@@ -192,7 +192,7 @@ wxPanel *mxPreferenceWindow::CreateGeneralPanel (mxBookCtrl *notebook) {
 	if (langs.Index("spanish")==wxNOT_FOUND) langs.Add("spanish");
 	
 	sizer.BeginCombo( LANG(PREFERENCES_GENERAL_GUI_LANGUAGE,"Idioma de la interfaz (*)") )
-		.Bind(m_binder,config->Init.language_file).Add(langs).EndCombo();
+		.Add(langs).Bind(m_binder,config->Init.language_file).EndCombo();
 	
 	sizer.BeginCheck( LANG(PREFERENCES_GENERAL_SHOW_TOOLTIPS,"Mostrar sugerencias al inicio") )
 		.Bind(m_binder,config->Init.show_tip_on_startup).EndCheck();
