@@ -89,7 +89,7 @@ sudo cp -r zinjai.app mnt/ || exit 1
 sudo umount mnt
 
 if mount|grep mnt; then sudo umount mnt; fi
-dd if=/dev/zero of=zinjai-m32.dmg bs=512k count=84
+dd if=/dev/zero of=zinjai-m32.dmg bs=512k count=85
 mkfs.hfsplus -v ZinjaI zinjai-m32.dmg
 sudo mount -o loop zinjai-m32.dmg mnt || exit 1
 rm -f zinjai.app/Contents/MacOS/zinjai
