@@ -121,7 +121,7 @@ SHOW_MILLIS("About to load ConfigManager...");
 	bool first_run = ConfigManager::Initialize(zpath);
 	
 	// cargar archivo de internacionalizacion
-	if (first_run) SelectLanguage();
+	if (first_run || config->Init.version==20160420) {) SelectLanguage();
 	
 	// si delega la carga a otra instancia termina inmediatamente
 	if (InitSingleton(cmd_path)) return false;
