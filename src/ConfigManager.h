@@ -55,6 +55,7 @@ struct cfgDebug {
 #ifdef __linux__
 	bool enable_core_dump;
 #endif
+	bool catch_throw;
 };
 
 //! Elementos de la configuración relacionados al aspecto del código

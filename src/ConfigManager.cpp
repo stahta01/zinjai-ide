@@ -196,6 +196,7 @@ bool ConfigManager::Load() {
 				else CFG_BOOL_READ_DN("always_debug",Debug.always_debug);
 //				else CFG_BOOL_READ_DN("close_on_normal_exit",Debug.close_on_normal_exit);
 				else CFG_BOOL_READ_DN("show_do_that",Debug.show_do_that);
+				else CFG_BOOL_READ_DN("catch_throw",Debug.catch_throw);
 				else CFG_BOOL_READ_DN("auto_solibs",Debug.auto_solibs);
 				else CFG_BOOL_READ_DN("readnow",Debug.readnow);
 				else CFG_BOOL_READ_DN("inspections_on_right",Debug.inspections_on_right);
@@ -518,6 +519,7 @@ bool ConfigManager::Save(){
 	CFG_BOOL_WRITE_DN("show_log_panel",Debug.show_log_panel);
 	CFG_BOOL_WRITE_DN("inspections_on_right",Debug.inspections_on_right);
 	CFG_BOOL_WRITE_DN("readnow",Debug.readnow);
+	CFG_BOOL_WRITE_DN("catch_throw",Debug.catch_throw);
 	CFG_BOOL_WRITE_DN("auto_solibs",Debug.auto_solibs);
 	CFG_BOOL_WRITE_DN("return_focus_on_continue",Debug.return_focus_on_continue);
 	CFG_BOOL_WRITE_DN("improve_inspections_by_type",Debug.improve_inspections_by_type);
@@ -813,6 +815,7 @@ void ConfigManager::LoadDefaults(){
 	Debug.inspections_on_right = false;
 	Debug.show_thread_panel = false;
 	Debug.show_log_panel = false;
+	Debug.catch_throw = true;
 	Debug.auto_solibs = false;
 	Debug.readnow = false;
 	Debug.show_do_that = false;

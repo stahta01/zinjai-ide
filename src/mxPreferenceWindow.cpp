@@ -293,6 +293,9 @@ wxPanel *mxPreferenceWindow::CreateDebugPanel2 (wxNotebook *notebook) {
 	sizer.BeginCheck( LANG(PREFERENCES_DEBUG_ENABLE_CORE_DUMP,"Habilitar volcado de memoria al ejecutar sin depurador") )
 		.Bind(m_binder,config->Debug.enable_core_dump).EndCheck();
 #endif
+	sizer.BeginCheck( LANG(PREFERENCES_DEBUG_CATCH_THROW,"Detenerse al lanzar una excepción (throw)") )
+		.Bind(m_binder,config->Debug.catch_throw).EndCheck();
+		
 	sizer.BeginCheck( LANG(PREFERENCES_DEBUG_LOAD_ALL_DEBUG_INFO,"Cargar toda la información de depuracion antes de comenzar") )
 		.Bind(m_binder,config->Debug.readnow).EndCheck();
 	

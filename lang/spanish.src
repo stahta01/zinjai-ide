@@ -3,7 +3,7 @@ Exportando...
 GENERAL_READY
 Listo
 CONFIG_NO_TERMINAL_FOUND
-No se ha encontrado una terminal conocida. Se recomienda instalar\nxterm; luego configure el parametro \"Comando del Terminal\" en la\npestaña \"Rutas 2\" del cuadro de \"Preferencias\".
+No se ha encontrado una terminal conocida. Se recomienda instalar\nxterm; luego configure el parametro \"Comando del Terminal\" en la\npestaña \"Rutas 1\" del cuadro de \"Preferencias\".
 CONFIG_TERMINAL_WARNING
 La aplicación terminal que se ha encontrado instalada\nes <{1}>. Algunas versiones de esta terminal pueden generar\nproblemas al intentar ejecutar un programa o proyecto. Si no logra\nejecutar correctamente desde ZinjaI ninguno de los programas/proyectos\nque compile, intente configurar otra terminal desde el cuadro de\n\"Preferencias\". La terminal recomendada es xterm).
 CONFIG_TERMINAL
@@ -19,7 +19,7 @@ No se ha encontrado el depurador (gdb). Debe instalarlo con\nel gestor de paquet
 PROJMNGR_WXFB_NOT_FOUND
 El proyecto utiliza wxFormBuilder, pero este software\nno se encuentra correctamente instalado/configurado en\nsu PC. Si ya se encuentra instalado debe configurar su\nubicación en el cuadro de \"Preferencias\".
 PROJMNGR_REGENERATING_ERROR_2
-La actualización automática de estos proyectos de deshabilitará temporalmente.
+La actualización automática de estos proyectos\nse deshabilitará temporalmente.
 GENERAL_WARNING
 Advertencia
 MAINW_DOXYGEN_MISSING
@@ -2488,6 +2488,8 @@ PREFERENCES_DEBUG_RETURN_FOCUS_ON_CONTINUE
 Devolver el foco a la aplicación en depuración luego de una pausa
 PREFERENCES_DEBUG_ENABLE_CORE_DUMP
 Habilitar volcado de memoria al ejecutar sin depurador
+PREFERENCES_DEBUG_CATCH_THROW
+Detenerse al lanzar una excepción (throw)
 PREFERENCES_DEBUG_LOAD_ALL_DEBUG_INFO
 Cargar toda la información de depuracion antes de comenzar
 PREFERENCES_DEBUG_LOAD_SHARED_LIBS_INFO
@@ -2715,7 +2717,7 @@ Ayuda
 PROJECTCONFIG_GENERAL
 General
 PROJECTCONFIG_COMPILING
-Compilacion
+Compilación
 PROJECTCONFIG_LINKING
 Enlazado
 PROJECTCONFIG_SEQUENCE
@@ -2723,7 +2725,7 @@ Secuencia
 PROJECTCONFIG_LIBRARIES
 Bibliotecas
 PROJECTCONFIG_LINKING_EXTRA_ARGS
-Parametros extra para el enlazado
+Parámetros extra para el enlazado
 PROJECTCONFIG_LINKING_EXTRA_PATHS
 Directorios adicionales para buscar bibliotecas
 PROJECTCONFIG_LINKING_EXTRA_LIBS
@@ -2741,7 +2743,7 @@ Habilitar optimizaciones durante el enlazado (LTO)
 PROJECTCONFIG_LINKING_IS_CONSOLE_PROGRAM
 Es un programa de consola
 PROJECTCONFIG_LINKING_FORCE_RELINK
-Reenlazar obligatoriamente en la proxima compilacion/ejecucion
+Reenlazar obligatoriamente en la proxima compilación/ejecución
 PROJECTCONFIG_GENERAL_ICON_PATH
 Icono del ejecutable (solo Windows)
 PROJECTCONFIG_GENERAL_MANIFEST_PATH
@@ -2763,11 +2765,11 @@ Script para ejecución/comando wrapper
 PROJECTCONFIG_GENERAL_WORKDIR
 Directorio de trabajo
 PROJECTCONFIG_GENERAL_RUNNING_ARGS
-Argumentos para la ejecucion
+Argumentos para la ejecución
 PROJECTCONFIG_GENERAL_ASK_ARGS
 Siempre pedir argumentos al ejecutar
 PROJECTCONFIG_GENERAL_WAIT_KEY
-Esperar una tecla luego de la ejecucion
+Esperar una tecla luego de la ejecución
 PROJECTCONFIG_GENERAL_WAIT_KEY_NEVER
 Nunca
 PROJECTCONFIG_GENERAL_WAIT_KEY_ERROR
@@ -2835,7 +2837,7 @@ Configuracion activa
 PROJECTCONFIG_EXE_NAME_MISSING
 No se ha definido ubicacion (primer campo en \"General\") para el ejecutable.\n Este campo no puede quedar vacio.
 PROJECTCONFIG_STEPS_COMPILATION_SEQUENCE
-Secuencia de compilacion:
+Secuencia de compilación:
 PROJECTCONFIG_STEPS_ADD
 Agregar
 PROJECTCONFIG_STEPS_EDIT

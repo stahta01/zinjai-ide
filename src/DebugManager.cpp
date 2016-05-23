@@ -1534,7 +1534,8 @@ void DebugManager::PopulateBreakpointsList(mxBreakList *break_list, bool also_wa
 	while (item.Mid(0,5)==_T("bkpt=")) {
 		item=item.Mid(6); 
 		wxString type=GetValueFromAns(item,_T("type"),true);
-		if (type=="breakpoint") {
+		wxString catch_type=GetValueFromAns(item,_T("catch-type"),true);
+		if (catch_type.IsEmpty() && type=="breakpoint") {
 			long id=-1; GetValueFromAns(item,_T("number"),true).ToLong(&id); 
 			BreakPointInfo *bpi=BreakPointInfo::FindFromNumber(id,true);
 			int cont=break_list->AppendRow(bpi?bpi->zinjai_id:-1);
@@ -1551,21 +1552,26 @@ void DebugManager::PopulateBreakpointsList(mxBreakList *break_list, bool also_wa
 			if (!fname.Len()) fname = GetValueFromAns(item,_T("file"),true);
 			grid->SetCellValue(cont,BL_COL_WHY,fname + _T(": line ") +GetValueFromAns(item,_T("line"),true));
 			grid->SetCellValue(cont,BL_COL_COND,GetValueFromAns(item,_T("cond"),true));
-		} else if (also_watchpoints && type.Contains("watchpoint")) {
-			int cont=break_list->AppendRow(-1);
-			if (type.Mid(0,3)==_("rea")) {
-				grid->SetCellValue(cont,BL_COL_TYPE,_T("w(l)"));
-			} else if (type.Mid(0,3)==_("acc")) {
-				grid->SetCellValue(cont,BL_COL_TYPE,_T("w(e)"));
-			} else /*if (type.Mid(0,3)==_("acc"))*/ {
-				grid->SetCellValue(cont,BL_COL_TYPE,_T("w(l/e)"));
+		} else if (also_watchpoints) {
+			if(type.Contains("watchpoint") || !catch_type.IsEmpty()) {
+				int cont=break_list->AppendRow(-1);
+				if (!catch_type.IsEmpty()) {
+					grid->SetCellValue(cont,BL_COL_TYPE,"catch");
+				} else {
+					if (type.Mid(0,3)==_("rea")) {
+						grid->SetCellValue(cont,BL_COL_TYPE,_T("w(l)"));
+					} else if (type.Mid(0,3)==_("acc")) {
+						grid->SetCellValue(cont,BL_COL_TYPE,_T("w(e)"));
+					} else /*if (type.Mid(0,3)==_("acc"))*/ {
+						grid->SetCellValue(cont,BL_COL_TYPE,_T("w(l/e)"));
+					}
+				}
+				grid->SetCellValue(cont,BL_COL_HIT,GetValueFromAns(item,_T("times"),true));
+				grid->SetCellValue(cont,BL_COL_ENABLE,GetValueFromAns(item,_T("enabled"),true)==_T("y")?_T("enabled"):_T("disabled"));
+				grid->SetCellValue(cont,BL_COL_WHY,
+								   mxUT::UnEscapeString(GetValueFromAns(item,_T("number"),true)) + ": "
+														+GetValueFromAns(item,_T("what"),true) );
 			}
-			grid->SetCellValue(cont,BL_COL_HIT,GetValueFromAns(item,_T("times"),true));
-			grid->SetCellValue(cont,BL_COL_ENABLE,GetValueFromAns(item,_T("enabled"),true)==_T("y")?_T("enabled"):_T("disabled"));
-			grid->SetCellValue(cont,BL_COL_WHY,
-				mxUT::UnEscapeString(GetValueFromAns(item,_T("number"),true)) + ": "
-				+GetValueFromAns(item,_T("what"),true)
-				);
 		}
 		item=GetNextItem(ans,p);
 	}
@@ -1954,6 +1960,7 @@ void DebugManager::Start_ConfigureGdb ( ) {
 		}
 	}
 	// otras configuraciones varias
+	if (config->Debug.catch_throw) SendCommand("catch throw");
 	if (!config->Debug.auto_solibs) SendCommand("set auto-solib-add off");
 //	SendCommand("set print addr off"); // necesito las direcciones para los helpers de los arreglos
 	SendCommand(_T("set print repeats 0"));
