@@ -957,7 +957,7 @@ void DebugManager::Pause() {
 	if (!winLoadDBP()) {
 		mxMessageDialog(main_window,"Esta caracteristica no se encuentra presente\n"
 									"en versiones de Windows previas a XP-SP2")
-			.Title(LANG(GENERAL_ERROR,"Error").IconError().Run();
+			.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
 		return;
 	}
 	if (FindOutChildPid()) winDebugBreak(child_pid);

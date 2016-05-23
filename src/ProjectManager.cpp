@@ -559,19 +559,22 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 	
 #ifdef __WIN32__
 	if (!project_template && version_saved<20130723) { // changes mingw default calling convention
-		int ret=mxMessageDialog(main_window,LANG(PROJECT_MINGW_CC_PROBLEM_DESC,""
-			"El proyecto que está abriendo fue guardado con una versión de ZinjaI que utilizaba\n"
-			"versiones ahora desactualizadas de las herramientas de compilación (mingw). Los\n"
-			"archivos compilados con esas herramientas no serán compatibles con los que se\n"
-			"compilen con la nueva versión disponible. Si utiliza el compilador por defecto\n"
-			"deberá recompilar todo el proyecto. ¿Desea eliminar ahora los objetos compilados\n"
-			"para forzar la recompilación del proyecto antes de la próxima ejecución?\n\n"
-			"Nota: si su proyecto utiliza bibliotecas no provistas con ZinjaI, probablemente deba\n"
-			"obtener además nuevas versiones de las mismas. En caso de no hacerlo, su programa\n"
-			"podría finalizar anormalmente al intentar ejecutarlo."
-			),LANG(GENERAL_WARNING,"Advertencia"),mxMD_WARNING|mxMD_YES_NO,LANG(PROJECT_MINGW_CC_PROBLEM_MORE,"Mostrar información (web)..."),false).ShowModal();
-		if (ret&mxMD_CHECKED) mxUT::OpenInBrowser("http://cucarachasracing.blogspot.com.ar/2013/07/mingw-y-las-calling-conventions.html");
-		if (ret&mxMD_YES) { wxCommandEvent evt; main_window->OnRunClean(evt); }
+		mxMessageDialog::mdAns ret =
+			mxMessageDialog(main_window,LANG(PROJECT_MINGW_CC_PROBLEM_DESC,""
+				"El proyecto que está abriendo fue guardado con una versión de ZinjaI que utilizaba\n"
+				"versiones ahora desactualizadas de las herramientas de compilación (mingw). Los\n"
+				"archivos compilados con esas herramientas no serán compatibles con los que se\n"
+				"compilen con la nueva versión disponible. Si utiliza el compilador por defecto\n"
+				"deberá recompilar todo el proyecto. ¿Desea eliminar ahora los objetos compilados\n"
+				"para forzar la recompilación del proyecto antes de la próxima ejecución?\n\n"
+				"Nota: si su proyecto utiliza bibliotecas no provistas con ZinjaI, probablemente deba\n"
+				"obtener además nuevas versiones de las mismas. En caso de no hacerlo, su programa\n"
+				"podría finalizar anormalmente al intentar ejecutarlo."
+				))
+			.Title(LANG(GENERAL_WARNING,"Advertencia")).IconWarning().ButtonsYesNo()
+			.Check1(LANG(PROJECT_MINGW_CC_PROBLEM_MORE,"Mostrar información (web)..."),false).Run();
+		if (ret.check1) mxUT::OpenInBrowser("http://cucarachasracing.blogspot.com.ar/2013/07/mingw-y-las-calling-conventions.html");
+		if (ret.yes) { wxCommandEvent evt; main_window->OnRunClean(evt); }
 	}
 #endif
 	
