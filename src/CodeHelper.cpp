@@ -1404,17 +1404,6 @@ void CodeHelper::SetAutocompletionMatchingMode (int mode) {
 	}
 }
 
-CodeHelper::RAIAutocompModeChanger::RAIAutocompModeChanger () {
-}
-
-CodeHelper::RAIAutocompModeChanger::~RAIAutocompModeChanger ( ) {
-	g_code_helper->SetAutocompletionMatchingMode(config->Source.autoCompletion);
-}
-
-void CodeHelper::RAIAutocompModeChanger::Change (int mode) {
-	g_code_helper->SetAutocompletionMatchingMode(mode);
-}
-
 void CodeHelper::FilterAutocomp (mxSource *source, const wxString & key, bool force_show) {
 	wxString old_res = g_autocomp_list.GetLastResult();
 	const wxString &new_res = g_autocomp_list.GetFiltered(key);

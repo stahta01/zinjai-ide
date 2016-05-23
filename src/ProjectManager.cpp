@@ -2622,7 +2622,10 @@ bool ProjectManager::WxfbGenerate(wxString fbp_file, wxString fbase, bool force_
 				message += LANG(PROJMNGR_REGENERATING_ERROR_2,""
 								"La actualización automática de estos proyectos\nse deshabilitará temporalmente.");
 			}
-			mxMessageDialog(main_window,message).Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
+//			bool just_installed =	
+				config->CheckComplaintAndInstall(main_window, "", LANG(GENERAL_WARNING,"Advertencia"), 
+												 message, "wxformbuilder", "http://wxformbuilder.org","wxformbuilder");
+//			mxMessageDialog(main_window,message).Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
 			return false;
 		}
 		

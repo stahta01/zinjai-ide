@@ -96,7 +96,7 @@ mxProjectConfigWindow::mxProjectConfigWindow(wxWindow* parent)
 	sizer.BeginNotebook()
 		.AddPageIf(config->Help.show_extra_panels,this,&mxProjectConfigWindow::CreateQuickHelpPanel, LANG(PROJECTCONFIG_HELP,"Ayuda"))
 		.AddPage(this,&mxProjectConfigWindow::CreateGeneralPanel, LANG(PROJECTCONFIG_GENERAL,"General"))
-		.AddPage(this,&mxProjectConfigWindow::CreateCompilingPanel, LANG(PROJECTCONFIG_COMPILING,"Compilacion"))
+		.AddPage(this,&mxProjectConfigWindow::CreateCompilingPanel, LANG(PROJECTCONFIG_COMPILING,"Compilación"))
 		.AddPage(this,&mxProjectConfigWindow::CreateLinkingPanel, LANG(PROJECTCONFIG_LINKING,"Enlazado"))
 		.AddPage(this,&mxProjectConfigWindow::CreateStepsPanel, LANG(PROJECTCONFIG_SEQUENCE,"Secuencia"))
 		.AddPage(this,&mxProjectConfigWindow::CreateLibsPanel, LANG(PROJECTCONFIG_LIBRARIES,"Bibliotecas"))
@@ -126,7 +126,7 @@ wxPanel *mxProjectConfigWindow::CreateQuickHelpPanel (wxNotebook *notebook) {
 wxPanel *mxProjectConfigWindow::CreateLinkingPanel (wxNotebook *notebook) {
 	CreatePanelAndSizer sizer(notebook);
 	
-	sizer.BeginText( LANG(PROJECTCONFIG_LINKING_EXTRA_ARGS,"Parametros extra para el enlazado") )
+	sizer.BeginText( LANG(PROJECTCONFIG_LINKING_EXTRA_ARGS,"Parámetros extra para el enlazado") )
 		.Value(configuration->linking_extra).Button(mxID_PROJECT_CONFIG_LINK_EXTRA_BUTTON)
 		.RegisterIn(wx_noexe).RegisterIn(wx_extern).EndText(linking_extra_options);
 			
@@ -155,7 +155,7 @@ wxPanel *mxProjectConfigWindow::CreateLinkingPanel (wxNotebook *notebook) {
 		.RegisterIn(wx_noexe) _if_win32( .RegisterIn(wx_extern), )
 		.Value(configuration->console_program).EndCheck(linking_console_program);
 				
-	sizer.BeginCheck( LANG(PROJECTCONFIG_LINKING_FORCE_RELINK,"Reenlazar obligatoriamente en la proxima compilacion/ejecucion") )
+	sizer.BeginCheck( LANG(PROJECTCONFIG_LINKING_FORCE_RELINK,"Reenlazar obligatoriamente en la proxima compilación/ejecución") )
 		.RegisterIn(wx_noexe).RegisterIn(wx_extern)
 		.Value(project->force_relink).EndCheck(linking_force_relink);
 			
@@ -193,7 +193,7 @@ wxPanel *mxProjectConfigWindow::CreateGeneralPanel (wxNotebook *notebook) {
 		.Value(configuration->working_folder).Button(mxID_PROJECT_CONFIG_WORKING_DIR)
 		.RegisterIn(wx_noexe).EndText(general_working_folder);
 	
-	sizer.BeginText( LANG(PROJECTCONFIG_GENERAL_RUNNING_ARGS,"Argumentos para la ejecucion") )
+	sizer.BeginText( LANG(PROJECTCONFIG_GENERAL_RUNNING_ARGS,"Argumentos para la ejecución") )
 		.Value(configuration->args).Button(mxID_PROJECT_CONFIG_ARGS_BUTTON)
 		.RegisterIn(wx_noexe).EndText(general_args);
 	
@@ -201,7 +201,7 @@ wxPanel *mxProjectConfigWindow::CreateGeneralPanel (wxNotebook *notebook) {
 		.Value(configuration->always_ask_args).RegisterIn(wx_noexe).EndCheck(general_always_ask_args);
 	
 
-	sizer.BeginCombo( LANG(PROJECTCONFIG_GENERAL_WAIT_KEY,"Esperar una tecla luego de la ejecucion") )
+	sizer.BeginCombo( LANG(PROJECTCONFIG_GENERAL_WAIT_KEY,"Esperar una tecla luego de la ejecución") )
 		.Add(LANG(PROJECTCONFIG_GENERAL_WAIT_KEY_NEVER,"Nunca"))
 		.Add(LANG(PROJECTCONFIG_GENERAL_WAIT_KEY_ERROR,"En caso de error"))
 		.Add(LANG(PROJECTCONFIG_GENERAL_WAIT_KEY_ALWAYS,"Siempre"))
@@ -220,7 +220,7 @@ wxPanel *mxProjectConfigWindow::CreateGeneralPanel (wxNotebook *notebook) {
 wxPanel *mxProjectConfigWindow::CreateCompilingPanel (wxNotebook *notebook) {
 	CreatePanelAndSizer sizer(notebook);
 		
-	sizer.BeginText( LANG(PROJECTCONFIG_COMPILING_EXTRA_ARGS,"Parametros extra para la compilacion") )
+	sizer.BeginText( LANG(PROJECTCONFIG_COMPILING_EXTRA_ARGS,"Parámetros extra para la compilación") )
 		.Value(configuration->compiling_extra).Button(mxID_PROJECT_CONFIG_COMPILE_EXTRA_BUTTON)
 		.RegisterIn(wx_extern).EndText(compiling_extra_options);
 						
@@ -334,7 +334,7 @@ void mxProjectConfigWindow::OnTempDirButton(wxCommandEvent &event){
 }
 
 void mxProjectConfigWindow::OnEnvVarsButton(wxCommandEvent &event){
-	new mxEnumerationEditor(this,"Parametros extra para el compilador",general_env_vars,false);
+	new mxEnumerationEditor(this,"Parámetros extra para el compilador",general_env_vars,false);
 }
 
 void mxProjectConfigWindow::OnWorkingDirButton(wxCommandEvent &event) {
@@ -592,7 +592,7 @@ void mxProjectConfigWindow::OnHelpButton(wxCommandEvent &event){
 
 void mxProjectConfigWindow::OnCompilingExtraOptionsButton(wxCommandEvent &evt) {
 	CommonPopup(compiling_extra_options).CommaSplit(false).BasePath(project->path)
-		.Caption( LANG(PROJECTCONFIG_COMPILING_EXTRA_ARGS,"Parametros extra para la compilacion") )
+		.Caption( LANG(PROJECTCONFIG_COMPILING_EXTRA_ARGS,"Parámetros extra para la compilación") )
 		.AddEditAsText().AddEditAsList().AddFilename().AddPath().AddMinGWDir().Run(this);
 }
 
@@ -604,7 +604,7 @@ void mxProjectConfigWindow::OnCompilingHeadersDirsButton(wxCommandEvent &evt) {
 
 void mxProjectConfigWindow::OnLinkingExtraOptionsButton(wxCommandEvent &evt) {
 	CommonPopup(linking_extra_options).CommaSplit(false).BasePath(project->path)
-		.Caption( LANG(PROJECTCONFIG_LINKING_EXTRA_ARGS,"Parametros extra para el enlazado") )
+		.Caption( LANG(PROJECTCONFIG_LINKING_EXTRA_ARGS,"Parámetros extra para el enlazado") )
 		.AddEditAsText().AddEditAsList().AddFilename().AddPath().AddMinGWDir().Run(this);
 }
 
@@ -622,7 +622,7 @@ void mxProjectConfigWindow::OnLinkingLibrariesButton(wxCommandEvent &evt) {
 
 void mxProjectConfigWindow::OnGeneralArgsButton(wxCommandEvent &evt) {
 	CommonPopup(general_args).CommaSplit(false).BasePath(DIR_PLUS_FILE(project->path,general_working_folder->GetValue()))
-		.Caption( LANG(PROJECTCONFIG_GENERAL_RUNNING_ARGS,"Argumentos para la ejecucion") )
+		.Caption( LANG(PROJECTCONFIG_GENERAL_RUNNING_ARGS,"Argumentos para la ejecución") )
 		.AddEditAsText().AddEditAsList().AddFilename().AddPath().Run(this);
 }
 
@@ -654,7 +654,7 @@ wxPanel *mxProjectConfigWindow::CreateStepsPanel (wxNotebook *notebook) {
 			if (toolchains_combo->GetString(i)==configuration->toolchain) 
 				{ toolchains_combo->SetSelection(i); break; }
 
-	wxStaticText *steps_label=new wxStaticText(panel,wxID_ANY,LANG(PROJECTCONFIG_STEPS_COMPILATION_SEQUENCE,"Secuencia de compilacion:"));
+	wxStaticText *steps_label=new wxStaticText(panel,wxID_ANY,LANG(PROJECTCONFIG_STEPS_COMPILATION_SEQUENCE,"Secuencia de compilación:"));
 	sizer->Add(steps_label,sizers->BLRT5);
 	wx_extern.Add(steps_label);
 	

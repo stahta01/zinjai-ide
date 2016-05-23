@@ -239,10 +239,14 @@ private:
 	void AddInspectionImprovingTemplate(const wxString &from, const wxString &to, bool replace=false);
 	void SetDefaultInspectionsImprovingTemplates(int version);
 
-	
+public:
 	/// verify is a linux package (xterm,g++,gdb,doxygen,etc) is installed, shows an error if not and offer an automatic installation when apt-get is present
 	bool CheckComplaintAndInstall(wxWindow *parent, const wxString &check_command, const wxString &what, const wxString &error_msg, const wxString &pkgname, const wxString &website="", const wxString &preferences_field="");
 	
+	/// verify is a linux package (xterm,g++,gdb,doxygen,etc) is installed, shows an error if not and offer an automatic installation when apt-get is present
+	bool ComplaintAndInstall(wxWindow *parent, const wxString &check_command, const wxString &what, const wxString &error_msg, const wxString &pkgname, const wxString &website="", const wxString &preferences_field="");
+
+private:
 	/// verify is a linux package (xterm,g++,gdb,doxygen,etc) is installed, shows an error if not and offer an automatic installation when apt-get is present
 	void TryToInstallWithAptGet(wxWindow *parent, const wxString &what, const wxString &pkgname);
 	

@@ -5,6 +5,8 @@
 
 class wxCheckBox;
 
+
+
 class mxMessageDialog : public wxDialog {
 	
 public:

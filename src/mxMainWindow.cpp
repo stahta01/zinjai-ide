@@ -885,7 +885,7 @@ void mxMainWindow::OnClose (wxCloseEvent &event) {
 	if (parser->working) {
 		parser->Stop(true);
 	}
-	bool do_save_project = config->Init.save_project;
+	bool do_save_project = project && config->Init.save_project;
 	if (project && !do_save_project) {
 		mxMessageDialog::mdAns pres 
 			= mxMessageDialog(main_window,LANG(MAINW_SAVE_PROJECT_BEFORE_CLOSING,""

@@ -789,7 +789,15 @@ void mxPreferenceWindow::OnOkButton(wxCommandEvent &event) {
 		return;
 	}
 	
+	wxString wxformbuilder_prev = config->Files.wxfb_command;
+	
 	m_binder.FromWidgets();
+	
+		
+	if (project && project->HasWxfbConfiguration()
+		&& project->GetWxfbConfiguration()->autoupdate_projects_temp_disabled
+		&& wxformbuilder_prev!=config->Files.wxfb_command) 
+			project->GetWxfbConfiguration()->autoupdate_projects_temp_disabled = false;
 	
 #ifdef __linux__
 	if ( init_disable_ubuntu_tweaks->GetValue() == wxFileExists(DIR_PLUS_FILE(config->config_dir,"ubuntu")) ) {

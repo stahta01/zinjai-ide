@@ -498,6 +498,7 @@ public:
 	float progress_step; ///< temporal para guardar de a cuanto avanza la barra de progreso al avanzar un paso
 	bool force_relink;	///< indica si debe reenlazar si o si en la proxima compilacion, aunque el exe esté al día
 	cppcheck_configuration *cppcheck; ///< configuracion para ejecutar cppcheck, nullptr si no esta definido en el proyecto
+
 private:
 	wxfb_configuration *wxfb; ///< configuración de la integración con wxfb (si es nullptr no está activada)
 	doxygen_configuration *doxygen; ///< configuracion para el Doxyfile, nullptr si no esta definido en el proyecto
@@ -506,7 +507,9 @@ public:
 	doxygen_configuration* GetDoxygenConfiguration();
 	valgrind_configuration* GetValgrindConfiguration();
 	wxfb_configuration* GetWxfbConfiguration(bool create_activated=true);
+	bool HasWxfbConfiguration() const { return wxfb!=nullptr; }
 	bool GetWxfbActivated() { return wxfb && wxfb->activate_integration; }
+	
 	project_configuration *active_configuration; ///< puntero a la configuracion activa
 	project_configuration *configurations[100]; ///< arreglo de configuraciones, ver configurations_count
 	int configurations_count; ///< cantidad de configuraciones validas en configurations

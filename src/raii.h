@@ -1,8 +1,18 @@
 #ifndef RAII_H
 #define RAII_H
 
-#include "Cpp11.h"
 #include <wx/filefn.h>
+#include "Cpp11.h"
+
+// helper for generic raii-like objects
+#define AtExit(name,code) \
+	struct name##_t { \
+		bool _do; name##_t():_do(true) {} \
+		void run_now() { code; _do = false; } \
+		void cancel() { _do = false; } \
+		~name##_t() { if (_do) run_now(); } \
+	} name;
+
 
 /**
 * @brief RAII wrapper for objects allocated on heap (new), but with a life-cycle

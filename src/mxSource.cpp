@@ -4157,7 +4157,7 @@ int mxSource::GetStatementStartPos(int pos, bool skip_coma, bool skip_white, boo
 		if (c==')'||c=='}'||c==']'/*||c=='>'*/) {
 			int pos_match = BraceMatch(pos);
 			if (pos_match!=wxSTC_INVALID_POSITION) {
-				if (c=='}'); --pos_match;
+				if (c=='}') --pos_match;
 				II_BACK(pos_match,II_IS_NOTHING_4(pos_match));
 				// todo el lio que sigue es para evitar seguir para atras cuando es funcion como en "void foo(bla){bla}"... cortar en el foo
 				if (c==')' || ( s==wxSTC_C_WORD && 
@@ -4168,7 +4168,7 @@ int mxSource::GetStatementStartPos(int pos, bool skip_coma, bool skip_white, boo
 					if (p_func_name!=wxSTC_INVALID_POSITION) {
 						p_func_name--; II_BACK_NC(p_func_name,II_IS_NOTHING_4(p_func_name));
 						if (s==wxSTC_C_IDENTIFIER||s==wxSTC_C_GLOBALCLASS) { // para evitar if,while,for,lambdas, something else?
-							II_BACK(p_func_name,II_IS_KEYWORD_CHAR(p_func_name));
+							II_BACK(p_func_name,(c=GetCharAt(p_func_name))&&II_IS_KEYWORD_CHAR(c));
 							II_BACK(p_func_name,II_IS_NOTHING_4(p_func_name));
 							if (c!=','&&c!=':'&&c!='{') // que no sea una lista de inicializadores en un constructor
 								break; // si era el par de llaves de una funcion, no seguir.... faltaría contemplar "namespace bla {...}"

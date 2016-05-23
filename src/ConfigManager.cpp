@@ -70,7 +70,7 @@ void ConfigManager::DoInitialChecks() {
 		wxString xterm_error_msg = LANG(CONFIG_NO_TERMINAL_FOUND,""
 			"No se ha encontrado una terminal conocida. Se recomienda instalar\n"
 			"xterm; luego configure el parametro \"Comando del Terminal\" en la\n"
-			"pestaña \"Rutas 2\" del cuadro de \"Preferencias\".");
+			"pestaña \"Rutas 1\" del cuadro de \"Preferencias\".");
 		LinuxTerminalInfo::Initialize();
 		for(int i=0;i<=LinuxTerminalInfo::count;i++) { 
 			if (LinuxTerminalInfo::list[i].Test()) {
@@ -1058,8 +1058,16 @@ bool ConfigManager::CheckComplaintAndInstall(wxWindow *parent, const wxString &c
 											 const wxString &error_msg, const wxString &pkgname, 
 											 const wxString &website, const wxString &preferences_field) 
 {
-	wxString check_output = mxUT::GetOutput(check_command,true);
+	wxString check_output = mxUT::GetOutput(check_command,true,false);
 	if (check_output.Len() && !check_output.StartsWith("execvp")) return true; // si anda, ya esta instalada
+	return ComplaintAndInstall(parent,check_command,what,error_msg,pkgname,website,preferences_field);
+}
+
+
+bool ConfigManager::ComplaintAndInstall(wxWindow *parent, const wxString &check_command, const wxString &what,
+											 const wxString &error_msg, const wxString &pkgname, 
+											 const wxString &website, const wxString &preferences_field) 
+{
 	wxString apt_message = GetTryToInstallCheckboxMessage(); // ver si tenemos apt-get
 	wxString web_msg = website.Len()?(LANG1(CONFIG_GOTO_PACKAGE_WEBSITE,"Abrir sitio web (<{1}>)",website)):"";
 	wxString pref_msg = preferences_field.Len()?(LANG(CONFIG_OPEN_PREFERENCES,"Abrir el cuadro de Preferencias")):"";
@@ -1068,7 +1076,7 @@ bool ConfigManager::CheckComplaintAndInstall(wxWindow *parent, const wxString &c
 		.Check1(pref_msg,apt_message.IsEmpty()).Check2(apt_message.IsEmpty()?web_msg:apt_message,true).Run(); // informar/preguntar
 	if (ans.check2 && !apt_message.IsEmpty()) { // si había apt-get, 
 		TryToInstallWithAptGet(parent,what,pkgname); // intentar instalar
-		check_output = mxUT::GetOutput(check_command,true);
+		wxString check_output = check_command.IsEmpty()?"":mxUT::GetOutput(check_command,true,false);
 		if (check_output.Len() && !check_output.StartsWith("execvp")) // si anda, ya esta instalada
 			return true; 
 		// si falló apt-get, avisar e intentar abrir el sitio web de descarga

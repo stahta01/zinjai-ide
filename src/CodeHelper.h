@@ -105,13 +105,6 @@ public:
 	/// @param mode  0=case-sensitive start, 1=case-insesitive start, 2=case-insensitive any, 3=case-insensitive Levenshtein
 	void SetAutocompletionMatchingMode(int mode);
 	
-	class RAIAutocompModeChanger {
-	public:
-		RAIAutocompModeChanger();
-		void Change(int mode);
-		~RAIAutocompModeChanger();
-	};
-	
 };
 
 extern CodeHelper *g_code_helper;
