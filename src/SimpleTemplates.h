@@ -11,6 +11,7 @@ class SimpleTemplates {
 		wxString userf_name; ///< user-friendly name for that template (Name field in template's header)
 		bool cpp; ///< true (default) if it is a cpp template, false if it is a C one (Type field in template's header)
 		wxString options; ///< compiler arguments (without ${DEFAULT}, Options field in template's header)
+		wxString includes; ///< list of header files associated with that template
 		int caret_pos; ///< initial position of the caret, (Caret field in template's header)
 	};
 	SingleList<TemplateInfo> m_templates;

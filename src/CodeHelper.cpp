@@ -1237,6 +1237,8 @@ void CodeHelper::AppendIndexes(wxString indexes) {
 *               sigue siendo responsabilidad de quien llamo
 **/
 void CodeHelper::TryToSuggestTemplateSolutionForLinkingErrors (const wxArrayString &full_output, GenericAction *&on_end) {
+
+#warning TODO: USAR SimpleTemplates
 	
 	static bool dont_check=false; if (dont_check) return;
 

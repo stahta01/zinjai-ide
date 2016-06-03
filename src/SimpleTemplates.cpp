@@ -24,6 +24,7 @@ SimpleTemplates::SimpleTemplates ( ) {
 		
 		if (opts.count(name_prefix)) info.userf_name = opts[name_prefix];
 		else if (opts.count("Name")) info.userf_name = opts["Name"];
+		else if (opts.count("Includes")) info.includes = opts["Includes"];
 		else info.userf_name = templates[i];
 		
 		info.cpp = opts.count("Type")==0 || opts["Type"]!="C";
