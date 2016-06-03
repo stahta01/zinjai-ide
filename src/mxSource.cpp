@@ -777,7 +777,7 @@ void mxSource::OnEditToggleLinesDown (wxCommandEvent &event) {
 		SetTargetEnd(PositionFromLine(min));
 		ReplaceTarget(line);
 		if (ss==-1) SetSelectionStart(PositionFromLine(min+1));
-		if (se==-1) SetSelectionStart(PositionFromLine(min+1));
+		if (se==-1) SetSelectionEnd(GetLineEndPosition(max+1));
 		EnsureVisibleEnforcePolicy(max);
 	}	
 }
