@@ -432,6 +432,7 @@ void color_theme::Initialize() {
 	wxTheColourDatabase->AddColour("Z REALLY DARKER GRAY",wxColour(66,66,66)); // para el texto del tooltip
 	wxTheColourDatabase->AddColour("Z DIFF GREEN",wxColour(128,255,128));
 	wxTheColourDatabase->AddColour("Z DIFF YELLOW",wxColour(255,255,128));
+	wxTheColourDatabase->AddColour("Z DARK YELLOW",wxColour(128,128,0));
 	wxTheColourDatabase->AddColour("Z CORNFLOWER BLUE",wxColour(100,150,240));
 	
 	g_ctheme = new color_theme;

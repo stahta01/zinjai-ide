@@ -30,6 +30,11 @@
 #include "LocalRefactory.h"
 using namespace std;
 
+// dwell time for margins
+#define _DWEEL_TIME_ 100
+// dwell time for code = _DWEEL_TIME_*_DWEEL_FACTOR_
+#define _DWEEL_FACTOR_ 10
+
 
 NavigationHistory g_navigation_history;
 
@@ -292,8 +297,10 @@ mxSource::mxSource (wxWindow *parent, wxString ptext, project_file_item *fitem)
 	
 	config_running = config->Running;
 	
+	wxString fname = DIR_PLUS_FILE(config->temp_dir,"sin_titulo.cpp");
 	source_filename = wxEmptyString;
-	temp_filename = DIR_PLUS_FILE(config->temp_dir,"sin_titulo.cpp");
+	temp_filename = fname;
+	m_cem_ref.SetFName(fname);
 	binary_filename = DIR_PLUS_FILE(config->temp_dir,"sin_titulo")+_T(BINARY_EXTENSION);
 	working_folder = wxFileName::GetHomeDir();
 
@@ -390,7 +397,7 @@ mxSource::mxSource (wxWindow *parent, wxString ptext, project_file_item *fitem)
 	SetBufferedDraw(false); 
 #endif
 //	SetTwoPhaseDraw (false);
-	SetMouseDwellTime(1000); // mis tooltips bizarros (con showbaloon = calltip)
+	SetMouseDwellTime(_DWEEL_TIME_); // mis tooltips bizarros (con showbaloon = calltip)
 	
 	if (debug->IsDebugging() && !config->Debug.allow_edition) SetReadOnlyMode(ROM_ADD_DEBUG);
 
@@ -904,6 +911,7 @@ bool mxSource::LoadFile (const wxFileName &filename) {
 		SetStyle(wxSTC_LEX_NULL);
 	}
 	
+	m_cem_ref.SetFName(filename.GetFullPath());
 	source_filename = filename;
 	source_time = source_filename.GetModificationTime();
 	cpp_or_just_c = source_filename.GetExt().Lower()!="c";
@@ -968,6 +976,7 @@ bool mxSource::SaveSource (const wxFileName &filename) {
 	if (lexer==wxSTC_LEX_CPP && config_source.avoidNoNewLineWarning && GetLine(GetLineCount()-1)!="")
 		AppendText("\n");
 	if (MySaveFile(filename.GetFullPath())) {
+		m_cem_ref.SetFName(filename.GetFullPath());
 		source_filename = filename;
 		working_folder = filename.GetPath();
 		cpp_or_just_c = source_filename.GetExt().Lower()!="c";
@@ -2892,28 +2901,43 @@ void mxSource::OnToolTipTime (wxStyledTextEvent &event) {
 //	if (FindFocus()!=this) // no mostrar tooltips si no se tiene el foco
 //		return;
 	
+	static int old_p = -1, count_p = 0;
+	
 	// no mostrar tooltips si no es la pestaña del notebook seleccionada, o el foco no esta en esta ventana
 	if (!main_window->IsActive() || main_window->focus_source!=this) return; 
 	
 	// no mostrar si el mouse no está dentro del area del fuente
 	wxRect psrc = GetScreenRect();
 	wxPoint pmouse = wxGetMousePosition()-psrc.GetTopLeft();
-	if (pmouse.x<0||pmouse.y<0) return;
-	if (pmouse.x>=psrc.GetWidth()||pmouse.y>=psrc.GetHeight()) return;
+	if (pmouse.x<0||pmouse.y<0) { old_p = -1; return; }
+	if (pmouse.x>=psrc.GetWidth()||pmouse.y>=psrc.GetHeight()) { old_p = -1; return; }
 	
+	int p = event.GetPosition(); 
+	if (old_p==p) { ++count_p; } else { old_p = p; count_p = 0; }
 	
 	// si esta en un margen....
-	int p = event.GetPosition();
 	if (p==-1) {
 		int x=event.GetX(), y=event.GetY();
 		if (GetMarginForThisX(x)==MARGIN_BREAKS) {
 			x=10; for(int i=0;i<MARGIN_NULL;i++) { x+=GetMarginWidth(i); }
-			int l=LineFromPosition( PositionFromPointClose(x,y) );
+			int l = LineFromPosition( PositionFromPointClose(x,y) );
+			// error/warning
+			wxString errors_message = m_cem_ref.GetMessageForLine(l+1);
+			if (!errors_message.IsEmpty()) {
+				ShowBaloon(errors_message,PositionFromLine(l));
+				return;
+			}
+			// breakpoint annotation
 			BreakPointInfo *bpi=m_extras->FindBreakpointFromLine(this,l);
-			if (bpi && bpi->annotation.Len()) ShowBaloon(bpi->annotation,PositionFromLine(l));
+			if (bpi && bpi->annotation.Len()) {
+				ShowBaloon(bpi->annotation,PositionFromLine(l));
+				return;
+			}
 		}
 		return;
 	}
+	
+	if (++count_p<_DWEEL_FACTOR_) { SetMouseDwellTime(_DWEEL_TIME_); return; } // SetMouseDwellTime is used to relaunch that when mouse doesn't move
 	
 	// si no esta depurando, buscar el tipo de dato del simbolo y mostrarlo
 	if (!debug->IsDebugging()) {
@@ -3757,6 +3781,13 @@ void mxSource::SetColours(bool also_style) {
 	MarkerDefine(mxSTC_MARK_FUNCCALL,wxSTC_MARK_SHORTARROW, g_ctheme->DEFAULT_FORE, "YELLOW");
 	MarkerDefine(mxSTC_MARK_STOP,wxSTC_MARK_SHORTARROW, g_ctheme->DEFAULT_FORE, "RED");
 	
+//	MarkerDefine(mxSTC_MARK_ERROR,wxSTC_MARK_BOXMINUS, g_ctheme->DEFAULT_BACK, "RED");
+//	MarkerDefine(mxSTC_MARK_WARNING,wxSTC_MARK_BOXMINUS, g_ctheme->DEFAULT_BACK,"Z DARK YELLOW");
+	MarkerDefine(mxSTC_MARK_WARNING,wxSTC_MARK_DOTDOTDOT, "Z DARK YELLOW","Z DARK YELLOW");
+	MarkerDefine(mxSTC_MARK_ERROR,wxSTC_MARK_DOTDOTDOT, "RED", "RED");
+	MarkerDefine(mxSTC_MARK_WARNING,wxSTC_MARK_ARROWS, "Z DARK YELLOW","Z DARK YELLOW");
+	MarkerDefine(mxSTC_MARK_ERROR,wxSTC_MARK_ARROWS, "RED", "RED");
+	
 	if (also_style) SetStyle(config_source.syntaxEnable);
 	
 }
@@ -4244,7 +4275,7 @@ bool mxSource::GetCurrentCall (wxString &ftype, wxString &fname, wxArrayString &
 				p=BraceMatch(p); // no hace falta verificar por pos invalida, porque p5 tiene match, eso garantiza que adentro todos tienen
 			} else if (c==','||p==p3) {
 				if (one_arg!="") {
-					wxString type; int dims=0;
+					wxString type;
 					// see if the actual arg is expression or identifier (only the second could be the formal parameter's name)
 					unsigned int oalen = one_arg.Len();
 					for(unsigned int j=0;j<oalen;j++) {
@@ -4272,6 +4303,7 @@ bool mxSource::GetCurrentCall (wxString &ftype, wxString &fname, wxArrayString &
 					}
 					// find out argument type
 					if (one_arg!="" && type=="") {
+						int dims=0;
 						type = FindTypeOfByPos(p-1,dims,true);
 						if (type=="") type="???";
 						else if (dims>0) { // array or ptr
@@ -4385,6 +4417,19 @@ void mxSource::MultiSel::End(mxSource *src) {
 		on_end->Run();
 		delete on_end;
 		on_end = nullptr;
+	}
+}
+
+void mxSource::ReloadErrorsList ( ) {
+	MarkerDeleteAll(mxSTC_MARK_ERROR);
+	MarkerDeleteAll(mxSTC_MARK_WARNING);
+	if (!m_cem_ref.Update()) return;
+	const vector<CompilerErrorsManager::CEMError> &v = m_cem_ref.GetErrors();
+	for(size_t i=0;i<v.size();i++) { 
+		int line = v[i].line-1;
+		bool is_error = v[i].is_error;
+		if (is_error && (MarkerGet(line)&(1<<mxSTC_MARK_WARNING))) MarkerDelete(line,mxSTC_MARK_WARNING);
+		MarkerAdd(line,is_error?mxSTC_MARK_ERROR:mxSTC_MARK_WARNING);
 	}
 }
 

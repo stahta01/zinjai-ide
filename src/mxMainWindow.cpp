@@ -78,6 +78,7 @@
 #include "mxCommandFinder.h"
 #include "SimpleTemplates.h"
 #include "mxGdbAsmPanel.h"
+#include "CompilerErrorsManager.h"
 using namespace std;
 
 #define SIN_TITULO (wxString("<")<<LANG(UNTITLED,"sin_titulo_")<<(++untitled_count)<<">")
@@ -132,8 +133,9 @@ inline bool SameFile(wxFileName f1, wxFileName f2) {
 		~MacroMasker() { if (is_masked) (*main_window->m_macro)[0].msg=1; } \
 	} macro_masker(_id);
 
-mxMainWindow *main_window;
-mxSource *EXTERNAL_SOURCE; // will be main_window address, an impossible address for a real mxSource, so OpenFile can use to say "was opened, but not by me, amy be wxfb or someone else"
+mxMainWindow *main_window = nullptr;
+
+mxSource *EXTERNAL_SOURCE = nullptr; // will be main_window address, an impossible address for a real mxSource, so OpenFile can use to say "was opened, but not by me, amy be wxfb or someone else"
 
 BEGIN_EVENT_TABLE(mxMainWindow, wxFrame)
 	
@@ -550,9 +552,9 @@ SHOW_MILLIS("Initializing aui_manager, panels...");
 	aui_manager.AddPane(CreateCompilerTree(), wxAuiPaneInfo().Name("compiler_tree").Bottom().Caption(LANG(CAPTION_COMPILER_OUTPUT,"Resultados de la Compilación")).CloseButton(true).MaximizeButton(true).Hide().MaximizeButton(!config->Init.autohiding_panels));
 	aui_manager.AddPane(CreateQuickHelp(), wxAuiPaneInfo().Name("quick_help").Bottom().Caption(LANG(CAPTION_QUIKHELP,"Ayuda Rapida")).CloseButton(true).MaximizeButton(true).Hide().MaximizeButton(!config->Init.autohiding_panels));
 	if (config->Debug.inspections_on_right)
-		aui_manager.AddPane((wxGrid*)(inspection_ctrl = new mxInspectionsPanel()), wxAuiPaneInfo().Name("inspection").Caption(LANG(CAPTION_INSPECTIONS,"Inspecciones")).Right().CloseButton(true).MaximizeButton(true).Hide().Position(0).MaximizeButton(!config->Init.autohiding_panels));
+		aui_manager.AddPane((wxGrid*)(inspection_ctrl = new mxInspectionsPanel(this)), wxAuiPaneInfo().Name("inspection").Caption(LANG(CAPTION_INSPECTIONS,"Inspecciones")).Right().CloseButton(true).MaximizeButton(true).Hide().Position(0).MaximizeButton(!config->Init.autohiding_panels));
 	else
-		aui_manager.AddPane((wxGrid*)(inspection_ctrl = new mxInspectionsPanel()), wxAuiPaneInfo().Name("inspection").Caption(LANG(CAPTION_INSPECTIONS,"Inspecciones")).Bottom().CloseButton(true).MaximizeButton(true).Hide().Position(2).MaximizeButton(!config->Init.autohiding_panels));
+		aui_manager.AddPane((wxGrid*)(inspection_ctrl = new mxInspectionsPanel(this)), wxAuiPaneInfo().Name("inspection").Caption(LANG(CAPTION_INSPECTIONS,"Inspecciones")).Bottom().CloseButton(true).MaximizeButton(true).Hide().Position(2).MaximizeButton(!config->Init.autohiding_panels));
 	if (config->Init.autohiding_panels)
 		autohide_handlers[ATH_INSPECTIONS] = new mxHidenPanel(this,inspection_ctrl,config->Debug.inspections_on_right?HP_RIGHT:HP_BOTTOM,LANG(MAINW_AUTOHIDE_INSPECTIONS,"Inspecciones"));
 	aui_manager.AddPane((wxGrid*)(backtrace_ctrl = new mxBacktraceGrid(this)), wxAuiPaneInfo().Name("backtrace").Caption(LANG(CAPTION_BACKTRACE,"Trazado Inverso")).Bottom().CloseButton(true).MaximizeButton(true).Hide().Position(1).MaximizeButton(!config->Init.autohiding_panels));
@@ -608,7 +610,7 @@ SHOW_MILLIS("Initializing parser and toolchain...");
 	g_code_helper->AppendIndexes(config->Help.autocomp_indexes);
 	g_autocoder = new Autocoder;
 	
-	compiler = new mxCompiler(compiler_tree.treeCtrl,compiler_tree.state,compiler_tree.errors,compiler_tree.warnings,compiler_tree.all);
+	compiler = new mxCompiler(/*compiler_tree.treeCtrl,compiler_tree.state,compiler_tree.errors,compiler_tree.warnings,compiler_tree.all*/);
 
 	parser_timer = new wxTimer(GetEventHandler(),mxID_PARSER_TIMER);
 	compiler->timer = new wxTimer(GetEventHandler(),mxID_COMPILER_TIMER);
@@ -727,7 +729,7 @@ void mxMainWindow::OnCompilerTreePopup(wxTreeEvent &event) {
 }
 
 void mxMainWindow::OnCompilerTreeShowFull(wxCommandEvent &event) {
-	ShowSpecilaUnnamedSource("<ultima_compilacion>",compiler->full_output);
+	ShowSpecilaUnnamedSource("<ultima_compilacion>",errors_manager->GetFullOutput());
 }
 
 void mxMainWindow::ShowSpecilaUnnamedSource(const wxString &tab_name, const wxArrayString &lines) {
@@ -769,7 +771,7 @@ void mxMainWindow::OnProjectTreeCompilingOpts(wxCommandEvent &event) {
 void mxMainWindow::AuxCompileOne(project_file_item *item) {
 	project->PrepareForBuilding(item);
 	status_bar->SetStatusText(LANG(MAINW_COMPILING_DOTS,"Compilando..."));
-	compiler->ResetCompileData();
+	errors_manager->Reset(true);
 	wxString current;
 	compile_and_run_struct_single *compile_and_run=new compile_and_run_struct_single("OnProjectTreeCompileNow");
 	compile_and_run->pid = project->CompileNext(compile_and_run, current);
@@ -1182,7 +1184,7 @@ DEBUG_INFO("wxYield:in  mxMainWindow::OnSelectError");
 DEBUG_INFO("wxYield:out mxMainWindow::OnSelectError");
 	mxCompilerItemData *comp_data = (mxCompilerItemData*)(compiler_tree.treeCtrl->GetItemData(event.GetItem()));
 	wxString error = comp_data ? comp_data->file_info : compiler_tree.treeCtrl->GetItemText(event.GetItem());
-	if (!error.Len()) error=compiler_tree.treeCtrl->GetItemText(event.GetItem());;
+	if (!error.Len()) error = compiler_tree.treeCtrl->GetItemText(event.GetItem());;
 	if (error.Len()) OnSelectErrorCommon(error);
 }
 
@@ -1286,20 +1288,19 @@ void mxMainWindow::OnNotebookPageChanged(wxAuiNotebookEvent& event) {
 	static wxMenuItem *menu_view_white_space=_menu_item(mxID_VIEW_WHITE_SPACE);
 	static wxMenuItem *menu_view_line_wrap=_menu_item(mxID_VIEW_LINE_WRAP);
 	static wxMenuItem *menu_view_code_style=_menu_item(mxID_VIEW_CODE_STYLE);
-//	if (page_change_event_on) {
-		if (diff_sidebar) diff_sidebar->Refresh();
-		int old_sel = event.GetOldSelection();
-		if (old_sel!=-1) {
-			mxSource *old_source = (mxSource*)notebook_sources->GetPage(old_sel);
-			if (old_source) old_source->HideCalltip();
-		}
-		menu_view_white_space->Check(CURRENT_SOURCE->config_source.whiteSpace);
-		menu_view_line_wrap->Check(CURRENT_SOURCE->config_source.wrapMode);
-		menu_view_code_style->Check(CURRENT_SOURCE->config_source.syntaxEnable);
-		if (!project)
-			parser_timer->Start(2000,true);
-		event.Veto();
-//	}
+	
+	if (diff_sidebar) diff_sidebar->Refresh();
+	int old_sel = event.GetOldSelection();
+	if (old_sel!=-1) {
+		mxSource *old_source = (mxSource*)notebook_sources->GetPage(old_sel);
+		if (old_source) old_source->HideCalltip();
+	}
+	menu_view_white_space->Check(CURRENT_SOURCE->config_source.whiteSpace);
+	menu_view_line_wrap->Check(CURRENT_SOURCE->config_source.wrapMode);
+	menu_view_code_style->Check(CURRENT_SOURCE->config_source.syntaxEnable);
+	if (!project) parser_timer->Start(2000,true);
+	CURRENT_SOURCE->ReloadErrorsList();
+	event.Veto();
 }
 
 void mxMainWindow::OnNotebookRightClick(wxAuiNotebookEvent& event) {
@@ -1639,6 +1640,8 @@ wxPanel* mxMainWindow::CreateCompilerTree() {
 	if (config->Init.autohiding_panels)
 		autohide_handlers[ATH_COMPILER] = new mxHidenPanel(this,compiler_panel,HP_BOTTOM,LANG(MAINW_AUTOHIDE_COMPILER,"Compilador"));
 	
+	CompilerErrorsManager::Initialize(compiler_tree);
+	
 	return compiler_panel;
 }
 
@@ -1711,7 +1714,7 @@ void mxMainWindow::StartExecutionStuff (compile_and_run_struct_single *compile_a
 //	compile_and_run.linking=(what==mES_LINK || what==mES_LINK_AND_RUN);
 	// ver si comenzo correctamente
 	if (compile_and_run->pid==0) {
-		wxBell();
+//		wxBell();
 		if (compile_and_run->compiling)
 			SetCompilingStatus(LANG(MAINW_COULDNOT_LAUNCH_PROCESS,"No se pudo lanzar el proceso"));
 		else

@@ -980,6 +980,7 @@ void MenusAndToolsConfig::CreateMenuesAndToolbars (mxMainWindow * _main_window) 
 	TransferStatesFromConfig();
 	CreateToolbars();
 	CreateMenues();
+	main_window=nullptr;
 }
 
 MenusAndToolsConfig::myMenuItem *MenusAndToolsConfig::GetMyMenuItem (int menu_id, int item_id) {

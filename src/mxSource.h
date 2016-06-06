@@ -6,6 +6,7 @@
 #include <wx/treebase.h>
 #include "ConfigManager.h"
 //#include <wx/timer.h>
+#include "CompilerErrorsManager.h"
 #include "Cpp11.h"
 #include "raii.h"
 
@@ -33,6 +34,8 @@ enum MXS_MARKER {
 	mxSTC_MARK_BAD_BREAKPOINT,	///< marcar los puntos de interrupcion
 	mxSTC_MARK_EXECPOINT,	///< indicar donde esta actualmente la ejecucion
 	mxSTC_MARK_FUNCCALL,	///< indicar donde quedo una funcion a la espera de retornar de una llamada a otra
+	mxSTC_MARK_ERROR,	
+	mxSTC_MARK_WARNING,	
 	mxSTC_MARK_HISTORY,	///< indicar donde quedo una funcion a la espera de retornar de una llamada a otra
 	mxSTC_MARK_STOP,		///< indicar donde se interrumpio la ejecucion (por ej, por SegFault)
 	mxSTC_MARK_DIFF_ADD, mxSTC_MARK_DIFF_CHANGE, mxSTC_MARK_DIFF_DEL, mxSTC_MARK_DIFF_NONE
@@ -84,7 +87,13 @@ extern NavigationHistory g_navigation_history;
 * @brief Componente visual de edicion de texto para fuentes
 **/
 class mxSource: public wxStyledTextCtrl {
-
+	
+private:
+	CEMReference m_cem_ref;
+public:
+	void ReloadErrorsList();
+	
+private:
 	class AutocompletionLocation {
 		int pos, age; 
 		wxString key;

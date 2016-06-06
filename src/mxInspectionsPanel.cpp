@@ -11,7 +11,7 @@ BEGIN_EVENT_TABLE(mxInspectionsPanel,wxAuiNotebook)
 	EVT_AUINOTEBOOK_PAGE_CHANGED(mxID_NOTEBOOK_INSPECTIONS, mxInspectionsPanel::OnPageChanged)
 END_EVENT_TABLE()
 
-mxInspectionsPanel::mxInspectionsPanel():wxAuiNotebook(main_window,mxID_NOTEBOOK_INSPECTIONS,wxDefaultPosition,wxSize(400,300),
+mxInspectionsPanel::mxInspectionsPanel(wxWindow *parent):wxAuiNotebook(parent,mxID_NOTEBOOK_INSPECTIONS,wxDefaultPosition,wxSize(400,300),
 	wxAUI_NB_MIDDLE_CLICK_CLOSE|wxAUI_NB_BOTTOM|wxNO_BORDER|wxAUI_NB_SCROLL_BUTTONS|wxAUI_NB_CLOSE_ON_ACTIVE_TAB) 
 {
 	created = false;

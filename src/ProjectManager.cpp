@@ -1515,21 +1515,19 @@ long int ProjectManager::CompileFile(compile_and_run_struct_single *compile_and_
 //	item->force_recompile=false;
 	
 	// preparar la linea de comando 
+	wxString fname = DIR_PLUS_FILE(path,item->name);
 	wxString command = wxString(item->IsCppOrJustC()?current_toolchain.cpp_compiler:current_toolchain.c_compiler)+
 #ifndef __WIN32__
 		(item->lib?" -fPIC ":" ")+
 #endif
-		item->compiling_options+" \""+DIR_PLUS_FILE(path,item->name)+"\" -c -o \""+item->GetBinName(temp_folder)+"\"";
+		item->compiling_options+" "+mxUT::Quotize(fname)+" -c -o "+mxUT::Quotize(item->GetBinName(temp_folder));
 	
 	compile_and_run->process = new wxProcess(main_window->GetEventHandler(),mxPROCESS_COMPILE);
 	compile_and_run->process->Redirect();
 	
 	// ejecutar
 	compile_and_run->output_type=MXC_GCC;
-	compile_and_run->full_output.Add("");
-	compile_and_run->full_output.Add(wxString("> ")+command);
-	compile_and_run->full_output.Add("");
-	compile_and_run->last_all_item = main_window->compiler_tree.treeCtrl->AppendItem(main_window->compiler_tree.all,command,2);
+	compile_and_run->m_cem_state = errors_manager->InitCompiling(command);
 	return mxUT::Execute(path,command, wxEXEC_ASYNC|wxEXEC_MAKE_GROUP_LEADER,compile_and_run->process);	
 }
 
@@ -1643,10 +1641,7 @@ long int ProjectManager::Link(compile_and_run_struct_single *compile_and_run, li
 	compile_and_run->process->Redirect();
 	compile_and_run->output_type=MXC_SIMIL_GCC;
 	compile_and_run->linking=true; // para que cuando termine sepa que enlazo, para verificar llamar a compiler->CheckForExecutablePermision
-	compile_and_run->last_all_item = main_window->compiler_tree.treeCtrl->AppendItem(main_window->compiler_tree.all,command,2);
-	compile_and_run->full_output.Add("");
-	compile_and_run->full_output.Add(wxString("> ")+command);
-	compile_and_run->full_output.Add("");
+	compile_and_run->m_cem_state = errors_manager->InitLinking(command);
 	return mxUT::Execute(path, command, wxEXEC_ASYNC,compile_and_run->process);
 }
 
@@ -1663,10 +1658,7 @@ long int ProjectManager::Strip(compile_and_run_struct_single *compile_and_run, s
 	compile_and_run->process->Redirect();
 	compile_and_run->output_type=MXC_EXTRA;
 	compile_and_run->step_label=wxString("Extrayendo símbolos de depuración de ")<<info->filename<<" - paso "<<info->current_step+1<<" de 3";
-	compile_and_run->full_output.Add("");
-	compile_and_run->full_output.Add(wxString("> ")+command);
-	compile_and_run->full_output.Add("");
-	compile_and_run->last_all_item = main_window->compiler_tree.treeCtrl->AppendItem(main_window->compiler_tree.all,command,2);
+	compile_and_run->m_cem_state = errors_manager->InitOtherStep(command);
 	return mxUT::Execute(path, command, wxEXEC_ASYNC,compile_and_run->process);
 }
 
@@ -1807,8 +1799,8 @@ static wxString get_percent(int cur, int tot) {
 }
 
 void ProjectManager::ExportMakefile(wxString make_file, bool exec_comas, wxString mingw_dir, MakefileTypeEnum mktype, bool cmake_style) {
-#warning Falta considerar el nuevo significado de strip_executable
-#warning Falta considerar las opciones de compilacion por fuente
+#warning TODO: considerar el nuevo significado de strip_executable
+#warning TODO: considerar las opciones de compilacion por fuente
 	int steps_total=0, steps_extras, steps_objs, steps_current;
 	if (cmake_style) { // calcular cuantos pasos hay en cada etapa para saber que porcentajes de progreso mostrar en cada comando
 		steps_objs = files_sources.GetSize();
@@ -2799,10 +2791,7 @@ long int ProjectManager::CompileExtra(compile_and_run_struct_single *compile_and
 	compile_and_run->process->Redirect();
 	compile_and_run->output_type=MXC_EXTRA;
 	compile_and_run->step_label=step->name;
-	compile_and_run->full_output.Add("");
-	compile_and_run->full_output.Add(wxString("> ")+command);
-	compile_and_run->full_output.Add("");
-	compile_and_run->last_all_item = main_window->compiler_tree.treeCtrl->AppendItem(main_window->compiler_tree.all,command,2);
+	compile_and_run->m_cem_state = errors_manager->InitOtherStep(command);
 	return mxUT::Execute(path,command, wxEXEC_ASYNC|(step->hide_window?0:wxEXEC_NOHIDE),compile_and_run->process);
 }
 
@@ -2826,9 +2815,7 @@ long int ProjectManager::CompileWithExternToolchain(compile_and_run_struct_singl
 	// ejecutar
 	compile_and_run->output_type=MXC_EXTERN;
 	compile_and_run->compiling=true;
-	compile_and_run->full_output.Add("");
-	compile_and_run->full_output.Add(wxString("> ")+command);
-	compile_and_run->full_output.Add("");
+	compile_and_run->m_cem_state = errors_manager->InitExtern(command);
 	main_window->extern_compiler_output->AddLine("> ",command);
 	return mxUT::Execute(path,command, wxEXEC_ASYNC/*|(step->hide_window?0:wxEXEC_NOHIDE)*/,compile_and_run->process);
 }
@@ -2916,10 +2903,7 @@ long int ProjectManager::CompileIcon(compile_and_run_struct_single *compile_and_
 	compile_and_run->process->Redirect();
 	// ejecutar
 	compile_and_run->output_type=MXC_SIMIL_GCC;
-	compile_and_run->full_output.Add("");
-	compile_and_run->full_output.Add(wxString("> ")+command);
-	compile_and_run->full_output.Add("");
-	compile_and_run->last_all_item = main_window->compiler_tree.treeCtrl->AppendItem(main_window->compiler_tree.all,command,2);
+	compile_and_run->m_cem_state = errors_manager->InitOtherStep(command);
 	return mxUT::Execute(path,command, wxEXEC_ASYNC,compile_and_run->process);
 }
 

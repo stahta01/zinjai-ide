@@ -48,6 +48,12 @@ extern mxSplashScreen *g_splash;
 
 enum autohide_ref {ATH_COMPILER=0,ATH_SYMBOL=1,ATH_PROJECT=2,ATH_EXPLORER=3,ATH_DEBUG_LOG=4,ATH_QUICKHELP=5,ATH_THREADS=6,ATH_INSPECTIONS=7,ATH_BACKTRACE=8,ATH_BEGINNERS=9,ATH_COUNT=10};
 
+// afuera de mxMainWindow para evitar tener que incluir este header en CompilerErrorsManager
+struct CompilerTreeStruct {
+	wxTreeCtrl *treeCtrl;
+	wxTreeItemId root, state, errors, warnings, all;
+};
+
 /**
 * @brief Ventana principal de la aplicación
 * 
@@ -525,11 +531,7 @@ public:
 	} project_tree;
 	
 	//! Componentes del árbol de resultados de la compilación
-	struct compiler_tree_struct {
-		wxTreeCtrl *treeCtrl;
-//		wxMenuItem *menuItem;
-		wxTreeItemId root, state, errors, warnings, all;
-	} compiler_tree;
+	CompilerTreeStruct compiler_tree;
 	//! Componentes del árbol de resultados de la compilación
 	mxExternCompilerOutput *extern_compiler_output;
 	//! this sizer will hold both compiler_tree.treeCtrl and extern_compiler_output, but only one could be visible at a given time

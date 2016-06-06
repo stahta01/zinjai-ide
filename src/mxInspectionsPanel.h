@@ -35,7 +35,7 @@ class mxInspectionsPanel : public wxAuiNotebook {
 	int name_aux;
 	bool created;
 public:
-	mxInspectionsPanel();
+	mxInspectionsPanel(wxWindow *parent);
 	void OnPageChanging(wxAuiNotebookEvent &event);
 	void OnPageChanged(wxAuiNotebookEvent &event);
 	void OnPageClosing(wxAuiNotebookEvent &event);

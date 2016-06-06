@@ -15,7 +15,7 @@
 #include "ProjectManager.h"
 using namespace std;
 
-#warning no se toma en cuenta config->Debug.use_colours_for_inspections
+#warning TODO: no se toma en cuenta config->Debug.use_colours_for_inspections
  
 BEGIN_EVENT_TABLE(mxInspectionGrid, wxGrid)
 	EVT_GRID_CELL_CHANGE(mxInspectionGrid::OnCellChange)
