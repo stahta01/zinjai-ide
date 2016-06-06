@@ -4,6 +4,7 @@
 #include <wx/grid.h>
 #include <vector>
 #include <algorithm>
+#include "Cpp11.h"
 using namespace std;
 
 class wxTextCtrl;
@@ -15,6 +16,7 @@ class mxPRTData {
 protected:
 	wxString GetCellValue(int row, int col);
 public:
+	mxPRTData() : parent(nullptr) {}
 	virtual int GetRowsCount() = 0;
 	virtual int GetColumnsCount() = 0;
 	virtual bool EnableFilter() { return false; }

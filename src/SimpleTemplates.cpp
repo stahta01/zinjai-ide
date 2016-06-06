@@ -24,8 +24,10 @@ SimpleTemplates::SimpleTemplates ( ) {
 		
 		if (opts.count(name_prefix)) info.userf_name = opts[name_prefix];
 		else if (opts.count("Name")) info.userf_name = opts["Name"];
-		else if (opts.count("Includes")) info.includes = opts["Includes"];
 		else info.userf_name = templates[i];
+		
+		if (opts.count("Includes")) info.includes = opts["Includes"];
+//		if (opts.count("Caret")==0 || !opts["Caret"].ToLong(&info.caret_pos)) info.caret_pos = -1;
 		
 		info.cpp = opts.count("Type")==0 || opts["Type"]!="C";
 		info.options = opts["Options"];

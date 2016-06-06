@@ -4343,7 +4343,7 @@ bool mxSource::GetCurrentCall (wxString &ftype, wxString &fname, wxArrayString &
 				if (p==wxSTC_INVALID_POSITION) p=scope_start;
 			}
 			int pend = p, p_last_blank=-1;
-			while((c=GetCharAt(pend)!='(') || c=='{') { // avanzar hasta donde empiezan los argumentos
+			while((c=GetCharAt(pend))!='(' || c=='{') { // avanzar hasta donde empiezan los argumentos
 				if (II_IS_NOTHING_4(pend)) {
 					p_last_blank = pend;
 				}

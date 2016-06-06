@@ -105,6 +105,7 @@ public:
 		OnEndAction *next;
 		friend class Parser;
 	public:
+		OnEndAction() : next(nullptr) {}
 		virtual void Run()=0;
 		virtual ~OnEndAction(){}
 	};

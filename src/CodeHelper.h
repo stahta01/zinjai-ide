@@ -20,6 +20,7 @@ class MyAutocompList {
 	wxString result;
 	unsigned int max_len/*, count*/;
 public:
+	MyAutocompList() : max_len(-1) { }
 	bool Empty() { 
 		return keywords.GetCount()==0;
 	}
