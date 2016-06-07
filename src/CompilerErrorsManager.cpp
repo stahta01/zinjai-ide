@@ -6,6 +6,10 @@
 #include "mxMainWindow.h"
 #include "compiler_strings.h"
 
+#define CEM_SWAP_STRING_FLAG "<<cem swap>>"
+#define CEM_KEEP_STRING_FLAG "<<cem keep>>"
+#include "mxCompiler.h"
+
 CompilerErrorsManager *errors_manager = nullptr;
 
 CompilerErrorsManager::CompilerErrorsManager(CompilerTreeStruct &tree) 
@@ -60,13 +64,18 @@ void CompilerErrorsManager::ShowCompilerTreePanel() {
 }
 
 bool CompilerErrorsManager::FinishStep (CEMState &cem_state) {
-	ShowCompilerTreePanel();
-	mxSource *src = main_window->GetCurrentSource();
-	for(unsigned int i=0;i<cem_state.full_output.GetCount();i++)
-		m_full_output.Add(cem_state.full_output[i]);
-	m_full_output.Add("");
-	if (src) src->ReloadErrorsList();
-	return cem_state.pending_lines.IsEmpty();
+	if (cem_state.HaveError()) DoAddError(cem_state);
+	else if (cem_state.HaveNotes()) cem_state.parsing_was_ok = false;
+	m_num_errors += cem_state.num_errors;
+	m_num_warnings += cem_state.num_warnings;
+	if (cem_state.AddedSomething()) {
+		for(unsigned int i=0;i<cem_state.full_output.GetCount();i++)
+			m_full_output.Add(cem_state.full_output[i]);
+		ShowCompilerTreePanel();
+		mxSource *src = main_window->GetCurrentSource();
+		if (src) src->ReloadErrorsList();
+	}
+	return cem_state.parsing_was_ok;
 }
 
 bool CompilerErrorsManager::CompilationFinished () {
@@ -76,11 +85,14 @@ bool CompilerErrorsManager::CompilationFinished () {
 	return true;
 }
 
-CompilerErrorsManager::CEMState CompilerErrorsManager::CommonInit(const wxString &command, bool really_compilling) {
-	CEMState state; 
+CompilerErrorsManager::CEMState CompilerErrorsManager::CommonInit(const wxString &command, bool really_compiling) {
+	CEMState state;
 	state.all_item = AddTreeMessageNode(m_tree.all,command,2);
-	state.last_is_ok = false;
-	state.really_compilling = really_compilling;
+	state.really_compiling = really_compiling;
+	state.parsing_was_ok = true;
+	state.is_error = true; 
+	state.num_errors = state.num_warnings = 0;
+	state.full_output.Add("");
 	state.full_output.Add(wxString("> ")+command);
 	state.full_output.Add("");
 	return state;
@@ -240,8 +252,9 @@ wxTreeItemId CompilerErrorsManager::AddTreeMessageNode(wxTreeItemId &where, cons
 	return m_tree.treeCtrl->AppendItem(where,message,icon);
 }
 
-static wxString GetMessage(const wxString &full_line) {
+static wxString GetMessage(const wxString &full_line, bool keep_loc = false) {
 	wxString retval = full_line;
+	if (keep_loc) return full_line;
 	// extract file name, line number, and column number
 	int l = full_line.Len(), p = 0;
 	while(++p<l) {
@@ -265,55 +278,118 @@ static wxString GetMessage(const wxString &full_line) {
 	return retval;
 }
 
-bool CompilerErrorsManager::AddError (CEMState & cem_state, bool is_error, const wxString &error_line) {
-	cem_state.full_output.Add(error_line);
-	ErrorLineParts parts(error_line);
-	wxString nice_error = GetNiceErrorLine(error_line);
-	if (parts.line!=-1) {
-		vector<CEMError> &v = m_errors_set[parts.fname];
-		v.push_back(CEMError(parts.line,GetMessage(nice_error),is_error));
-		cem_state.last_message = &(v.back().message);
-	}
-	m_tree.treeCtrl->AppendItem(cem_state.all_item,error_line,6,-1);
-	cem_state.last_is_ok = true;
-	cem_state.last_item = AddTreeErrorNode( is_error?m_tree.errors:m_tree.warnings,error_line, nice_error,is_error?4:3);
-	++(is_error?m_num_errors:m_num_warnings);
-	if (!cem_state.pending_lines.IsEmpty()) { // agregar los hijos que estaban pendientes
-		wxTreeItemId tree_item = cem_state.last_item;
-		for(unsigned int i=0;i<cem_state.pending_lines.GetCount();i++) {
-			nice_error = GetNiceErrorLine(cem_state.pending_lines[i]);
-			wxTreeItemId new_item = AddTreeErrorNode(tree_item,cem_state.pending_lines[i],nice_error,5);
-			(*cem_state.last_message) << "\n    "<<GetMessage(nice_error);
-			if (i==0) tree_item = new_item;
+void CompilerErrorsManager::DoAddError (CEMState &cem_state) {
+	wxString main_full = cem_state.full_error;
+	wxString main_nice = GetNiceErrorLine(main_full);
+	wxTreeItemId main_item 
+		= AddTreeErrorNode( cem_state.is_error?m_tree.errors:m_tree.warnings,
+						   main_full, main_nice, cem_state.is_error?4:3);
+	++(cem_state.is_error?cem_state.num_errors:cem_state.num_warnings);
+	wxString margin_error = GetMessage(main_nice,false);
+	
+	wxString prev_nice;
+	wxTreeItemId prev_item; bool have_prev_item = false;
+	for(size_t i=0;i<cem_state.notes.size();i++) { 
+		wxString &note_full = cem_state.notes[i].message;
+		wxString note_nice = GetNiceErrorLine(note_full);
+		int flags = cem_state.notes[i].flags;
+		if (flags&CAR_EL_FLAG_NESTED) {
+			if (have_prev_item) 
+				AddTreeErrorNode(prev_item,note_full,note_nice,5);
+			else
+				prev_item = AddTreeErrorNode(main_item,note_full,note_nice,5);
+			have_prev_item = true;
+		} else {
+			have_prev_item = false;
+			AddTreeErrorNode(main_item,note_full,note_nice,5);
 		}
-		cem_state.pending_lines.Clear();
+		if (flags&CAR_EL_FLAG_SWAP) {
+			ErrorLineParts note_prts(note_full);
+			wxString margin_note = GetMessage(main_nice) + "\n   "
+								   +GetMessage((flags&CAR_EL_FLAG_USE_PREV)?prev_nice:note_nice);
+			CEMError aux_err(note_prts.line,margin_note,cem_state.is_error);
+			m_errors_set[note_prts.fname].push_back(aux_err);
+		}
+		margin_error << "\n   " << GetMessage(note_nice,flags&CAR_EL_FLAG_KEEP_LOC);
+		prev_nice = note_nice;
 	}
-	return true;
+	
+	ErrorLineParts main_prts(main_full);
+	CEMError aux_err(main_prts.line,margin_error,cem_state.is_error);
+	m_errors_set[main_prts.fname].push_back(aux_err);
+	
+//	if (parts.line!=-1) {
+//		vector<CEMError> &v = m_errors_set[parts.fname];
+//		v.push_back(CEMError(parts.line,GetMessage(nice_error),is_error));
+//		cem_state.last_vector_ptr = &v;
+//		cem_state.last_vector_idx = v.size()-1;
+//	}
+//	m_tree.treeCtrl->AppendItem(cem_state.all_item,error_line,6,-1);
+//	cem_state.last_is_ok = true;
+//	
+//	
+//	if (!cem_state.pending_lines.IsEmpty()) { // agregar los hijos que estaban pendientes
+//		bool next_swaps = false, next_keeps_loc = false;
+//		wxString previous_error_message;
+//		wxTreeItemId tree_item = cem_state.last_item;
+//		for(unsigned int i=0;i<cem_state.pending_lines.GetCount();i++) {
+//			if (cem_state.pending_lines[i] == CEM_SWAP_STRING_FLAG) { next_swaps = true; continue; }
+//			if (cem_state.pending_lines[i] == CEM_KEEP_STRING_FLAG) { next_keeps_loc = true; continue; }
+//			nice_error = GetNiceErrorLine(cem_state.pending_lines[i]);
+//			wxTreeItemId new_item = AddTreeErrorNode(tree_item,cem_state.pending_lines[i],nice_error,5);
+//			cem_state.GetLastMessage() << "\n    "<<GetMessage(nice_error);
+//			if (next_swaps) {
+//				ErrorLineParts parts(cem_state.pending_lines[i]);
+//				wxString prev_error = cem_state.pending_lines[i>1?i-2:i];
+//				bool is_error = !error_line.Contains(EN_COMPOUT_WARNING) && !error_line.Contains(ES_COMPOUT_WARNING);
+//				if (parts.line!=-1) m_errors_set[parts.fname].push_back(CEMError(parts.line,GetMessage(prev_error)+"\n   "+GetMessage(error_line),is_error));
+//			}
+//			previous_error_message = nice_error;
+//			if (i==0) tree_item = new_item;
+//			next_keeps_loc = next_swaps = false;
+//		}
+//		cem_state.pending_lines.Clear();
+//	}
+	cem_state.ClearError();
 }
 
-bool CompilerErrorsManager::AddNoteForLastOne (CEMState & cem_state, const wxString &error_line, bool and_swap) {
-//	cem_state.full_output << errors_manager << "\n";
+void CompilerErrorsManager::AddToFullOutput(CompilerErrorsManager::CEMState &cem_state, const wxString &error_line) {
 	cem_state.full_output.Add(error_line);
-	m_tree.treeCtrl->AppendItem(cem_state.all_item,error_line,6,-1);
-	if (!cem_state.last_is_ok) return false;
-	wxString nice_error = GetNiceErrorLine(error_line);
-	(*cem_state.last_message) << "\n    " << GetMessage(nice_error);
-	AddTreeErrorNode(cem_state.last_item,error_line,nice_error,5);
-	if (and_swap) {
-		// won't swap anymore, but will mark in margin
-		wxString error_parent = m_tree.treeCtrl->GetItemText(cem_state.last_item);
-		ErrorLineParts parts(error_line);
-		bool is_error = !error_parent.Contains(EN_COMPOUT_WARNING) && !error_parent.Contains(ES_COMPOUT_WARNING);
-		if (parts.line!=-1) m_errors_set[parts.fname].push_back(CEMError(parts.line,GetMessage(nice_error)+"\n   "+GetMessage(error_parent),is_error));
-	}
-	return true;
+	AddTreeMessageNode(cem_state.all_item,error_line,6);
 }
 
-bool CompilerErrorsManager::AddNoteForNextOne (CEMState & cem_state, const wxString &error_line) {
-	cem_state.full_output.Add(error_line);
-	m_tree.treeCtrl->AppendItem(cem_state.all_item,error_line,6,-1);
-	cem_state.last_is_ok = false;
-	cem_state.pending_lines.Add(error_line);
-	return true;
+void CompilerErrorsManager::AddError (CEMState & cem_state, bool is_error, const wxString &error_line) {
+	AddToFullOutput(cem_state,error_line);
+	if (cem_state.HaveError()) DoAddError(cem_state);
+	cem_state.SetError(is_error,error_line);
+}
+
+void CompilerErrorsManager::AddNoteForLastOne (CEMState & cem_state, const wxString &error_line, int flags) {
+	AddToFullOutput(cem_state,error_line);
+	if (!cem_state.HaveError()) cem_state.parsing_was_ok = false;
+	else cem_state.AddNote(error_line,flags);
+//	if (!cem_state.last_is_ok) return false;
+//	wxString nice_error = GetNiceErrorLine(error_line);
+//	cem_state.GetLastMessage() << "\n    " << GetMessage(nice_error);
+//	AddTreeErrorNode(cem_state.last_item,error_line,nice_error,5);
+//	if (and_swap) {
+//		// won't swap anymore, but will mark in margin
+//		wxString error_parent = m_tree.treeCtrl->GetItemText(cem_state.last_item);
+//		ErrorLineParts parts(error_line);
+//		bool is_error = !error_parent.Contains(EN_COMPOUT_WARNING) && !error_parent.Contains(ES_COMPOUT_WARNING);
+//		if (parts.line!=-1) m_errors_set[parts.fname].push_back(CEMError(parts.line,GetMessage(nice_error)+"\n   "+GetMessage(error_parent),is_error));
+//	}
+//	return true;
+}
+
+void CompilerErrorsManager::AddNoteForNextOne (CEMState & cem_state, const wxString &error_line, int flags) {
+	AddToFullOutput(cem_state,error_line);
+	if (cem_state.HaveError()) DoAddError(cem_state);
+	cem_state.AddNote(error_line,flags);
+//	cem_state.last_is_ok = false;
+//	if (and_swap) cem_state.pending_lines.Add(CEM_SWAP_STRING_FLAG);
+//	if (keep_loc) cem_state.pending_lines.Add(CEM_KEEP_STRING_FLAG);
+//	cem_state.pending_lines.Add(error_line);
+//	return true;
 }
 

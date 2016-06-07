@@ -9,7 +9,8 @@
 #define EN_COMPOUT_LINKER_WARNING "Warning: "
 
 #define EN_COMPOUT_COMPILATION_TERMINATED "compilation terminated."
-#define EN_COMPOUT_REQUIRED_FROM_HERE "required from "
+#define EN_COMPOUT_REQUIRED_FROM      " required from "
+#define EN_COMPOUT_REQUIRED_FROM_HERE " required from here"
 //#define EN_COMPOUT__NSTANTIATED_FROM "nstantiated from "
 #define EN_COMPOUT_IN_INSTANTIATION_OF "In instantiation of "
 #define EN_COMPOUT_AT_THIS_POINT_IN_FILE ": at this point in file"
@@ -30,7 +31,8 @@
 
 
 #define ES_COMPOUT_COMPILATION_TERMINATED "compilación terminada."
-#define ES_COMPOUT_REQUIRED_FROM_HERE "se requiere desde "
+#define ES_COMPOUT_REQUIRED_FROM      " se requiere desde "
+#define ES_COMPOUT_REQUIRED_FROM_HERE " se requiere desde aqu"
 //#define ES_COMPOUT__NSTANTIATED_FROM "nstantiated from "
 #define ES_COMPOUT_IN_INSTANTIATION_OF "In instantiation of "
 #define ES_COMPOUT_AT_THIS_POINT_IN_FILE ": en este punto en el fichero"

@@ -2563,14 +2563,22 @@ void mxSource::ShowBaloon(wxString str, int p) {
 //		if (LineFromPosition(p)!=cl) 
 //			p = GetLineEndPosition(cl);
 //	}
-	
+	int line_count = 1, max_lines = 25, spaces = 0;
 	int x1 = PointFromPosition(p).x, char_w = TextWidth(0,"W");
 	if (char_w<1) char_w=1;
 	int l=str.Len(), ll = (GetSize().GetWidth()-x1)/(char_w)-1;
 	if (ll>5) {
 		int ac=0;
 		for (int i = 0;i<l; i++) {
-			if (str[i]=='\n') ac=0;
+			if (str[i]=='\n') {
+				ac=0; 
+				if (++line_count==max_lines) {
+					str = str.SubString(0,i)+"...";
+					break;
+				}
+				spaces = 0;
+				while (i+1<l&&str[i+1]==' ') { ++i; ++spaces; }
+			}
 			else {
 				ac++;
 				if (ac>ll) {
@@ -2578,7 +2586,8 @@ void mxSource::ShowBaloon(wxString str, int p) {
 					while (j && ( str[j]!=' ' && str[j]!=',' && str[j]!='(' && str[j]!=')' ) ) j--;
 					if (j && !(j>2 && str[j]==' ' && str[j-1]==' ' && str[j-2]==' ' && str[j-3]=='\n') ) {
 						i=j;
-						str = str.SubString(0,j)+"\n   "+str.Mid(j+1);
+						str = str.SubString(0,j)+"\n"+wxString(' ',spaces+3).c_str()+str.Mid(j+1);
+						++line_count;
 						l+=4;
 					}
 				}

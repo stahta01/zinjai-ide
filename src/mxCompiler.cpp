@@ -60,7 +60,6 @@ compile_and_run_struct_single::compile_and_run_struct_single(const char *name) {
 #endif
 	on_end=nullptr;
 	killed=compiling=linking=false;
-	parsing_errors_was_ok=true;
 	output_type=MXC_NULL;
 	process=nullptr;
 	pid=0;
@@ -174,47 +173,53 @@ CAR_ERROR_LINE mxCompiler::ParseSomeErrorsOneLine(compile_and_run_struct_single 
 	if (compile_and_run->error_line_flag==CAR_LL_IN_INCLUDED_FILE || error_line.Contains(EN_COMPOUT_IN_FILE_INCLUDED_FROM) || error_line.Contains(ES_COMPOUT_IN_FILE_INCLUDED_FROM) ) {
 		if (error_line.Last()==',') compile_and_run->error_line_flag=CAR_LL_IN_INCLUDED_FILE;
 		else compile_and_run->error_line_flag=CAR_LL_NULL;
-		return CAR_EL_IGNORE;
+		return CAR_EL_TYPE_IGNORE;
 	}
 	compile_and_run->error_line_flag=CAR_LL_NULL;
 	
 	// if there was an error within the compiler stop
-	if (error_line==EN_COMPOUT_COMPILATION_TERMINATED || error_line==ES_COMPOUT_COMPILATION_TERMINATED) return CAR_EL_ERROR;
+	if (error_line==EN_COMPOUT_COMPILATION_TERMINATED || error_line==ES_COMPOUT_COMPILATION_TERMINATED) return CAR_EL_TYPE_ERROR;
 	
 	// if it starts or continue a list of template instantiation chain: "In instantiation of ....: \n required from ...\n required from ..."
 	if (error_line.Contains(EN_COMPOUT_IN_INSTANTIATION_OF) || error_line.Contains(ES_COMPOUT_IN_INSTANTIATION_OF)
-		|| error_line.Contains(EN_COMPOUT_REQUIRED_FROM_HERE) || error_line.Contains(ES_COMPOUT_REQUIRED_FROM_HERE)) {
-		return CAR_EL_CHILD_NEXT;
+		|| error_line.Contains(EN_COMPOUT_REQUIRED_FROM) || error_line.Contains(ES_COMPOUT_REQUIRED_FROM)) 
+	{
+		if (error_line.Contains(EN_COMPOUT_REQUIRED_FROM_HERE) || error_line.Contains(ES_COMPOUT_REQUIRED_FROM_HERE))
+			return CAR_EL_TYPE_CHILD_NEXT|CAR_EL_FLAG_NESTED|CAR_EL_FLAG_SWAP|CAR_EL_FLAG_KEEP_LOC|CAR_EL_FLAG_USE_PREV;
+		else
+			return CAR_EL_TYPE_CHILD_NEXT|CAR_EL_FLAG_NESTED;
 	}
 	
 	// esto va antes de testear si es error o warning, porque ambos tests (por ejemplo, este y el de si es error) pueden dar verdaderos, y en ese caso debe primar este
 	if (ErrorLineIsChild(error_line)) {
-		if (error_line.Contains(EN_COMPOUT_IN_EXPANSION_OF_MACRO)) return CAR_EL_CHILD_SWAP;
-		return CAR_EL_CHILD_LAST;
+		if (error_line.Contains(EN_COMPOUT_IN_EXPANSION_OF_MACRO)) 
+			return CAR_EL_TYPE_CHILD_LAST|CAR_EL_FLAG_SWAP;
+		else
+			return CAR_EL_TYPE_CHILD_LAST;
 	}
 	
 	// errores "fatales" (como cuando no encuentra los archivos que tiene que compilar)
 	if (error_line.Contains(EN_COMPOUT_FATAL_ERROR) || error_line.Contains(ES_COMPOUT_FATAL_ERROR)) {
-		return CAR_EL_ERROR;
+		return CAR_EL_TYPE_ERROR;
 	}
 	
 	if (error_line.Contains(EN_COMPOUT_ERROR) || error_line.Contains(ES_COMPOUT_ERROR)) {
 		// el "within this contex" avisa el punto dentro de una plantilla, para un error previo que se marco en la llamada a la plantilla, por eso va como hijo
 		if (error_line.Contains(EN_COMPOUT_WITHIN_THIS_CONTEXT) || error_line.Contains(ES_COMPOUT_WITHIN_THIS_CONTEXT))
-			return CAR_EL_CHILD_LAST;
+			return CAR_EL_TYPE_CHILD_LAST;
 		if (error_line.Contains(EN_COMPOUT_AT_THIS_POINT_IN_FILE) || error_line.Contains(EN_COMPOUT_AT_THIS_POINT_IN_FILE)) // estos errores aparecian en gcc 4.4, ahora cambiaron y ya no los veo
-			return CAR_EL_CHILD_LAST;
-		else return CAR_EL_ERROR;
+			return CAR_EL_TYPE_CHILD_LAST;
+		else return CAR_EL_TYPE_ERROR;
 	}
 	
 	// warnings del compilador
 	if (error_line.Contains(EN_COMPOUT_WARNING) || error_line.Contains(ES_COMPOUT_WARNING)) {
-		return CAR_EL_WARNING;
+		return CAR_EL_TYPE_WARNING;
 	}
 	
 	// warnings del linker
 	if (error_line.Contains(EN_COMPOUT_LINKER_WARNING) || error_line.Contains(ES_COMPOUT_LINKER_WARNING)) {
-		return CAR_EL_WARNING;
+		return CAR_EL_TYPE_WARNING;
 	}
 	
 //	// notas (detectado antes en ErrorLineIsChild(error_line))
@@ -223,10 +228,10 @@ CAR_ERROR_LINE mxCompiler::ParseSomeErrorsOneLine(compile_and_run_struct_single 
 //	}
 	
 	// error inside functions has a line before saying "In function 'foo()':"
-	if (error_line.Last()==':') return CAR_EL_IGNORE;
+	if (error_line.Last()==':') return CAR_EL_TYPE_IGNORE;
 	
 	// anything else? probably linker error
-	return CAR_EL_ERROR;
+	return CAR_EL_TYPE_ERROR;
 	
 //	compile_and_run->parsing_errors_was_ok=false;
 //	return CAR_EL_UNKNOWN;
@@ -274,15 +279,12 @@ void mxCompiler::ParseSomeErrors(compile_and_run_struct_single *compile_and_run)
 //			}
 //		}
 		
-		if (action==CAR_EL_ERROR||action==CAR_EL_WARNING) { // nuevo error o warning
-			if (!errors_manager->AddError(compile_and_run->m_cem_state,action==CAR_EL_ERROR,error_line))
-				compile_and_run->parsing_errors_was_ok=false;
-		} else if (action==CAR_EL_CHILD_LAST||action==CAR_EL_CHILD_SWAP) { // continua el último error
-			if (!errors_manager->AddNoteForLastOne(compile_and_run->m_cem_state,error_line,action==CAR_EL_CHILD_SWAP))
-				compile_and_run->parsing_errors_was_ok=false;
-		} else if (action==CAR_EL_CHILD_NEXT) { // parte (hijos) del siguiente error
-			if (!errors_manager->AddNoteForNextOne(compile_and_run->m_cem_state,error_line))
-				compile_and_run->parsing_errors_was_ok=false;
+		if (action&(CAR_EL_TYPE_ERROR|CAR_EL_TYPE_WARNING)) { // nuevo error o warning
+			errors_manager->AddError(compile_and_run->m_cem_state,action&CAR_EL_TYPE_ERROR,error_line);
+		} else if (action&CAR_EL_TYPE_CHILD_LAST) { // continua el último error
+			errors_manager->AddNoteForLastOne(compile_and_run->m_cem_state,error_line,action);
+		} else if (action&CAR_EL_TYPE_CHILD_NEXT) { // parte (hijos) del siguiente error
+			errors_manager->AddNoteForNextOne(compile_and_run->m_cem_state,error_line,action);
 		}
 			
 	}
@@ -312,7 +314,7 @@ void mxCompiler::ParseCompilerOutput(compile_and_run_struct_single *compile_and_
 	ParseSomeErrors(compile_and_run); // poner los errores/warnings/etc en el arbol
 	bool cem_ok = errors_manager->FinishStep(compile_and_run->m_cem_state);
 	
-	if (!compile_and_run_single->killed&& (!compile_and_run->parsing_errors_was_ok || !cem_ok)) {
+	if (!compile_and_run_single->killed && !cem_ok) {
 		mxMessageDialog(main_window,LANG(MAINW_COMPILER_OUTPUT_PARSING_ERROR,""
 				 "ZinjaI ha intentado reacomodar la salida del compilador de forma incorrecta.\n"
 				 "Puede que algun error no se muestre correctamente en el arbol. Para ver la salida\n"

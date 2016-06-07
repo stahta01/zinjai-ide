@@ -51,27 +51,43 @@ public:
 	};
 	
 	struct CEMState {
+		// overall process state
 		wxTreeItemId all_item;
-		wxTreeItemId last_item;
-		bool last_is_ok, really_compilling;
-		wxString *last_message;
-		wxArrayString pending_lines;
 		wxArrayString full_output;
+		bool really_compiling, parsing_was_ok;
+		int num_errors, num_warnings;
+		bool AddedSomething() const { return num_errors+num_warnings>0; }
+		// current errors state
+		wxString full_error;
+		bool is_error; // or warning
+		struct CEMLine {
+			int flags;
+			wxString message;
+			CEMLine(const wxString &str, int f = 0) : flags(f), message(str) {}
+		};
+		vector<CEMLine>notes;
+		void SetError(bool error, const wxString &message) {
+			is_error = error; full_error = message;
+		}
+		void AddNote(const wxString &note, int flags) {
+			notes.push_back(CEMLine(note,flags));
+		}
+		void ClearError() { full_error.Clear(); notes.clear(); }
+		bool HaveError() const { return !full_error.IsEmpty(); }
+		bool HaveNotes() const { return !notes.empty(); }
 	};
 	
+private:
 	map<wxString,vector<CEMError> > m_errors_set;
 	
 	unsigned int m_timestamp;
 	friend class CEMReference;
-	
-private:
 	
 	CompilerTreeStruct &m_tree;
 	int m_num_errors, m_num_warnings;
 	
 	wxArrayString m_full_output;
 	
-	CEMState CommonInit(const wxString &command, bool really_compilling);
 	wxTreeItemId AddTreeErrorNode(wxTreeItemId &where, const wxString &full_error, const wxString &nice_error, int icon);
 	wxTreeItemId AddTreeMessageNode(wxTreeItemId &where, const wxString &message, int icon);
 	void ShowCompilerTreePanel();
@@ -81,6 +97,10 @@ private:
 	// non-copyable
 	CompilerErrorsManager& operator=(const CompilerErrorsManager &tree);
 	CompilerErrorsManager(const CompilerErrorsManager &tree);
+	
+	CEMState CommonInit(const wxString &command, bool really_compiling);
+	void AddToFullOutput(CEMState &cem_state, const wxString &error_line);
+	void DoAddError(CEMState &cem_state);
 	
 public:
 	static void Initialize(CompilerTreeStruct &tree);
@@ -98,15 +118,13 @@ public:
 	
 	void AddZinjaiError(bool is_error, const wxString &message);
 	void AddExtraOutput(CEMState &cem_state, const wxString &error_line);
-	bool AddError(CEMState &cem_state, bool is_error, const wxString &error_line);
-	bool AddNoteForLastOne(CEMState &cem_state, const wxString &error_line, bool and_swap);
-	bool AddNoteForNextOne(CEMState &cem_state, const wxString &error_line);
+	void AddError(CEMState &cem_state, bool is_error, const wxString &error_line);
+	void AddNoteForLastOne(CEMState &cem_state, const wxString &error_line, int flags);
+	void AddNoteForNextOne(CEMState &cem_state, const wxString &error_line, int flags);
 	
 	bool FinishStep(CEMState &cem_state);
 	
 	bool CompilationFinished();
-	
-	
 	
 };
 
