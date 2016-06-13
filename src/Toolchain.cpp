@@ -156,7 +156,7 @@ void Toolchain::SetPaths() {
 			wxString new_path=original_path;
 			wxArrayString array; mxUT::Split(current_toolchain.bin_path,array,true,false);
 			for(unsigned int i=0;i<array.GetCount();i++) 
-				new_path=wxFileName(DIR_PLUS_FILE(config->zinjai_dir,array[i])).GetShortPath()+";"+new_path;
+				new_path=wxFileName(DIR_PLUS_FILE(config->zinjai_dir,array[i])).GetShortPath()+_if_win32(";",":")+new_path;
 			wxSetEnv("PATH",new_path);
 		} else {
 			wxSetEnv("PATH",original_path);
