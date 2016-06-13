@@ -1272,7 +1272,7 @@ void mxSource::OnCharAdded (wxStyledTextEvent &event) {
 			} else if ( c_curr_last==';' || c_curr_last=='{' || c_curr_last=='}' ) { // nueva sentencia
 				// prev_ind: donde empieza realmente la instruccion anterior (salteando indentado)
 				if (c_curr_last=='}') p_curr_last++;
-				int p_prev_ind = GetStatementStartPos(p_curr_last-1,true);
+				int p_prev_ind = GetStatementStartPos(p_curr_last-1,true,true,c_curr_last=='{');
 				while (GetStyleAt(p_prev_ind)==wxSTC_C_WORD && TextRangeIs(p_prev_ind,"else")) { // si es un else, ir al if
 					--p_prev_ind;
 					II_BACK(p_prev_ind,II_IS_NOTHING_4(p_prev_ind));
@@ -4216,7 +4216,7 @@ int mxSource::GetStatementStartPos(int pos, bool skip_coma, bool skip_white, boo
 						}
 					}
 				}
-				pos=pos_match+1;
+				pos=pos_match;
 			}
 		}
 		pos_skip=pos; --pos;
