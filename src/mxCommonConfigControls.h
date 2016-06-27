@@ -45,7 +45,7 @@ public:
 	enum OnClosePolicy { OCP_NULL, OCP_HIDE, OCP_DESTROY };
 	
 	// varias funciones deprecadas, que eliminaré cuando termine de reemplazar 
-	// todos sus usos por las nuevas interfases que agrega esta clase
+	// todos sus usos por las nuevas interfaces que agrega esta clase
 	static wxCheckBox *AddCheckBox (wxBoxSizer *sizer, wxWindow *panel, wxString text, bool value=false, wxWindowID id = wxID_ANY,bool margin=false);
 	static wxTextCtrl *AddTextCtrl (wxBoxSizer *sizer, wxWindow *panel, wxString text, wxString value="", int id=wxID_ANY);
 	static wxTextCtrl *AddShortTextCtrl (wxBoxSizer *sizer, wxWindow *panel, wxString text, wxString value="", bool margin=false, wxWindowID id=wxID_ANY);

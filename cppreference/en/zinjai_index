@@ -2,7 +2,7 @@
 ./c.html:C reference
 ./c/keyword.html:C keywords
 ./c/numeric/tgmath.html:Type-generic math
-./c/numeric/fenv.html:Floating point environment
+./c/numeric/fenv.html:Floating-point environment
 ./c/numeric/math.html:Common mathematical functions
 ./c/numeric/math/asin.html:asin, asinf, asinl
 ./c/numeric/math/logb.html:logb, logbf, logbl
@@ -55,7 +55,7 @@
 ./c/numeric/math/copysign.html:copysign, copysignf, copysignl
 ./c/numeric/math/isunordered.html:isunordered
 ./c/numeric/math/erfc.html:erfc, erfcf, erfcl
-./c/numeric/math/HUGE_VAL.html:HUGE_VALF
+./c/numeric/math/HUGE_VAL.html:HUGE_VALF, HUGE_VAL, HUGE_VALL
 ./c/numeric/math/FP_categories.html:FP_NORMAL, FP_SUBNORMAL, FP_ZERO, FP_INFINITE, FP_NAN
 ./c/numeric/math/asinh.html:asinh, asinhf, asinhl
 ./c/numeric/math/sqrt.html:sqrt, sqrtf, sqrtl
@@ -107,7 +107,7 @@
 ./c/numeric/complex/cimag.html:cimagf, cimag, cimagl
 ./c/numeric/random.html:Pseudo-random number generation
 ./c/numeric/fenv/feenv.html:fegetenv, fesetenv
-./c/numeric/fenv/feupdateenv.html:feupdatedenv
+./c/numeric/fenv/feupdateenv.html:feupdateenv
 ./c/numeric/fenv/feholdexcept.html:feholdexcept
 ./c/numeric/fenv/FE_exceptions.html:FE_DIVBYZERO, FE_INEXACT, FE_INVALID, FE_OVERFLOW, FE_UNDERFLOW, FE_ALL_EXCEPT
 ./c/numeric/fenv/feround.html:fegetround, fesetround
@@ -118,6 +118,7 @@
 ./c/numeric/fenv/fetestexcept.html:fetestexcept
 ./c/numeric/fenv/feraiseexcept.html:feraiseexcept
 ./c/numeric/complex.html:Complex number arithmetic
+./c/comment.html:Comments
 ./c/thread.html:Thread support library
 ./c/atomic.html:Atomic operations library
 ./c/locale.html:Localization support
@@ -139,7 +140,7 @@
 ./c/atomic/atomic_signal_fence.html:atomic_signal_fence
 ./c/atomic/atomic_is_lock_free.html:atomic_is_lock_free
 ./c/atomic/atomic_flag_clear.html:atomic_flag_clear, atomic_flag_clear_explicit
-./c/atomic/ATOMIC_FLAG_INIT.html:ATOMIC_FLAG_FREE
+./c/atomic/ATOMIC_FLAG_INIT.html:ATOMIC_FLAG_INIT
 ./c/atomic/atomic_load.html:atomic_load, atomic_load_explicit
 ./c/atomic/atomic_store.html:atomic_store, atomic_store_explicit
 ./c/atomic/atomic_compare_exchange.html:atomic_compare_exchange_weak, atomic_compare_exchange_strong, atomic_compare_exchange_weak_explicit, atomic_compare_exchange_strong_explicit
@@ -157,8 +158,12 @@
 ./c/atomic/atomic_exchange.html:atomic_exchange, atomic_exchange_explicit
 ./c/chrono.html:Date and time utilities
 ./c/links.html:Useful resources
+./c/experimental/dynamic.html:Dynamic memory extensions
+./c/error/abort_handler_s.html:abort_handler_s
+./c/error/set_constraint_handler_s.html:set_constraint_handler_s, constraint_handler_t
 ./c/error/static_assert.html:static_assert
 ./c/error/errno.html:errno
+./c/error/ignore_handler_s.html:ignore_handler_s
 ./c/error/errno_macros.html:Error numbers
 ./c/error/assert.html:assert
 ./c/string.html:Strings library
@@ -174,6 +179,7 @@
 ./c/keyword/_Complex.html:C keywords: _Complex
 ./c/keyword/long.html:C keywords: long
 ./c/keyword/inline.html:C keywords: inline (since C99)
+./c/keyword/fortran.html:C keywords: fortran
 ./c/keyword/void.html:C keywords: void
 ./c/keyword/auto.html:C keywords: auto
 ./c/keyword/else.html:C keywords: else
@@ -204,7 +210,7 @@
 ./c/keyword/struct.html:C keywords: struct
 ./c/keyword/for.html:C keywords: for
 ./c/keyword/register.html:C keywords: register
-./c/keyword/_Static_assert.html:_Static_assert
+./c/keyword/_Static_assert.html:C keywords: _Static_assert
 ./c/keyword/enum.html:C keywords: enum
 ./c/keyword/continue.html:C keywords: continue
 ./c/algorithm.html:Algorithms
@@ -214,16 +220,15 @@
 ./c/preprocessor/conditional.html:Conditional inclusion
 ./c/preprocessor/error.html:Error directive
 ./c/preprocessor/impl.html:Implementation defined behavior control
-./c/align/alignas.html:c/align/alignas
-./c/thread/thrd_detach.html:thread_detach
+./c/thread/thrd_detach.html:thrd_detach
 ./c/thread/mtx_lock.html:mtx_lock
 ./c/thread/cnd_broadcast.html:cnd_broadcast
-./c/thread/thrd_current.html:thread_current
-./c/thread/thrd_join.html:thread_join
+./c/thread/thrd_current.html:thrd_current
+./c/thread/thrd_join.html:thrd_join
 ./c/thread/cnd_destroy.html:cnd_destroy
 ./c/thread/thrd_equal.html:thrd_equal
 ./c/thread/cnd_init.html:cnd_init
-./c/thread/thrd_sleep.html:thread_sleep
+./c/thread/thrd_sleep.html:thrd_sleep
 ./c/thread/tss_create.html:tss_create
 ./c/thread/tss_set.html:tss_set
 ./c/thread/cnd_timedwait.html:cnd_timedwait
@@ -234,41 +239,44 @@
 ./c/thread/thread_local.html:thread_local
 ./c/thread/mtx_types.html:mtx_plain, mtx_recursive, mtx_timed
 ./c/thread/TSS_DTOR_ITERATIONS.html:TSS_DTOR_ITERATIONS
-./c/thread/thrd_yield.html:thread_yield
-./c/thread/call_once.html:call_once
+./c/thread/thrd_yield.html:thrd_yield
+./c/thread/call_once.html:call_once, once_flag, ONCE_FLAG_INIT
 ./c/thread/tss_get.html:tss_get
 ./c/thread/mtx_trylock.html:mtx_trylock
-./c/thread/thrd_exit.html:thread_exit
-./c/thread/ONCE_FLAG_INIT.html:thread_local
+./c/thread/thrd_exit.html:thrd_exit
+./c/thread/ONCE_FLAG_INIT.html:call_once, once_flag, ONCE_FLAG_INIT
 ./c/thread/mtx_unlock.html:mtx_unlock
 ./c/thread/thrd_errors.html:thrd_success, thrd_timedout, thrd_busy, thrd_nomem, thrd_error
 ./c/thread/tss_delete.html:tss_delete
 ./c/thread/mtx_timedlock.html:mtx_timedlock
 ./c/thread/mtx_destroy.html:mtx_destroy
 ./c/chrono/time.html:time
-./c/chrono/ctime.html:ctime
+./c/chrono/ctime.html:ctime, ctime_s
 ./c/chrono/clock.html:clock
 ./c/chrono/CLOCKS_PER_SEC.html:CLOCKS_PER_SEC
 ./c/chrono/strftime.html:strftime
 ./c/chrono/clock_t.html:clock_t
 ./c/chrono/mktime.html:mktime
-./c/chrono/asctime.html:asctime
+./c/chrono/asctime.html:asctime, asctime_s
+./c/chrono/timespec_get.html:timespec_get
 ./c/chrono/time_t.html:time_t
 ./c/chrono/difftime.html:difftime
-./c/chrono/localtime.html:localtime
+./c/chrono/localtime.html:localtime, localtime_s
 ./c/chrono/wcsftime.html:wcsftime
 ./c/chrono/tm.html:tm
-./c/chrono/gmtime.html:gmtime
+./c/chrono/gmtime.html:gmtime, gmtime_s
+./c/chrono/timespec.html:timespec
 ./c/error.html:Error handling
 ./c/memory.html:C memory management library
+./c/experimental.html:Experimental C standard libraries
 ./c/io/getwchar.html:getwchar
 ./c/io/fgets.html:fgets
 ./c/io/setbuf.html:setbuf
 ./c/io/fwrite.html:fwrite
-./c/io/vfwprintf.html:vwprintf, vfwprintf, vswprintf
+./c/io/vfwprintf.html:vwprintf, vfwprintf, vswprintf, vwprintf_s, vfwprintf_s, vswprintf_s
 ./c/io/rename.html:rename
 ./c/io/ftell.html:ftell
-./c/io/vfscanf.html:vscanf, vfscanf, vsscanf
+./c/io/vfscanf.html:vscanf, vfscanf, vsscanf, vscanf_s, vfscanf_s, vsscanf_s
 ./c/io/fputc.html:fputc, putc
 ./c/io/fread.html:fread
 ./c/io/fgetpos.html:fgetpos
@@ -277,17 +285,17 @@
 ./c/io/ungetwc.html:ungetwc
 ./c/io/fwide.html:fwide
 ./c/io/ungetc.html:ungetc
-./c/io/tmpnam.html:tmpnam
-./c/io/fscanf.html:scanf, fscanf, sscanf
+./c/io/tmpnam.html:tmpnam, tmpnam_s
+./c/io/fscanf.html:scanf, fscanf, sscanf, scanf_s, fscanf_s, sscanf_s
 ./c/io/clearerr.html:clearerr
 ./c/io/fgetwc.html:fgetwc
 ./c/io/putwchar.html:putwchar
 ./c/io/setvbuf.html:setvbuf
-./c/io/vfwscanf.html:vwscanf, vfwscanf, vswscanf
-./c/io/fopen.html:fopen
+./c/io/vfwscanf.html:vwscanf, vfwscanf, vswscanf, vwscanf_s, vfwscanf_s, vswscanf_s
+./c/io/fopen.html:fopen, fopen_s
 ./c/io/gets.html:gets, gets_s
-./c/io/fwprintf.html:wprintf, fwprintf, swprintf
-./c/io/freopen.html:freopen
+./c/io/fwprintf.html:wprintf, fwprintf, swprintf, wprintf_s, fwprintf_s, swprintf_s
+./c/io/freopen.html:freopen, freopen_s
 ./c/io/putchar.html:putchar
 ./c/io/fputwc.html:fputwc
 ./c/io/feof.html:feof
@@ -295,8 +303,8 @@
 ./c/io/perror.html:perror
 ./c/io/remove.html:remove
 ./c/io/fseek.html:fseek
-./c/io/fwscanf.html:wscanf, fwscanf, swscanf
-./c/io/tmpfile.html:tmpfile
+./c/io/fwscanf.html:wscanf, fwscanf, swscanf, wscanf_s, fwscanf_s, swscanf_s
+./c/io/tmpfile.html:tmpfile, tmpfile_s
 ./c/io/puts.html:puts
 ./c/io/fflush.html:fflush
 ./c/io/fputs.html:fputs
@@ -305,29 +313,29 @@
 ./c/io/fgetws.html:fgetws
 ./c/io/getchar.html:getchar
 ./c/io/ferror.html:ferror
-./c/io/vfprintf.html:vprintf, vfprintf, vsprintf, vsnprintf
-./c/io/fprintf.html:printf, fprintf, sprintf, snprintf
-./c/string/multibyte/wcsrtombs.html:wcsrtombs
-./c/string/multibyte/mbsrtowcs.html:mbsrtowcs
-./c/string/multibyte/wcrtomb.html:wcrtomb
+./c/io/vfprintf.html:vprintf, vfprintf, vsprintf, vsnprintf, vprintf_s, vfprintf_s
+./c/io/fprintf.html:printf, fprintf, sprintf, snprintf, printf_s, fprintf_s
+./c/string/multibyte/wcsrtombs.html:wcsrtombs, wcsrtombs_s
+./c/string/multibyte/mbsrtowcs.html:mbsrtowcs, mbsrtowcs_s
+./c/string/multibyte/wcrtomb.html:wcrtomb, wcrtomb_s
 ./c/string/multibyte/mbsinit.html:mbsinit
-./c/string/multibyte/wctomb.html:wctomb
+./c/string/multibyte/wctomb.html:wctomb, wctomb_s
 ./c/string/multibyte/mblen.html:mblen
 ./c/string/multibyte/c32rtomb.html:c32rtomb
 ./c/string/multibyte/c16rtomb.html:c16rtomb
 ./c/string/multibyte/mbstate_t.html:mbstate_t
 ./c/string/multibyte/wctob.html:wctob
 ./c/string/multibyte/mbrtowc.html:mbrtowc
-./c/string/multibyte/wcstombs.html:wcstombs
+./c/string/multibyte/wcstombs.html:wcstombs, wcstombs_s
 ./c/string/multibyte/mbrtoc16.html:mbrtoc16
-./c/string/multibyte/mbstowcs.html:mbstowcs
+./c/string/multibyte/mbstowcs.html:mbstowcs, mbstowcs_s
 ./c/string/multibyte/mbrtoc32.html:mbrtoc32
 ./c/string/multibyte/btowc.html:btowc
 ./c/string/multibyte/mbtowc.html:mbtowc
 ./c/string/multibyte/mbrlen.html:mbrlen
 ./c/string/multibyte.html:Null-terminated multibyte strings
-./c/string/byte/strncpy.html:strncpy
-./c/string/byte/strncat.html:strncat
+./c/string/byte/strncpy.html:strncpy, strncpy_s
+./c/string/byte/strncat.html:strncat, strncat_s
 ./c/string/byte/strchr.html:strchr
 ./c/string/byte/strtol.html:strtol, strtoll
 ./c/string/byte/ispunct.html:ispunct
@@ -343,12 +351,12 @@
 ./c/string/byte/isupper.html:isupper
 ./c/string/byte/strstr.html:strstr
 ./c/string/byte/iscntrl.html:iscntrl
-./c/string/byte/strcpy.html:strcpy
+./c/string/byte/strcpy.html:strcpy, strcpy_s
 ./c/string/byte/isalnum.html:isalnum
-./c/string/byte/strcat.html:strcat
+./c/string/byte/strcat.html:strcat, strcat_s
 ./c/string/byte/strspn.html:strspn
 ./c/string/byte/isblank.html:isblank
-./c/string/byte/memcpy.html:memcpy
+./c/string/byte/memcpy.html:memcpy, memcpy_s
 ./c/string/byte/strxfrm.html:strxfrm
 ./c/string/byte/strtof.html:strtof, strtod, strtold
 ./c/string/byte/toupper.html:toupper
@@ -356,19 +364,19 @@
 ./c/string/byte/strncmp.html:strncmp
 ./c/string/byte/strtoul.html:strtoul, strtoull
 ./c/string/byte/strcoll.html:strcoll
-./c/string/byte/memmove.html:memmove
+./c/string/byte/memmove.html:memmove, memmove_s
 ./c/string/byte/tolower.html:tolower
-./c/string/byte/strtok.html:strtok
+./c/string/byte/strtok.html:strtok, strtok_s
 ./c/string/byte/strtoimax.html:strtoimax, strtoumax
 ./c/string/byte/isspace.html:isspace
 ./c/string/byte/strcspn.html:strcspn
-./c/string/byte/memset.html:memset
+./c/string/byte/memset.html:memset, memset_s
 ./c/string/byte/atoi.html:atoi, atol, atoll
 ./c/string/byte/isalpha.html:isalpha
-./c/string/byte/strlen.html:strlen
-./c/string/byte/strerror.html:strerror
+./c/string/byte/strlen.html:strlen, strnlen_s
+./c/string/byte/strerror.html:strerror, strerror_s, strerrorlen_s
 ./c/string/byte/isgraph.html:isgraph
-./c/string/wide/wmemmove.html:wmemmove
+./c/string/wide/wmemmove.html:wmemmove, wmemmove_s
 ./c/string/wide/wcstol.html:wcstol, wcstoll
 ./c/string/wide/wcsxfrm.html:wcsxfrm
 ./c/string/wide/iswctype.html:iswctype
@@ -376,23 +384,23 @@
 ./c/string/wide/wcscspn.html:wcscspn
 ./c/string/wide/iswprint.html:iswprint
 ./c/string/wide/iswblank.html:iswblank
-./c/string/wide/wcscat.html:wcscat
+./c/string/wide/wcscat.html:wcscat, wcscat_s
 ./c/string/wide/iswupper.html:iswupper
 ./c/string/wide/iswalnum.html:iswalnum
 ./c/string/wide/iswxdigit.html:iswxdigit
-./c/string/wide/wcscpy.html:wcscpy
+./c/string/wide/wcscpy.html:wcscpy, wcscpy_s
 ./c/string/wide/iswpunct.html:iswpunct
 ./c/string/wide/towupper.html:towupper
 ./c/string/wide/towctrans.html:towctrans
 ./c/string/wide/iswalpha.html:iswalpha
 ./c/string/wide/wcstoul.html:wcstoul, wcstoull
 ./c/string/wide/wcscmp.html:wcscmp
-./c/string/wide/wcslen.html:wcslen
+./c/string/wide/wcslen.html:wcslen, wcsnlen_s
 ./c/string/wide/towlower.html:towlower
 ./c/string/wide/wcscoll.html:wcscoll
 ./c/string/wide/wcsncmp.html:wcsncmp
 ./c/string/wide/wcsstr.html:wcsstr
-./c/string/wide/wmemcpy.html:wmemcpy
+./c/string/wide/wmemcpy.html:wmemcpy, wmemcpy_s
 ./c/string/wide/iswgraph.html:iswgraph
 ./c/string/wide/wcspbrk.html:wcspbrk
 ./c/string/wide/wmemchr.html:wmemchr
@@ -400,17 +408,17 @@
 ./c/string/wide/wmemcmp.html:wmemcmp
 ./c/string/wide/wctrans.html:wctrans
 ./c/string/wide/wcsrchr.html:wcsrchr
-./c/string/wide/wcsncpy.html:wcsncpy
+./c/string/wide/wcsncpy.html:wcsncpy, wcsncpy_s
 ./c/string/wide/iswcntrl.html:iswcntrl
 ./c/string/wide/iswlower.html:iswlower
 ./c/string/wide/iswdigit.html:iswdigit
 ./c/string/wide/wcstoimax.html:wcstoimax, wcstoumax
 ./c/string/wide/wcschr.html:wcschr
 ./c/string/wide/wmemset.html:wmemset
-./c/string/wide/wcsncat.html:wcsncat
+./c/string/wide/wcsncat.html:wcsncat, wcsncat_s
 ./c/string/wide/wcsspn.html:wcsspn
 ./c/string/wide/wcstof.html:wcstof, wcstod, wcstold
-./c/string/wide/wcstok.html:wcstok
+./c/string/wide/wcstok.html:wcstok, wcstok_s
 ./c/string/wide.html:Null-terminated wide strings
 ./c/string/byte.html:Null-terminated byte strings
 ./c/numeric.html:Numerics
@@ -428,7 +436,7 @@
 ./c/program/atexit.html:atexit
 ./c/program/jmp_buf.html:jmp_buf
 ./c/program/setjmp.html:setjmp
-./c/program/getenv.html:getenv
+./c/program/getenv.html:getenv, getenv_s
 ./c/program/exit.html:exit
 ./c/program/system.html:system
 ./c/program/quick_exit.html:quick_exit
@@ -443,86 +451,98 @@
 ./c/types/limits/FLT_EVAL_METHOD.html:FLT_EVAL_METHOD
 ./c/types/limits/FLT_ROUNDS.html:FLT_ROUNDS
 ./c/types/boolean.html:Boolean type support library
-./c/types/align.html:Type alignment control
 ./c/types/max_align_t.html:max_align_t
-./c/types/function.html:Non-returning function
 ./c/types/integer.html:Fixed width integer types (since C99)
 ./c/types/limits.html:Numeric limits
 ./c/types/offsetof.html:offsetof
 ./c/types/ptrdiff_t.html:ptrdiff_t
 ./c/links/libs.html:A list of open source C libraries
-./c/language/real_floating_and_integer.html:Real floating and integer
+./c/language/statements.html:Statements
+./c/language/compatible_type.html:Type
+./c/language/struct_initialization.html:Struct and union initialization
 ./c/language/operator_incdec.html:Increment/decrement operators
 ./c/language/main_function.html:Main function
-./c/language/alignment_specifier.html:_Alignas
+./c/language/atomic.html:atomic types
 ./c/language/initialization.html:Initialization
+./c/language/lifetime.html:Lifetime
+./c/language/object.html:Objects and alignment
 ./c/language/sizeof.html:sizeof operator
-./c/language/function_prototype_scope.html:Function prototype scope
-./c/language/internal_linkage.html:Internal linkage
-./c/language/types.html:c/language/types
+./c/language/_Alignas.html:alignas
+./c/language/identifier.html:Identifier
+./c/language/bit_field.html:Bit fields
+./c/language/types.html:Type
 ./c/language/operator_precedence.html:C Operator Precedence
-./c/language/_Atomic.html:atomic type specifier and qualifier
+./c/language/floating_constant.html:floating constant
 ./c/language/typedef.html:Typedef declaration
-./c/language/no_linkage.html:No linkage
-./c/language/_Bool.html:_Bool
-./c/language/linkage.html:Linkage of identifiers
-./c/language/_Complex.html:_Complex
-./c/language/union_type_initialization.html:union-type initialization
+./c/language/inline.html:inline function specifier
+./c/language/generic.html:Generic selection
+./c/language/memory_model.html:Memory model
+./c/language/expressions.html:Expressions
+./c/language/alignas.html:alignas
 ./c/language/ascii.html:ASCII Chart
-./c/language/default_initialization.html:default initialization
-./c/language/integer_conversion_rank.html:Integer conversion rank
 ./c/language/operator_member_access.html:Member access operators
-./c/language/automatic_storage_duration.html:Automatic storage duration
+./c/language/character_constant.html:character constant
 ./c/language/if.html:if statement
 ./c/language/operator_logical.html:Logical operators
-./c/language/function_scope.html:Function scope
 ./c/language/conversions.html:Conversions
+./c/language/declarations.html:Declarations
 ./c/language/scope.html:Scope
+./c/language/static_assert.html:static assert declaration
+./c/language/value_category.html:Value categories
+./c/language/noreturn.html:_Noreturn function specifier
+./c/language/function_declaration.html:Function declarations
 ./c/language/switch.html:switch statement
-./c/language/alignment.html:Data alignment
 ./c/language/type.html:Type
 ./c/language/thread_storage_duration.html:Thread storage duration
 ./c/language/eval_order.html:Order of evaluation
-./c/language/struct_type_initialization.html:struct-type initialization
-./c/language/operators.html:Operators
+./c/language/conversion.html:Implicit conversions
 ./c/language/operator_assignment.html:Assignment operators
 ./c/language/while.html:while loop
-./c/language/boolean_type.html:Boolean type
-./c/language/namespace.html:Name spaces
-./c/language/storage_class_specifiers.html:Storage-class specifiers
+./c/language/volatile.html:volatile type qualifier
 ./c/language/union.html:Union declaration
-./c/language/pointer_type_initialization.html:pointer-type initialization
-./c/language/complex_types.html:Complex types
+./c/language/const.html:const type qualifier
+./c/language/arithmetic_types.html:Arithmetic types
+./c/language/integer_constant.html:integer constant
 ./c/language/goto.html:goto statement
 ./c/language/_Alignof.html:_Alignof operator
-./c/language/restrict.html:Restricted pointer
+./c/language/restrict.html:restrict type qualifier
 ./c/language/storage_duration.html:Storage-class specifiers
-./c/language/block_scope.html:Block scope
 ./c/language/operator_comparison.html:Comparison operators
 ./c/language/break.html:break statement
-./c/language/function_specifiers.html:Function specifiers
+./c/language/array_initialization.html:Array initialization
+./c/language/_Noreturn.html:_Noreturn function specifier
+./c/language/pointer.html:Pointer declaration
+./c/language/translation_phases.html:Phases of translation
+./c/language/compound_literal.html:compound literals
+./c/language/function_definition.html:Function definitions
 ./c/language/static_storage_duration.html:Static storage duration
-./c/language/signed_and_unsigned_integers.html:Signed and unsigned integers
+./c/language/scalar_initialization.html:Scalar initialization
+./c/language/escape.html:Escape sequences
+./c/language/cast.html:cast operator
 ./c/language/operator_other.html:Other operators
-./c/language/real_floating_types.html:Real floating types
 ./c/language/file_scope.html:File scope
+./c/language/array.html:Array declaration
+./c/language/extern.html:External and tentative definitions
 ./c/language/do.html:do-while loop
 ./c/language/return.html:return statement
 ./c/language/history.html:History of C
-./c/language/operator_alternative.html:Alternative operator representations (since C99)
-./c/language/_Generic.html:Type-generic expression
-./c/language/array_type_initialization.html:array-type initialization
-./c/language/usual_arithmetic_conversions.html:Usual arithmetic conversions
-./c/language/arithmetic_type_initialization.html:arithmetic-type initialization
+./c/language/analyzability.html:Analyzability
+./c/language/operator_alternative.html:Alternative operator representations (since C95)
+./c/language/string_literal.html:string literals
+./c/language/alignof.html:_Alignof operator
+./c/language/name_space.html:Lookup and name spaces
+./c/language/functions.html:Functions
+./c/language/constant_expression.html:Constant expressions
 ./c/language/struct.html:Struct declaration
-./c/language/external_linkage.html:External linkage
+./c/language/basic_concepts.html:Basic concepts
 ./c/language/operator_arithmetic.html:Arithmetic operators
 ./c/language/for.html:for loop
-./c/language/cv.html:cv (const-volatility) specifiers and qualifiers
+./c/language/_Static_assert.html:static assert declaration
+./c/language/enum.html:Enumerations
 ./c/language/continue.html:continue statement
-./c/language/real_and_complex.html:Real and complex
-./c/algorithm/qsort.html:qsort
-./c/algorithm/bsearch.html:bsearch
+./c/language/variadic.html:Variadic arguments
+./c/algorithm/qsort.html:qsort, qsort_s
+./c/algorithm/bsearch.html:bsearch, bsearch_s
 ./c/preprocessor.html:Preprocessor
 ./cpp/keyword.html:C++ keywords
 ./cpp/numeric/valarray.html:std::valarray
@@ -553,7 +573,7 @@
 ./cpp/numeric/valarray/log10.html:std::log10(std::valarray)
 ./cpp/numeric/valarray/exp.html:std::exp(std::valarray)
 ./cpp/numeric/valarray/slice_array.html:std::slice_array
-./cpp/numeric/valarray/operator_arith3.html:operator+,-,*,/,%,&amp;,|,&lt;&lt;,&gt;&gt;,^ std::valarray
+./cpp/numeric/valarray/operator_arith3.html:operator+,-,*,/,%,&amp;,|,^,&lt;&lt;,&gt;&gt;,&amp;&amp;,|| std::valarray
 ./cpp/numeric/valarray/resize.html:std::valarray::resize
 ./cpp/numeric/valarray/tan.html:std::tan(std::valarray)
 ./cpp/numeric/valarray/size.html:std::valarray::size
@@ -638,7 +658,7 @@
 ./cpp/numeric/math/copysign.html:std::copysign
 ./cpp/numeric/math/isunordered.html:std::isunordered
 ./cpp/numeric/math/erfc.html:std::erfc
-./cpp/numeric/math/HUGE_VAL.html:HUGE_VALF
+./cpp/numeric/math/HUGE_VAL.html:HUGE_VALF, HUGE_VAL, HUGE_VALL
 ./cpp/numeric/math/FP_categories.html:FP_NORMAL, FP_SUBNORMAL, FP_ZERO, FP_INFINITE, FP_NAN
 ./cpp/numeric/math/asinh.html:std::asinh
 ./cpp/numeric/math/sqrt.html:std::sqrt
@@ -669,7 +689,7 @@
 ./cpp/numeric/random/uniform_int_distribution/min.html:std::uniform_int_distribution::min
 ./cpp/numeric/random/uniform_int_distribution/max.html:std::uniform_int_distribution::max
 ./cpp/numeric/random/uniform_int_distribution/params.html:std::uniform_int_distribution::a, b
-./cpp/numeric/random/uniform_int_distribution/reset.html:std::uniform_real_distribution::reset
+./cpp/numeric/random/uniform_int_distribution/reset.html:std::uniform_int_distribution::reset
 ./cpp/numeric/random/piecewise_constant_distribution.html:std::piecewise_constant_distribution
 ./cpp/numeric/random/discard_block_engine.html:std::discard_block_engine
 ./cpp/numeric/random/uniform_real_distribution/operator_ltltgtgt.html:operator&lt;&lt;,&gt;&gt;(std::uniform_real_distribution)
@@ -1039,7 +1059,6 @@
 ./cpp/locale/has_facet.html:std::has_facet
 ./cpp/locale/codecvt_mode.html:std::codecvt_mode
 ./cpp/locale/ctype_char.html:std::ctype&lt;char&gt;
-./cpp/locale/moneypunct/neg_format.html:std::moneypunct::pos_format, do_pos_format, neg_format, do_neg_format
 ./cpp/locale/moneypunct/grouping.html:std::moneypunct::grouping, do_grouping
 ./cpp/locale/moneypunct/curr_symbol.html:std::moneypunct::curr_symbol, do_curr_symbol
 ./cpp/locale/moneypunct/frac_digits.html:std::moneypunct::frac_digits, do_frac_digits
@@ -1150,6 +1169,7 @@
 ./cpp/concept/UniformRandomNumberGenerator.html:C++ concepts: UniformRandomNumberGenerator
 ./cpp/concept/AllocatorAwareContainer.html:C++ concepts: AllocatorAwareContainer
 ./cpp/concept/MoveConstructible.html:C++ concepts: MoveConstructible (since C++11)
+./cpp/concept/SharedTimedMutex.html:C++ concepts: SharedTimedMutex
 ./cpp/concept/Lockable.html:C++ concepts: Lockable
 ./cpp/concept/FormattedOutputFunction.html:C++ concepts: FormattedOutputFunction
 ./cpp/concept/TimedLockable.html:C++ concepts: TimedLockable
@@ -1181,7 +1201,7 @@
 ./cpp/concept/FunctionObject.html:C++ concepts: FunctionObject
 ./cpp/concept/Eraseable.html:C++ concepts: Erasable
 ./cpp/concept/SequenceContainer.html:C++ concepts: SequenceContainer
-./cpp/concept/SharedMutex.html:C++ concepts: SharedTimedMutex
+./cpp/concept/SharedMutex.html:C++ concepts: SharedMutex
 ./cpp/concept/UnformattedInputFunction.html:C++ concepts: UnformattedInputFunction
 ./cpp/concept/FormattedInputFunction.html:C++ concepts: FormattedInputFunction
 ./cpp/concept/Compare.html:C++ concepts: Compare
@@ -1189,6 +1209,7 @@
 ./cpp/concept/TriviallyCopyable.html:C++ concepts: TriviallyCopyable
 ./cpp/concept/Predicate.html:C++ concepts: Predicate
 ./cpp/concept/Hash.html:C++ concepts: Hash
+./cpp/concept/UnorderedAssociativeContainer.html:C++ concepts: UnorderedAssociativeContainer
 ./cpp/concept/DefaultConstructible.html:C++ concepts: DefaultConstructible
 ./cpp/concept/CopyInsertable.html:C++ concepts: CopyInsertable
 ./cpp/concept/Iterator.html:C++ concepts: Iterator
@@ -1201,6 +1222,7 @@
 ./cpp/concept/Erasable.html:C++ concepts: Erasable
 ./cpp/concept/Callable.html:C++ concepts: Callable
 ./cpp/header.html:C++ Standard Library header files
+./cpp/comments.html:Comments
 ./cpp/types.html:Type support (basic types, RTTI, type traits)
 ./cpp/container/stack.html:std::stack
 ./cpp/container/dynarray/max_size.html:std::dynarray::max_size
@@ -1357,7 +1379,7 @@
 ./cpp/container/list/emplace_back.html:std::list::emplace_back
 ./cpp/container/map.html:std::map
 ./cpp/container/set.html:std::set
-./cpp/container/dynarray.html:std::dynarray
+./cpp/container/dynarray.html:std::experimental::dynarray
 ./cpp/container/array/max_size.html:std::array::max_size
 ./cpp/container/array/rbegin.html:std::array::rbegin, std::array::crbegin
 ./cpp/container/array/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::array)
@@ -1411,6 +1433,7 @@
 ./cpp/container/unordered_multimap/clear.html:std::unordered_multimap::clear
 ./cpp/container/queue.html:std::queue
 ./cpp/container/multiset.html:std::multiset
+./cpp/container/map/try_emplace.html:std::map::try_emplace
 ./cpp/container/map/~map.html:std::map::~map
 ./cpp/container/map/value_compare.html:std::map::value_compare
 ./cpp/container/map/max_size.html:std::map::max_size
@@ -1437,6 +1460,7 @@
 ./cpp/container/map/swap2.html:std::swap(std::map)
 ./cpp/container/map/count.html:std::map::count
 ./cpp/container/map/end.html:std::map::end, std::map::cend
+./cpp/container/map/insert_or_assign.html:std::map::insert_or_assign
 ./cpp/container/map/operator_at.html:std::map::operator[]
 ./cpp/container/map/begin.html:std::map::begin, std::map::cbegin
 ./cpp/container/map/clear.html:std::map::clear
@@ -1622,6 +1646,7 @@
 ./cpp/container/set/clear.html:std::set::clear
 ./cpp/container/list.html:std::list
 ./cpp/container/array.html:std::array
+./cpp/container/unordered_map/try_emplace.html:std::unordered_map::try_emplace
 ./cpp/container/unordered_map/end2.html:std::unordered_map::end(int), std::unordered_map::cend(int)
 ./cpp/container/unordered_map/max_size.html:std::unordered_map::max_size
 ./cpp/container/unordered_map/insert.html:std::unordered_map::insert
@@ -1648,6 +1673,7 @@
 ./cpp/container/unordered_map/swap2.html:std::swap(std::unordered_map)
 ./cpp/container/unordered_map/count.html:std::unordered_map::count
 ./cpp/container/unordered_map/end.html:std::unordered_map::end, std::unordered_map::cend
+./cpp/container/unordered_map/insert_or_assign.html:std::unordered_map::insert_or_assign
 ./cpp/container/unordered_map/operator_at.html:std::unordered_map::operator[]
 ./cpp/container/unordered_map/key_eq.html:std::unordered_map::key_eq
 ./cpp/container/unordered_map/max_bucket_count.html:std::unordered_map::max_bucket_count
@@ -1670,7 +1696,7 @@
 ./cpp/iterator/back_insert_iterator/operator++.html:std::back_insert_iterator::operator++
 ./cpp/iterator/back_insert_iterator/operator=.html:std::back_insert_iterator::operator=
 ./cpp/iterator/prev.html:std::prev
-./cpp/iterator/rbegin.html:std::rbegin
+./cpp/iterator/rbegin.html:std::rbegin, std::crbegin
 ./cpp/iterator/iterator_tags.html:std::input_iterator_tag, std::output_iterator_tag, std::forward_iterator_tag, std::bidirectional_iterator_tag, std::random_access_iterator_tag
 ./cpp/iterator/ostream_iterator.html:std::ostream_iterator
 ./cpp/iterator/advance.html:std::advance
@@ -1697,9 +1723,11 @@
 ./cpp/iterator/insert_iterator/operator++.html:std::insert_iterator::operator++
 ./cpp/iterator/insert_iterator/operator=.html:std::insert_iterator::operator=
 ./cpp/iterator/distance.html:std::distance
+./cpp/iterator/size.html:std::size
 ./cpp/iterator/move_iterator.html:std::move_iterator
-./cpp/iterator/rend.html:std::rend
+./cpp/iterator/rend.html:std::rend, std::crend
 ./cpp/iterator/iterator_traits.html:std::iterator_traits
+./cpp/iterator/data.html:std::data
 ./cpp/iterator/inserter.html:std::inserter
 ./cpp/iterator/front_inserter.html:std::front_inserter
 ./cpp/iterator/back_insert_iterator.html:std::back_insert_iterator
@@ -1732,6 +1760,7 @@
 ./cpp/iterator/front_insert_iterator/operator*.html:std::front_insert_iterator::operator*
 ./cpp/iterator/front_insert_iterator/operator++.html:std::front_insert_iterator::operator++
 ./cpp/iterator/front_insert_iterator/operator=.html:std::front_insert_iterator::operator=
+./cpp/iterator/empty.html:std::empty
 ./cpp/iterator/back_inserter.html:std::back_inserter
 ./cpp/iterator/reverse_iterator.html:std::reverse_iterator
 ./cpp/iterator/end.html:std::end
@@ -1806,19 +1835,43 @@
 ./cpp/chrono.html:Date and time utilities
 ./cpp/utility.html:Utility library
 ./cpp/links.html:Useful resources
+./cpp/experimental/polymorphic_allocator.html:std::experimental::pmr::polymorphic_allocator
+./cpp/experimental/propagate_const.html:std::experimental::propagate_const
+./cpp/experimental/observer_ptr.html:std::experimental::observer_ptr
+./cpp/experimental/multiset/erase_if.html:std::experimental::erase_if (std::multiset)
+./cpp/experimental/source_location/file_name.html:std::experimental::source_location::file_name
+./cpp/experimental/source_location/column.html:std::experimental::source_location::column
+./cpp/experimental/source_location/line.html:std::experimental::source_location::line
+./cpp/experimental/source_location/current.html:std::experimental::source_location::current
+./cpp/experimental/source_location/source_location.html:std::experimental::source_location::source_location
+./cpp/experimental/source_location/function_name.html:std::experimental::source_location::function_name
+./cpp/experimental/execution_policy_tag_t.html:std::experimental::parallel::sequential_execution_policy, std::experimental::parallel::parallel_execution_policy, std::experimental::parallel::parallel_vector_execution_policy
+./cpp/experimental/reduce.html:std::experimental::parallel::reduce
+./cpp/experimental/unordered_set/erase_if.html:std::experimental::erase_if (std::unordered_set)
+./cpp/experimental/make_array.html:std::experimental::make_array
+./cpp/experimental/forward_list/erase.html:std::experimental::erase (std::forward_list)
+./cpp/experimental/forward_list/erase_if.html:std::experimental::erase_if (std::forward_list)
+./cpp/experimental/type_trait_variable_templates.html:Variable templates for type traits (library fundamentals TS)
+./cpp/experimental/to_array.html:std::experimental::to_array
+./cpp/experimental/list/erase.html:std::experimental::erase (std::list)
+./cpp/experimental/list/erase_if.html:std::experimental::erase_if (std::list)
+./cpp/experimental/search.html:std::experimental::search
+./cpp/experimental/apply.html:std::experimental::apply
+./cpp/experimental/lcm.html:std::experimental::lcm
+./cpp/experimental/get_default_resource.html:std::experimental::pmr::get_default_resource
 ./cpp/experimental/fs/path/root_name.html:std::experimental::filesystem::path::root_name
 ./cpp/experimental/fs/path/stem.html:std::experimental::filesystem::path::stem
 ./cpp/experimental/fs/path/has_path.html:std::experimental::filesystem::path::has_..._path
 ./cpp/experimental/fs/path/path.html:std::experimental::filesystem::path::path
-./cpp/experimental/fs/path/operator_ltltgtgt.html:operator&lt;&lt;,&gt;&gt;(std::fs::path)
-./cpp/experimental/fs/path/operator_slash.html:operator/(std::fs::path)
+./cpp/experimental/fs/path/operator_ltltgtgt.html:operator&lt;&lt;,&gt;&gt;(std::experimental::filesystem::path)
+./cpp/experimental/fs/path/operator_slash.html:std::experimental::filesystem::operator/(std::experimental::filesystem::path)
 ./cpp/experimental/fs/path/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::fs::path)
-./cpp/experimental/fs/path/append.html:std::experimental::filesystem::path::append,operator/=
+./cpp/experimental/fs/path/append.html:std::experimental::filesystem::path::append, std::experimental::filesystem::path::operator/=
 ./cpp/experimental/fs/path/compare.html:std::experimental::filesystem::path::compare
 ./cpp/experimental/fs/path/replace_extension.html:std::experimental::filesystem::path::replace_extension
 ./cpp/experimental/fs/path/replace_filename.html:std::experimental::filesystem::path::replace_filename
 ./cpp/experimental/fs/path/make_preferred.html:std::experimental::filesystem::path::make_preferred
-./cpp/experimental/fs/path/root_path.html:std::experimental::filesystem::path::root_name
+./cpp/experimental/fs/path/root_path.html:std::experimental::filesystem::path::root_path
 ./cpp/experimental/fs/path/generic_string.html:std::experimental::filesystem::path::generic_string,generic_wstring,generic_u8string,...
 ./cpp/experimental/fs/path/string.html:std::experimental::filesystem::path::string,wstring,u8string,...
 ./cpp/experimental/fs/path/parent_path.html:std::experimental::filesystem::path::parent_path
@@ -1827,17 +1880,15 @@
 ./cpp/experimental/fs/path/remove_filename.html:std::experimental::filesystem::path::remove_filename
 ./cpp/experimental/fs/path/swap.html:std::experimental::filesystem::path::swap
 ./cpp/experimental/fs/path/root_directory.html:std::experimental::filesystem::path::root_directory
-./cpp/experimental/fs/path/concat.html:std::experimental::filesystem::path::concat,operator+=
-./cpp/experimental/fs/path/c_str.html:std::experimental::filesystem::path::c_str
+./cpp/experimental/fs/path/concat.html:std::experimental::filesystem::path::concat, std::experimental::filesystem::path::operator+=
 ./cpp/experimental/fs/path/filename.html:std::experimental::filesystem::path::filename
-./cpp/experimental/fs/path/native.html:std::experimental::filesystem::path::native, operator string_type()
+./cpp/experimental/fs/path/native.html:std::experimental::filesystem::path::c_str, std::experimental::filesystem::path::native, std::experimental::filesystem::path::operator string_type()
 ./cpp/experimental/fs/path/is_absrel.html:std::experimental::filesystem::path::is_absolute,is_relative
 ./cpp/experimental/fs/path/empty.html:std::experimental::filesystem::path::empty
-./cpp/experimental/fs/path/swap2.html:std::swap(std::fs::path)
-./cpp/experimental/fs/path/end.html:std::experimental::filesystem::path::end
+./cpp/experimental/fs/path/swap2.html:std::experimental::filesystem::swap(std::experimental::filesystem::path)
 ./cpp/experimental/fs/path/~path.html:std::experimental::filesystem::path::~path
 ./cpp/experimental/fs/path/extension.html:std::experimental::filesystem::path::extension
-./cpp/experimental/fs/path/begin.html:std::experimental::filesystem::path::begin
+./cpp/experimental/fs/path/begin.html:std::experimental::filesystem::path::begin, std::experimental::filesystem::path::end
 ./cpp/experimental/fs/path/relative_path.html:std::experimental::filesystem::path::relative_path
 ./cpp/experimental/fs/path/assign.html:std::experimental::filesystem::path::assign
 ./cpp/experimental/fs/path/clear.html:std::experimental::filesystem::path::clear
@@ -1846,17 +1897,22 @@
 ./cpp/experimental/fs/directory_iterator.html:std::experimental::filesystem::directory_iterator
 ./cpp/experimental/fs/path.html:std::experimental::filesystem::path
 ./cpp/experimental/fs/copy_symlink.html:std::experimental::filesystem::copy_symlink
+./cpp/experimental/fs/rename.html:std::experimental::filesystem::rename
 ./cpp/experimental/fs/space_info.html:std::experimental::filesystem::space_info
+./cpp/experimental/fs/space.html:std::experimental::filesystem::space
 ./cpp/experimental/fs/current_path.html:std::experimental::filesystem::current_path
+./cpp/experimental/fs/status_known.html:std::experimental::filesystem::status_known
 ./cpp/experimental/fs/file_status.html:std::experimental::filesystem::file_status
 ./cpp/experimental/fs/create_hard_link.html:std::experimental::filesystem::create_hard_link
 ./cpp/experimental/fs/canonical.html:std::experimental::filesystem::canonical
 ./cpp/experimental/fs/perms.html:std::experimental::filesystem::perms
+./cpp/experimental/fs/permissions.html:std::experimental::filesystem::permissions
 ./cpp/experimental/fs/copy_file.html:std::experimental::filesystem::copy_file
-./cpp/experimental/fs/create_symlink.html:std::experimental::filesystem::create_symlink,create_directory_symlink
+./cpp/experimental/fs/create_symlink.html:std::experimental::filesystem::create_symlink, std::experimental::filesystem::create_directory_symlink
 ./cpp/experimental/fs/copy_options.html:std::experimental::filesystem::copy_options
 ./cpp/experimental/fs/filesystem_error.html:std::experimental::filesystem::filesystem_error
 ./cpp/experimental/fs/directory_entry.html:std::experimental::filesystem::directory_entry
+./cpp/experimental/fs/last_write_time.html:std::experimental::filesystem::last_write_time
 ./cpp/experimental/fs/filesystem_error/path.html:std::experimental::filesystem::filesystem_error::path1,path2
 ./cpp/experimental/fs/filesystem_error/filesystem_error.html:std::experimental::filesystem::filesystem_error::filesystem_error
 ./cpp/experimental/fs/filesystem_error/what.html:std::experimental::filesystem::filesystem_error::what
@@ -1868,33 +1924,37 @@
 ./cpp/experimental/fs/recursive_directory_iterator/options.html:std::experimental::filesystem::recursive_directory_iterator::options
 ./cpp/experimental/fs/recursive_directory_iterator/recursion_pending.html:std::experimental::filesystem::recursive_directory_iterator::recursion_pending
 ./cpp/experimental/fs/recursive_directory_iterator/disable_recursion_pending.html:std::experimental::filesystem::recursive_directory_iterator::disable_recursion_pending
-./cpp/experimental/fs/recursive_directory_iterator/operator*.html:std::experimental::filesystem::recursive_directory_iterator::operator*,operator-&gt;
+./cpp/experimental/fs/recursive_directory_iterator/operator*.html:std::experimental::filesystem::recursive_directory_iterator::operator*, std::experimental::filesystem::recursive_directory_iterator::operator-&gt;
 ./cpp/experimental/fs/recursive_directory_iterator/operator=.html:std::experimental::filesystem::recursive_directory_iterator::operator=
 ./cpp/experimental/fs/recursive_directory_iterator/increment.html:std::experimental::filesystem::recursive_directory_iterator::operator++, increment
+./cpp/experimental/fs/recursive_directory_iterator/begin.html:std::experimental::filesystem::begin(recursive_directory_iterator), std::experimental::filesystem::end(recursive_directory_iterator)
 ./cpp/experimental/fs/recursive_directory_iterator/recursive_directory_iterator.html:std::experimental::filesystem::recursive_directory_iterator::recursive_directory_iterator
 ./cpp/experimental/fs/is_character_file.html:std::experimental::filesystem::is_character_file
 ./cpp/experimental/fs/file_size.html:std::experimental::filesystem::file_size
-./cpp/experimental/fs/absolute.html:std::experimental::filesystem::absolute
+./cpp/experimental/fs/absolute.html:std::experimental::filesystem::absolute, std::experimental::filesystem::system_complete
 ./cpp/experimental/fs/file_time_type.html:std::experimental::filesystem::file_time_type
 ./cpp/experimental/fs/is_empty.html:std::experimental::filesystem::is_empty
 ./cpp/experimental/fs/file_status/file_status.html:std::experimental::filesystem::file_status::file_status
 ./cpp/experimental/fs/file_status/permissions.html:std::experimental::filesystem::file_status::permissions
 ./cpp/experimental/fs/file_status/operator=.html:std::experimental::filesystem::file_status::operator=
 ./cpp/experimental/fs/file_status/type.html:std::experimental::filesystem::file_status::type
+./cpp/experimental/fs/read_symlink.html:std::experimental::filesystem::read_symlink
+./cpp/experimental/fs/remove.html:std::experimental::filesystem::remove, std::experimental::filesystem::remove_all
 ./cpp/experimental/fs/directory_entry/path.html:std::experimental::filesystem::directory_entry::path
 ./cpp/experimental/fs/directory_entry/operator_cmp.html:std::experimental::filesystem::directory_entry::operator==,!=,&lt;,&lt;=,&gt;,&gt;=
-./cpp/experimental/fs/directory_entry/symbolic_status.html:std::experimental::filesystem::directory_entry::symlink_status
 ./cpp/experimental/fs/directory_entry/replace_filename.html:std::experimental::filesystem::directory_entry::replace_filename
 ./cpp/experimental/fs/directory_entry/operator=.html:std::experimental::filesystem::directory_entry::operator=
 ./cpp/experimental/fs/directory_entry/directory_entry.html:std::experimental::filesystem::directory_entry::directory_entry
-./cpp/experimental/fs/directory_entry/status.html:std::experimental::filesystem::directory_entry::status
+./cpp/experimental/fs/directory_entry/status.html:std::experimental::filesystem::directory_entry::status, std::experimental::filesystem::directory_entry::symlink_status
 ./cpp/experimental/fs/directory_entry/assign.html:std::experimental::filesystem::directory_entry::assign
+./cpp/experimental/fs/resize_file.html:std::experimental::filesystem::resize_file
 ./cpp/experimental/fs/is_symlink.html:std::experimental::filesystem::is_symlink
 ./cpp/experimental/fs/copy.html:std::experimental::filesystem::copy
 ./cpp/experimental/fs/directory_options.html:std::experimental::filesystem::directory_options
+./cpp/experimental/fs/status.html:std::experimental::filesystem::status, std::experimental::filesystem::symlink_status
 ./cpp/experimental/fs/file_type.html:std::experimental::filesystem::file_type
 ./cpp/experimental/fs/is_fifo.html:std::experimental::filesystem::is_fifo
-./cpp/experimental/fs/create_directory.html:std::experimental::filesystem::create_directory,create_directories
+./cpp/experimental/fs/create_directory.html:std::experimental::filesystem::create_directory, std::experimental::filesystem::create_directories
 ./cpp/experimental/fs/temp_directory_path.html:std::experimental::filesystem::temp_directory_path
 ./cpp/experimental/fs/is_other.html:std::experimental::filesystem::is_other
 ./cpp/experimental/fs/equivalent.html:std::experimental::filesystem::equivalent
@@ -1903,9 +1963,12 @@
 ./cpp/experimental/fs/directory_iterator/operator*.html:std::experimental::filesystem::directory_iterator::operator*,operator-&gt;
 ./cpp/experimental/fs/directory_iterator/operator=.html:std::experimental::filesystem::directory_iterator::operator=
 ./cpp/experimental/fs/directory_iterator/increment.html:std::experimental::filesystem::directory_iterator::operator=
+./cpp/experimental/fs/directory_iterator/begin.html:std::experimental::filesystem::begin(directory_iterator), std::experimental::filesystem::end(directory_iterator)
 ./cpp/experimental/fs/is_regular_file.html:std::experimental::filesystem::is_regular_file
 ./cpp/experimental/fs/recursive_directory_iterator.html:std::experimental::filesystem::recursive_directory_iterator
 ./cpp/experimental/fs/exists.html:std::experimental::filesystem::exists
+./cpp/experimental/nonesuch.html:std::experimental::nonesuch
+./cpp/experimental/function.html:std::experimental::function
 ./cpp/experimental/any/any.html:std::experimental::any::any
 ./cpp/experimental/any/operator=.html:std::experimental::any::operator=
 ./cpp/experimental/any/type.html:std::experimental::any::type
@@ -1914,26 +1977,100 @@
 ./cpp/experimental/any/swap2.html:std::experimental::swap
 ./cpp/experimental/any/any_cast.html:std::experimental::any_cast
 ./cpp/experimental/any/clear.html:std::experimental::any::clear
+./cpp/experimental/unordered_multimap/erase_if.html:std::experimental::erase_if (std::unordered_multimap)
+./cpp/experimental/parallelism.html:Extensions for parallelism
+./cpp/experimental/memory_resource/do_allocate.html:std::experimental::pmr::memory_resource::do_allocate
+./cpp/experimental/memory_resource/allocate.html:std::experimental::pmr::memory_resource::allocate
+./cpp/experimental/memory_resource/is_equal.html:std::experimental::pmr::memory_resource::is_equal
+./cpp/experimental/memory_resource/do_deallocate.html:std::experimental::pmr::memory_resource::do_deallocate
+./cpp/experimental/memory_resource/do_is_equal.html:std::experimental::pmr::memory_resource::do_is_equal
+./cpp/experimental/memory_resource/deallocate.html:std::experimental::pmr::memory_resource::deallocate
+./cpp/experimental/memory_resource/operator_eq.html:operator==, operator!= (std::experimental::pmr::memory_resource)
+./cpp/experimental/memory_resource/memory_resource.html:std::experimental::pmr::memory_resource::memory_resource
+./cpp/experimental/new_delete_resource.html:std::experimental::pmr::new_delete_resource
+./cpp/experimental/map/erase_if.html:std::experimental::erase_if (std::map)
 ./cpp/experimental/any.html:std::experimental::any
+./cpp/experimental/transform_reduce.html:std::experimental::parallel::transform_reduce
+./cpp/experimental/set_default_resource.html:std::experimental::pmr::set_default_resource
 ./cpp/experimental/fs.html:Filesystem library
+./cpp/experimental/negation.html:std::experimental::negation
+./cpp/experimental/gcd.html:std::experimental::gcd
+./cpp/experimental/unordered_multiset/erase_if.html:std::experimental::erase_if (std::unordered_multiset)
 ./cpp/experimental/optional.html:std::experimental::optional
+./cpp/experimental/basic_string/erase.html:std::experimental::erase (std::basic_string)
+./cpp/experimental/basic_string/erase_if.html:std::experimental::erase_if (std::basic_string)
+./cpp/experimental/vector/erase.html:std::experimental::erase (std::vector)
+./cpp/experimental/vector/erase_if.html:std::experimental::erase_if (std::vector)
+./cpp/experimental/default_searcher.html:std::experimental::default_searcher, std::experimental::make_default_searcher
+./cpp/experimental/execution_policy_tag.html:std::experimental::parallel::seq, std::experimental::parallel::par, std::experimental::parallel::par_vec
+./cpp/experimental/concurrency.html:Extensions for concurrency
+./cpp/experimental/ostream_joiner/operator=.html:std::experimental::ostream_joiner::operator=
+./cpp/experimental/ostream_joiner/ostream_joiner.html:std::experimental::ostream_joiner::ostream_joiner
+./cpp/experimental/ostream_joiner/operator_arith.html:std::experimental::ostream_joiner::operator++
+./cpp/experimental/ostream_joiner/make_ostream_joiner.html:std::experimental::make_ostream_joiner
+./cpp/experimental/ostream_joiner/operator*.html:std::experimental::ostream_joiner::operator*
+./cpp/experimental/ostream_joiner/operator=.html:std::experimental::ostream_joiner::operator=
+./cpp/experimental/ostream_joiner/operator_arith.html:std::experimental::ostream_joiner::operator++
 ./cpp/experimental/optional/hash.html:std::hash &lt;std::experimental::optional&gt;
-./cpp/experimental/optional/operator_cmp.html:operator=(std::experimental::optional)
+./cpp/experimental/optional/operator_cmp.html:operator==, operator&lt;(std::experimental::optional)
 ./cpp/experimental/optional/value.html:std::experimental::optional::value
-./cpp/experimental/optional/~optional.html:std::experimental::optional::optional
+./cpp/experimental/optional/~optional.html:std::experimental::optional::~optional
 ./cpp/experimental/optional/value_or.html:std::experimental::optional::value_or
-./cpp/experimental/optional/make_optional.html:std::make_optional
+./cpp/experimental/optional/make_optional.html:std::experimental::make_optional
 ./cpp/experimental/optional/operator_bool.html:std::experimental::optional::operator bool
 ./cpp/experimental/optional/operator=.html:std::experimental::optional::operator=
+./cpp/experimental/optional/nullopt_t.html:std::experimental::nullopt_t
 ./cpp/experimental/optional/swap.html:std::experimental::optional::swap
 ./cpp/experimental/optional/optional.html:std::experimental::optional::optional
+./cpp/experimental/optional/in_place.html:std::experimental::in_place
+./cpp/experimental/optional/in_place_t.html:std::experimental::in_place_t
 ./cpp/experimental/optional/emplace.html:std::experimental::optional::emplace
-./cpp/experimental/optional/swap2.html:std::swap(std::experimental::optional)
+./cpp/experimental/optional/nullopt.html:std::experimental::nullopt
+./cpp/experimental/optional/swap2.html:std::experimental::swap(std::experimental::optional)
+./cpp/experimental/optional/bad_optional_access.html:std::experimental::bad_optional_access
 ./cpp/experimental/optional/operator*.html:std::experimental::optional::operator-&gt;, std::experimental::optional::operator*
 ./cpp/experimental/optional/operator=.html:std::experimental::optional::operator=
 ./cpp/experimental/optional/operator_bool.html:std::experimental::optional::operator bool
-./cpp/experimental/optional/operator_cmp.html:operator=(std::experimental::optional)
-./cpp/experimental/memory.html:Polymorphic allocator library
+./cpp/experimental/optional/operator_cmp.html:operator==, operator&lt;(std::experimental::optional)
+./cpp/experimental/disjunction.html:std::experimental::disjunction
+./cpp/experimental/invocation_type.html:std::experimental::invocation_type, std::experimental::raw_invocation_type
+./cpp/experimental/parallelism/existing.html:Parallelized version of existing algorithms (parallelism TS)
+./cpp/experimental/multimap/erase_if.html:std::experimental::erase_if (std::multimap)
+./cpp/experimental/null_memory_resource.html:std::experimental::pmr::null_memory_resource
+./cpp/experimental/erased_type.html:std::experimental::erased_type
+./cpp/experimental/ostream_joiner.html:std::experimental::ostream_joiner
+./cpp/experimental/deque/erase.html:std::experimental::erase (std::deque)
+./cpp/experimental/deque/erase_if.html:std::experimental::erase_if (std::deque)
+./cpp/experimental/function/swap.html:std::experimental::function::swap
+./cpp/experimental/function/uses_allocator.html:std::uses_allocator&lt;std::experimental::function&gt;
+./cpp/experimental/function/get_memory_resource.html:std::experimental::function::get_memory_resource
+./cpp/experimental/function/swap2.html:std::experimental::swap(std::experimental::function)
+./cpp/experimental/shuffle.html:std::experimental::shuffle
+./cpp/experimental/lib_extensions/packaged_task.html:std::experimental::packaged_task (library fundamentals TS)
+./cpp/experimental/lib_extensions/pmr_container.html:Convenience aliases for containers using polymorphic allocators (library fundamentals TS)
+./cpp/experimental/lib_extensions/promise/get_memory_resource.html:std::experimental::promise::get_memory_resource
+./cpp/experimental/lib_extensions/promise.html:std::experimental::promise (library fundamentals TS)
+./cpp/experimental/lib_extensions/packaged_task/packaged_task.html:std::experimental::packaged_task::packaged_task (library fundamentals TS)
+./cpp/experimental/lib_extensions/packaged_task/get_memory_resource.html:std::experimental::packaged_task::get_memory_resource
+./cpp/experimental/observer_ptr/observer_ptr.html:std::experimental::observer_ptr::observer_ptr
+./cpp/experimental/observer_ptr/hash.html:std::hash(std::experimental::observer_ptr)
+./cpp/experimental/observer_ptr/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::experimental::observer_ptr)
+./cpp/experimental/observer_ptr/operator_bool.html:std::experimental::observer_ptr::operator bool
+./cpp/experimental/observer_ptr/operator_pointer.html:std::experimental::observer_ptr::operator pointer
+./cpp/experimental/observer_ptr/swap.html:std::experimental::observer_ptr::swap
+./cpp/experimental/observer_ptr/release.html:std::experimental::observer_ptr::release
+./cpp/experimental/observer_ptr/swap2.html:std::experimental::swap(std::experimental::observer_ptr)
+./cpp/experimental/observer_ptr/make_observer.html:std::experimental::make_observer
+./cpp/experimental/observer_ptr/operator*.html:std::experimental::observer_ptr::operator*, std::experimental::observer_ptr::operator-&gt;
+./cpp/experimental/observer_ptr/operator_bool.html:std::experimental::observer_ptr::operator bool
+./cpp/experimental/observer_ptr/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::experimental::observer_ptr)
+./cpp/experimental/observer_ptr/operator_pointer.html:std::experimental::observer_ptr::operator pointer
+./cpp/experimental/observer_ptr/get.html:std::experimental::observer_ptr::get
+./cpp/experimental/observer_ptr/reset.html:std::experimental::observer_ptr::reset
+./cpp/experimental/is_detected.html:std::experimental::is_detected, std::experimental::detected_t, std::experimental::detected_or
+./cpp/experimental/lib_extensions_2.html:C++ standard libraries extensions, version 2
+./cpp/experimental/void_t.html:std::experimental::void_t
+./cpp/experimental/memory.html:C++ standard libraries extensions
 ./cpp/experimental/basic_string_view/to_string.html:std::experimental::basic_string_view::to_string, std::experimental::basic_string_view::operator basic_string
 ./cpp/experimental/basic_string_view/find_last_of.html:std::experimental::basic_string_view::find_last_of
 ./cpp/experimental/basic_string_view/hash.html:std::hash (std::experimental::string_view, std::experimental::wstring_view, std::experimental::u16string_view, std::experimental::u32string_view)
@@ -1964,10 +2101,39 @@
 ./cpp/experimental/basic_string_view/operator_at.html:std::experimental::basic_string_view::operator[]
 ./cpp/experimental/basic_string_view/begin.html:std::experimental::basic_string_view::begin, std::experimental::basic_string_view::cbegin
 ./cpp/experimental/basic_string_view/find_first_not_of.html:std::experimental::basic_string_view::find_first_not_of
-./cpp/experimental/basic_string_view/clear.html:std::experimental::basic_string_view::clear
 ./cpp/experimental/basic_string_view/rfind.html:std::experimental::basic_string_view::rfind
+./cpp/experimental/set/erase_if.html:std::experimental::erase_if (std::set)
+./cpp/experimental/boyer_moore_searcher.html:std::experimental::boyer_moore_searcher, std::experimental::make_boyer_moore_searcher
+./cpp/experimental/not_fn.html:std::experimental::not_fn
+./cpp/experimental/reseed.html:std::experimental::reseed
+./cpp/experimental/unordered_map/erase_if.html:std::experimental::erase_if (std::unordered_map)
 ./cpp/experimental/basic_string_view.html:std::experimental::basic_string_view
+./cpp/experimental/boyer_moore_horspool_searcher.html:std::experimental::boyer_moore_horspool_searcher, std::experimental::make_boyer_moore_horspool_searcher
+./cpp/experimental/propagate_const/propagate_const.html:std::experimental::propagate_const::propagate_const
+./cpp/experimental/propagate_const/operator_element_type*.html:std::experimental::propagate_const::operator element_type*, std::experimental::propagate_const::operator const element_type*
+./cpp/experimental/propagate_const/hash.html:std::hash(std::experimental::propagate_const)
+./cpp/experimental/propagate_const/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::experimental::propagate_const)
+./cpp/experimental/propagate_const/get_underlying.html:std::experimental::get_underlying
+./cpp/experimental/propagate_const/operator_bool.html:std::experimental::propagate_const::operator bool
+./cpp/experimental/propagate_const/operator=.html:std::experimental::propagate_const::operator=
+./cpp/experimental/propagate_const/swap.html:std::experimental::propagate_const::swap
+./cpp/experimental/propagate_const/swap2.html:std::experimental::swap(std::experimental::propagate_const)
+./cpp/experimental/propagate_const/operator*.html:std::experimental::propagate_const::operator*, std::experimental::propagate_const::operator-&gt;
+./cpp/experimental/propagate_const/operator=.html:std::experimental::propagate_const::operator=
+./cpp/experimental/propagate_const/operator_bool.html:std::experimental::propagate_const::operator bool
+./cpp/experimental/propagate_const/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::experimental::propagate_const)
+./cpp/experimental/propagate_const/operator_element_type*.html:std::experimental::propagate_const::operator element_type*, std::experimental::propagate_const::operator const element_type*
+./cpp/experimental/propagate_const/cmp_func.html:std::equal_to, not_equal_to, less, greater, less_equal, greater_equal(std::experimental::propagate_const)
+./cpp/experimental/propagate_const/get.html:std::experimental::propagate_const::get
+./cpp/experimental/is_execution_policy.html:std::experimental::parallel::is_execution_policy
+./cpp/experimental/conjunction.html:std::experimental::conjunction
 ./cpp/experimental/lib_extensions.html:C++ standard libraries extensions
+./cpp/experimental/monotonic_buffer_resource.html:std::experimental::pmr::monotonic_buffer_resource
+./cpp/experimental/sample.html:std::experimental::sample
+./cpp/experimental/source_location.html:std::experimental::source_location
+./cpp/experimental/randint.html:std::experimental::randint
+./cpp/experimental/resource_adaptor.html:std::experimental::pmr::resource_adaptor
+./cpp/experimental/memory_resource.html:std::experimental::pmr::memory_resource
 ./cpp/error/error_category.html:std::error_category
 ./cpp/error/length_error.html:std::length_error
 ./cpp/error/logic_error.html:std::logic_error
@@ -2000,7 +2166,6 @@
 ./cpp/error/overflow_error.html:std::overflow_error
 ./cpp/error/error_condition.html:std::error_condition
 ./cpp/error/nested_exception/nested_ptr.html:std::nested_exception::nested_ptr
-./cpp/error/nested_exception/throw_with_nested.html:std::throw_with_nested
 ./cpp/error/nested_exception/operator=.html:std::nested_exception::operator=
 ./cpp/error/nested_exception/nested_exception.html:std::nested_exception::nested_exception
 ./cpp/error/nested_exception/rethrow_nested.html:std::nested_exception::rethrow_nested
@@ -2008,7 +2173,7 @@
 ./cpp/error/system_error/system_error.html:std::system_error::system_error
 ./cpp/error/system_error/what.html:std::system_error::what
 ./cpp/error/system_error/code.html:std::system_error::code
-./cpp/error/error_condition/operator_cmp.html:std::error_condition::operator==,!=,&lt;
+./cpp/error/error_condition/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::error_condition)
 ./cpp/error/error_condition/value.html:std::error_condition::value
 ./cpp/error/error_condition/category.html:std::error_condition::category
 ./cpp/error/error_condition/is_error_condition_enum.html:std::is_error_condition_enum
@@ -2060,10 +2225,10 @@
 ./cpp/error/unexpected.html:std::unexpected
 ./cpp/error/generic_category.html:std::generic_category
 ./cpp/error/range_error.html:std::range_error
-./cpp/error/uncaught_exception.html:std::uncaught_exception
+./cpp/error/uncaught_exception.html:std::uncaught_exception, std::uncaught_exceptions
 ./cpp/error/bad_exception.html:std::bad_exception
 ./cpp/error/get_terminate.html:std::get_terminate
-./cpp/concept.html:Concepts
+./cpp/concept.html:Library Concepts
 ./cpp/string.html:Strings library
 ./cpp/keyword/class.html:C++ keywords: class
 ./cpp/keyword/or.html:C++ keywords: or
@@ -2088,6 +2253,7 @@
 ./cpp/keyword/dynamic_cast.html:C++ keywords: dynamic_cast
 ./cpp/keyword/final.html:C++ keywords: final (since C++11)
 ./cpp/keyword/void.html:C++ keywords: void
+./cpp/keyword/concept.html:C++ keywords: concept
 ./cpp/keyword/auto.html:C++ keywords: auto
 ./cpp/keyword/compl.html:C++ keywords: compl
 ./cpp/keyword/template.html:C++ keywords: template
@@ -2145,6 +2311,7 @@
 ./cpp/keyword/bool.html:C++ keywords: bool
 ./cpp/keyword/decltype.html:C++ keywords: decltype
 ./cpp/keyword/struct.html:C++ keywords: struct
+./cpp/keyword/requires.html:C++ keywords: requires
 ./cpp/keyword/for.html:C++ keywords: for
 ./cpp/keyword/register.html:C++ keywords: register
 ./cpp/keyword/enum.html:C++ keywords: enum
@@ -2167,7 +2334,7 @@
 ./cpp/regex/regex_traits/transform_primary.html:std::regex_traits::transform_primary
 ./cpp/regex/regex_search.html:std::regex_search
 ./cpp/regex/sub_match.html:std::sub_match
-./cpp/regex/sub_match/operator_cmp.html:std::sub_match::compare
+./cpp/regex/sub_match/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::sub_match)
 ./cpp/regex/sub_match/sub_match.html:std::sub_match::sub_match
 ./cpp/regex/sub_match/compare.html:std::sub_match::compare
 ./cpp/regex/sub_match/length.html:std::sub_match::length
@@ -2245,6 +2412,7 @@
 ./cpp/thread/future_error/future_error.html:std::future_error::future_error
 ./cpp/thread/future_error/what.html:std::future_error::what
 ./cpp/thread/future_error/code.html:std::future_error::code
+./cpp/thread/shared_mutex.html:std::shared_mutex
 ./cpp/thread/notify_all_at_thread_exit.html:std::notify_all_at_thread_exit
 ./cpp/thread/shared_future.html:std::shared_future
 ./cpp/thread/unique_lock/unique_lock.html:std::unique_lock::unique_lock
@@ -2272,12 +2440,19 @@
 ./cpp/thread/lock_guard.html:std::lock_guard
 ./cpp/thread/launch.html:std::launch
 ./cpp/thread/packaged_task.html:std::packaged_task
-./cpp/thread/shared_mutex/unlock_shared.html:std::shared_timed_mutex::unlock_shared
+./cpp/thread/shared_mutex/shared_mutex.html:std::shared_mutex::shared_mutex
+./cpp/thread/shared_mutex/unlock.html:std::shared_mutex::unlock
+./cpp/thread/shared_mutex/lock_shared.html:std::shared_mutex::lock_shared
+./cpp/thread/shared_mutex/lock.html:std::shared_mutex::lock
+./cpp/thread/shared_mutex/native_handle.html:std::shared_mutex::native_handle
+./cpp/thread/shared_mutex/try_lock_shared.html:std::shared_mutex::try_lock_shared
+./cpp/thread/shared_mutex/unlock_shared.html:std::shared_mutex::unlock_shared
+./cpp/thread/shared_mutex/try_lock.html:std::shared_mutex::try_lock
+./cpp/thread/shared_mutex/~shared_mutex.html:std::shared_timed_mutex::~shared_timed_mutex
 ./cpp/thread/shared_timed_mutex/try_lock_shared_until.html:std::shared_timed_mutex::try_lock_shared_until
 ./cpp/thread/shared_timed_mutex/unlock.html:std::shared_timed_mutex::unlock
 ./cpp/thread/shared_timed_mutex/lock_shared.html:std::shared_timed_mutex::lock_shared
 ./cpp/thread/shared_timed_mutex/lock.html:std::shared_timed_mutex::lock
-./cpp/thread/shared_timed_mutex/~shared_timed_mutex.html:std::shared_timed_mutex::~shared_timed_mutex
 ./cpp/thread/shared_timed_mutex/try_lock_shared.html:std::shared_timed_mutex::try_lock_shared
 ./cpp/thread/shared_timed_mutex/try_lock_until.html:std::shared_timed_mutex::try_lock_until
 ./cpp/thread/shared_timed_mutex/unlock_shared.html:std::shared_timed_mutex::unlock_shared
@@ -2302,8 +2477,6 @@
 ./cpp/thread/lock_tag_t.html:std::defer_lock_t, std::try_to_lock_t, std::adopt_lock_t
 ./cpp/thread/async.html:std::async
 ./cpp/thread/future_error.html:std::future_error
-./cpp/thread/cv_status/timeout.html:std::cv_status
-./cpp/thread/cv_status/no_timeout.html:std::cv_status
 ./cpp/thread/recursive_mutex.html:std::recursive_mutex
 ./cpp/thread/lock_guard/lock_guard.html:std::lock_guard::lock_guard
 ./cpp/thread/lock_guard/~lock_guard.html:std::lock_guard::~lock_guard
@@ -2367,7 +2540,6 @@
 ./cpp/thread/condition_variable_any/~condition_variable_any.html:std::condition_variable_any::~condition_variable_any
 ./cpp/thread/condition_variable_any/notify_all.html:std::condition_variable_any::notify_all
 ./cpp/thread/condition_variable_any/condition_variable_any.html:std::condition_variable_any::condition_variable_any
-./cpp/thread/condition_variable_any/native_handle.html:std::condition_variable_any::native_handle
 ./cpp/thread/condition_variable_any/notify_one.html:std::condition_variable_any::notify_one
 ./cpp/thread/condition_variable_any/wait_until.html:std::condition_variable_any::wait_until
 ./cpp/thread/condition_variable_any/wait.html:std::condition_variable_any::wait
@@ -2432,7 +2604,7 @@
 ./cpp/utility/variadic/va_copy.html:va_copy
 ./cpp/utility/variadic/va_start.html:va_start
 ./cpp/utility/variadic/va_end.html:va_end
-./cpp/utility/variadic/va_list.html:va_list
+./cpp/utility/variadic/va_list.html:std::va_list
 ./cpp/utility/bitset/to_string.html:std::bitset::to_string
 ./cpp/utility/bitset/hash.html:std::hash (std::bitset)
 ./cpp/utility/bitset/operator_ltltgtgt.html:std::bitset::operator&lt;&lt;,&lt;&lt;=,&gt;&gt;,&gt;&gt;=
@@ -2456,6 +2628,7 @@
 ./cpp/utility/functional.html:Function objects
 ./cpp/utility/forward.html:std::forward
 ./cpp/utility/program.html:Program support utilities
+./cpp/utility/as_const.html:std::as_const
 ./cpp/utility/pair/pair.html:std::pair::pair
 ./cpp/utility/pair/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::pair)
 ./cpp/utility/pair/tuple_element.html:std::tuple_element&lt;std::pair&gt;
@@ -2467,6 +2640,7 @@
 ./cpp/utility/pair/get.html:std::get(std::pair)
 ./cpp/utility/functional/equal_to_void.html:std::equal_to&lt;void&gt;
 ./cpp/utility/functional/modulus.html:std::modulus
+./cpp/utility/functional/invoke.html:std::invoke
 ./cpp/utility/functional/bit_and.html:std::bit_and
 ./cpp/utility/functional/bit_not.html:std::bit_not
 ./cpp/utility/functional/negate_void.html:std::negate&lt;void&gt;
@@ -2558,17 +2732,12 @@
 ./cpp/utility/tuple/swap2.html:std::swap(std::tuple)
 ./cpp/utility/tuple/tuple_size.html:std::tuple_size&lt;std::tuple&gt;
 ./cpp/utility/tuple/get.html:std::get(std::tuple)
-./cpp/utility/nullopt_t.html:std::nullopt_t
 ./cpp/utility/declval.html:std::declval
 ./cpp/utility/rel_ops/operator_cmp.html:std::rel_ops::operator!=,&gt;,&lt;=,&gt;=
 ./cpp/utility/tuple.html:std::tuple
-./cpp/utility/in_place.html:std::in_place
-./cpp/utility/in_place_t.html:std::in_place_t
 ./cpp/utility/exchange.html:std::exchange
 ./cpp/utility/bitset.html:std::bitset
-./cpp/utility/nullopt.html:std::nullopt
 ./cpp/utility/integer_sequence.html:std::integer_sequence
-./cpp/utility/bad_optional_access.html:std::bad_optional_access
 ./cpp/utility/initializer_list.html:std::initializer_list
 ./cpp/utility/program/signal.html:std::signal
 ./cpp/utility/program/sig_atomic_t.html:std::sig_atomic_t
@@ -2620,13 +2789,14 @@
 ./cpp/header/set.html:Standard library header &lt;set&gt;
 ./cpp/header/clocale.html:Standard library header &lt;clocale&gt;
 ./cpp/header/chrono.html:Standard library header &lt;chrono&gt;
-./cpp/header/dynarray.html:Standard library header &lt;dynarray&gt;
 ./cpp/header/utility.html:Standard library header &lt;utility&gt;
 ./cpp/header/cassert.html:Standard library header &lt;cassert&gt;
 ./cpp/header/functional.html:Standard library header &lt;functional&gt;
+./cpp/header/experimental/dynarray.html:Standard library header &lt;dynarray&gt;
 ./cpp/header/experimental/string_view.html:Standard library header &lt;experimental/string_view&gt;
 ./cpp/header/experimental/any.html:Standard library header &lt;experimental/any&gt;
 ./cpp/header/experimental/optional.html:Standard library header &lt;experimental/optional&gt;
+./cpp/header/experimental/filesystem.html:Standard library header &lt;experimental/filesystem&gt;
 ./cpp/header/experimental/memory_resource.html:Standard library header &lt;experimental/memory_resource&gt;
 ./cpp/header/cfenv.html:Standard library header &lt;cfenv&gt;
 ./cpp/header/climits.html:Standard library header &lt;climits&gt;
@@ -2634,7 +2804,6 @@
 ./cpp/header/string.html:Standard library header &lt;string&gt;
 ./cpp/header/queue.html:Standard library header &lt;queue&gt;
 ./cpp/header/cmath.html:Standard library header &lt;cmath&gt;
-./cpp/header/codectv.html:Standard library header &lt;codecvt&gt;
 ./cpp/header/system_error.html:Standard library header &lt;system_error&gt;
 ./cpp/header/cctype.html:Standard library header &lt;cctype&gt;
 ./cpp/header/stdexcept.html:Standard library header &lt;stdexcept&gt;
@@ -2643,11 +2812,11 @@
 ./cpp/header/csignal.html:Standard library header &lt;csignal&gt;
 ./cpp/header/cwchar.html:Standard library header &lt;cwchar&gt;
 ./cpp/header/algorithm.html:Standard library header &lt;algorithm&gt;
+./cpp/header/codecvt.html:Standard library header &lt;codecvt&gt;
 ./cpp/header/cstdbool.html:Standard library header &lt;cstdbool&gt;
 ./cpp/header/cerrno.html:Standard library header &lt;cerrno&gt;
 ./cpp/header/unordered_map.html:Standard library header &lt;unordered_map&gt;
 ./cpp/header/iosfwd.html:Standard library header &lt;iosfwd&gt;
-./cpp/header/optional.html:Standard library header &lt;optional&gt;
 ./cpp/header/future.html:Standard library header &lt;future&gt;
 ./cpp/header/tuple.html:Standard library header &lt;tuple&gt;
 ./cpp/header/condition_variable.html:Standard library header &lt;condition_variable&gt;
@@ -2689,15 +2858,18 @@
 ./cpp/chrono/system_clock/to_time_t.html:std::chrono::system_clock::to_time_t
 ./cpp/chrono/system_clock/from_time_t.html:std::chrono::system_clock::from_time_t
 ./cpp/chrono/system_clock/now.html:std::chrono::system_clock::now
+./cpp/chrono/time_point/ceil.html:std::chrono::ceil(std::chrono::time_point)
 ./cpp/chrono/time_point/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::time_point)
 ./cpp/chrono/time_point/time_point.html:std::chrono::time_point::time_point
 ./cpp/chrono/time_point/common_type.html:std::common_type(std::chrono::time_point)
+./cpp/chrono/time_point/round.html:std::chrono::round(std::chrono::time_point)
 ./cpp/chrono/time_point/min.html:std::chrono::time_point::min
 ./cpp/chrono/time_point/time_since_epoch.html:std::chrono::time_point::time_since_epoch
 ./cpp/chrono/time_point/time_point_cast.html:std::chrono::time_point_cast
 ./cpp/chrono/time_point/operator_arith.html:std::chrono::time_point::operator+, operator-
 ./cpp/chrono/time_point/operator_arith2.html:operator+, operator-(std::time_point)
 ./cpp/chrono/time_point/max.html:std::chrono::time_point::max
+./cpp/chrono/time_point/floor.html:std::chrono::floor(std::chrono::time_point)
 ./cpp/chrono/treat_as_floating_point.html:std::chrono::treat_as_floating_point
 ./cpp/chrono/time_point.html:std::chrono::time_point
 ./cpp/chrono/duration_values/zero.html:std::chrono::duration_values::zero
@@ -2730,12 +2902,15 @@
 ./cpp/chrono/operator_q__q_min.html:std::literals::chrono_literals::operator""min
 ./cpp/chrono/steady_clock.html:std::chrono::steady_clock
 ./cpp/chrono/operator_q__q_us.html:std::literals::chrono_literals::operator""us
+./cpp/chrono/duration/ceil.html:std::chrono::ceil(std::chrono::duration)
 ./cpp/chrono/duration/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::chrono::duration)
 ./cpp/chrono/duration/duration.html:std::chrono::duration::duration
 ./cpp/chrono/duration/operator_arith3.html:std::chrono::duration::operator+=, -=, *=, /=, %=
 ./cpp/chrono/duration/common_type.html:std::common_type(std::chrono::duration)
 ./cpp/chrono/duration/operator=.html:std::chrono::duration::operator=
 ./cpp/chrono/duration/duration_cast.html:std::chrono::duration_cast
+./cpp/chrono/duration/abs.html:std::chrono::abs(std::chrono::duration)
+./cpp/chrono/duration/round.html:std::chrono::round(std::chrono::duration)
 ./cpp/chrono/duration/zero.html:std::chrono::duration::zero
 ./cpp/chrono/duration/min.html:std::chrono::duration::min
 ./cpp/chrono/duration/operator_arith4.html:operator+,-,*,/,%(std::chrono::duration)
@@ -2743,7 +2918,9 @@
 ./cpp/chrono/duration/count.html:std::chrono::duration::count
 ./cpp/chrono/duration/operator_arith2.html:std::chrono::duration::operator++, std::chrono::duration::operator--
 ./cpp/chrono/duration/max.html:std::chrono::duration::max
+./cpp/chrono/duration/floor.html:std::chrono::floor(std::chrono::duration)
 ./cpp/chrono/operator_q__q_ns.html:std::literals::chrono_literals::operator""ns
+./cpp/index.html:Index
 ./cpp/error.html:Error handling
 ./cpp/memory.html:Dynamic memory management
 ./cpp/experimental.html:Experimental C++ standard libraries
@@ -2854,7 +3031,7 @@
 ./cpp/io/c/fputs.html:std::fputs
 ./cpp/io/c/fputws.html:std::fputws
 ./cpp/io/c/fclose.html:std::fclose
-./cpp/io/c/fgetws.html:std::fwgets
+./cpp/io/c/fgetws.html:std::fgetws
 ./cpp/io/c/getchar.html:std::getchar
 ./cpp/io/c/ferror.html:std::ferror
 ./cpp/io/c/vfprintf.html:std::vprintf, std::vfprintf, std::vsprintf, std::vsnprintf
@@ -3249,7 +3426,7 @@
 ./cpp/memory/new/nothrow.html:std::nothrow
 ./cpp/memory/new/set_new_handler.html:std::set_new_handler
 ./cpp/memory/new/bad_alloc.html:std::bad_alloc
-./cpp/memory/new/bad_array_length.html:std::bad_array_length
+./cpp/memory/new/bad_array_length.html:std::experimental::bad_array_length
 ./cpp/memory/new/bad_array_new_length/bad_array_new_length.html:std::bad_array_new_length::bad_array_new_length
 ./cpp/memory/bad_weak_ptr/bad_weak_ptr.html:std::bad_weak_ptr::bad_weak_ptr
 ./cpp/memory/uninitialized_copy.html:std::uninitialized_copy
@@ -3355,9 +3532,11 @@
 ./cpp/memory/unique_ptr/operator_at.html:std::unique_ptr::operator[]
 ./cpp/memory/unique_ptr/unique_ptr.html:std::unique_ptr::unique_ptr
 ./cpp/memory/unique_ptr/reset.html:std::unique_ptr::reset
+./cpp/memory/owner_less_void.html:std::owner_less
 ./cpp/memory/raw_storage_iterator.html:std::raw_storage_iterator
 ./cpp/memory/pointer_traits.html:std::pointer_traits
 ./cpp/memory/raw_storage_iterator/operator=.html:std::raw_storage_iterator::operator=
+./cpp/memory/raw_storage_iterator/base.html:std::raw_storage_iterator::base
 ./cpp/memory/raw_storage_iterator/operator_arith.html:std::raw_storage_iterator::operator++, operator++(int)
 ./cpp/memory/raw_storage_iterator/raw_storage_iterator.html:std::raw_storage_iterator::raw_storage_iterator
 ./cpp/memory/raw_storage_iterator/operator*.html:std::raw_storage_iterator::operator*
@@ -3382,6 +3561,7 @@
 ./cpp/memory/scoped_allocator_adaptor/outer_allocator.html:std::scoped_allocator_adaptor::outer_allocator
 ./cpp/memory/scoped_allocator_adaptor/destroy.html:std::scoped_allocator_adaptor::destroy
 ./cpp/memory/scoped_allocator_adaptor/scoped_allocator_adaptor.html:std::scoped_allocator_adaptor::scoped_allocator_adaptor
+./cpp/memory/scoped_allocator_adaptor/operator=.html:std::scoped_allocator_adaptor::operator=
 ./cpp/memory/scoped_allocator_adaptor/inner_allocator.html:std::scoped_allocator_adaptor::inner_allocator
 ./cpp/memory/scoped_allocator_adaptor/allocate.html:std::scoped_allocator_adaptor::allocate
 ./cpp/memory/scoped_allocator_adaptor/construct.html:std::scoped_allocator_adaptor::construct
@@ -3418,7 +3598,6 @@
 ./cpp/types/type_index/hash_code.html:std::type_index::hash_code
 ./cpp/types/type_index/type_index.html:std::type_index::type_index
 ./cpp/types/type_index/name.html:std::type_index::name
-./cpp/types/climits.html:C numeric limits interface
 ./cpp/types/result_of.html:std::result_of
 ./cpp/types/is_compound.html:std::is_compound
 ./cpp/types/is_default_constructible.html:std::is_default_constructible, std::is_trivially_default_constructible, std::is_nothrow_default_constructible
@@ -3470,6 +3649,7 @@
 ./cpp/types/climits/FLT_ROUNDS.html:FLT_ROUNDS
 ./cpp/types/is_union.html:std::is_union
 ./cpp/types/remove_pointer.html:std::remove_pointer
+./cpp/types/negation.html:std::negation
 ./cpp/types/is_signed.html:std::is_signed
 ./cpp/types/is_polymorphic.html:std::is_polymorphic
 ./cpp/types/is_member_function_pointer.html:std::is_member_function_pointer
@@ -3481,6 +3661,8 @@
 ./cpp/types/is_empty.html:std::is_empty
 ./cpp/types/is_lvalue_reference.html:std::is_lvalue_reference
 ./cpp/types/is_integral.html:std::is_integral
+./cpp/types/numeric_limits.1.html:std::numeric_limits
+./cpp/types/disjunction.html:std::disjunction
 ./cpp/types/is_object.html:std::is_object
 ./cpp/types/underlying_type.html:std::underlying_type
 ./cpp/types/is_copy_assignable.html:std::is_copy_assignable, std::is_trivially_copy_assignable, std::is_nothrow_copy_assignable
@@ -3492,6 +3674,7 @@
 ./cpp/types/is_literal_type.html:std::is_literal_type
 ./cpp/types/is_class.html:std::is_class
 ./cpp/types/is_pod.html:std::is_pod
+./cpp/types/void_t.html:std::void_t
 ./cpp/types/is_final.html:std::is_final
 ./cpp/types/aligned_storage.html:std::aligned_storage
 ./cpp/types/enable_if.html:std::enable_if
@@ -3500,11 +3683,12 @@
 ./cpp/types/decay.html:std::decay
 ./cpp/types/is_member_object_pointer.html:std::is_member_object_pointer
 ./cpp/types/is_move_constructible.html:std::is_move_constructible, std::is_trivially_move_constructible, std::is_nothrow_move_constructible
+./cpp/types/climits.1.html:C numeric limits interface
 ./cpp/types/offsetof.html:offsetof
 ./cpp/types/integral_constant.html:std::integral_constant
 ./cpp/types/extent.html:std::extent
+./cpp/types/conjunction.html:std::conjunction
 ./cpp/types/ptrdiff_t.html:std::ptrdiff_t
-./cpp/types/numeric_limits.html:std::numeric_limits
 ./cpp/types/is_floating_point.html:std::is_floating_point
 ./cpp/types/is_destructible.html:std::is_destructible, std::is_trivially_destructible, std::is_nothrow_destructible
 ./cpp/types/make_signed.html:std::make_signed
@@ -3524,12 +3708,14 @@
 ./cpp/language/operator_incdec.html:Increment/decrement operators
 ./cpp/language/noexcept_spec.html:noexcept specifier  (since C++11)
 ./cpp/language/main_function.html:Main function
+./cpp/language/concepts.html:Constraints and concepts
 ./cpp/language/initialization.html:Initialization
 ./cpp/language/lifetime.html:Object lifetime
 ./cpp/language/object.html:Object
 ./cpp/language/static_cast.html:static_cast conversion
-./cpp/language/explicit_cast.html:explicit type conversion
+./cpp/language/explicit_cast.html:Explicit type conversion
 ./cpp/language/as_if.html:The as-if rule
+./cpp/language/constructor.html:Constructors and member initializer lists
 ./cpp/language/sizeof.html:sizeof operator
 ./cpp/language/rule_of_three.html:The rule of three/five/zero
 ./cpp/language/exceptions.html:Exceptions
@@ -3553,7 +3739,7 @@
 ./cpp/language/memory_model.html:Memory model
 ./cpp/language/expressions.html:Expressions
 ./cpp/language/character_literal.html:character literal
-./cpp/language/alignas.html:alignas specifier
+./cpp/language/alignas.html:alignas specifier (since C++11)
 ./cpp/language/ascii.html:ASCII Chart
 ./cpp/language/variable_template.html:Variable template
 ./cpp/language/class_template.html:Class template
@@ -3565,21 +3751,25 @@
 ./cpp/language/operator_member_access.html:Member access operators
 ./cpp/language/classes.html:Classes
 ./cpp/language/nested_types.html:nested classes
+./cpp/language/elaborated_type_specifier.html:Elaborated type specifier
 ./cpp/language/function.html:Declaring functions
 ./cpp/language/auto.html:auto specifier (since C++11)
 ./cpp/language/template_argument_deduction.html:Template argument deduction
 ./cpp/language/identifiers.html:Identifiers
 ./cpp/language/converting_constructor.html:Converting constructor
 ./cpp/language/if.html:if statement
+./cpp/language/transactional_memory.html:Transactional memory
 ./cpp/language/operator_logical.html:Logical operators
 ./cpp/language/declarations.html:Declarations
 ./cpp/language/scope.html:Scope
 ./cpp/language/static_assert.html:Static Assertion
 ./cpp/language/value_category.html:Value categories
 ./cpp/language/type_alias.html:Type alias, alias template (since C++11)
+./cpp/language/ub.html:Undefined behavior
 ./cpp/language/templates.html:Templates
 ./cpp/language/implicit_cast.html:Implicit conversions
 ./cpp/language/switch.html:switch statement
+./cpp/language/fold.html:fold expression
 ./cpp/language/asm.html:asm declaration
 ./cpp/language/override.html:override specifier (since C++11)
 ./cpp/language/type.html:Type
@@ -3597,7 +3787,7 @@
 ./cpp/language/while.html:while loop
 ./cpp/language/namespace.html:Namespaces
 ./cpp/language/const_cast.html:const_cast conversion
-./cpp/language/nullptr.html:nullptr pointer literal
+./cpp/language/nullptr.html:nullptr, the pointer literal
 ./cpp/language/incomplete_type.html:Type
 ./cpp/language/union.html:Union declaration
 ./cpp/language/lookup.html:Name lookup
@@ -3607,12 +3797,15 @@
 ./cpp/language/access.html:access specifiers
 ./cpp/language/user_literal.html:User-defined literals (since C++11)
 ./cpp/language/function_template.html:Function template
+./cpp/language/unqualified_lookup.html:Unqualified name lookup
 ./cpp/language/goto.html:goto statement
 ./cpp/language/dependent_name.html:Dependent names
 ./cpp/language/language_linkage.html:Language linkage
 ./cpp/language/copy_initialization.html:copy initialization
 ./cpp/language/storage_duration.html:Storage class specifiers
+./cpp/language/qualified_lookup.html:Qualified name lookup
 ./cpp/language/operator_comparison.html:Comparison operators
+./cpp/language/constraints.html:Constraints and concepts
 ./cpp/language/sfinae.html:SFINAE
 ./cpp/language/break.html:break statement
 ./cpp/language/move_operator.html:Move assignment operator
@@ -3652,16 +3845,17 @@
 ./cpp/language/ebo.html:Empty base optimization
 ./cpp/language/functions.html:Functions
 ./cpp/language/constant_expression.html:Constant expressions
-./cpp/language/initializer_list.html:Member initializer list
+./cpp/language/initializer_list.html:Constructors and member initializer lists
 ./cpp/language/decltype.html:decltype specifier
 ./cpp/language/list_initialization.html:list initialization (since C++11)
-./cpp/language/bool_literal.html:bool literal
+./cpp/language/bool_literal.html:Boolean literals
 ./cpp/language/basic_concepts.html:Basic concepts
 ./cpp/language/operator_arithmetic.html:Arithmetic operators
 ./cpp/language/reference.html:Reference declaration
 ./cpp/language/except_spec.html:dynamic exception specification
 ./cpp/language/for.html:for loop
-./cpp/language/cv.html:cv (const-volatility) specifiers and qualifiers
+./cpp/language/type-id.html:Type
+./cpp/language/cv.html:cv (const and volatile) type qualifiers
 ./cpp/language/objects.html:Object
 ./cpp/language/enum.html:enumeration declaration
 ./cpp/language/continue.html:continue statement

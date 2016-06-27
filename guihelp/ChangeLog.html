@@ -8,6 +8,9 @@
 
 </UL><BR><B>Release 201606xx</B><BR><UL>
 	<LI>New: Se resaltan en el márgen izquierdo las lineas que generan errores o warnings luego de una compilación, y se muestra el mensaje de error simplificado al colocar el mouse sobre el mismo.</LI>
+	<LI>Fix: El path del directorio de binarios del compilador se aplica correctamente en GNU/Linux.</LI>
+	<LI>Fix: Correcciones en el indentado inteligenta para casos en los que hay estructuras de control anidadas sin llaves que delimiten sus bloques.</LI>
+	<LI>Fix: Corregido el error por el cual se modificaba la selección cuando ésta abarcaba más de una línea de código al utilizar los atajos Ctrl+T y Ctrl+Shift+T.</LI>
 	
 </UL><BR><B>Release 20160523</B><BR><UL>
 	<LI>Imp: Agregada una opción en las preferencias para hacer que gdb se detenga cuando se lanza una excepción.</LI>
@@ -595,7 +598,7 @@
 	<LI>Mejorada la forma en que se detecta la ruta al ejecutable de wxFormBuilder en Windows</LI>
 	<LI>Agregado un mensaje alusivo para cuando el ejecutable de wxFormBuilder no termina correctamente o no se encuentra</LI>
 	<LI>Corregido el problema por el que indicaba que la actualización automática de proyectos wxFormBuilder debía desactivarse al crear un nuevo proyecto con la plantilla para este tipo de proyectos</LI>
-	<LI>Corregido el funcionamiento del item "Regenerar y Actualizar Automaticamente" del menú "Diseñar Interfases"</LI>
+	<LI>Corregido el funcionamiento del item "Regenerar y Actualizar Automaticamente" del menú "Diseñar Interfaces"</LI>
 	<LI>Corregida la selección por defecto luego de una busqueda en el cuadro para agregar multiples archivos a un proyecto</LI>
 	
 </UL><BR><B>Release 20110718</B><BR><UL>
@@ -974,7 +977,7 @@
 	<LI>Se actualizaron los íconos de la aplicación y de los tipos de archivos (se agregaron además iconos de alta resolución)</LI>
 	<LI>Se pueden agregar los elementos del menú de wxFormBuilder a la barra de herramientas</LI>
 	<LI>Corregida la violación de segmento al invocar la ventana de ayuda por segunda vez</LI>
-	<LI>Agregada una opción en el submenú <I>Diseñar interfases</I> del menú <I>Herramientas</I> para actualizar las clases heredadas de las generadas por <I>wxFormBuilder</I> (agregar los métodos que falten si se definieron eventos nuevos)</LI>
+	<LI>Agregada una opción en el submenú <I>Diseñar interfaces</I> del menú <I>Herramientas</I> para actualizar las clases heredadas de las generadas por <I>wxFormBuilder</I> (agregar los métodos que falten si se definieron eventos nuevos)</LI>
 	<LI>Corregido el loop infinito al recibir el foco en la pestaña de un archivo que se eliminó del disco</LI>
 	<LI>Corregido el error por el cual la ventana principal no se maximizaba al iniciar</LI>
 	<LI>Cambiado el tamaño del historial de archivos abiertos a 50</LI>
@@ -1187,7 +1190,7 @@
 </UL><BR><B>Release 20081224</B><BR><UL>
 	<LI>Corregidos los botones para explorar en las opciones de la pestaña <I>Rutas 2</I> del diálogo de <I>Preferencias</I></LI>
 	<LI>Ahora los enlaces de la ayuda a sitios de internet se abrirán con el navegador del sistema</LI>
-	<LI>Creado un lanzador generico shellexecute.exe que funciona como interfase para la API de Windows homónima para lanzar el navegador por defecto<LI>
+	<LI>Creado un lanzador generico shellexecute.exe que funciona como interfaz para la API de Windows homónima para lanzar el navegador por defecto<LI>
 	<LI>Corregidos los errores de la integración las herramientas <I>Doxygen</I> y diff en Windows</LI>
 	<LI>El título de la ventana principal ahora muestra el nombre del proyecto y no el nombre del archivo de proyecto cuando se abre uno</LI>
 	<LI>Agregada una ventana para definir algunas opciones para <I>Doxygen</I></LI>

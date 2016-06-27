@@ -267,7 +267,7 @@ void MenusAndToolsConfig::LoadMenuData ( ) {
 			AddMenuItem(mnTOOLS, myMenuItem("",mxID_TOOLS_DOXY_HELP,LANG(MENUITEM_TOOLS_COMMON_HELP,"A&yuda...")).Description("Muestra una breve ayuda acerca de la integración de Doxygen en ZinjaI").Icon("ayuda.png"));
 		EndSubMenu(mnTOOLS);
 		
-		BeginSubMenu(mnTOOLS,myMenuItem("",wxID_ANY,LANG(MENUITEM_TOOLS_WXFB,"Diseñar &Interfases (wxFormBuilder)")).Description("Diseño visual de interfaces con la biblioteca wxWidgets").Icon("wxfb.png").EnableIf(ecPROJECT));
+		BeginSubMenu(mnTOOLS,myMenuItem("",wxID_ANY,LANG(MENUITEM_TOOLS_WXFB,"Diseñar &Interfaces (wxFormBuilder)")).Description("Diseño visual de interfaces con la biblioteca wxWidgets").Icon("wxfb.png").EnableIf(ecPROJECT));
 			AddMenuItem(mnTOOLS, myMenuItem("wxfb_config",mxID_TOOLS_WXFB_CONFIG,LANG(MENUITEM_TOOLS_WXFB_CONFIG,"Configurar &Integración con wxFormBuilder...")).Description("Configura características adicionales que facilitan el uso de wxFormBuilder").Icon("wxfb_activate.png"));
 			AddMenuItem(mnTOOLS, myMenuItem("wxfb_new_res",mxID_TOOLS_WXFB_NEW_RES,LANG(MENUITEM_TOOLS_WXFB_NEW_RESOURCE,"&Adjuntar un Nuevo Proyecto wxFB...")).Description("Crea un nuevo proyecto wxFormBuilder y lo agrega al proyecto en ZinjaI").Icon("wxfb_new_res.png"));
 			AddMenuItem(mnTOOLS, myMenuItem("wxfb_load_res",mxID_TOOLS_WXFB_LOAD_RES,LANG(MENUITEM_TOOLS_WXFB_LOAD_RESOURCE,"&Adjuntar un Proyecto wxFB Existente...")).Description("Agrega un proyecto wxFormBuilder ya existente al proyecto en ZinjaI").Icon("wxfb_load_res.png"));

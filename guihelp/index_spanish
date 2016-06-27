@@ -5,7 +5,7 @@
 		0 tutor_2.html Introducción al Uso de Proyectos
 			0 t0600.html Mi primer proyecto
 			0 t0700.html Utilizando bibliotecas externas
-			0 t0800.html Interfases de usuario con wxFormBuilder
+			0 t0800.html Interfaces de usuario con wxFormBuilder
 			0 t0900.html Como construir tu propia biblioteca
 		0 tutor_3.html Nociones Básicas de Depuración
 			0 t0300.html Control básico e inspección de variables
@@ -106,7 +106,7 @@
 			0 gcov.html Test de covertura (gcov)
 			0 valgrind.html Análisis Dinámico (Valgrind)
 			0 cppcheck.html Análisis Estático (CppCheck)
-			0 wxformbuilder.html Diseño Rápido de Interfases (wxFormBuilder)
+			0 wxformbuilder.html Diseño Rápido de Interfaces (wxFormBuilder)
 			0 objdump.html Desensamblado (objdump)
 		0 toolchains.html Uso de toolchains alternativos
 		0 complements.html Complementos adicionales instalables

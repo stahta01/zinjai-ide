@@ -33,7 +33,7 @@ using namespace std;
 // dwell time for margins
 #define _DWEEL_TIME_ 100
 // dwell time for code = _DWEEL_TIME_*_DWEEL_FACTOR_
-#define _DWEEL_FACTOR_ 10
+#define _DWEEL_FACTOR_ 15
 
 
 NavigationHistory g_navigation_history;

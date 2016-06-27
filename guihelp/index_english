@@ -106,7 +106,7 @@
 			0 gcov.html Test de cobertura (gcov)
 			0 valgrind.html Análisis Dinámico (Valgrind)
 			0 cppcheck.html Análisis Estático (CppCheck)
-			0 wxformbuilder.html Diseño Rápido de Interfases (wxFormBuilder)
+			0 wxformbuilder.html Diseño Rápido de Interfaces (wxFormBuilder)
 			0 objdump.html Desensamblado (objdump)
 		0 toolchains.html Uso de toolchains alternativos
 		0 complements.html Complementos Adicionales Instalables

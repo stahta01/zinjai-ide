@@ -1210,7 +1210,7 @@ bool DebugManager::MarkCurrentPoint(wxString cfile, int cline, int cmark) {
 /**
 * @brief Parsea la salida de un comando enviado a gdb para extraer un campo
 *
-* @param ans        cadena con el resultado arrejado por gdb en su interfase mi, usualmente obtenida mediante SendCommand
+* @param ans        cadena con el resultado arrejado por gdb en su interfaz mi, usualmente obtenida mediante SendCommand
 * @param key        nombre del campo cuyo valor se quiere extraer (por ejemplo, si la cadena dice 'name="booga"' y se le pasa "name" se obtiene "booga")
 * @param crop       indica si hay que suprimir las comillas que rodean al valor
 * @param fix_slash  si el valor es texto puede contener secuencias de escape, esto indica si hay que reemplazarlas por sus valores reales

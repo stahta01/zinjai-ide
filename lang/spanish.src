@@ -567,7 +567,7 @@ MENUITEM_TOOLS_DOXYGEN_CONFIGURE
 MENUITEM_TOOLS_DOXYGEN_VIEW
 &Ver...
 MENUITEM_TOOLS_WXFB
-Diseñar &Interfases (wxFormBuilder)
+Diseñar &Interfaces (wxFormBuilder)
 MENUITEM_TOOLS_WXFB_CONFIG
 Configurar &Integración con wxFormBuilder...
 MENUITEM_TOOLS_WXFB_NEW_RESOURCE
