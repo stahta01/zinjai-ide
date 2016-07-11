@@ -2,6 +2,10 @@ HTMLEXPORT_STATUS
 Generating_html...
 GENERAL_READY
 Ready
+MAINW_CT_ERRORS
+Errors
+MAINW_CT_WARNINGS
+Warnings
 CONFIG_NO_TERMINAL_FOUND
 No known console application was found. Please\ninstall xterm, konsole or gnome-terminal; then\ngo to "Console application" field in "Paths 2"\ntabsin "Preferences" (from "File" menu) dialog\nand set it.
 CONFIG_TERMINAL_WARNING
@@ -1254,10 +1258,6 @@ MAINW_COMPILATION_CUSTOM_STEP_ERROR
 Error running custom compiling step: 
 MAINW_COMPILING_DOTS
 Compiling...
-MAINW_CT_ERRORS
-Errors
-MAINW_CT_WARNINGS
-Warnings
 MAINW_WARNING_NO_EXCUTABLE_PERMISSION
 Binary file doesn't have execute permission
 MAINW_WARNING_EXCUTABLE_PERMISSION_CHANGED
@@ -1888,6 +1888,8 @@ LIBTOBUILD_SOURCES_OUT
 Sources to exclude
 LIBTOBUILD_DEFAULT
 Default library for new sources
+LIBTOBUILD_DO_LINK
+Link into the project's executable file.
 LIBTOBUILD_NAME_MISSING
 Name cannot be left empty.
 LIBTOBUILD_NAME_REPEATED

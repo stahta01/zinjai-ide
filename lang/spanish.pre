@@ -4,6 +4,10 @@ HTMLEXPORT_STATUS
 Exportando...
 GENERAL_READY
 Listo
+MAINW_CT_ERRORS
+Errores
+MAINW_CT_WARNINGS
+Advertencias
 CONFIG_NO_TERMINAL_FOUND
 No se ha encontrado una terminal conocida. Se recomienda instalar\nxterm; luego configure el parametro \"Comando del Terminal\" en la\npestaña \"Rutas 1\" del cuadro de \"Preferencias\".
 CONFIG_TERMINAL_WARNING
@@ -569,7 +573,7 @@ MENUITEM_TOOLS_DOXYGEN_CONFIGURE
 MENUITEM_TOOLS_DOXYGEN_VIEW
 &Ver...
 MENUITEM_TOOLS_WXFB
-Diseñar &Interfases (wxFormBuilder)
+Diseñar &Interfaces (wxFormBuilder)
 MENUITEM_TOOLS_WXFB_CONFIG
 Configurar &Integración con wxFormBuilder...
 MENUITEM_TOOLS_WXFB_NEW_RESOURCE
@@ -1241,25 +1245,21 @@ Preparando compilacion...
 MAINW_COMPILATION_INTERRUPTED
 Compilacion interrumpida.
 MAINW_BINARY_ALREADY_UPDATED
-El binario ya esta actualizado.
+El binario ya esta actualizado
 MAINW_COMPILER_OUTPUT_PARSING_ERROR
 ZinjaI ha intentado reacomodar la salida del compilador de forma incorrecta.\nPuede que algun error no se muestre correctamente en el arbol. Para ver la salida\ncompleta haga click con el boton derecho del raton en cualquier elemento del arbol\ny seleccione \"abrir ultima salida\". Para contribuir al desarrollo de ZinjaI puede\nenviar esta salida, o el codigo que la ocasiono a zaskar_84@yahoo.com.ar
 MAINW_COMPILING_DONE_SECONDS
-Compilacion finalizada ( tiempo transcurrido: <{1}> segundos ).
+Compilación finalizada ( tiempo transcurrido: <{1}> segundos ).
 MAINW_COMPILING_DONE_ONE_MINUTE
-Compilacion finalizada ( tiempo transcurrido: un minuto y <{1}> segundos ).
+Compilación finalizada ( tiempo transcurrido: un minuto y <{1}> segundos ).
 MAINW_COMPILING_DONE_MINUTES_AND_SECONDS
-Compilacion finalizada ( tiempo transcurrido: <{1}> minutos y <{2}> segundos ).
+Compilación finalizada ( tiempo transcurrido: <{1}> minutos y <{2}> segundos ).
 MAINW_COMPILING_DONE
-Compilacion finalizada.
+Compilación finalizada.
 MAINW_COMPILATION_CUSTOM_STEP_ERROR
 Error al ejecutar paso de compilación personalizado: 
 MAINW_COMPILING_DOTS
 Compilando...
-MAINW_CT_ERRORS
-Errores
-MAINW_CT_WARNINGS
-Advertencias
 MAINW_WARNING_NO_EXCUTABLE_PERMISSION
 El binario no tiene permisos de ejecución.
 MAINW_WARNING_EXCUTABLE_PERMISSION_CHANGED
@@ -1890,6 +1890,8 @@ LIBTOBUILD_SOURCES_OUT
 Fuentes a excluir
 LIBTOBUILD_DEFAULT
 Biblioteca por defecto para nuevos fuentes
+LIBTOBUILD_DO_LINK
+Enlazar en el ejecutable del proyecto
 LIBTOBUILD_NAME_MISSING
 Debe completar el nombre.
 LIBTOBUILD_NAME_REPEATED

@@ -64,6 +64,7 @@ mxLibToBuildWindow::mxLibToBuildWindow(mxProjectConfigWindow *aparent, project_c
 	mySizer->Add(src_sizer,sizers->BA10_Exp1);
 	
 	default_lib = mxDialog::AddCheckBox(mySizer,this,LANG(LIBTOBUILD_DEFAULT,"Biblioteca por defecto para nuevos fuentes"),lib?lib->default_lib:false);
+	do_link = mxDialog::AddCheckBox(mySizer,this,LANG(LIBTOBUILD_DO_LINK,"Enlazar en el ejecutable del proyecto"),lib?lib->do_link:false);
 	
 	wxBitmapButton *help_button = new wxBitmapButton(this,mxID_HELP_BUTTON,*bitmaps->buttons.help);
 	butSizer->Add(help_button,sizers->BA5);
@@ -121,6 +122,7 @@ void mxLibToBuildWindow::OnOkButton(wxCommandEvent &evt) {
 //	lib->filename = filename->GetValue();
 	lib->extra_link = extra_link->GetValue();
 	lib->is_static = type->GetSelection()==1;
+	lib->do_link = do_link->GetValue();
 	lib->default_lib = default_lib->GetValue();
 	if (lib->default_lib) {
 		project_library *aux = configuration->libs_to_build;

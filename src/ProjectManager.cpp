@@ -217,6 +217,7 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 				else CFG_GENERIC_READ_DN("extra_link",lib_to_build->extra_link);
 				else CFG_BOOL_READ_DN("is_static",lib_to_build->is_static);
 				else CFG_BOOL_READ_DN("default_lib",lib_to_build->default_lib);
+				else CFG_BOOL_READ_DN("do_link",lib_to_build->do_link);
 			} else if (section=="extra_step" && extra_step) {
 				CFG_GENERIC_READ_DN("name",extra_step->name);
 				else CFG_GENERIC_READ_DN("output",extra_step->out);
@@ -822,6 +823,7 @@ bool ProjectManager::Save (bool as_template) {
 			CFG_GENERIC_WRITE_DN("extra_link",lib_to_build->extra_link);
 			CFG_BOOL_WRITE_DN("is_static",lib_to_build->is_static);
 			CFG_BOOL_WRITE_DN("default_lib",lib_to_build->default_lib);
+			CFG_BOOL_WRITE_DN("do_link",lib_to_build->do_link);
 			lib_to_build = lib_to_build->next;
 		}
 		compile_extra_step *step=configurations[i]->extra_steps;
@@ -1311,7 +1313,7 @@ bool ProjectManager::PrepareForBuilding(project_file_item *only_one) {
 						DIR_PLUS_FILE(path,lib->filename),lib->objects_list,lib->parsed_extra,&(lib->need_relink)));
 					steps_count++;
 					lib->need_relink=true; // para que sepa el loop que sigue (el del strip_executable)
-					relink_exe=true;
+					if (lib->do_link) relink_exe=true;
 				} else {
 					lib->need_relink=false; // para que sepa el loop que sigue (el del strip_executable)
 					warnings.Add(LANG1(PROJMNGR_LIB_WITHOUT_SOURCES,"La biblioteca \"<{1}>\" no tiene ningun fuente asociado.",lib->libname));
@@ -2258,14 +2260,14 @@ void ProjectManager::AnalizeConfig(wxString path, bool exec_comas, wxString ming
 
 	lib = active_configuration->libs_to_build;
 	while (lib) {
-		if (lib->objects_list.Len()) {
+		if (lib->objects_list.Len() && lib->do_link) {
 			lib->objects_list.RemoveLast();
 			lib->parsed_extra = mxUT::ExecComas(path,lib->extra_link);
 			mxUT::ParameterReplace(lib->parsed_extra,"${MINGW_DIR}",mingw_dir);
 			mxUT::ParameterReplace(lib->parsed_extra,"${TEMP_DIR}",temp_folder_short);
 			wxFileName bin_name = DIR_PLUS_FILE(path,lib->filename);
-			wxString libfile = lib->is_static ? bin_name.GetFullPath():wxString("-l")<<lib->libname;
-				objects_list<<mxUT::Quotize(libfile)<<" ";
+			wxString libfile = lib->is_static ? bin_name.GetFullPath():(wxString("-l")<<lib->libname);
+			objects_list<<mxUT::Quotize(libfile)<<" ";
 			if (!lib->is_static) {
 				bin_name.MakeRelativeTo(path);
 				if (bin_name.GetPath().Len())
@@ -2912,7 +2914,8 @@ int ProjectManager::GetRequiredVersion() {
 	bool have_macros=false,have_icon=false,have_temp_dir=false,builds_libs=false,have_extra_vars=false,
 		 have_manifest=false,have_std=false,use_og=false,use_exec_script=false,have_custom_tools=false,
 		 have_env_vars=false,have_breakpoint_annotation=false,env_vars_autoref=false,exe_use_temp=false,
-		 copy_debug_symbols=false, use_ofast=false, exec_wrapper=false, by_src_args=false, use_lto_or_werror=false;
+		 copy_debug_symbols=false, use_ofast=false, exec_wrapper=false, by_src_args=false, use_lto_or_werror=false,
+		 libs_dont_link=false;
 	
 	// breakpoint options
 	GlobalListIterator<BreakPointInfo*> bpi=BreakPointInfo::GetGlobalIterator();
@@ -2943,6 +2946,11 @@ int ProjectManager::GetRequiredVersion() {
 			have_env_vars=true;
 			if (configurations[i]->env_vars.Contains("${")) env_vars_autoref=true;
 		}
+		project_library *lib = configurations[i]->libs_to_build;
+		while (lib) {
+			if (!lib->do_link) libs_dont_link=true;
+			lib=lib->next;
+		}
 		compile_extra_step *step=configurations[i]->extra_steps;
 		while (step) {
 			if (step->deps.Contains("${TEMP_DIR}")) have_temp_dir=true;
@@ -2963,7 +2971,8 @@ int ProjectManager::GetRequiredVersion() {
 	for (int i=0;i<MAX_PROJECT_CUSTOM_TOOLS;i++) if (custom_tools[i].command.Len()) have_custom_tools=true;
 	
 	version_required=0;
-	if (use_lto_or_werror) version_required=20160225;
+	if (libs_dont_link) version_required=20160711;
+	else if (use_lto_or_werror) version_required=20160225;
 	else if (inspection_improving_template_to.GetCount()) version_required=20150227;
 	else if (by_src_args) version_required=20150220;
 	else if (exec_wrapper) version_required=20141218;

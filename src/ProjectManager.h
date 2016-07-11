@@ -236,6 +236,7 @@ struct project_library {
 	wxString extra_link; ///< opciones extra para el linker
 	bool is_static; ///< estatica o dinamica
 	bool default_lib; ///< por defecto para nuevos fuentes
+	bool do_link; ///< si hay que enlazarla en el ejecutable final
 	bool need_relink; ///< temporal, para AnalizeConfig y PrepareForBuilding
 	wxString objects_list; ///< temporal, para AnalizeConfig y PrepareForBuilding
 	wxString parsed_extra; ///< temporal, para AnalizeConfig y PrepareForBuilding
@@ -243,6 +244,7 @@ struct project_library {
 	project_library *next;
 	project_library *prev;
 	project_library(project_library *aprev=nullptr) {
+		do_link=true;
 		is_static=true;
 		need_relink=false;
 		next=nullptr;

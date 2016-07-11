@@ -22,6 +22,7 @@ private:
 	wxListBox *sources_in;
 	wxListBox *sources_out;
 	wxCheckBox *default_lib;
+	wxCheckBox *do_link;
 	wxComboBox *type;
 	bool constructed;
 	mxProjectConfigWindow *parent;
