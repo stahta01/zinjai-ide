@@ -345,16 +345,16 @@ void mxCompiler::ParseCompilerOutput(compile_and_run_struct_single *compile_and_
 					time_t elapsed_time = time(nullptr)-project->compile_startup_time;
 					if (elapsed_time>5) {
 						if (elapsed_time/60==0)
-							main_window->SetCompilingStatus(LANG1(MAINW_COMPILING_DONE_SECONDS,"Compilacion finalizada ( tiempo transcurrido: <{1}> segundos ).",wxString()<<elapsed_time));
+							main_window->SetCompilingStatus(LANG1(MAINW_COMPILING_DONE_SECONDS,"Compilación finalizada ( tiempo transcurrido: <{1}> segundos ).",wxString()<<elapsed_time));
 						if (elapsed_time/60==1)
-							main_window->SetCompilingStatus(LANG1(MAINW_COMPILING_DONE_ONE_MINUTE,"Compilacion finalizada ( tiempo transcurrido: un minuto y <{1}> segundos ).",wxString()<<(elapsed_time%60)));
+							main_window->SetCompilingStatus(LANG1(MAINW_COMPILING_DONE_ONE_MINUTE,"Compilación finalizada ( tiempo transcurrido: un minuto y <{1}> segundos ).",wxString()<<(elapsed_time%60)));
 						else
-							main_window->SetCompilingStatus(LANG2(MAINW_COMPILING_DONE_MINUTES_AND_SECONDS,"Compilacion finalizada ( tiempo transcurrido: <{1}> minutos y <{2}> segundos ).",wxString()<<(elapsed_time/60),wxString()<<(elapsed_time%60)));
+							main_window->SetCompilingStatus(LANG2(MAINW_COMPILING_DONE_MINUTES_AND_SECONDS,"Compilación finalizada ( tiempo transcurrido: <{1}> minutos y <{2}> segundos ).",wxString()<<(elapsed_time/60),wxString()<<(elapsed_time%60)));
 					} else {
-						main_window->SetCompilingStatus(LANG(MAINW_COMPILING_DONE,"Compilacion finalizada."));
+						main_window->SetCompilingStatus(LANG(MAINW_COMPILING_DONE,"Compilación finalizada."));
 					}
 					errors_manager->CompilationFinished();
-					main_window->SetCompilingStatus(LANG(MAINW_COMPILING_DONE,"Compilacion Finalizada"));
+//					main_window->SetCompilingStatus(LANG(MAINW_COMPILING_DONE,"Compilación Finalizada"));
 					// ejecutar o depurar
 					GenericAction *on_end = fms_move(compile_and_run->on_end);
 					valgrind_cmd=compile_and_run->valgrind_cmd;

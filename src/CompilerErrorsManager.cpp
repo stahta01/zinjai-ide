@@ -68,9 +68,9 @@ bool CompilerErrorsManager::FinishStep (CEMState &cem_state) {
 	else if (cem_state.HaveNotes()) cem_state.parsing_was_ok = false;
 	m_num_errors += cem_state.num_errors;
 	m_num_warnings += cem_state.num_warnings;
+	for(unsigned int i=0;i<cem_state.full_output.GetCount();i++)
+		m_full_output.Add(cem_state.full_output[i]);
 	if (cem_state.AddedSomething()) {
-		for(unsigned int i=0;i<cem_state.full_output.GetCount();i++)
-			m_full_output.Add(cem_state.full_output[i]);
 		ShowCompilerTreePanel();
 		mxSource *src = main_window->GetCurrentSource();
 		if (src) src->ReloadErrorsList();
