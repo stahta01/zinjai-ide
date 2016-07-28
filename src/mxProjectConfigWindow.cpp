@@ -878,19 +878,18 @@ void mxProjectConfigWindow::DiscardChanges() {
 }
 
 void mxProjectConfigWindow::ReloadLibs(wxString selection) {
-	int n=libtobuild_list->GetCount(), i=0;
-	project_library *lib = configuration->libs_to_build;
-	while (lib) {
-		if (i<n)
+	int nlist = libtobuild_list->GetCount(), 
+		nproject = configuration->libs_to_build.GetSize();
+	for(int i=0;i<nproject;i++) {
+		project_library *lib = configuration->libs_to_build[i];
+		if (i<nlist)
 			libtobuild_list->SetString(i,lib->libname);
 		else
 			libtobuild_list->Append(lib->libname);
-		lib = lib->next;
-		i++;
 	}
-	if (i<n) while (i<n) libtobuild_list->Delete(--n);
-	if (selection=="" && i) selection=libtobuild_list->GetString(0);
-	libtobuild_list->SetSelection(libtobuild_list->FindString(selection));
+	if (nproject<nlist) while (nproject<nlist) libtobuild_list->Delete(--nlist);
+	if (selection=="" && nlist) selection=libtobuild_list->GetString(0);
+	if (nlist) libtobuild_list->SetSelection(libtobuild_list->FindString(selection));
 }
 
 void mxProjectConfigWindow::OnLibsAdd(wxCommandEvent &evt) {

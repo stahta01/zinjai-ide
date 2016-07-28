@@ -143,15 +143,9 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 				active_configuration=configurations[configurations_count++]=new project_configuration(name.GetName(),"");
 				extra_step = nullptr;
 				lib_to_build = nullptr;
-			} else if (section=="lib_to_build") { // agregar un paso de compilación adicional a la configuración actual del proyecto
-				if (lib_to_build) {
-					lib_to_build->next = new project_library;
-					lib_to_build->next->prev=lib_to_build;
-					lib_to_build=lib_to_build->next;
-				} else if (active_configuration) {
-					lib_to_build = new project_library;
-					active_configuration->libs_to_build = lib_to_build;
-				}
+			} else if (section=="lib_to_build") { // agregar una biblioteca a generar por el projecto
+				lib_to_build = new project_library;
+				active_configuration->libs_to_build.Add(lib_to_build);
 			} else if (section=="extra_step") { // agregar un paso de compilación adicional a la configuración actual del proyecto
 				if (extra_step) {
 					extra_step->next = new compile_extra_step;
@@ -646,14 +640,8 @@ project_file_item *ProjectManager::AddFile (eFileType where, wxFileName filename
 		case FT_SOURCE:
 			// add the file to default library if there is one
 			for (int i=0;i<configurations_count;i++) {
-				project_library *lib = configurations[i]->libs_to_build;
-				while (lib) {
-					if (lib->default_lib) {
-						lib->sources<<" "<<mxUT::Quotize(name);
-						break;
-					}
-					lib = lib->next;
-				}
+				project_library *lib = project->GetDefaultLib(configurations[i]);
+				if (lib) lib->sources<<" "<<mxUT::Quotize(name);
 			}
 			files_sources.Add(fitem);
 			break;
@@ -809,25 +797,22 @@ bool ProjectManager::Save (bool as_template) {
 		CFG_GENERIC_WRITE_DN("strip_executable",configurations[i]->strip_executable);
 		CFG_BOOL_WRITE_DN("console_program",configurations[i]->console_program);
 		CFG_BOOL_WRITE_DN("dont_generate_exe",configurations[i]->dont_generate_exe);
-		HashStringString::iterator it = configurations[i]->by_src_compiling_options->begin();
-		while (it!=configurations[i]->by_src_compiling_options->end()) {
+		for(HashStringString::iterator it = configurations[i]->by_src_compiling_options->begin();
+			it!=configurations[i]->by_src_compiling_options->end(); ++it) 
+		{
 			CFG_GENERIC_WRITE_DN("by_src_comp_args",mxUT::Text2Line(it->first+"\n"+it->second));
-			++it;
 		}
-		project_library *lib_to_build = configurations[i]->libs_to_build;
-		while (lib_to_build) {
+		for(JavaVectorIterator<project_library> lib(configurations[i]->libs_to_build); lib.IsValid(); lib.Next()) { 
 			fil.AddLine("[lib_to_build]");
-			CFG_GENERIC_WRITE_DN("libname",lib_to_build->libname);
-			CFG_GENERIC_WRITE_DN("path",lib_to_build->path);
-			CFG_GENERIC_WRITE_DN("sources",lib_to_build->sources);
-			CFG_GENERIC_WRITE_DN("extra_link",lib_to_build->extra_link);
-			CFG_BOOL_WRITE_DN("is_static",lib_to_build->is_static);
-			CFG_BOOL_WRITE_DN("default_lib",lib_to_build->default_lib);
-			CFG_BOOL_WRITE_DN("do_link",lib_to_build->do_link);
-			lib_to_build = lib_to_build->next;
-		}
-		compile_extra_step *step=configurations[i]->extra_steps;
-		while (step) {
+			CFG_GENERIC_WRITE_DN("libname",lib->libname);
+			CFG_GENERIC_WRITE_DN("path",lib->path);
+			CFG_GENERIC_WRITE_DN("sources",lib->sources);
+			CFG_GENERIC_WRITE_DN("extra_link",lib->extra_link);
+			CFG_BOOL_WRITE_DN("is_static",lib->is_static);
+			CFG_BOOL_WRITE_DN("default_lib",lib->default_lib);
+			CFG_BOOL_WRITE_DN("do_link",lib->do_link);
+		};
+		for(compile_extra_step *step=configurations[i]->extra_steps; step; step=step->next) {
 			fil.AddLine("[extra_step]");
 			CFG_GENERIC_WRITE_DN("name",step->name);
 			CFG_GENERIC_WRITE_DN("deps",step->deps);
@@ -853,7 +838,6 @@ bool ProjectManager::Save (bool as_template) {
 			CFG_BOOL_WRITE_DN("hide_win",step->hide_window);
 			CFG_BOOL_WRITE_DN("delete_on_clean",step->delete_on_clean);
 			CFG_BOOL_WRITE_DN("link_output",step->link_output);
-			step = step->next;
 		}
 	}
 
@@ -1301,8 +1285,7 @@ bool ProjectManager::PrepareForBuilding(project_file_item *only_one) {
 		}
 		
 		// agregar el enlazado de bibliotecas
-		project_library *lib = active_configuration->libs_to_build;
-		while (lib) {
+		for(JavaVectorIterator<project_library> lib(active_configuration->libs_to_build); lib.IsValid(); lib.Next()) {
 			if (lib->path.Len() && !wxFileName::DirExists(DIR_PLUS_FILE(path,lib->path)))
 				wxFileName::Mkdir(DIR_PLUS_FILE(path,lib->path),0777,wxPATH_MKDIR_FULL);
 			if (lib->need_relink || !wxFileName(DIR_PLUS_FILE(path,lib->filename)).FileExists()) {
@@ -1319,20 +1302,17 @@ bool ProjectManager::PrepareForBuilding(project_file_item *only_one) {
 					warnings.Add(LANG1(PROJMNGR_LIB_WITHOUT_SOURCES,"La biblioteca \"<{1}>\" no tiene ningun fuente asociado.",lib->libname));
 				}
 			}
-			lib = lib->next;
 		}
 		
 		// si hay que mover la info de depuracion afuera de los binarios, agregar esos pasos
 		if (active_configuration->strip_executable==DBSACTION_COPY) {
 			step = step->next = new compile_step(CNS_BARRIER,nullptr);
 			for(int k=0;k<3;k++) {
-				lib = active_configuration->libs_to_build;
-				while (lib) {
+				for(JavaVectorIterator<project_library> lib(active_configuration->libs_to_build);lib.IsValid();lib.Next()) { 
 					if (lib->need_relink && !lib->is_static) {
 						step = step->next = new compile_step(CNS_DEBUGSYM,new stripping_info(DIR_PLUS_FILE(path,lib->filename),"",k));
 						if (k==0) steps_count++;
 					}
-					lib = lib->next;
 				}
 			}
 		}
@@ -1806,8 +1786,7 @@ void ProjectManager::ExportMakefile(wxString make_file, bool exec_comas, wxStrin
 	int steps_total=0, steps_extras, steps_objs, steps_current;
 	if (cmake_style) { // calcular cuantos pasos hay en cada etapa para saber que porcentajes de progreso mostrar en cada comando
 		steps_objs = files_sources.GetSize();
-		project_library *lib = active_configuration->libs_to_build;
-		int steps_libs=0; while (lib) { lib = lib->next; steps_libs++; }
+		int steps_libs=active_configuration->libs_to_build.GetSize();
 		compile_extra_step *estep=active_configuration->extra_steps;
 		steps_extras=0; while (estep) { if (estep->out.Len()) steps_extras++; estep=estep->next;	}
 		steps_total=/*steps_extras+*/steps_objs+steps_libs+(active_configuration->dont_generate_exe?0:1);
@@ -1849,10 +1828,8 @@ void ProjectManager::ExportMakefile(wxString make_file, bool exec_comas, wxStrin
 	}
 	
 	wxString libs_deps;
-	project_library *lib = active_configuration->libs_to_build;
-	while (lib) {
+	for(JavaVectorIterator<project_library> lib(active_configuration->libs_to_build);lib.IsValid();lib.Next()) { 
 		if (lib->objects_list.Len()) libs_deps<<" "<<lib->objects_list;
-		lib = lib->next;
 	}
 	
 	if (mktype!=MKTYPE_CONFIG) fil.AddLine(wxString("OBJS=")+exe_deps);
@@ -1937,25 +1914,21 @@ void ProjectManager::ExportMakefile(wxString make_file, bool exec_comas, wxStrin
 		}
 	
 		// agregar las bibliotecas
-		project_library *lib = active_configuration->libs_to_build;
-		steps_current=steps_objs;
-		while (lib) {
+		for(JavaVectorIterator<project_library> lib(active_configuration->libs_to_build);lib.IsValid();lib.Next()) {
 			wxString libdep = mxUT::Quotize(lib->filename);
 			wxString objs;
 			libdep<<":";
-			LocalListIterator<project_file_item*> item(&files_sources);
-			while (item.IsValid()) {
-				if (item->lib==lib) {
+			for(LocalListIterator<project_file_item*> item(&files_sources);
+				item.IsValid();item.Next())
+			{
+				if (item->lib==lib)
 					objs<<" "<<mxUT::Quotize(item->GetBinName(temp_folder));
-				}
-				item.Next();
 			}
 			fil.AddLine(libdep+objs);
 			
 			if (cmake_style) fil.AddLine(tab+"@echo "+get_percent(steps_current++,steps_total)+" Linking library "+libdep);
 			fil.AddLine(tab+(cmake_style?"@":"")+(lib->is_static?current_toolchain.static_lib_linker:current_toolchain.dynamic_lib_linker)+" "+mxUT::Quotize(lib->filename)+objs+" "+lib->extra_link);
 			fil.AddLine("");
-			lib = lib->next;
 		}
 	}
 
@@ -2015,8 +1988,7 @@ void ProjectManager::Clean() {
 		item.Next();
 	}
 	// borrar las salidas de los pasos adicionales
-	compile_extra_step *step = active_configuration->extra_steps;
-	while (step) {
+	for(compile_extra_step *step = active_configuration->extra_steps; step; step = step->next) {
 		if (step->delete_on_clean&&step->out.Len()){
 			wxString out=step->out;
 			mxUT::ParameterReplace(out,"${TEMP_DIR}",temp_folder);
@@ -2028,7 +2000,6 @@ void ProjectManager::Clean() {
 			wxString file=DIR_PLUS_FILE(path,out);
 			if (wxFileName::FileExists(file)) wxRemoveFile(file);
 		}
-		step = step->next;
 	}
 	// borrar temporales del icono
 	if (wxFileName::FileExists(DIR_PLUS_FILE(temp_folder,"zpr_resource.rc")))
@@ -2037,12 +2008,10 @@ void ProjectManager::Clean() {
 		wxRemoveFile(DIR_PLUS_FILE(temp_folder,"zpr_resource.o"));
 
 	// borrar las bibliotecas
-	project_library *lib = active_configuration->libs_to_build;
-	while (lib) {
+	for(JavaVectorIterator<project_library> lib(active_configuration->libs_to_build);lib.IsValid();lib.Next()) { 
 		wxString file=DIR_PLUS_FILE(path,lib->filename);
 		if (wxFileName::FileExists(file)) wxRemoveFile(file);
 		if (wxFileName::FileExists(file+".dbg")) wxRemoveFile(file+".dbg");
-		lib = lib->next;
 	}
 	
 	// borrar el ejecutable
@@ -2194,11 +2163,8 @@ void ProjectManager::AnalizeConfig(wxString path, bool exec_comas, wxString ming
 	/*executable_name = */GetExePath(false,false,path); // GetExePath ya asigna en executable_name
 	
 	// bibliotecas
-	project_library *lib = active_configuration->libs_to_build;
-	while (lib) {
+	for(JavaVectorIterator<project_library> lib(active_configuration->libs_to_build);lib.IsValid();lib.Next())
 		lib->objects_list.Clear();
-		lib = lib->next;
-	}	
 	
 	AssociateLibsAndSources(active_configuration);
 	
@@ -2258,9 +2224,8 @@ void ProjectManager::AnalizeConfig(wxString path, bool exec_comas, wxString ming
 	
 	exe_deps = objects_list;
 
-	lib = active_configuration->libs_to_build;
-	while (lib) {
-		if (lib->objects_list.Len() && lib->do_link) {
+	for(JavaVectorIterator<project_library> lib(active_configuration->libs_to_build);lib.IsValid();lib.Next()) {
+		if (lib->objects_list.Len()) {
 			lib->objects_list.RemoveLast();
 			lib->parsed_extra = mxUT::ExecComas(path,lib->extra_link);
 			mxUT::ParameterReplace(lib->parsed_extra,"${MINGW_DIR}",mingw_dir);
@@ -2275,10 +2240,9 @@ void ProjectManager::AnalizeConfig(wxString path, bool exec_comas, wxString ming
 				else
 					linking_options<<" -L./";
 			}
-			exe_deps<<mxUT::Quotize(lib->filename)<<" ";
+			if (lib->do_link) exe_deps<<mxUT::Quotize(lib->filename)<<" ";
 		}
-		lib = lib->next;
-	}	
+	}
 	objects_list.RemoveLast();
 
 	SetEnvironment(true,false);
@@ -2705,7 +2669,7 @@ void ProjectManager::MoveExtraSteps(project_configuration *conf, compile_extra_s
 	if (delta==-1) {
 		if (!step->prev || step->prev->pos!=step->pos) {
 			if (step->pos==CES_BEFORE_EXECUTABLE) {
-				if (conf->libs_to_build)
+				if (conf->libs_to_build.GetSize())
 					step->pos=CES_BEFORE_LIBS;
 				else
 					step->pos=CES_BEFORE_SOURCES;
@@ -2731,12 +2695,12 @@ void ProjectManager::MoveExtraSteps(project_configuration *conf, compile_extra_s
 			if (step->pos==CES_BEFORE_EXECUTABLE)
 				step->pos=CES_AFTER_LINKING;
 			else if (step->pos==CES_BEFORE_SOURCES) {
-				if (conf->libs_to_build)
+				if (conf->libs_to_build.GetSize())
 					step->pos=CES_BEFORE_LIBS;
 				else
 					step->pos=CES_BEFORE_EXECUTABLE;
 			} else if (step->pos==CES_BEFORE_LIBS) {
-				if (conf->libs_to_build)
+				if (conf->libs_to_build.GetSize())
 					step->pos=CES_BEFORE_EXECUTABLE;
 				else
 					step->pos=CES_AFTER_LINKING;
@@ -2872,10 +2836,8 @@ void ProjectManager::FixTemplateData(wxString name) {
 	project_name=name;
 	for (int i=0;i<configurations_count;i++) {
 		mxUT::ParameterReplace(configurations[i]->output_file,"${FILENAME}",name);
-		project_library *lib = configurations[i]->libs_to_build;
-		while (lib) {
+		for(JavaVectorIterator<project_library> lib(configurations[i]->libs_to_build);lib.IsValid();lib.Next()) { 
 			mxUT::ParameterReplace(lib->libname,"${FILENAME}",name);
-			lib = lib->next;
 		}
 	}
 	main_window->SetOpenedFileName(project_name=name);
@@ -2941,18 +2903,15 @@ int ProjectManager::GetRequiredVersion() {
 		if (configurations[i]->macros.Len()) have_macros=true;
 		if (configurations[i]->manifest_file.Len()) have_manifest=true;
 		if (configurations[i]->icon_file.Len()) have_icon=true;
-		if (configurations[i]->libs_to_build) builds_libs=true;
+		if (configurations[i]->libs_to_build.GetSize()) builds_libs=true;
 		if (configurations[i]->env_vars.Len()) {
 			have_env_vars=true;
 			if (configurations[i]->env_vars.Contains("${")) env_vars_autoref=true;
 		}
-		project_library *lib = configurations[i]->libs_to_build;
-		while (lib) {
+		for(JavaVectorIterator<project_library> lib(configurations[i]->libs_to_build);lib.IsValid();lib.Next()) { 
 			if (!lib->do_link) libs_dont_link=true;
-			lib=lib->next;
 		}
-		compile_extra_step *step=configurations[i]->extra_steps;
-		while (step) {
+		for(compile_extra_step *step=configurations[i]->extra_steps; step; step=step->next) {
 			if (step->deps.Contains("${TEMP_DIR}")) have_temp_dir=true;
 			if (step->out.Contains("${TEMP_DIR}")) have_temp_dir=true;
 			wxString sum=step->out+step->deps+step->command;
@@ -2962,7 +2921,6 @@ int ProjectManager::GetRequiredVersion() {
 			if (sum.Contains("${DEPS}")) have_extra_vars=true;
 			if (sum.Contains("${OUTPUT}")) have_extra_vars=true;
 			if (!step->delete_on_clean) have_extra_vars=true;
-			step = step->next;
 		}
 		
 		if (!configurations[i]->by_src_compiling_options->empty()) by_src_args=true;
@@ -3014,59 +2972,35 @@ void ProjectManager::UpdateSymbols() {
 }
 
 
-/** @brief Agrega una biblioteca a construir de una configuración **/
 project_library *ProjectManager::AppendLibToBuild(project_configuration *conf) {
-	project_library *lib = conf->libs_to_build;
-	if (!lib) {
-		lib = conf->libs_to_build = new project_library;
-	} else {
-		while (lib->next)
-			lib = lib->next;
-		lib->next = new project_library(lib);
-		lib = lib->next;
-	}
-	return lib;
+	project_library *new_lib = new project_library();
+	conf->libs_to_build.Add(new_lib);
+	return new_lib;
 }
 
 /** @brief Elimina una biblioteca a construir de una configuración **/
 bool ProjectManager::DeleteLibToBuild(project_configuration *conf, project_library *lib_to_del) {
-	if (conf->libs_to_build==lib_to_del) {
-		conf->libs_to_build=lib_to_del->next;
+	int pos = conf->libs_to_build.FindPtr(lib_to_del);
+	if (pos!=conf->libs_to_build.NotFound()) {
+		conf->libs_to_build.Remove(pos);
 		return true;
+	} else {
+		return false;
 	}
-	project_library *lib = conf->libs_to_build->next;
-	while (lib && lib_to_del!=lib) {
-		lib=lib->next;
-	}
-	if (lib) {
-		lib->prev->next=lib->next;
-		if (lib->next) 
-			lib->next->prev=lib->prev;
-		delete lib;
-		return true;
-	}
-	return false;
 }
 
 /** @brief Elimina una biblioteca a construir de una configuración **/
 project_library *ProjectManager::GetLibToBuild(project_configuration *conf, wxString libname) {
-	project_library *lib = conf->libs_to_build;
-	while (lib) {
-		if (lib->libname==libname)
-			return lib;
-		lib=lib->next;
-	}
+	for(JavaVectorIterator<project_library> lib(conf->libs_to_build); lib.IsValid(); lib.Next())
+		if (lib->libname==libname) return lib;
 	return nullptr;
 }
 
 void ProjectManager::SaveLibsAndSourcesAssociation(project_configuration *conf) {
-	project_library *lib = conf->libs_to_build;
-	while (lib) {
+	for(JavaVectorIterator<project_library> lib(conf->libs_to_build); lib.IsValid(); lib.Next()) { 
 		lib->sources.Clear();
-		lib=lib->next;
 	}
-	LocalListIterator<project_file_item*> fi(&files_sources);
-	while(fi.IsValid()) {
+	for (LocalListIterator<project_file_item*> fi(&files_sources); fi.IsValid(); fi.Next()) {
 		if (fi->lib) {
 			if (fi->lib->sources.Len())
 				fi->lib->sources<<" ";
@@ -3075,18 +3009,15 @@ void ProjectManager::SaveLibsAndSourcesAssociation(project_configuration *conf) 
 			else
 				fi->lib->sources<<fi->name;
 		}
-		fi.Next();
 	}
 }
 
 // parte de la PrepareForBuilding
 void ProjectManager::AssociateLibsAndSources(project_configuration *conf) {
 	if (!conf) conf=active_configuration;
-	LocalListIterator<project_file_item*> fi(&files_sources);
-	while (fi.IsValid()) { fi->lib=nullptr; fi.Next(); }
-	project_library *lib = conf->libs_to_build;
+	for (LocalListIterator<project_file_item*> fi(&files_sources); fi.IsValid(); fi.Next()) { fi->lib=nullptr; }
 	wxArrayString srcs;
-	while (lib) {
+	for(JavaVectorIterator<project_library> lib(conf->libs_to_build); lib.IsValid(); lib.Next()) {
 		srcs.Clear();
 		mxUT::Split(lib->sources,srcs);
 		for (unsigned int i=0;i<srcs.GetCount();i++) {
@@ -3114,7 +3045,6 @@ void ProjectManager::AssociateLibsAndSources(project_configuration *conf) {
 		else
 			lib->filename<<".so";
 #endif
-		lib = lib->next;
 	}
 }
 
@@ -3680,15 +3610,13 @@ void ProjectManager::SetEnvironment (bool set, bool for_running) {
 			wxGetEnv(ldlp_vname,&old_ld_library_path);
 			wxString ld_library_path=old_ld_library_path;
 			// recorrer la bibliotecas y agregar lo que haga falta agregar
-			project_library *lib = active_configuration->libs_to_build;
-			while (lib) {
+			for(JavaVectorIterator<project_library> lib(active_configuration->libs_to_build); lib.IsValid(); lib.Next()) {
 				if (!lib->is_static) {
 					has_libs=true;
 					if (ld_library_path.Len())
 						ld_library_path<<(ldlp_sep);
 					ld_library_path<<mxUT::Quotize(DIR_PLUS_FILE(path,lib->path));
 				}
-				lib = lib->next;
 			}
 			// si habia bibliotecas, guardar el viejo, y actualizarlo
 			if (has_libs) {
@@ -3761,3 +3689,8 @@ void ProjectManager::SetFileHideSymbols (project_file_item * item, bool hide_sym
 	parser->SetHideSymbols(DIR_PLUS_FILE(path,item->name),hide_symbols);
 }
 
+project_library *ProjectManager::GetDefaultLib(project_configuration *conf) {
+	for(JavaVectorIterator<project_library> lib(conf->libs_to_build); lib.IsValid(); lib.Next())
+		if (lib->default_lib) return lib;
+	return nullptr;
+}

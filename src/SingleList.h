@@ -97,7 +97,7 @@ public:
 	void Clear() {
 		m_size=0;
 	}
-	int Find(const T &data) {
+	int Find(const T &data) const {
 		for(int i=0;i<m_size;i++) { 
 			if (m_vec[i]==data) return i;
 		}

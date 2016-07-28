@@ -35,6 +35,7 @@
 #include "enums.h"
 #include "SourceExtras.h"
 #include "CustomTools.h"
+#include "JavaVector.h"
 class BreakPointInfo;
 class mxSource;
 class mxOSDGuard;
@@ -241,14 +242,10 @@ struct project_library {
 	wxString objects_list; ///< temporal, para AnalizeConfig y PrepareForBuilding
 	wxString parsed_extra; ///< temporal, para AnalizeConfig y PrepareForBuilding
 	wxString filename; ///< archivo de salida (ruta completa del destino), para AnalizeConfig y PrepareForBuilding
-	project_library *next;
-	project_library *prev;
-	project_library(project_library *aprev=nullptr) {
+	project_library() {
 		do_link=true;
 		is_static=true;
 		need_relink=false;
-		next=nullptr;
-		prev=aprev;
 	}
 };
 
@@ -300,14 +297,13 @@ struct project_configuration {
 	int strip_executable; ///< que hacer durante el enlazado con la info de depuracion (las opciones estan en el enum DebugSymbolsAction)
 	bool console_program; ///< marcar como programa de consola (sino, no usar el runner y compilar con -mwindows)
 	compile_extra_step *extra_steps; ///< puntero al primer item de la lista de pasos adicionales para la compilacion (sin primer nodo ficticio), nullptr si no hay pasos extra
-	project_library *libs_to_build; ///< bibliotecas a construir, lista enlazada sin primer nodo ficticio
+	JavaVector<project_library> libs_to_build; ///< bibliotecas a construir
 	bool dont_generate_exe; ///< no generar ejecutable, solo bibliotecas
 	HashStringString *by_src_compiling_options; ///< argumentos de compilacion adicionales por fuente (solo guarda los fuentes que no usan la configuracion por defecto)
 	
 	//! inicializa la configuración con los valores por defecto
 	project_configuration(wxString pname, wxString cname) {
 		by_src_compiling_options = new HashStringString();
-		libs_to_build=nullptr;
 		bakup=nullptr;
 		name=cname;
 		working_folder="";
@@ -348,14 +344,6 @@ struct project_configuration {
 			compile_extra_step *aux = extra_steps = new compile_extra_step(*extra_steps);
 			while (aux->next) { 
 				compile_extra_step * niu = new compile_extra_step(*aux->next); 
-				aux->next = niu; niu->prev=aux;
-				aux=niu;
-			}
-		}
-		if (libs_to_build) {
-			project_library *aux = libs_to_build = new project_library(*libs_to_build);
-			while (aux->next) { 
-				project_library * niu = new project_library(*aux->next); 
 				aux->next = niu; niu->prev=aux;
 				aux=niu;
 			}
@@ -660,6 +648,9 @@ public:
 	
 	/** @brief Elimina una biblioteca a construir de una configuración **/
 	project_library *GetLibToBuild(project_configuration *conf, wxString libname);
+	
+	/** @brief If there is a lib marked as default for new source in a configuration, returns that one, else returs nullptr **/
+	project_library *GetDefaultLib(project_configuration *conf);
 	
 	/// @brief Asocia los fuenes a las bibliotecas de una configuracion (llena el puntero lib de project_file_item)
 	void AssociateLibsAndSources(project_configuration *conf=nullptr);

@@ -64,7 +64,7 @@ mxLibToBuildWindow::mxLibToBuildWindow(mxProjectConfigWindow *aparent, project_c
 	mySizer->Add(src_sizer,sizers->BA10_Exp1);
 	
 	default_lib = mxDialog::AddCheckBox(mySizer,this,LANG(LIBTOBUILD_DEFAULT,"Biblioteca por defecto para nuevos fuentes"),lib?lib->default_lib:false);
-	do_link = mxDialog::AddCheckBox(mySizer,this,LANG(LIBTOBUILD_DO_LINK,"Enlazar en el ejecutable del proyecto"),lib?lib->do_link:false);
+	do_link = mxDialog::AddCheckBox(mySizer,this,LANG(LIBTOBUILD_DO_LINK,"Enlazar en el ejecutable del proyecto"),lib?lib->do_link:true);
 	
 	wxBitmapButton *help_button = new wxBitmapButton(this,mxID_HELP_BUTTON,*bitmaps->buttons.help);
 	butSizer->Add(help_button,sizers->BA5);
@@ -125,14 +125,13 @@ void mxLibToBuildWindow::OnOkButton(wxCommandEvent &evt) {
 	lib->do_link = do_link->GetValue();
 	lib->default_lib = default_lib->GetValue();
 	if (lib->default_lib) {
-		project_library *aux = configuration->libs_to_build;
-		while (aux) {
-			if (aux!=lib) aux->default_lib=false;
-			aux = aux->next;
+		for(JavaVectorIterator<project_library> it(configuration->libs_to_build);it.IsValid();it.Next()) { 
+			if (it!=lib) it->default_lib = false;
 		}
 	}
-	LocalListIterator<project_file_item*> fi(&project->files_sources);
-	while(fi.IsValid()) {
+	for (LocalListIterator<project_file_item*> fi(&project->files_sources);
+		 fi.IsValid() ; fi.Next()) 
+	{
 		if (sources_in->FindString(fi->name)!=wxNOT_FOUND) {
 #ifndef __WIN32__
 			if (!fi->lib) fi->force_recompile=true; // por el fPIC
@@ -144,11 +143,10 @@ void mxLibToBuildWindow::OnOkButton(wxCommandEvent &evt) {
 			fi->lib=nullptr;
 #endif
 		}
-		fi.Next();
 	}
 	project->SaveLibsAndSourcesAssociation(configuration);
-	lib->need_relink=true;
-	parent->linking_force_relink->SetValue(true);
+	lib->need_relink = true;
+	if (lib->do_link) parent->linking_force_relink->SetValue(true);
 	Close();
 }
 
