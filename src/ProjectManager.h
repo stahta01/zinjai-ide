@@ -652,6 +652,9 @@ public:
 	/** @brief If there is a lib marked as default for new source in a configuration, returns that one, else returs nullptr **/
 	project_library *GetDefaultLib(project_configuration *conf);
 	
+	/** @brief for reordering the list of libs to build **/
+	void MoveLibToBuild(project_configuration *conf, int pos, bool up);
+	
 	/// @brief Asocia los fuenes a las bibliotecas de una configuracion (llena el puntero lib de project_file_item)
 	void AssociateLibsAndSources(project_configuration *conf=nullptr);
 	/// @brief Guarda las asociaciones de los fuentes (puntero lib de project_file_item) en la configuracion que recibe

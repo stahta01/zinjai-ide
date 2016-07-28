@@ -2,6 +2,7 @@
 #define MXLIBTOBUILDWINDOW_H
 #include <wx/dialog.h>
 #include "Cpp11.h"
+#include "mxCommonConfigControls.h"
 
 class project_configuration;
 class project_library;
@@ -11,25 +12,24 @@ class wxListBox;
 class wxCheckBox;
 class mxProjectConfigWindow;
 
-class mxLibToBuildWindow : public wxDialog {
+class mxLibToBuildWindow : public mxDialog {
 private:
-	project_configuration *configuration;
-	project_library *lib;
-	wxTextCtrl *name;
-	wxTextCtrl *path;
-	wxTextCtrl *filename;
-	wxTextCtrl *extra_link;
-	wxListBox *sources_in;
-	wxListBox *sources_out;
-	wxCheckBox *default_lib;
-	wxCheckBox *do_link;
-	wxComboBox *type;
-	bool constructed;
-	mxProjectConfigWindow *parent;
+	mxProjectConfigWindow *m_parent;
+	bool m_constructed;
+	project_configuration *m_configuration;
+	project_library *m_lib;
+	wxTextCtrl *m_name;
+	wxTextCtrl *m_path;
+	wxTextCtrl *m_filename;
+	wxTextCtrl *m_extra_link;
+	wxListBox *m_sources_in;
+	wxListBox *m_sources_out;
+	wxCheckBox *m_default_lib;
+	wxCheckBox *m_do_link;
+	wxComboBox *m_type;
 public:
 	static wxString new_name;
 	mxLibToBuildWindow(mxProjectConfigWindow *aparent, project_configuration *conf, project_library *alib=nullptr);
-	void OnClose(wxCloseEvent &evt);
 	void OnHelpButton(wxCommandEvent &evt);
 	void OnOkButton(wxCommandEvent &evt);
 	void OnInButton(wxCommandEvent &evt);

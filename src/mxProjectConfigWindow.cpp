@@ -65,6 +65,8 @@ BEGIN_EVENT_TABLE(mxProjectConfigWindow, wxDialog)
 	EVT_BUTTON(mxID_PROJECT_CONFIG_LIBS_ADD,mxProjectConfigWindow::OnLibsAdd)
 	EVT_BUTTON(mxID_PROJECT_CONFIG_LIBS_EDIT,mxProjectConfigWindow::OnLibsEdit)
 	EVT_BUTTON(mxID_PROJECT_CONFIG_LIBS_DEL,mxProjectConfigWindow::OnLibsDel)
+	EVT_BUTTON(mxID_PROJECT_CONFIG_LIBS_UP,mxProjectConfigWindow::OnLibsUp)
+	EVT_BUTTON(mxID_PROJECT_CONFIG_LIBS_DOWN,mxProjectConfigWindow::OnLibsDown)
 	
 	EVT_CHECKBOX(mxID_PROJECT_CONFIG_LIBS_DONT_EXE,mxProjectConfigWindow::OnLibsNoExe)
 	
@@ -634,60 +636,52 @@ void mxProjectConfigWindow::OnGeneralExePathButton(wxCommandEvent &evt) {
 }
 
 wxPanel *mxProjectConfigWindow::CreateStepsPanel (wxNotebook *notebook) {
-	wxBoxSizer *sizer= new wxBoxSizer(wxVERTICAL);
-	wxBoxSizer *sizer_h= new wxBoxSizer(wxHORIZONTAL);
-	wxPanel *panel = new wxPanel(notebook, wxID_ANY );
+	CreatePanelAndSizer sizer(notebook); wxPanel *panel = sizer.GetPanel();
 	
 	wxArrayString toolchain_cmb;
 	toolchain_cmb.Add("<default>");
 	Toolchain::GetNames(toolchain_cmb,false);
 	
-	wxBoxSizer *sizer_i = new wxBoxSizer(wxHORIZONTAL);
-	sizer_i->Add(new wxStaticText(panel,wxID_ANY,"Toolchain:"),sizers->BA5_Center);
-	sizer_i->Add(toolchains_combo=new wxComboBox(panel,mxID_PROJECT_CONFIG_TOOLCHAIN_COMBO,"<default>",wxDefaultPosition,wxDefaultSize,toolchain_cmb,wxCB_READONLY),wxSizerFlags().Proportion(1).Center());
-	wxButton *button_toolchain = new wxButton(panel,mxID_PROJECT_CONFIG_TOOLCHAIN_OPTIONS,"Opciones...");
-	sizer_i->Add(button_toolchain,sizers->BA10);
-	sizer->Add(sizer_i,sizers->BB5_Exp0);
-	// set toolchains combo value
-	if (configuration->toolchain.Len()) 
-		for(unsigned int i=1;i<toolchains_combo->GetCount();i++) 
-			if (toolchains_combo->GetString(i)==configuration->toolchain) 
-				{ toolchains_combo->SetSelection(i); break; }
+	sizer.BeginLine()
+		.BeginLabel("Toolchain:").EndLabel()
+		.BeginCombo().Add(toolchain_cmb).Id(mxID_PROJECT_CONFIG_TOOLCHAIN_COMBO).Select(configuration->toolchain,0).EndCombo(toolchains_combo)
+		.BeginButton("Opciones...").Id(mxID_PROJECT_CONFIG_TOOLCHAIN_OPTIONS).EndButton()
+		.EndLine();
 
-	wxStaticText *steps_label=new wxStaticText(panel,wxID_ANY,LANG(PROJECTCONFIG_STEPS_COMPILATION_SEQUENCE,"Secuencia de compilación:"));
-	sizer->Add(steps_label,sizers->BLRT5);
-	wx_extern.Add(steps_label);
+	sizer.BeginLabel( LANG(PROJECTCONFIG_STEPS_COMPILATION_SEQUENCE,"Secuencia de compilación:") ).RegisterIn(wx_extern).EndLabel();
 	
 	steps_list = new wxListBox(panel,wxID_ANY);
-	ReloadSteps();
-	sizer_h->Add(steps_list,sizers->BA5_Exp1);
 	wx_extern.Add(steps_list);
 	
-	wxBoxSizer *buttons = new wxBoxSizer(wxVERTICAL);
-	wxButton *button_add = new wxButton(panel,mxID_PROJECT_CONFIG_STEPS_ADD,LANG(PROJECTCONFIG_STEPS_ADD,"Agregar"));
-	buttons->Add(button_add,sizers->BLRT5); wx_extern.Add(button_add);
-	wxButton *button_edit = new wxButton(panel,mxID_PROJECT_CONFIG_STEPS_EDIT,LANG(PROJECTCONFIG_STEPS_EDIT,"Editar"));
-	buttons->Add(button_edit,sizers->BLRT5); wx_extern.Add(button_edit);
-	wxButton *button_run = new wxButton(panel,mxID_PROJECT_CONFIG_STEPS_RUN,LANG(PROJECTCONFIG_STEPS_RUN,"Ejecutar"));
-	buttons->Add(button_run,sizers->BLRT5); wx_extern.Add(button_run);
-	wxButton *button_delete = new wxButton(panel,mxID_PROJECT_CONFIG_STEPS_DEL,LANG(PROJECTCONFIG_STEPS_DELETE,"Quitar"));
-	buttons->Add(button_delete,sizers->BLRT5); wx_extern.Add(button_delete);
-	wxButton *button_up = new wxButton(panel,mxID_PROJECT_CONFIG_STEPS_UP,LANG(PROJECTCONFIG_STEPS_MOVE_UP,"Subir"));
-	buttons->Add(button_up,sizers->BLRT5); wx_extern.Add(button_up);
-	wxButton *button_down = new wxButton(panel,mxID_PROJECT_CONFIG_STEPS_DOWN,LANG(PROJECTCONFIG_STEPS_MOVE_DOWN,"Bajar"));
-	buttons->Add(button_down,sizers->BA5); wx_extern.Add(button_down);
-	sizer_h->Add(buttons,sizers->BA5_Center);
-	sizer->Add(sizer_h,sizers->BA5_Exp1);
+	ReuseSizer sizer_h (panel,new wxBoxSizer(wxHORIZONTAL));
+	sizer_h.Add(steps_list,sizers->BA5_Exp1);
 	
-
-	wxStaticText *st_warn1 = new wxStaticText(panel,wxID_ANY,LANG(PROJECTCONFIG_STEPS_WARNING_APPLY_NOW_LINE_1,"Nota: estos cambios se aplican inmediatamente,"));
-	sizer->Add(st_warn1,sizers->Center); wx_extern.Add(st_warn1);
-	wxStaticText *st_warn2 = new wxStaticText(panel,wxID_ANY,LANG(PROJECTCONFIG_STEPS_WARNING_APPLY_NOW_LINE_2,"aunque luego seleccione cancelar"));
-	sizer->Add(st_warn2,sizers->Center); wx_extern.Add(st_warn2);
+	CreateSizer sizer_buttons (panel);
+	sizer_buttons.Spacer();
+	sizer_buttons.BeginButton( LANG(PROJECTCONFIG_STEPS_ADD,"Agregar...") )
+		.Id(mxID_PROJECT_CONFIG_STEPS_ADD).RegisterIn(wx_extern).Expand().EndButton();
+	sizer_buttons.BeginButton( LANG(PROJECTCONFIG_STEPS_EDIT,"Editar...") )
+		.Id(mxID_PROJECT_CONFIG_STEPS_EDIT).RegisterIn(wx_extern).Expand().EndButton();
+	sizer_buttons.BeginButton( LANG(PROJECTCONFIG_STEPS_RUN,"Ejecutar...") )
+		.Id(mxID_PROJECT_CONFIG_STEPS_RUN).RegisterIn(wx_extern).Expand().EndButton();
+	sizer_buttons.BeginButton( LANG(PROJECTCONFIG_STEPS_DELETE,"Quitar") )
+		.Id(mxID_PROJECT_CONFIG_STEPS_DEL).RegisterIn(wx_extern).Expand().EndButton();
+	sizer_buttons.Spacer();
+	sizer_buttons.BeginButton( LANG(PROJECTCONFIG_STEPS_MOVE_UP,"Subir") )
+		.Id(mxID_PROJECT_CONFIG_STEPS_UP).RegisterIn(wx_extern).Expand().EndButton();
+	sizer_buttons.BeginButton( LANG(PROJECTCONFIG_STEPS_MOVE_DOWN,"Bajar") )
+		.Id(mxID_PROJECT_CONFIG_STEPS_DOWN).RegisterIn(wx_extern).Expand().EndButton();
+	sizer_buttons.Spacer();
+	sizer_h.Add(sizer_buttons,sizers->BA5_Exp0);
 	
-	panel->SetSizerAndFit(sizer);
+	sizer.Add(sizer_h,sizers->BA5_Exp1);
 	
-	return panel;
+	sizer.BeginLabel(LANG(PROJECTCONFIG_STEPS_WARNING_APPLY_NOW_LINE_1,"Nota: estos cambios se aplican inmediatamente,")).Center().EndLabel();
+	sizer.BeginLabel(LANG(PROJECTCONFIG_STEPS_WARNING_APPLY_NOW_LINE_2,"aunque luego seleccione cancelar")).Center().EndLabel();
+	
+	ReloadSteps();
+	sizer.Set();
+	return sizer.GetPanel();
 }
 
 wxPanel *mxProjectConfigWindow::CreateLibsPanel (wxNotebook *notebook) {
@@ -709,13 +703,20 @@ wxPanel *mxProjectConfigWindow::CreateLibsPanel (wxNotebook *notebook) {
 	sizer_h.Add(libtobuild_list,sizers->BA5_Exp1);
 	
 	CreateSizer sizer_buttons (panel);
-	sizer_buttons.BeginButton( LANG(PROJECTCONFIG_LIBS_ADD,"Agregar") )
+	sizer_buttons.Spacer();
+	sizer_buttons.BeginButton( LANG(PROJECTCONFIG_LIBS_ADD,"Agregar...") )
 		.Id(mxID_PROJECT_CONFIG_LIBS_ADD).RegisterIn(wx_extern).Expand().EndButton();
-	sizer_buttons.BeginButton( LANG(PROJECTCONFIG_LIBS_EDIT,"Editar") )
+	sizer_buttons.BeginButton( LANG(PROJECTCONFIG_LIBS_EDIT,"Editar...") )
 		.Id(mxID_PROJECT_CONFIG_LIBS_EDIT).RegisterIn(wx_extern).Expand().EndButton();
 	sizer_buttons.BeginButton( LANG(PROJECTCONFIG_LIBS_DELETE,"Quitar") )
 		.Id(mxID_PROJECT_CONFIG_LIBS_DEL).RegisterIn(wx_extern).Expand().EndButton();
-	sizer_h.Add(sizer_buttons,sizers->BA5_Center);
+	sizer_buttons.Spacer();
+	sizer_buttons.BeginButton( LANG(PROJECTCONFIG_STEPS_MOVE_UP,"Subir") )
+		.Id(mxID_PROJECT_CONFIG_LIBS_UP).RegisterIn(wx_extern).Expand().EndButton();
+	sizer_buttons.BeginButton( LANG(PROJECTCONFIG_STEPS_MOVE_DOWN,"Bajar") )
+		.Id(mxID_PROJECT_CONFIG_LIBS_DOWN).RegisterIn(wx_extern).Expand().EndButton();
+	sizer_buttons.Spacer();
+	sizer_h.Add(sizer_buttons,sizers->BA5_Exp0);
 	
 	sizer.Add(sizer_h,sizers->BA5_Exp1);
 	
@@ -963,3 +964,18 @@ void mxProjectConfigWindow::SelectCustomStep(const wxString &custom_step_name) {
 		}
 	}
 }
+
+void mxProjectConfigWindow::OnLibsUp (wxCommandEvent & evt) {
+	int sel = libtobuild_list->GetSelection(); 
+	if (sel==wxNOT_FOUND || sel==0) return;
+	project->MoveLibToBuild(configuration,sel,true);
+	ReloadLibs(libtobuild_list->GetString(sel));
+}
+
+void mxProjectConfigWindow::OnLibsDown (wxCommandEvent & evt) {
+	int sel = libtobuild_list->GetSelection(); 
+	if (sel==wxNOT_FOUND || sel+1==int(libtobuild_list->GetCount())) return;
+	project->MoveLibToBuild(configuration,sel,false);
+	ReloadLibs(libtobuild_list->GetString(sel));
+}
+

@@ -275,7 +275,7 @@ mxDialog::MainSizer &mxDialog::MainSizer::MainLabel::EndLabel() {
 
 mxDialog::MainSizer &mxDialog::MainSizer::MainButton::EndButton() {
 	wxWindow *parent = m_sizer->m_parent; wxBoxSizer *sizer = m_sizer->m_sizer;
-	sizer->Add(new wxButton(parent,m_id,m_label,wxDefaultPosition), m_expand?sizers->BA10_Exp0:sizers->BA10);
+	sizer->Add(new wxButton(parent,m_id,m_label,wxDefaultPosition), m_expand?sizers->BA5_Exp0:sizers->BA10);
 	return *m_sizer;
 }
 

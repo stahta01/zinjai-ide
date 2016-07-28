@@ -3694,3 +3694,12 @@ project_library *ProjectManager::GetDefaultLib(project_configuration *conf) {
 		if (lib->default_lib) return lib;
 	return nullptr;
 }
+
+void ProjectManager::MoveLibToBuild (project_configuration * conf, int pos, bool up) {
+	project_library *lib1 = conf->libs_to_build.Release(pos);
+	int pos2 = pos + (up?-1:1);
+	project_library *lib2 = conf->libs_to_build.Release(pos2);
+	conf->libs_to_build.Set(pos,lib2);
+	conf->libs_to_build.Set(pos2,lib1);
+}
+

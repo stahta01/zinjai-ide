@@ -127,6 +127,8 @@ public:
 	void OnLibsAdd(wxCommandEvent &evt);
 	void OnLibsEdit(wxCommandEvent &evt);
 	void OnLibsDel(wxCommandEvent &evt);
+	void OnLibsUp(wxCommandEvent &evt);
+	void OnLibsDown(wxCommandEvent &evt);
 	void ReloadSteps(wxString selection="");
 	void ReloadLibs(wxString selection="");
 	void OnLibsNoExe(wxCommandEvent &evt);

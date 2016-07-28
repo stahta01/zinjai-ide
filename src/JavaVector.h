@@ -1,12 +1,14 @@
 #ifndef JAVAVECTOR_H
 #define JAVAVECTOR_H
 #include "SingleList.h"
+#include "Cpp11.h"
 
 template<typename T> class JavaVectorIterator;
 
 /// vector of dynamic objects, this container owns (will delete) the pointers you add
 template<typename T>
 class JavaVector : private SingleList<T*> {
+	typedef SingleList<T*> Base;
 	friend class JavaVectorIterator<T>;
 public:
 	JavaVector() {}
@@ -15,30 +17,39 @@ public:
 	}
 	JavaVector &operator=(const JavaVector &other) {
 		Clear();
-		SingleList<T*>::EnsureMemFor(other.GetSize());
+		Base::EnsureMemFor(other.GetSize());
 		for(int i=0;i<other.GetSize();i++)
 			Add(new T(*other[i]));
 		return *this;
 	}
-	int NotFound() const { return SingleList<T*>::NotFound(); }
-	int FindPtr(T * ptr) const { return SingleList<T*>::Find(ptr); }
+	int NotFound() const { return Base::NotFound(); }
+	int FindPtr(T * ptr) const { return Base::Find(ptr); }
 	int FindObject(const T &obj) const { 
-		for(int i=0;i<SingleList<T*>::GetSize();i++)
-			if ((*SingleList<T>::operator[](i))==obj) return i;
-		return SingleList<T>::NotFound();
+		for(int i=0;i<Base::GetSize();i++)
+			if (Base::operator[](i) && Base::operator[](i)==obj) return i;
+		return Base::NotFound();
+	}
+	T *Release(int i) { 
+		T* ptr = Base::operator[](i);
+		Base::operator[](i)=nullptr;
+		return ptr;
+	}
+	void Set(int i, T *ptr) {
+		delete Base::operator[](i);
+		Base::operator[](i) = ptr;
 	}
 	void Remove(int i) { 
-		delete SingleList<T*>::operator[](i);
-		SingleList<T*>::Remove(i);
+		delete Base::operator[](i);
+		Base::Remove(i);
 	}
-	int GetSize() const { return SingleList<T*>::GetSize(); }
-	void Add(T *ptr) { SingleList<T*>::Add(ptr); }
-	T const * const operator[](int i) const { return SingleList<T*>::operator[](i); }
-	T * const operator[](int i) { return SingleList<T*>::operator[](i); }
+	int GetSize() const { return Base::GetSize(); }
+	void Add(T *ptr) { Base::Add(ptr); }
+	T const * const operator[](int i) const { return Base::operator[](i); }
+	T * const operator[](int i) { return Base::operator[](i); }
 	void Clear() {
-		for(int i=0;i<SingleList<T*>::GetSize();i++)
-			delete SingleList<T*>::operator[](i);
-		SingleList<T*>::Clear();
+		for(int i=0;i<Base::GetSize();i++)
+			delete Base::operator[](i);
+		Base::Clear();
 	}
 	~JavaVector() { Clear(); }
 };

@@ -18,33 +18,24 @@ BEGIN_EVENT_TABLE(mxLibToBuildWindow, wxDialog)
 	EVT_BUTTON(wxID_OK,mxLibToBuildWindow::OnOkButton)
 	EVT_BUTTON(mxID_HELP_BUTTON,mxLibToBuildWindow::OnHelpButton)
 	EVT_TEXT(wxID_ANY,mxLibToBuildWindow::OnCombo)
-	EVT_CLOSE(mxLibToBuildWindow::OnClose)
-	
 END_EVENT_TABLE()
 	
 wxString mxLibToBuildWindow::new_name;
 	
-mxLibToBuildWindow::mxLibToBuildWindow(mxProjectConfigWindow *aparent, project_configuration *conf, project_library *alib) : wxDialog(aparent,wxID_ANY,LANG(LIBTOBUILD_CAPTION,"Generar biblioteca"),wxDefaultPosition,wxDefaultSize,wxALWAYS_SHOW_SB | wxALWAYS_SHOW_SB | wxDEFAULT_FRAME_STYLE | wxSUNKEN_BORDER) {
-
-	parent=aparent;
-	constructed=false;
-	configuration=conf;
-	lib=alib;
+mxLibToBuildWindow::mxLibToBuildWindow(mxProjectConfigWindow *parent, project_configuration *conf, project_library *lib) : 
+	mxDialog(parent,LANG(LIBTOBUILD_CAPTION,"Generar biblioteca")), 
+	m_parent(parent), m_constructed(false), m_configuration(conf), m_lib(lib)
+{
+	CreateSizer sizer(this);
 	
-	wxBoxSizer *mySizer= new wxBoxSizer(wxVERTICAL);
-	wxBoxSizer *butSizer = new wxBoxSizer(wxHORIZONTAL);
+	sizer.BeginText(LANG(LIBTOBUILD_NAME,"Nombre")).Value(m_lib?m_lib->libname:"").EndText(m_name);
+	sizer.BeginText(LANG(LIBTOBUILD_DIR,"Directorio de salida")).Value(m_lib?m_lib->path:m_configuration->temp_folder).EndText(m_path);
+	sizer.BeginText(LANG(LIBTOBUILD_FILE,"Archivo de salida")).ReadOnly().EndText(m_filename);
+	sizer.BeginText(LANG(LIBTOBUILD_EXTRA_LINK,"Opciones de enlazado")).Value(m_lib?m_lib->extra_link:"").EndText(m_extra_link);
 	
-	name = mxDialog::AddTextCtrl(mySizer,this,LANG(LIBTOBUILD_NAME,"Nombre"),lib?lib->libname:"");
-	path = mxDialog::AddTextCtrl(mySizer,this,LANG(LIBTOBUILD_DIR,"Directorio de salida"),lib?lib->path:configuration->temp_folder);
-	filename = mxDialog::AddTextCtrl(mySizer,this,LANG(LIBTOBUILD_FILE,"Archivo de salida"),"");
-	filename->SetEditable(false);
-	extra_link = mxDialog::AddTextCtrl(mySizer,this,LANG(LIBTOBUILD_EXTRA_LINK,"Opciones de enlazado"),lib?lib->extra_link:"");
-	
-	wxArrayString tipos;
-	tipos.Add(LANG(LIBTOBUILD_DYNAMIC,"Dinamica"));
-	tipos.Add(LANG(LIBTOBUILD_STATIC,"Estatica"));
-	type = mxDialog::AddComboBox(mySizer,this,LANG(LIBTOBUILD_TYPE,"Tipo de biblioteca"),tipos,0);
-	if (lib) type->SetSelection(lib->is_static?1:0);
+	sizer.BeginCombo(LANG(LIBTOBUILD_TYPE,"Tipo de biblioteca"))
+		.Add(LANG(LIBTOBUILD_DYNAMIC,"Dinamica")).Add(LANG(LIBTOBUILD_STATIC,"Estatica"))
+		.Select(m_lib?(m_lib->is_static?1:0):0).EndCombo(m_type);
 		
 	wxSizer *src_sizer = new wxBoxSizer(wxHORIZONTAL);
 	wxSizer *szsrc_buttons = new wxBoxSizer(wxVERTICAL);
@@ -52,101 +43,85 @@ mxLibToBuildWindow::mxLibToBuildWindow(mxProjectConfigWindow *aparent, project_c
 	szsrc_buttons->Add(new wxButton(this,mxID_LIBS_OUT,"<<<",wxDefaultPosition,wxSize(50,-1)),sizers->BA10_Exp0);
 	wxSizer *szsrc_in = new wxBoxSizer(wxVERTICAL);
 	szsrc_in->Add(new wxStaticText(this,wxID_ANY,LANG(LIBTOBUILD_SOURCES_IN,"Fuentes a incluir")),sizers->Exp0);
-	sources_in = new wxListBox(this,wxID_ANY,wxDefaultPosition,wxDefaultSize,0,nullptr,wxLB_SORT|wxLB_EXTENDED|wxLB_NEEDED_SB);
-	szsrc_in->Add(sources_in,sizers->Exp1);
+	m_sources_in = new wxListBox(this,wxID_ANY,wxDefaultPosition,wxDefaultSize,0,nullptr,wxLB_SORT|wxLB_EXTENDED|wxLB_NEEDED_SB);
+	szsrc_in->Add(m_sources_in,sizers->Exp1);
 	wxSizer *szsrc_out = new wxBoxSizer(wxVERTICAL);
 	szsrc_out->Add(new wxStaticText(this,wxID_ANY,LANG(LIBTOBUILD_SOURCES_OUT,"Fuentes a excluir")),sizers->Exp0);
-	sources_out = new wxListBox(this,wxID_ANY,wxDefaultPosition,wxDefaultSize,0,nullptr,wxLB_SORT|wxLB_EXTENDED|wxLB_NEEDED_SB);
-	szsrc_out->Add(sources_out,sizers->Exp1);
+	m_sources_out = new wxListBox(this,wxID_ANY,wxDefaultPosition,wxDefaultSize,0,nullptr,wxLB_SORT|wxLB_EXTENDED|wxLB_NEEDED_SB);
+	szsrc_out->Add(m_sources_out,sizers->Exp1);
 	src_sizer->Add(szsrc_out,sizers->Exp1);
 	src_sizer->Add(szsrc_buttons,sizers->Center);
 	src_sizer->Add(szsrc_in,sizers->Exp1);
-	mySizer->Add(src_sizer,sizers->BA10_Exp1);
+	sizer.GetSizer()->Add(src_sizer,sizers->BA10_Exp1);
 	
-	default_lib = mxDialog::AddCheckBox(mySizer,this,LANG(LIBTOBUILD_DEFAULT,"Biblioteca por defecto para nuevos fuentes"),lib?lib->default_lib:false);
-	do_link = mxDialog::AddCheckBox(mySizer,this,LANG(LIBTOBUILD_DO_LINK,"Enlazar en el ejecutable del proyecto"),lib?lib->do_link:true);
+	sizer.BeginCheck(LANG(LIBTOBUILD_DEFAULT,"Biblioteca por defecto para nuevos fuentes")).Value(m_lib?m_lib->default_lib:false).EndCheck(m_default_lib);
+	sizer.BeginCheck(LANG(LIBTOBUILD_DO_LINK,"Enlazar en el ejecutable del proyecto")).Value(m_lib?m_lib->do_link:true).EndCheck(m_do_link);
 	
-	wxBitmapButton *help_button = new wxBitmapButton(this,mxID_HELP_BUTTON,*bitmaps->buttons.help);
-	butSizer->Add(help_button,sizers->BA5);
-	butSizer->AddStretchSpacer();
-	wxBitmapButton *cancel_button = new mxBitmapButton(this,wxID_CANCEL,bitmaps->buttons.cancel,LANG(GENERAL_CANCEL_BUTTON,"&Cancelar"));
-	butSizer->Add(cancel_button,sizers->BA5);
-	wxBitmapButton *ok_button = new mxBitmapButton (this,wxID_OK,bitmaps->buttons.ok,LANG(GENERAL_OK_BUTTON,"&Aceptar"));
-	butSizer->Add(ok_button,sizers->BA5);
+//	mySizer->SetMinSize(400,400);
+	sizer.BeginBottom().Help().Cancel().Ok().EndBottom(this);
+	sizer.SetAndFit();
 	
-	mySizer->Add(butSizer,sizers->BA5_Exp0);
-	
-	mySizer->SetMinSize(400,400);
-	SetSizerAndFit(mySizer);
-	ok_button->SetDefault();
-	SetEscapeId(wxID_CANCEL);
-	
-	project->AssociateLibsAndSources(configuration);
+	project->AssociateLibsAndSources(m_configuration);
 
-	LocalListIterator<project_file_item*> item(&project->files_sources);
-	while (item.IsValid()) {
-		if (lib && item->lib==lib)
-			sources_in->Append(item->name);
+	for(LocalListIterator<project_file_item*> item(&project->files_sources); item.IsValid(); item.Next()) {
+		if (m_lib && item->lib==m_lib)
+			m_sources_in->Append(item->name);
 		else
-			sources_out->Append(item->name);
-		item.Next();
+			m_sources_out->Append(item->name);
+		
 	}
 	
-	constructed=true;
+	m_constructed = true;
 	SetFName();
-	name->SetFocus();
+	m_name->SetFocus();
 	ShowModal();
 }
 
-void mxLibToBuildWindow::OnClose(wxCloseEvent &evt) {
-	Destroy();
-}
-
 void mxLibToBuildWindow::OnOkButton(wxCommandEvent &evt) {
-	new_name = name->GetValue();
+	new_name = m_name->GetValue();
 	if (new_name.Len()==0) {
 		mxMessageDialog(this,LANG(LIBTOBUILD_NAME_MISSING,"Debe completar el nombre."))
 			.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
 		return;
 	}
-	if (!lib) {
-		if (project->GetLibToBuild(configuration,name->GetValue())) {
+	if (!m_lib) {
+		if (project->GetLibToBuild(m_configuration,m_name->GetValue())) {
 			mxMessageDialog(this,LANG(LIBTOBUILD_NAME_REPEATED,"Ya existe una biblioteca con ese nombre."))
 				.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
 			return;
 		}
-		lib = project->AppendLibToBuild(configuration);
+		m_lib = project->AppendLibToBuild(m_configuration);
 	}
-	lib->libname = new_name;
-	lib->path = path->GetValue();
+	m_lib->libname = new_name;
+	m_lib->path = m_path->GetValue();
 //	lib->filename = filename->GetValue();
-	lib->extra_link = extra_link->GetValue();
-	lib->is_static = type->GetSelection()==1;
-	lib->do_link = do_link->GetValue();
-	lib->default_lib = default_lib->GetValue();
-	if (lib->default_lib) {
-		for(JavaVectorIterator<project_library> it(configuration->libs_to_build);it.IsValid();it.Next()) { 
-			if (it!=lib) it->default_lib = false;
+	m_lib->extra_link = m_extra_link->GetValue();
+	m_lib->is_static = m_type->GetSelection()==1;
+	m_lib->do_link = m_do_link->GetValue();
+	m_lib->default_lib = m_default_lib->GetValue();
+	if (m_lib->default_lib) {
+		for(JavaVectorIterator<project_library> it(m_configuration->libs_to_build);it.IsValid();it.Next()) { 
+			if (it!=m_lib) it->default_lib = false;
 		}
 	}
 	for (LocalListIterator<project_file_item*> fi(&project->files_sources);
 		 fi.IsValid() ; fi.Next()) 
 	{
-		if (sources_in->FindString(fi->name)!=wxNOT_FOUND) {
+		if (m_sources_in->FindString(fi->name)!=wxNOT_FOUND) {
 #ifndef __WIN32__
 			if (!fi->lib) fi->force_recompile=true; // por el fPIC
 #endif
-			fi->lib = lib;
-		} else if (fi->lib == lib) {
+			fi->lib = m_lib;
+		} else if (fi->lib == m_lib) {
 #ifndef __WIN32__
 			if (!fi->lib) fi->force_recompile=true; // por el fPIC
 			fi->lib=nullptr;
 #endif
 		}
 	}
-	project->SaveLibsAndSourcesAssociation(configuration);
-	lib->need_relink = true;
-	if (lib->do_link) parent->linking_force_relink->SetValue(true);
+	project->SaveLibsAndSourcesAssociation(m_configuration);
+	m_lib->need_relink = true;
+	if (m_lib->do_link) m_parent->linking_force_relink->SetValue(true);
 	Close();
 }
 
@@ -160,44 +135,38 @@ void mxLibToBuildWindow::OnHelpButton(wxCommandEvent &evt) {
 }
 
 void mxLibToBuildWindow::OnOutButton(wxCommandEvent &evt) {
-	sources_out->SetSelection(wxNOT_FOUND);
-	for (int i=sources_in->GetCount();i>=0;i--)
-		if (sources_in->IsSelected(i)) {
-			sources_out->Append(sources_in->GetString(i));
-			sources_out->Select(sources_out->FindString(sources_in->GetString(i)));
-			sources_in->Delete(i);
+	m_sources_out->SetSelection(wxNOT_FOUND);
+	for (int i=m_sources_in->GetCount();i>=0;i--)
+		if (m_sources_in->IsSelected(i)) {
+			m_sources_out->Append(m_sources_in->GetString(i));
+			m_sources_out->Select(m_sources_out->FindString(m_sources_in->GetString(i)));
+			m_sources_in->Delete(i);
 		}
 }
 
 void mxLibToBuildWindow::OnInButton(wxCommandEvent &evt) {
-	sources_in->SetSelection(wxNOT_FOUND);
-	for (int i=sources_out->GetCount();i>=0;i--)
-		if (sources_out->IsSelected(i)) {
-			sources_in->Append(sources_out->GetString(i));
-			sources_in->Select(sources_in->FindString(sources_out->GetString(i)));
-			sources_out->Delete(i);
+	m_sources_in->SetSelection(wxNOT_FOUND);
+	for (int i=m_sources_out->GetCount();i>=0;i--)
+		if (m_sources_out->IsSelected(i)) {
+			m_sources_in->Append(m_sources_out->GetString(i));
+			m_sources_in->Select(m_sources_in->FindString(m_sources_out->GetString(i)));
+			m_sources_out->Delete(i);
 		}
 }
 
 void mxLibToBuildWindow::OnCombo(wxCommandEvent &evt) {
 	wxObject *w = evt.GetEventObject();
-	if (w==name || w==type || w==path)
+	if (w==m_name || w==m_type || w==m_path)
 		SetFName();
 }
 void mxLibToBuildWindow::SetFName() {
-	if (!constructed) return;
-	bool is_static = type->GetSelection()==1;
-	wxString fname = DIR_PLUS_FILE(path->GetValue(),wxString("lib")<<name->GetValue());
+	if (!m_constructed) return;
+	bool is_static = m_type->GetSelection()==1;
+	wxString fname = DIR_PLUS_FILE(m_path->GetValue(),wxString("lib")<<m_name->GetValue());
 #ifdef __WIN32__
-	if (is_static)
-		fname<<".a";
-	else
-		fname<<".dll";
+	fname << (is_static?".a":".dll");
 #else
-	if (is_static)
-		fname<<".a";
-	else
-		fname<<".so";
+	fname << (is_static?".a":".so");
 #endif
-	filename->SetValue(fname);
+	m_filename->SetValue(fname);
 }
