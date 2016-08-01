@@ -1566,7 +1566,7 @@ wxTreeCtrl* mxMainWindow::CreateProjectTree() {
 }
 
 wxTreeCtrl* mxMainWindow::CreateSymbolsTree() {
-	symbols_tree.treeCtrl = new wxTreeCtrl(this, mxID_TREE_SYMBOLS, wxPoint(0,0), wxSize(160,100), wxTR_DEFAULT_STYLE | wxNO_BORDER | wxTR_HIDE_ROOT);
+	symbols_tree.treeCtrl = new mxTreeCtrl(this, mxID_TREE_SYMBOLS, wxPoint(0,0), wxSize(160,100), wxTR_DEFAULT_STYLE | wxNO_BORDER | wxTR_HIDE_ROOT);
 	wxImageList* imglist = new wxImageList(16, 16, true, 15);
 	imglist->Add(bitmaps->GetBitmap("as_folder.png"));
 	imglist->Add(wxArtProvider::GetBitmap(wxART_NORMAL_FILE, wxART_OTHER, wxSize(16,16)));
@@ -1601,7 +1601,7 @@ wxPanel* mxMainWindow::CreateCompilerTree() {
 	
 	compiler_panel=new wxPanel(this,wxID_ANY,wxDefaultPosition,wxSize(160,250));
 	
-	compiler_tree.treeCtrl = new wxTreeCtrl(compiler_panel, mxID_TREE_COMPILER, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE | wxNO_BORDER | wxTR_HIDE_ROOT);
+	compiler_tree.treeCtrl = new mxTreeCtrl(compiler_panel, mxID_TREE_COMPILER, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE | wxNO_BORDER | wxTR_HIDE_ROOT);
 // 	wxFont tree_font=compiler_tree.treeCtrl->GetFont();
 // 	tree_font.SetFaceName("courier");
 // 	compiler_tree.treeCtrl->SetFont(tree_font);
@@ -4288,11 +4288,19 @@ void mxMainWindow::SetOpenedFileName(wxString name) {
 }
 
 void mxMainWindow::OnKeyEvent(wxWindow *who, wxKeyEvent &evt) {
+	if (autohide_handlers) {
+		for(int i=0;i<ATH_COUNT;i++) { 
+			if (autohide_handlers[i] && (autohide_handlers[i]->control==who||autohide_handlers[i]->control==who->GetParent())) {
+				if (!autohide_handlers[i]->IsDocked()) {
+					autohide_handlers[i]->Hide();
+					return;
+				}
+			}
+		}
+	}
 	if (who==project_tree.treeCtrl && project) {
 		project_tree.selected_item = project_tree.treeCtrl->GetSelection();
-		if (config->Init.autohiding_panels && evt.GetKeyCode()==WXK_ESCAPE && !autohide_handlers[ATH_PROJECT]->IsDocked() ) {
-			autohide_handlers[ATH_PROJECT]->Hide();
-		} else if (evt.GetKeyCode()==WXK_MENU) {
+		if (evt.GetKeyCode()==WXK_MENU) {
 			wxTreeEvent te;
 			te.SetItem(project_tree.selected_item);
 			wxRect r;
@@ -4313,9 +4321,7 @@ void mxMainWindow::OnKeyEvent(wxWindow *who, wxKeyEvent &evt) {
 		}
 	} else if (who==explorer_tree.treeCtrl) {
 		explorer_tree.selected_item=explorer_tree.treeCtrl->GetSelection();
-		if (config->Init.autohiding_panels && evt.GetKeyCode()==WXK_ESCAPE && !autohide_handlers[ATH_EXPLORER]->IsDocked() ) {
-			autohide_handlers[ATH_EXPLORER]->Hide();
-		} else if (evt.GetKeyCode()==WXK_MENU) {
+		if (evt.GetKeyCode()==WXK_MENU) {
 			wxTreeEvent te;
 			te.SetItem(explorer_tree.selected_item);
 			wxRect r;
