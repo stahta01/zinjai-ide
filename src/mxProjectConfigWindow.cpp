@@ -734,31 +734,31 @@ wxPanel *mxProjectConfigWindow::CreateLibsPanel (wxNotebook *notebook) {
 }
 
 void mxProjectConfigWindow::OnStepsUp(wxCommandEvent &evt) {
-	bool orig_dir=true;
+	bool up = true;
 	unsigned int i = steps_list->GetSelection();
 	wxString sel = steps_list->GetString(i);
 	compile_extra_step *step = project->GetExtraStep(configuration,steps_list->GetString(i));
 	while (!step && i>0) {
-		orig_dir=false;
+		up = false;
 		step = project->GetExtraStep(configuration,steps_list->GetString(--i));
 	}
 	if (step) {
-		project->MoveExtraSteps(configuration,step,orig_dir?-1:1);
+		project->MoveExtraSteps(configuration,step,up);
 		ReloadSteps(sel);
 	}
 }
 
 void mxProjectConfigWindow::OnStepsDown(wxCommandEvent &evt) {
-	bool orig_dir=true;
+	bool up = false;
 	unsigned int i = steps_list->GetSelection();
 	wxString sel = steps_list->GetString(i);
 	compile_extra_step *step = project->GetExtraStep(configuration,steps_list->GetString(i));
 	while (!step && i<steps_list->GetCount()-1) {
-		orig_dir=false;
+		up = true;
 		step = project->GetExtraStep(configuration,steps_list->GetString(++i));
 	}
 	if (step) {
-		project->MoveExtraSteps(configuration,step,orig_dir?1:-1);
+		project->MoveExtraSteps(configuration,step,up);
 		ReloadSteps(sel);
 	}
 }
@@ -809,62 +809,26 @@ void mxProjectConfigWindow::OnStepsEdit(wxCommandEvent &evt) {
 
 void mxProjectConfigWindow::ReloadSteps(wxString selection) {
 	int count=0, sel=0, last_count=steps_list->GetCount();
-	compile_extra_step *step = configuration->extra_steps;
-	while (step && step->pos==CES_BEFORE_SOURCES) {
-		if (count<last_count)
-			steps_list->SetString(count,step->name);
-		else
-			steps_list->Append(step->name);
-		if (step->name==selection) sel=count;
-		count++;
-		step = step->next;
-	}
-	if (count<last_count)
-		steps_list->SetString(count,LANG(PROJECTCONFIG_STEPS_COMPILE_SOURCES,"**Compilar Fuentes del Proyecto**"));
-	else
-		steps_list->Append(LANG(PROJECTCONFIG_STEPS_COMPILE_SOURCES,"**Compilar Fuentes del Proyecto**"));
-	if (selection==LANG(PROJECTCONFIG_STEPS_COMPILE_SOURCES,"**Compilar Fuentes del Proyecto**")) sel=count;
-	count++;
-	while (step && step->pos==CES_BEFORE_LIBS) {
-		if (count<last_count)
-			steps_list->SetString(count,step->name);
-		else
-			steps_list->Append(step->name);
-		if (step->name==selection) sel=count;
-		count++;
-		step = step->next;
-	}
-//	if (configuration->libs_to_build) {
-		if (count<last_count)
-			steps_list->SetString(count,LANG(PROJECTCONFIG_STEPS_LINK_LIBS,"**Generar Bibliotecas**"));
-		else
-			steps_list->Append(LANG(PROJECTCONFIG_STEPS_LINK_LIBS,"**Generar Bibliotecas**"));
-		if (selection==LANG(PROJECTCONFIG_STEPS_LINK_LIBS,"**Generar Bibliotecas**")) sel=count;
-		count++;
-//	}
-	while (step && step->pos==CES_BEFORE_EXECUTABLE) {
-		if (count<last_count)
-			steps_list->SetString(count,step->name);
-		else
-			steps_list->Append(step->name);
-		if (step->name==selection) sel=count;
-		count++;
-		step = step->next;
-	}
-	if (count<last_count)
-		steps_list->SetString(count,LANG(PROJECTCONFIG_STEPS_LINK_EXE,"**Enlazar Ejecutable**"));
-	else
-		steps_list->Append(LANG(PROJECTCONFIG_STEPS_LINK_EXE,"**Enlazar Ejecutable**"));
-	if (selection==LANG(PROJECTCONFIG_STEPS_LINK_EXE,"**Enlazar Ejecutable**")) sel=count;
-	count++;
-	while (step && step->pos==CES_AFTER_LINKING) {
-		if (count<last_count)
-			steps_list->SetString(count,step->name);
-		else
-			steps_list->Append(step->name);
-		if (step->name==selection) sel=count;
-		count++;
-		step = step->next;
+	for(int k=0;k<4;k++) { 
+		int current_pos = k<2 ? (k==0?CES_BEFORE_SOURCES:CES_BEFORE_LIBS) : (k==3?CES_BEFORE_EXECUTABLE:CES_AFTER_LINKING) ;
+		for(JavaVectorIterator<compile_extra_step> step(configuration->extra_steps); step.IsValid(); step.Next()) {
+			if (step->pos!=current_pos) continue;
+			if (count<last_count) steps_list->SetString(count,step->name);
+			else                  steps_list->Append(step->name);
+			if (step->name==selection) sel = count;
+			count++;
+		}
+		wxString label = k<2 ?
+			(k==0 ? LANG(PROJECTCONFIG_STEPS_COMPILE_SOURCES,"**Compilar Fuentes del Proyecto**") 
+			      : LANG(PROJECTCONFIG_STEPS_LINK_LIBS,"**Generar Bibliotecas**") ) :
+			(k==3 ? LANG(PROJECTCONFIG_STEPS_LINK_EXE,"**Enlazar Ejecutable**")
+				  : "") ;
+		if (!label.IsEmpty()) {
+			if (count<last_count) steps_list->SetString(count,label);
+			else                  steps_list->Append(label);
+			if (selection==label) sel=count;
+			count++;
+		}
 	}
 	while (count<last_count) steps_list->Delete(--last_count);
 	if (count) steps_list->SetSelection(sel);

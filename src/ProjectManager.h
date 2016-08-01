@@ -296,7 +296,7 @@ struct project_configuration {
 	wxString libraries; ///< librearias para enlazar (para pasar con -l)
 	int strip_executable; ///< que hacer durante el enlazado con la info de depuracion (las opciones estan en el enum DebugSymbolsAction)
 	bool console_program; ///< marcar como programa de consola (sino, no usar el runner y compilar con -mwindows)
-	compile_extra_step *extra_steps; ///< puntero al primer item de la lista de pasos adicionales para la compilacion (sin primer nodo ficticio), nullptr si no hay pasos extra
+	JavaVector<compile_extra_step> extra_steps; ///< lista de pasos adicionales para la compilacion (sin primer nodo ficticio), nullptr si no hay pasos extra
 	JavaVector<project_library> libs_to_build; ///< bibliotecas a construir
 	bool dont_generate_exe; ///< no generar ejecutable, solo bibliotecas
 	HashStringString *by_src_compiling_options; ///< argumentos de compilacion adicionales por fuente (solo guarda los fuentes que no usan la configuracion por defecto)
@@ -329,7 +329,6 @@ struct project_configuration {
 		strip_executable=DBSACTION_KEEP;
 		console_program=true;
 		dont_generate_exe=false;
-		extra_steps=nullptr;
 		toolchain="";
 		std_c=std_cpp="";
 		for(int i=0;i<TOOLCHAIN_MAX_ARGS;i++) toolchain_arguments[i]="${DEFAULT}";
@@ -340,14 +339,6 @@ struct project_configuration {
 		(*this)=*copy_from; // this copy is not correct, copies ptrs
 		bakup=nullptr;
 		name=cname;
-		if (extra_steps) {
-			compile_extra_step *aux = extra_steps = new compile_extra_step(*extra_steps);
-			while (aux->next) { 
-				compile_extra_step * niu = new compile_extra_step(*aux->next); 
-				aux->next = niu; niu->prev=aux;
-				aux=niu;
-			}
-		}
 		by_src_compiling_options = new HashStringString();
 		*by_src_compiling_options = *(copy_from->by_src_compiling_options);
 	}
@@ -664,7 +655,7 @@ public:
 	compile_extra_step *InsertExtraSteps(project_configuration *conf, wxString name, wxString cmd, int pos);
 	
 	/** @brief Mueve una paso de compilación personalizado hacia arriba o hacia abajo en la secuencia **/
-	void MoveExtraSteps(project_configuration *conf, compile_extra_step *step, int delta);
+	void MoveExtraSteps(project_configuration *conf, compile_extra_step *step, bool up);
 	
 	/** @brief Busca un paso de compilación personalizado por nombre en una configuración **/
 	compile_extra_step *GetExtraStep(project_configuration *conf, wxString name);

@@ -79,18 +79,15 @@ void mxExtraStepWindow::OnOkButton(wxCommandEvent &evt) {
 			.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
 		return;
 	}
-	compile_extra_step *aux = configuration->extra_steps;
-	while (aux) {
-		if (aux->name==sname && (!step || step!=aux)) {
-			mxMessageDialog(this,LANG(EXTRASTEP_NAME_REPEATED,"Ya existe otro paso con ese nombre."))
+	compile_extra_step *aux = project->GetExtraStep(configuration,sname);
+	if (aux && aux!=step) {
+		mxMessageDialog(this,LANG(EXTRASTEP_NAME_REPEATED,"Ya existe otro paso con ese nombre."))
 				.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
-			return;
-		}
-		aux=aux->next;
+		return;
 	}
-	if (!step)
+	if (!step) {
 		step = project->InsertExtraSteps(configuration,sname,scmd,position->GetSelection());
-	else {
+	} else {
 		step->name=sname;
 		step->command=scmd;
 	}

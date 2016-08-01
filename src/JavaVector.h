@@ -42,6 +42,9 @@ public:
 		delete Base::operator[](i);
 		Base::Remove(i);
 	}
+	void Swap(int i1, int i2) {
+		Base::Swap(i1,i2);
+	}
 	int GetSize() const { return Base::GetSize(); }
 	void Add(T *ptr) { Base::Add(ptr); }
 	T const * const operator[](int i) const { return Base::operator[](i); }

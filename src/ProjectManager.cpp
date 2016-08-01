@@ -36,6 +36,7 @@
 #include "mxWxfbInheriter.h"
 #include "MenusAndToolsConfig.h"
 #include "mxExternCompilerOutput.h"
+#include "asserts.h"
 using namespace std;
 
 #define ICON_LINE(filename) (wxString("0 ICON \"")<<filename<<"\"")
@@ -147,14 +148,8 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 				lib_to_build = new project_library;
 				active_configuration->libs_to_build.Add(lib_to_build);
 			} else if (section=="extra_step") { // agregar un paso de compilación adicional a la configuración actual del proyecto
-				if (extra_step) {
-					extra_step->next = new compile_extra_step;
-					extra_step->next->prev=extra_step;
-					extra_step=extra_step->next;
-				} else if (active_configuration) {
-					extra_step = new compile_extra_step;
-					active_configuration->extra_steps=extra_step;
-				}
+				extra_step = new compile_extra_step;
+				active_configuration->extra_steps.Add(extra_step);
 			} else if (section=="cppcheck" && !cppcheck) { 
 				cppcheck=new cppcheck_configuration();
 				cppcheck->save_in_project=true;
@@ -812,7 +807,7 @@ bool ProjectManager::Save (bool as_template) {
 			CFG_BOOL_WRITE_DN("default_lib",lib->default_lib);
 			CFG_BOOL_WRITE_DN("do_link",lib->do_link);
 		};
-		for(compile_extra_step *step=configurations[i]->extra_steps; step; step=step->next) {
+		for(JavaVectorIterator<compile_extra_step> step(configurations[i]->extra_steps); step.IsValid(); step.Next()) {
 			fil.AddLine("[extra_step]");
 			CFG_GENERIC_WRITE_DN("name",step->name);
 			CFG_GENERIC_WRITE_DN("deps",step->deps);
@@ -1162,7 +1157,6 @@ bool ProjectManager::PrepareForBuilding(project_file_item *only_one) {
 	AssociateLibsAndSources(active_configuration);
 	
 	compile_step *step=first_compile_step=new compile_step(CNS_VOID,nullptr);
-	compile_extra_step *extra_step = only_one?nullptr:active_configuration->extra_steps;
 	current_step=steps_count=0;
 
 	wxString full_path;
@@ -1177,7 +1171,8 @@ bool ProjectManager::PrepareForBuilding(project_file_item *only_one) {
 		if (GetWxfbActivated()) WxfbGenerate();
 		
 		// agregar los items extra previos a los fuentes
-		while (extra_step && extra_step->pos==CES_BEFORE_SOURCES) {
+		for(JavaVectorIterator<compile_extra_step> extra_step(active_configuration->extra_steps); extra_step.IsValid(); extra_step.Next()) {
+			if (!extra_step->pos==CES_BEFORE_SOURCES) continue;
 			if (ShouldDoExtraStep(extra_step)) {
 				steps_count++;
 				step = step->next = new compile_step(CNS_EXTRA,extra_step);
@@ -1188,7 +1183,6 @@ bool ProjectManager::PrepareForBuilding(project_file_item *only_one) {
 				}
 				retval=true;
 			}
-			extra_step = extra_step->next;
 		}
 	}
 	
@@ -1276,12 +1270,12 @@ bool ProjectManager::PrepareForBuilding(project_file_item *only_one) {
 	step = step->next = new compile_step(CNS_BARRIER,nullptr);
 	if (!only_one) {
 		// agregar los items extra previos al enlazado de bibliotecas
-		while (extra_step && extra_step->pos==CES_BEFORE_LIBS) {
+		for(JavaVectorIterator<compile_extra_step> extra_step(active_configuration->extra_steps); extra_step.IsValid(); extra_step.Next()) {
+			if (extra_step->pos!=CES_BEFORE_LIBS) continue;
 			if (ShouldDoExtraStep(extra_step)) {
 				steps_count++; relink_exe=true;
 				step = step->next = new compile_step(CNS_EXTRA,extra_step);
 			}
-			extra_step = extra_step->next;
 		}
 		
 		// agregar el enlazado de bibliotecas
@@ -1318,12 +1312,12 @@ bool ProjectManager::PrepareForBuilding(project_file_item *only_one) {
 		}
 		
 		// agregar los items extra posteriores al enlazado de blibliotecas
-		while (extra_step && extra_step->pos==CES_BEFORE_EXECUTABLE) {
+		for(JavaVectorIterator<compile_extra_step> extra_step(active_configuration->extra_steps); extra_step.IsValid(); extra_step.Next()) {
+			if (extra_step->pos!=CES_BEFORE_EXECUTABLE) continue;
 			if (ShouldDoExtraStep(extra_step)) {
 				steps_count++; relink_exe=true;
 				step = step->next = new compile_step(CNS_EXTRA,extra_step);
 			}
-			extra_step = extra_step->next;
 		}
 		
 
@@ -1435,12 +1429,12 @@ bool ProjectManager::PrepareForBuilding(project_file_item *only_one) {
 	
 	if (!only_one) {
 		// agregar los items extra posteriores al reenlazado
-		while (extra_step && extra_step->pos==CES_AFTER_LINKING) {
+		for(JavaVectorIterator<compile_extra_step> extra_step(active_configuration->extra_steps); extra_step.IsValid(); extra_step.Next()) {
+			if (extra_step->pos!=CES_AFTER_LINKING) continue;
 			if (ShouldDoExtraStep(extra_step)) {
 				steps_count++;
 				step = step->next = new compile_step(CNS_EXTRA,extra_step);
 			}
-			extra_step = extra_step->next;
 		}
 		// reestablecer la bandera force_recompile de los headers y guardar lista de macros
 		active_configuration->old_macros=active_configuration->macros;
@@ -1783,14 +1777,12 @@ static wxString get_percent(int cur, int tot) {
 void ProjectManager::ExportMakefile(wxString make_file, bool exec_comas, wxString mingw_dir, MakefileTypeEnum mktype, bool cmake_style) {
 #warning TODO: considerar el nuevo significado de strip_executable
 #warning TODO: considerar las opciones de compilacion por fuente
-	int steps_total=0, steps_extras, steps_objs, steps_current;
-	if (cmake_style) { // calcular cuantos pasos hay en cada etapa para saber que porcentajes de progreso mostrar en cada comando
-		steps_objs = files_sources.GetSize();
-		int steps_libs=active_configuration->libs_to_build.GetSize();
-		compile_extra_step *estep=active_configuration->extra_steps;
-		steps_extras=0; while (estep) { if (estep->out.Len()) steps_extras++; estep=estep->next;	}
-		steps_total=/*steps_extras+*/steps_objs+steps_libs+(active_configuration->dont_generate_exe?0:1);
-	}
+	
+	// calcular cuantos pasos hay en cada etapa para saber que porcentajes de progreso mostrar en cada comando (para el cmake-style)
+	int steps_extras = active_configuration->extra_steps.GetSize(), 
+		steps_objs = files_sources.GetSize(), 
+		steps_libs = active_configuration->libs_to_build.GetSize();
+	int steps_total = steps_extras+steps_objs+steps_libs+(active_configuration->dont_generate_exe?0:1);
 	
 	wxString old_temp_folder = active_configuration->temp_folder;
 	if (mktype!=MKTYPE_FULL) active_configuration->temp_folder="${OBJS_DIR}";
@@ -1847,19 +1839,18 @@ void ProjectManager::ExportMakefile(wxString make_file, bool exec_comas, wxStrin
 			fil.AddLine("");
 		}
 
-		compile_extra_step *estep=active_configuration->extra_steps;
+		
 		wxString extra_pre, extra_post;
-		while (estep) {
-			if (estep->out.Len() && estep->delete_on_clean) {
-				if (estep->pos!=CES_AFTER_LINKING) {
+		for(JavaVectorIterator<compile_extra_step> extra_step(active_configuration->extra_steps); extra_step.IsValid(); extra_step.Next()){
+			if (extra_step->out.Len() && extra_step->delete_on_clean) {
+				if (extra_step->pos!=CES_AFTER_LINKING) {
 					extra_pre<<" ";
-					extra_pre<<estep->out;
+					extra_pre<<extra_step->out;
 				} else {
 					extra_post<<" ";
-					extra_post<<estep->out;
+					extra_post<<extra_step->out;
 				}
 			}
-			estep=estep->next;
 		}
 		mxUT::ParameterReplace(extra_post,"${TEMP_DIR}",temp_folder);
 		mxUT::ParameterReplace(extra_pre,"${TEMP_DIR}",temp_folder);
@@ -1901,26 +1892,23 @@ void ProjectManager::ExportMakefile(wxString make_file, bool exec_comas, wxStrin
 		// agregar las secciones de los pasos extra 
 		/// @todo: falta ver como forzar la ejecucion y el orden
 		
-		estep=active_configuration->extra_steps;
-		while (estep) {
-			if (estep->out.Len()) {
+		for(JavaVectorIterator<compile_extra_step> extra_step(active_configuration->extra_steps); extra_step.IsValid(); extra_step.Next()) {
+			if (extra_step->out.Len()) {
 				wxString output,deps,command;
-				command = GetCustomStepCommand(estep,mingw_dir,deps,output);
+				command = GetCustomStepCommand(extra_step,mingw_dir,deps,output);
 				fil.AddLine(output+": "+deps);
 				fil.AddLine("\t"+command);
 				fil.AddLine("");
 			}
-			estep=estep->next;
 		}
 	
+		int steps_current = steps_objs;
 		// agregar las bibliotecas
 		for(JavaVectorIterator<project_library> lib(active_configuration->libs_to_build);lib.IsValid();lib.Next()) {
 			wxString libdep = mxUT::Quotize(lib->filename);
 			wxString objs;
 			libdep<<":";
-			for(LocalListIterator<project_file_item*> item(&files_sources);
-				item.IsValid();item.Next())
-			{
+			for(LocalListIterator<project_file_item*> item(&files_sources); item.IsValid();item.Next()) {
 				if (item->lib==lib)
 					objs<<" "<<mxUT::Quotize(item->GetBinName(temp_folder));
 			}
@@ -1931,7 +1919,7 @@ void ProjectManager::ExportMakefile(wxString make_file, bool exec_comas, wxStrin
 			fil.AddLine("");
 		}
 	}
-
+	
 	if (mktype!=MKTYPE_CONFIG) {
 		// agregar las secciones de los objetos
 		wxArrayString header_dirs_array;
@@ -1940,7 +1928,7 @@ void ProjectManager::ExportMakefile(wxString make_file, bool exec_comas, wxStrin
 			header_dirs_array[i]=DIR_PLUS_FILE(path,header_dirs_array[i]);
 		
 		LocalListIterator<project_file_item*> item(&files_sources);
-		steps_current=0;
+		int steps_current=0;
 		while(item.IsValid()) {
 			wxString bin_full_path = mxUT::Quotize(item->GetBinName(temp_folder));
 			fil.AddLine(bin_full_path+": "+mxUT::FindObjectDeps(DIR_PLUS_FILE(path,item->name),path,header_dirs_array));
@@ -1988,7 +1976,7 @@ void ProjectManager::Clean() {
 		item.Next();
 	}
 	// borrar las salidas de los pasos adicionales
-	for(compile_extra_step *step = active_configuration->extra_steps; step; step = step->next) {
+	for(JavaVectorIterator<compile_extra_step> step(active_configuration->extra_steps); step.IsValid(); step.Next()) {
 		if (step->delete_on_clean&&step->out.Len()){
 			wxString out=step->out;
 			mxUT::ParameterReplace(out,"${TEMP_DIR}",temp_folder);
@@ -2179,12 +2167,8 @@ void ProjectManager::AnalizeConfig(wxString path, bool exec_comas, wxString ming
 #endif
 	
 	wxString extra_step_objs;
-	compile_extra_step *step = active_configuration->extra_steps;
-	while (step) {
-		if (step->pos!=CES_AFTER_LINKING && step->out.Len() && step->link_output) {
-			extra_step_objs<<step->out<<" ";
-		}
-		step = step->next;
+	for(JavaVectorIterator<compile_extra_step> step(active_configuration->extra_steps); step.IsValid(); step.Next()) {
+		if (step->pos!=CES_AFTER_LINKING && step->out.Len() && step->link_output) extra_step_objs<<step->out<<" ";
 	}
 	if (extra_step_objs.Len()) {
 		mxUT::ParameterReplace(extra_step_objs,"${TEMP_DIR}",temp_folder);
@@ -2640,34 +2624,16 @@ compile_extra_step *ProjectManager::InsertExtraSteps(project_configuration *conf
 	step->command=cmd;
 	step->name=name;
 	step->pos=pos;
-	if (conf->extra_steps) {
-		compile_extra_step *s1=conf->extra_steps,*s1p=nullptr;;
-		while (s1 && s1->pos<=step->pos) {
-			s1p=s1;
-			s1=s1->next;
-		}
-		if (s1p) {
-			if (s1p->next) s1p->next->prev=step;
-			step->next=s1p->next;
-			s1p->next=step;
-			step->prev=s1p;
-		} else {
-			step->next=conf->extra_steps;
-			if (step->next) step->next->prev=step;
-			conf->extra_steps=step;
-		}
-	} else {
-		conf->extra_steps=step;
-		step->next=step->prev=nullptr;
-	}
+	conf->extra_steps.Add(step);
 	return step;
 }
 
-void ProjectManager::MoveExtraSteps(project_configuration *conf, compile_extra_step *step, int delta) {
-	modified=true;
-	if (!conf) conf=active_configuration;
-	if (delta==-1) {
-		if (!step->prev || step->prev->pos!=step->pos) {
+void ProjectManager::MoveExtraSteps(project_configuration *conf, compile_extra_step *step, bool up) {
+	if (!conf) conf = active_configuration;
+	int idx = conf->extra_steps.FindPtr(step);
+	if (up) {
+		if (idx==0 || conf->extra_steps[idx-1]->pos!=step->pos) {
+			EXPECT_OR( step->pos!=CES_BEFORE_SOURCES, return );
 			if (step->pos==CES_BEFORE_EXECUTABLE) {
 				if (conf->libs_to_build.GetSize())
 					step->pos=CES_BEFORE_LIBS;
@@ -2678,20 +2644,12 @@ void ProjectManager::MoveExtraSteps(project_configuration *conf, compile_extra_s
 			} else if (step->pos==CES_AFTER_LINKING)
 				step->pos=CES_BEFORE_EXECUTABLE;
 		} else if (step->prev) {
-			// intercambia s2 y s3
-			compile_extra_step *s1=step->prev->prev,*s2=step->prev,*s3=step,*s4=step->next;
-			s2->next=s4;
-			if (s4) s4->prev=s2;
-			s2->prev=s3;
-			s3->next=s2;
-			s3->prev=s1;
-			if (s1)
-				s1->next=s3;
-			else
-				conf->extra_steps=s3;
+			EXPECT_OR( idx>0, return );
+			conf->extra_steps.Swap(idx,idx-1);
 		}
-	} else if (delta==1) {
-		if (!step->next || step->next->pos!=step->pos) {
+	} else {
+		if (idx==conf->extra_steps.GetSize()-1 || conf->extra_steps[idx+1]->pos!=step->pos) {
+			EXPECT_OR( step->pos!=CES_AFTER_LINKING, return );
 			if (step->pos==CES_BEFORE_EXECUTABLE)
 				step->pos=CES_AFTER_LINKING;
 			else if (step->pos==CES_BEFORE_SOURCES) {
@@ -2706,31 +2664,20 @@ void ProjectManager::MoveExtraSteps(project_configuration *conf, compile_extra_s
 					step->pos=CES_AFTER_LINKING;
 			}
 		} else if (step->next) {
-			// intercambia s2 y s3
-			compile_extra_step *s1=step->prev,*s2=step,*s3=step->next,*s4=step->next->next;
-			s3->next=s2;
-			s2->prev=s3;
-			s2->next=s4;
-			if (s4) s4->prev=s2;
-			s3->prev=s1;
-			if (s1)
-				s1->next=s3;
-			else
-				conf->extra_steps=s3;
+			EXPECT_OR( idx+1<conf->extra_steps.GetSize(), return );
+			conf->extra_steps.Swap(idx,idx+1);
 		}
 	}
+	modified=true;
 }
 
 bool ProjectManager::DeleteExtraStep(project_configuration *conf, compile_extra_step *step) {
-	if (!conf) conf=active_configuration;
+	if (!conf) conf = active_configuration;
 	if (!step) return false;
-	modified=true;
-	if (step->next) step->next->prev = step->prev;
-	if (step->prev)
-		step->prev->next=step->next;
-	else
-		conf->extra_steps=step->next;
-	delete step;
+	int idx = conf->extra_steps.FindPtr(step);
+	if (idx==conf->extra_steps.NotFound()) return false;
+	modified = true;
+	conf->extra_steps.Remove(idx);
 	return true;
 }
 
@@ -2744,10 +2691,10 @@ bool ProjectManager::DeleteExtraStep(project_configuration *conf, compile_extra_
 
 compile_extra_step *ProjectManager::GetExtraStep(project_configuration *conf, wxString name) {
 	if (!conf) conf=active_configuration;
-	compile_extra_step *step = conf->extra_steps;
-	while (step && step->name!=name)
-		step = step->next;
-	return step;
+	for(JavaVectorIterator<compile_extra_step> step(conf->extra_steps);step.IsValid();step.Next()) {
+		if (step->name!=name) return step;
+	}
+	return nullptr;
 }
 
 long int ProjectManager::CompileExtra(compile_and_run_struct_single *compile_and_run, compile_extra_step *step) {
@@ -2911,7 +2858,7 @@ int ProjectManager::GetRequiredVersion() {
 		for(JavaVectorIterator<project_library> lib(configurations[i]->libs_to_build);lib.IsValid();lib.Next()) { 
 			if (!lib->do_link) libs_dont_link=true;
 		}
-		for(compile_extra_step *step=configurations[i]->extra_steps; step; step=step->next) {
+		for(JavaVectorIterator<compile_extra_step> step(configurations[i]->extra_steps); step.IsValid(); step.Next()) {
 			if (step->deps.Contains("${TEMP_DIR}")) have_temp_dir=true;
 			if (step->out.Contains("${TEMP_DIR}")) have_temp_dir=true;
 			wxString sum=step->out+step->deps+step->command;
@@ -3696,6 +3643,7 @@ project_library *ProjectManager::GetDefaultLib(project_configuration *conf) {
 }
 
 void ProjectManager::MoveLibToBuild (project_configuration * conf, int pos, bool up) {
+	EXPECT_OR( (up&&pos>0) || (!up&&pos<conf->libs_to_build.GetSize()-1), return );
 	project_library *lib1 = conf->libs_to_build.Release(pos);
 	int pos2 = pos + (up?-1:1);
 	project_library *lib2 = conf->libs_to_build.Release(pos2);
