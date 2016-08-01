@@ -4885,28 +4885,25 @@ void mxMainWindow::OnSelectErrorCommon (const wxString & error, bool set_focus_t
 		// ver si esta abierto
 		wxString sthe_one(error[1]!=':' ?error.BeforeFirst(':'):(error.Mid(0,2)+error.AfterFirst(':').BeforeFirst(':')));
 		wxFileName the_one;
-		if (project)
-			the_one=sthe_one=DIR_PLUS_FILE(project->path,sthe_one);
-		else IF_THERE_IS_SOURCE
-			the_one=sthe_one=DIR_PLUS_FILE(CURRENT_SOURCE->source_filename.GetPath(),sthe_one);
-		else
-			the_one=sthe_one;
-		bool opened=false;
+		if (project)             the_one=sthe_one=DIR_PLUS_FILE(project->path,sthe_one);
+		else IF_THERE_IS_SOURCE  the_one=sthe_one=DIR_PLUS_FILE(CURRENT_SOURCE->source_filename.GetPath(),sthe_one);
+		else                     the_one=sthe_one;
+		mxSource *source = nullptr;
 		for (int i=0,j=notebook_sources->GetPageCount();i<j;i++) {
-			mxSource *src = ((mxSource*)(notebook_sources->GetPage(i)));
-			if ((!src->sin_titulo && SameFile(src->source_filename,the_one)) || (src->temp_filename==the_one && src==compiler->last_compiled) ) {
+			mxSource *aux = ((mxSource*)(notebook_sources->GetPage(i)));
+			if ((!aux->sin_titulo && SameFile(aux->source_filename,the_one)) || (aux->temp_filename==the_one && aux==compiler->last_compiled) ) {
 				notebook_sources->SetSelection(i);
-				opened=true; break;
+				source = aux; break;
 			}
 		}
 		// si no esta abierto
-		if (!opened) {
-			mxSource *src=OpenFile(sthe_one);
-			if (src==EXTERNAL_SOURCE) return; // si era un proyecto wxfb o algo asi que se abre afuera de zinjai
-			if (!src) { new mxGotoFileDialog(the_one.GetFullName(),this,line-1); return; }
+		if (!source) {
+			source = OpenFile(sthe_one);
+			if (source==EXTERNAL_SOURCE) return; // si era un proyecto wxfb o algo asi que se abre afuera de zinjai
+			if (!source) { new mxGotoFileDialog(the_one.GetFullName(),this,line-1); return; }
 		}
 		
-		mxSource *source=CURRENT_SOURCE;
+		line = source->FixErrorLine(line);
 		source->MarkError(line-1);
 		
 		preline=preline.AfterFirst(':').BeforeFirst(':');

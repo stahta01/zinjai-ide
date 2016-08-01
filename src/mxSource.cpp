@@ -2931,10 +2931,12 @@ void mxSource::OnToolTipTime (wxStyledTextEvent &event) {
 			x=10; for(int i=0;i<MARGIN_NULL;i++) { x+=GetMarginWidth(i); }
 			int l = LineFromPosition( PositionFromPointClose(x,y) );
 			// error/warning
-			wxString errors_message = m_cem_ref.GetMessageForLine(l+1);
-			if (!errors_message.IsEmpty()) {
-				ShowBaloon(errors_message,PositionFromLine(l));
-				return;
+			if (MarkerGet(l)&((1<<mxSTC_MARK_ERROR)|(1<<mxSTC_MARK_WARNING))) {
+				wxString errors_message = m_cem_ref.GetMessageForLine(this,l);
+				if (!errors_message.IsEmpty()) {
+					ShowBaloon(errors_message,PositionFromLine(l));
+					return;
+				}
 			}
 			// breakpoint annotation
 			BreakPointInfo *bpi=m_extras->FindBreakpointFromLine(this,l);
@@ -4430,15 +4432,21 @@ void mxSource::MultiSel::End(mxSource *src) {
 }
 
 void mxSource::ReloadErrorsList ( ) {
+	if (m_cem_ref.IsOk()) return;
 	MarkerDeleteAll(mxSTC_MARK_ERROR);
 	MarkerDeleteAll(mxSTC_MARK_WARNING);
 	if (!m_cem_ref.Update()) return;
 	const vector<CompilerErrorsManager::CEMError> &v = m_cem_ref.GetErrors();
 	for(size_t i=0;i<v.size();i++) { 
-		int line = v[i].line-1;
+		int b0_line = v[i].line-1;
 		bool is_error = v[i].is_error;
-		if (is_error && (MarkerGet(line)&(1<<mxSTC_MARK_WARNING))) MarkerDelete(line,mxSTC_MARK_WARNING);
-		MarkerAdd(line,is_error?mxSTC_MARK_ERROR:mxSTC_MARK_WARNING);
+		if (is_error && (MarkerGet(b0_line)&(1<<mxSTC_MARK_WARNING))) MarkerDelete(b0_line,mxSTC_MARK_WARNING);
+		int marker_handler = MarkerAdd(b0_line,is_error?mxSTC_MARK_ERROR:mxSTC_MARK_WARNING);
+		m_cem_ref.RegisterMarker(marker_handler,b0_line);
 	}
+}
+
+int mxSource::FixErrorLine (int line) {
+	return m_cem_ref.FixLineNumber(this,line);
 }
 

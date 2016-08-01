@@ -393,3 +393,23 @@ void CompilerErrorsManager::AddNoteForNextOne (CEMState & cem_state, const wxStr
 //	return true;
 }
 
+wxString CEMReference::GetMessageForLine(mxSource *src, int src_line) {
+	m_aux_error_msg.Clear();
+	for(int i=0;i<m_markers.GetSize();i++) { 
+		int foo = src->MarkerLineFromHandle(m_markers[i].marker_handler);
+		if (src->MarkerLineFromHandle(m_markers[i].marker_handler)==src_line)
+			GetMessageForLine(m_markers[i].original_error_line,false);
+	}
+	return m_aux_error_msg;
+}
+
+int CEMReference::FixLineNumber(mxSource *src, int error_line) const {
+	if (!IsOk()) return error_line;
+	for(int i=0;i<m_markers.GetSize();i++) {
+		if (m_markers[i].original_error_line==error_line) {
+			int src_line = src->MarkerLineFromHandle(m_markers[i].marker_handler);
+			if (src_line!=-1) return src_line+1;
+		}
+	}
+	return error_line;
+}

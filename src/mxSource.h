@@ -266,6 +266,11 @@ public:
 	void SetModify(bool modif=true);
 	void MarkError(int line, bool focus=true);
 	void SelectError(int indic, int p1, int p2);
+	/**
+	* @brief uses markers and m_cem_ref to track changes since the compiler error was generated
+	* @param line   base 1 line number (should be used only for compiler generated errors)
+	**/
+	int FixErrorLine(int line); 
 	void Indent(int min, int max);
 	DiffInfo *MarkDiffs(int from, int to, MXS_MARKER marker, wxString extra="");
 	void SetDiffBrother(mxSource *source);

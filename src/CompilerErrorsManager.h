@@ -5,9 +5,11 @@
 #include <map>
 #include <vector>
 #include "Cpp11.h"
+#include "SingleList.h"
 using namespace std;
 
 class CompilerTreeStruct;
+class mxSource;
 
 //! Informacion asociada a un item del arbol de resultados de compilacion, para guardar los que no se ve (por ejemplo el path completo)
 class mxCompilerItemData:public wxTreeItemData {
@@ -18,7 +20,7 @@ public:
 };
 
 struct ErrorLineParts {
-	long line, column;
+	long line, column; // base 1 (as present in the original compiler's error message)
 	wxString fname;
 //	wxString message;
 	ErrorLineParts(const wxString &full_error) {
@@ -134,10 +136,17 @@ class CEMReference {
 	vector<CompilerErrorsManager::CEMError> *m_errors;
 	unsigned int m_timestamp;
 	wxString m_fname, m_aux_error_msg;
+	struct MarkerInfo { 
+		int marker_handler, original_error_line; 
+		MarkerInfo() {}
+		MarkerInfo(int handler, int line) : marker_handler(handler), original_error_line(line) {}
+	};
+	SingleList<MarkerInfo> m_markers;
 public:
 	CEMReference() : m_errors(nullptr), m_timestamp(0) {}
 	void SetFName(const wxString &fname) { m_fname = fname; }
-	bool Update() { 
+	bool Update() {
+		m_markers.Clear();
 		m_timestamp = errors_manager->m_timestamp;
 		map<wxString,vector<CompilerErrorsManager::CEMError> >::iterator it 
 			= errors_manager->m_errors_set.find(m_fname);
@@ -146,12 +155,15 @@ public:
 	}
 	bool IsOk() const { return m_errors && errors_manager->m_timestamp==m_timestamp; }
 	vector<CompilerErrorsManager::CEMError> &GetErrors() const { return *m_errors; }
-	wxString GetMessageForLine(int l) {
-		m_aux_error_msg.Clear();
+	/** @param src_line    base 0 line number (as internally handled by mxSource)**/
+	wxString GetMessageForLine(mxSource *src, int src_line);
+	/** @param original_error_line    base 1 line number (as in the original error message)**/
+	wxString GetMessageForLine(int original_error_line, bool append=false) {
+		if (!append) m_aux_error_msg.Clear();
 		if (IsOk()) {
 			const vector<CompilerErrorsManager::CEMError> &v = GetErrors();
 			for(size_t i=0;i<v.size();i++) { 
-				if (l == v[i].line) {
+				if (original_error_line == v[i].line) {
 					if (m_aux_error_msg.IsEmpty()) m_aux_error_msg << v[i].message;
 					else                           m_aux_error_msg << "\n" << v[i].message;
 				}
@@ -159,6 +171,15 @@ public:
 		}
 		return m_aux_error_msg;
 	}
+	/** @param src_line    base 0 line number (as internally handled by mxSource)**/
+	void RegisterMarker(int handler, int line) { 
+		m_markers.Add(MarkerInfo(handler,line+1)); 
+	}
+	/**
+	* @param src_line    base 1 line number (as given by the compiler)
+	* @retval updated base 1 line number (changes are suppossed to be tracked by stc markers)
+	**/
+	int FixLineNumber(mxSource *src, int error_line) const;
 };
 
 #endif
