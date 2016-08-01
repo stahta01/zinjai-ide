@@ -2232,7 +2232,7 @@ void ProjectManager::AnalizeConfig(wxString path, bool exec_comas, wxString ming
 			mxUT::ParameterReplace(lib->parsed_extra,"${TEMP_DIR}",temp_folder_short);
 			wxFileName bin_name = DIR_PLUS_FILE(path,lib->filename);
 			wxString libfile = lib->is_static ? bin_name.GetFullPath():(wxString("-l")<<lib->libname);
-			objects_list<<mxUT::Quotize(libfile)<<" ";
+			if (lib->do_link) objects_list<<mxUT::Quotize(libfile)<<" ";
 			if (!lib->is_static) {
 				bin_name.MakeRelativeTo(path);
 				if (bin_name.GetPath().Len())
@@ -2240,7 +2240,7 @@ void ProjectManager::AnalizeConfig(wxString path, bool exec_comas, wxString ming
 				else
 					linking_options<<" -L./";
 			}
-			if (lib->do_link) exe_deps<<mxUT::Quotize(lib->filename)<<" ";
+			exe_deps<<mxUT::Quotize(lib->filename)<<" ";
 		}
 	}
 	objects_list.RemoveLast();
