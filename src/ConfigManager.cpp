@@ -72,7 +72,7 @@ void ConfigManager::DoInitialChecks() {
 			"xterm; luego configure el parametro \"Comando del Terminal\" en la\n"
 			"pestaña \"Rutas 1\" del cuadro de \"Preferencias\".");
 		LinuxTerminalInfo::Initialize();
-		for(int i=0;i<=LinuxTerminalInfo::count;i++) { 
+		for(int i=0;i<LinuxTerminalInfo::count;i++) { 
 			if (LinuxTerminalInfo::list[i].Test()) {
 				Files.terminal_command = LinuxTerminalInfo::list[i].run_command;
 				if (LinuxTerminalInfo::list[i].warning) {
