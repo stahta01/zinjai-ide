@@ -4329,9 +4329,6 @@ void mxMainWindow::OnKeyEvent(wxWindow *who, wxKeyEvent &evt) {
 			wxPoint p(r.GetX()+r.GetHeight(),r.GetY()+r.GetHeight());
 			te.SetPoint(p);
 			OnExplorerTreePopup(te);
-		} else if (evt.GetKeyCode()==WXK_RETURN && !explorer_tree.treeCtrl->GetItemImage(explorer_tree.selected_item)) {
-			wxCommandEvent evt;
-			OnExplorerTreeSetAsPath(evt);
 		} else if (evt.GetKeyCode()==WXK_LEFT) {
 			explorer_tree.treeCtrl->Collapse(explorer_tree.selected_item);
 		} else if (evt.GetKeyCode()==WXK_RIGHT) {

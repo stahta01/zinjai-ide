@@ -11,6 +11,5 @@ mxTreeCtrl::mxTreeCtrl(wxWindow* parent, wxWindowID id, const wxPoint& pos, cons
 }
 
 void mxTreeCtrl::OnKey(wxKeyEvent &evt) {
-	evt.Skip();
 	main_window->OnKeyEvent(this,evt);
 }
