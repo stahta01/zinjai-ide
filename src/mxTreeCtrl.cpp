@@ -6,9 +6,11 @@ BEGIN_EVENT_TABLE(mxTreeCtrl,wxTreeCtrl)
 END_EVENT_TABLE()
 
 mxTreeCtrl::mxTreeCtrl(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxValidator& validator, const wxString& name):
-	wxTreeCtrl(parent, id, pos, size, style, validator, name) {
+	wxTreeCtrl(parent, id, pos, size, style, validator, name) 
+{
 }
 
 void mxTreeCtrl::OnKey(wxKeyEvent &evt) {
+	evt.Skip();
 	main_window->OnKeyEvent(this,evt);
 }

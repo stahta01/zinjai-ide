@@ -4288,7 +4288,7 @@ void mxMainWindow::SetOpenedFileName(wxString name) {
 }
 
 void mxMainWindow::OnKeyEvent(wxWindow *who, wxKeyEvent &evt) {
-	if (autohide_handlers) {
+	if (autohide_handlers && evt.GetKeyCode()==WXK_MENU) {
 		for(int i=0;i<ATH_COUNT;i++) { 
 			if (autohide_handlers[i] && (autohide_handlers[i]->control==who||autohide_handlers[i]->control==who->GetParent())) {
 				if (!autohide_handlers[i]->IsDocked()) {
