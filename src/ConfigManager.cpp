@@ -430,6 +430,11 @@ bool ConfigManager::Load() {
 		Running.c_compiler_options.Replace("-finput-charset=iso-8859-1 -fexec-charset=cp437","");
 	}
 #endif
+	
+	if (Init.version<20160812) {
+		for(unsigned int i=0;i<Debug.blacklist.GetCount();i++)
+			Debug.blacklist[i] = wxString("file ")+mxUT::Quotize(Debug.blacklist[i]);
+	}
 
 	Init.autohiding_panels=Init.autohide_panels;
 	

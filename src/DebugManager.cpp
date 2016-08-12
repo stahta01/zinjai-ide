@@ -2014,7 +2014,7 @@ void DebugManager::SetBlacklist (bool clear_first) {
 	if (clear_first) SendCommand("skip delete");
 	if (config->Debug.use_blacklist) {
 		for(unsigned int i=0;i<config->Debug.blacklist.GetCount();i++)
-			SendCommand("skip file",mxUT::Quotize(config->Debug.blacklist[i]));
+			SendCommand("skip ",config->Debug.blacklist[i]);
 	}
 }
 
