@@ -3,12 +3,12 @@ GPP=wine "${MINGW_DIR}"/bin/mingw32-g++
 WINDRES=wine "${MINGW_DIR}"/bin/windres
 FLAGS=-O2 -s -static-libgcc -static-libstdc++
 
-all: ../bin ../bin/updatem.exe ../bin/runner.exe ../bin/shellexecute.exe ../bin/lsdeps.exe
+all: ../bin ../bin/updatem.exe ../bin/runner.exe ../bin/shellexecute.exe ../bin/lsdeps.exe ../log.exe
 	$(MAKE) -f Makefile.wine -C complement
 	$(MAKE) -f Makefile.wine -C img_viewer
 
 clean:
-	rm -f ../release.w32/xmlres.o ../bin/updatem.exe ../bin/runner.exe ../bin/shellexecute.exe ../bin/lsdeps.exe
+	rm -f ../release.w32/xmlres.o ../bin/updatem.exe ../bin/runner.exe ../bin/shellexecute.exe ../bin/lsdeps.exe ../log.exe
 	$(MAKE) -f Makefile.wine -C complement clean
 	$(MAKE) -f Makefile.wine -C img_viewer clean
 
@@ -33,3 +33,5 @@ clean:
 ../bin/updatem.exe: updatem.cpp zockets.cpp zockets.h ../release.w32/xmlres.o
 	${GPP} ${FLAGS} -mwindows updatem.cpp zockets.cpp -lwsock32 xmlres.o -o $@
 
+../log.exe: log-w32.cpp
+	${GPP} -mwindows -static-libgcc -static-libstdc++ log-32.cpp -o $@

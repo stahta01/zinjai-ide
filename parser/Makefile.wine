@@ -1,7 +1,8 @@
 MINGW_DIR=../MinGW
 GCC=wine "${MINGW_DIR}"/bin/mingw32-gcc
-OPTS= -DZASKAR -Dpanic=printf -Dckfree=free -Dckalloc=malloc -Dckrealloc=realloc -DHAVE_CONFIG_H -Ihyper -Icommon -Imisc -Icpp/cpplib -I. -O2  
+OPTS=-O3 -DZASKAR -Dpanic=printf -Dckfree=free -Dckalloc=malloc -Dckrealloc=realloc -DHAVE_CONFIG_H -Ihyper -Icommon -Imisc -Icpp/cpplib -I.
 OBJS_DIR=release.w32
+LDFLAGS=-s
 
 all: ../bin/cbrowser.exe
 
@@ -14,7 +15,7 @@ ${OBJS_DIR}:
 	mkdir ../bin
 	
 ../bin/cbrowser.exe: ../bin ${OBJS_DIR} ${OBJS}
-	${GCC} ${OBJS} -o $@
+	${GCC} ${OBJS} ${LDFLAGS} -o $@
 
 
 clean:

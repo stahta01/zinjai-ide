@@ -29,6 +29,8 @@ zmkdir zinjai
     cp -u $SRC/bin/runner.exe zinjai/bin/
     cp -u $SRC/bin/cbrowser.exe zinjai/bin/
     cp -u $SRC/zinjai.exe zinjai/
+#    cp -u $SRC/zinjai-w32.dbg zinjai/
+#    cp -u $SRC/log.exe zinjai/
     cp -u $SRC/zinjai.dir zinjai/
     cp -u $SRC/bin/img_viewer.exe zinjai/bin/
     cp -u $SRC/bin/complement.exe zinjai/bin/

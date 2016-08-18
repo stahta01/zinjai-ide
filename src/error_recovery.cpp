@@ -19,7 +19,7 @@ er_source_register *g_er_first_source = nullptr;
 #define ERR_REC_LOG_NORM(what) fil1<<#what<<": "<<what<<endl
 
 #ifndef SIGPIPE
-#define SIGPIPE 13
+#	define SIGPIPE 13
 #endif
 
 er_source_register::er_source_register(mxSource *s, er_source_register *p, er_source_register *n) {
@@ -57,6 +57,10 @@ void er_sigsev(int sig) {
 		ERR_REC_LOG_NORM(debug->status);
 		ERR_REC_LOG_NORM(debug->last_command);
 		ERR_REC_LOG_NORM(debug->last_answer);
+		ERR_REC_LOG_BOOL(debug->debugging);
+		ERR_REC_LOG_BOOL(debug->waiting);
+		ERR_REC_LOG_BOOL(debug->running);
+		ERR_REC_LOG_NORM(debug->gdb_version);
 	} else
 		fil1<<"debug: NULL"<<endl;
 	if (parser) {
@@ -68,7 +72,7 @@ void er_sigsev(int sig) {
 	else
 		fil1<<"project: NULL"<<endl;
 	if (main_window) {
-		ERR_REC_LOG_BOOL(!compiler->IsCompiling());
+		ERR_REC_LOG_BOOL(compiler->IsCompiling());
 	} else 
 		fil1<<"main_window: NULL"<<endl;
 	fil1<<endl;
@@ -140,7 +144,6 @@ void er_init(const char *dir) {
 	signal(SIGPIPE,er_sigsev);
 #endif
 }
-
 
 void er_uninit() {
 	signal(SIGSEGV,nullptr);

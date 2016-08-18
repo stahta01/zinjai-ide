@@ -156,6 +156,7 @@ private:
 	bool debugging; ///< indica que hay una sesion de depuracion en marcha (en cualquier estado)
 	bool waiting; ///< indica que se esta esperando una respuesta a un comando gdb, por lo que no se puede enviar otro
 	bool running; ///< indica que se esta estarando por un comando gdb que involucra la real ejecucion del programa, y no es consulta o configuracion del estado
+	friend void er_sigsev(int sig);
 public:
 	bool CanTalkToGDB() { return debugging && !waiting; }
 	bool IsPaused() { return debugging && !running; }

@@ -115,8 +115,8 @@ elif [ "$1" = "pack" ]; then
   rmdir -f zinjai/lang/tools/mxLangTool/release.lnx
 
   VER=`cat zinjai/src/version.h | head -n 1 | cut -d ' ' -f 3`
-  if uname -a | grep x86_64; then ARCH=l64; else ARCH=l32; fi
-  if ! tar -czvf zinjai-${ARCH}-${VER}.tgz zinjai; then exit; fi
+  ARCH=`sh zinjai/src_extras/get-arch.sh`
+  if ! tar -czvf zinjai-${ARCH}-${VER}.tgz zinjai --exclude=zinjai/bin/*.dbg; then exit; fi
   echo -n "Done: "
   ls -sh zinjai-${ARCH}-${VER}.tgz
 

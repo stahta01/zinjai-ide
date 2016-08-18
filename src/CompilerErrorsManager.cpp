@@ -396,7 +396,6 @@ void CompilerErrorsManager::AddNoteForNextOne (CEMState & cem_state, const wxStr
 wxString CEMReference::GetMessageForLine(mxSource *src, int src_line) {
 	m_aux_error_msg.Clear();
 	for(int i=0;i<m_markers.GetSize();i++) { 
-		int foo = src->MarkerLineFromHandle(m_markers[i].marker_handler);
 		if (src->MarkerLineFromHandle(m_markers[i].marker_handler)==src_line)
 			GetMessageForLine(m_markers[i].original_error_line,false);
 	}

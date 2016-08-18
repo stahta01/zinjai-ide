@@ -29,6 +29,7 @@
 #include "mxSizers.h"
 #include "mxErrorRecovering.h"
 #include "mxSplashScreen.h"
+#include "error_recovery.h"
 using namespace std;
 
 
@@ -119,6 +120,10 @@ SHOW_MILLIS("About to load ConfigManager...");
 	
 	// inicialize mxUtils and ConfigManager
 	bool first_run = ConfigManager::Initialize(zpath);
+	
+	if (argc==2 && wxString(argv[1])=="--for-gdb") {
+		er_uninit();
+	}
 	
 	// cargar archivo de internacionalizacion
 	if (first_run || config->Init.version==20160420) SelectLanguage();
@@ -243,7 +248,7 @@ bool mxApplication::InitSingleton(const wxString &cmd_path) {
 	bool done=true;
 	for (int i=1; i<argc;i++) {
 		wxString name = argv[i];
-		if (name!="--last-source" && name!="--last-project" && name!="--no-splash" && name.AfterLast('.').Lower()!=PROJECT_EXT) {
+		if (name!="--last-source" && name!="--for-gdb" && name!="--last-project" && name!="--no-splash" && name.AfterLast('.').Lower()!=PROJECT_EXT) {
 			bool opened = g_singleton->RemoteOpen(DIR_PLUS_FILE(cmd_path,name));
 			int ret=0;
 			while (!opened && ret<2) { // dos reintentos, por si estaba muy ocupado

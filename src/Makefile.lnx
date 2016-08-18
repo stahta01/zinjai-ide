@@ -1,18 +1,24 @@
 GPP=g++
-CXXFLAGS=-O2 `wx-config --cppflags --version=2.8 --unicode=no`
-LIBS=-s -lwx_gtk2_stc-2.8 `wx-config --version=2.8 --unicode=no --libs` -lX11
+STRIP=strip
+OBJCOPY=objcopy
+CXXFLAGS=-O3 -g `wx-config --cppflags --version=2.8 --unicode=no`
+LIBS=-lwx_gtk2_stc-2.8 `wx-config --version=2.8 --unicode=no --libs` -lX11
 OBJS_DIR=../release.lnx
+ARCH=`../src_extras/get-arch.sh`
 
 all: ../bin ../bin/zinjai.bin
 
 include Makefile.common
 
 clean:
-	rm -rf ${OBJS} ../bin/zinjai.bin
+	rm -rf ${OBJS} ../bin/zinjai.bin ../bin/zinjai-${ARCH}.dbg
 	rm -f core
 
 ../bin/zinjai.bin: ${OBJS_DIR} ${OBJS}
 	${GPP} ${OBJS} ${LIBS} -o $@
+	${OBJCOPY} --only-keep-debug ../bin/zinjai.bin ../bin/zinjai-${ARCH}.dbg
+	${STRIP} ../bin/zinjai.bin
+	${OBJCOPY} --add-gnu-debuglink=../bin/zinjai-${ARCH}.dbg ../bin/zinjai.bin
 
 ${OBJS_DIR}:
 	mkdir ${OBJS_DIR}

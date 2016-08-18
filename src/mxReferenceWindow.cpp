@@ -219,7 +219,7 @@ wxString mxReferenceWindow::ProcessHTML (wxString fname, mxReferenceWindow *w) {
 			// arreglar caracteres unicode para compilaciones de wx ansi
 			for(unsigned int i=0;i<str.size();i++) { 
 				if (str[i]=='Â') 
-					str.replace(i,2,"&nbsp");
+					str.replace(i,2,"&nbsp;");
 				if (str[i]=='â') 
 					str.replace(i,3,"-");
 			}

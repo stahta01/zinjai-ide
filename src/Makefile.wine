@@ -1,7 +1,9 @@
 MINGW_DIR=../MinGW
 GPP=wine "${MINGW_DIR}"/bin/mingw32-g++
-CXXFLAGS=-O2 -I"${MINGW_DIR}"/wx/include
-LIBS=-mwindows -s -L"${MINGW_DIR}"/wx/lib -lwxmsw28_stc -lwxmsw28_aui -lwxmsw28_html -lwxmsw28_core -lwxbase28_net -lwxbase28 -lwxmsw28_adv -lwxtiff -lwxjpeg -lwxpng -lwxzlib -lwxregex -lwxexpat -lwinmm -lshell32 -lcomctl32 -lole32 -loleaut32 -luuid -lrpcrt4 -ladvapi32 -lwsock32 -lodbc32 -lkernel32 -luser32 -lgdi32 -lcomdlg32 -lwinspool -static-libstdc++ -static-libgcc
+OBJCOPY=wine "${MINGW_DIR}"/bin/objcopy
+STRIP=wine "${MINGW_DIR}"/bin/strip
+CXXFLAGS=-O3 -g -I"${MINGW_DIR}"/wx/include
+LIBS=-mwindows -L"${MINGW_DIR}"/wx/lib -lwxmsw28_stc -lwxmsw28_aui -lwxmsw28_html -lwxmsw28_core -lwxbase28_net -lwxbase28 -lwxmsw28_adv -lwxtiff -lwxjpeg -lwxpng -lwxzlib -lwxregex -lwxexpat -lwinmm -lshell32 -lcomctl32 -lole32 -loleaut32 -luuid -lrpcrt4 -ladvapi32 -lwsock32 -lodbc32 -lkernel32 -luser32 -lgdi32 -lcomdlg32 -lwinspool -static-libstdc++ -static-libgcc
 OBJS_DIR=../release.w32
 
 all: ../zinjai.exe
@@ -9,7 +11,7 @@ all: ../zinjai.exe
 include Makefile.common
 
 clean:
-	rm -rf ${OBJS} ../zinjai.exe ${OBJS_DIR}/icon.o
+	rm -rf ${OBJS} ../zinjai.exe ../zinjai-w32.dbg ${OBJS_DIR}/icon.o
 
 
 ${OBJS_DIR}/icon.o: zinjai.rc manifest.xml
@@ -17,6 +19,9 @@ ${OBJS_DIR}/icon.o: zinjai.rc manifest.xml
 
 ../zinjai.exe: ${OBJS_DIR} ${OBJS} ${OBJS_DIR}/icon.o
 	${GPP} ${OBJS} ${LIBS} ${OBJS_DIR}/icon.o -o $@
+	${OBJCOPY} --only-keep-debug ../zinjai.exe ../zinjai-w32.dbg
+	${STRIP} ../zinjai.exe
+	${OBJCOPY} --add-gnu-debuglink=../zinjai-w32.dbg ../zinjai.exe
 
 ${OBJS_DIR}:
 	mkdir ${OBJS_DIR}
