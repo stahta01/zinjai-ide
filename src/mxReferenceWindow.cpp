@@ -18,6 +18,10 @@ mxReferenceWindow *mxReferenceWindow::instance=nullptr;
 
 mxReferenceWindow::mxReferenceWindow(wxString page):mxGenericHelpWindow(LANG(CPPREF_CAPTION,"Referencia C/C++"),true) {
 	if (!PopulateInitialTree()) return;
+	if (!LoadSearchIndex()) {
+		search_text->SetValue("error: index file not found - search disabled");
+		search_text->Enable(false);
+	}
 	LoadHelp(DIR_PLUS_FILE(config->Help.cppreference_dir,_index));
 	Show();
 }
@@ -73,7 +77,6 @@ void mxReferenceWindow::OnSearch (wxString value, bool update_history) {
 		while(!history_next.empty()) history_next.pop(); 
 		if (value.Len()) history_prev.push(current_page);
 	}
-	LoadSearchIndex();
 	tree->DeleteChildren(page_tree_item); 
 	tree->SetItemText(page_tree_item,value);
 	current_path=config->Help.cppreference_dir;
@@ -208,7 +211,9 @@ wxString mxReferenceWindow::ProcessHTML (wxString fname, mxReferenceWindow *w) {
 			if (str.Contains("<div id=\"siteSub\">")) str="";
 			else if (str.Contains("<div id=\"contentSub\">")) str="";
 			else if (str.Contains("<div class=\"printfooter\">")) {
-				str="<BR><BR><BR><I>This help page was generated from content archive (version 20140208) donwloaded from <A href=\"http://www.cppreference.com\">www.cppreference.com</a>.</I>";
+				str="<BR><BR><BR><I>This help page was generated from content archive ";
+				if (!m_doc_version.IsEmpty()) { str+="(version "; str+=m_doc_version; str+=") "; }
+				str+="donwloaded from <A href=\"http://www.cppreference.com\">www.cppreference.com</a>.</I>";
 				str+="<BR><BR><A href=\"file:"; str+=fname;
 				str+="\">Click here</A> to open this page in your default web browser.<BR>";
 				fil.GetNextLine(); 
@@ -250,17 +255,25 @@ void mxReferenceWindow::OnTree (wxTreeItemId item) {
 //	OnSearch(tree->GetItemText(item));
 }
 
-void mxReferenceWindow::LoadSearchIndex ( ) {
-	if (search_index.size()) return;
-	wxTextFile fil(DIR_PLUS_FILE(config->Help.cppreference_dir,"zinjai_index"));
-	if (!fil.Exists()) return;
-	fil.Open();
-	for ( wxString str = fil.GetFirstLine(); !fil.Eof(); str = fil.GetNextLine() ) {
+bool mxReferenceWindow::LoadSearchIndex ( ) {
+	if (search_index.size()) return true; // already loaded
+	
+	// index tree
+	wxTextFile findex(DIR_PLUS_FILE(config->Help.cppreference_dir,"zinjai_index"));
+	if (!findex.Exists()) return false;
+	findex.Open();
+	for ( wxString str = findex.GetFirstLine(); !findex.Eof(); str = findex.GetNextLine() ) {
 		wxString file=str.BeforeFirst(':'), title=str.AfterFirst(':');
 		if (file.StartsWith("./")) file=file.Mid(2);
 		if (file.Len()&&title.Len()) search_index.push_back(make_pair(file,title));
 	}
-	fil.Close();
+	findex.Close();
+	
+	// reference's version
+	wxTextFile fver(DIR_PLUS_FILE(config->Help.cppreference_dir,"version"));
+	if (fver.Exists()) { fver.Open(); m_doc_version = fver.GetFirstLine(); fver.Close(); }
+	
+	return true;
 }
 
 bool mxReferenceWindow::PopulateInitialTree ( ) {

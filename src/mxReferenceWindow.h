@@ -9,7 +9,7 @@ using namespace std;
 class mxReferenceWindow:public mxGenericHelpWindow {
 	
 	vector< pair<wxString,wxString> > search_index;
-	void LoadSearchIndex();
+	bool LoadSearchIndex();
 	
 	wxTreeItemId page_tree_item;
 	bool PopulateInitialTree();
@@ -21,13 +21,15 @@ class mxReferenceWindow:public mxGenericHelpWindow {
 	wxString current_path;
 	wxString current_page;
 	
+	wxString m_doc_version; ///< version of the cppreference content archive
+	
 	stack<wxString> history_prev;
 	stack<wxString> history_next;
 	
 public:
 	static void ShowPage(wxString page="");
 	static void ShowAndSearch(const wxString &keyword);
-	static wxString ProcessHTML(wxString fname, mxReferenceWindow *w=nullptr);
+	wxString ProcessHTML(wxString fname, mxReferenceWindow *w=nullptr);
 	
 	void LoadHelp(wxString file, bool update_history=true);
 	
