@@ -483,7 +483,7 @@ wxPanel *mxPreferenceWindow::CreateCompilePanelSimple (wxNotebook *notebook) {
 		.Bind(m_binder,config->Running.wait_for_key).EndCheck();
 	sizer.BeginCheck( LANG(PREFERENCES_SIMPLE_ALWAYS_ASK_ARGS,"Siempre pedir argumentos al ejecutar") )
 		.Bind(m_binder,config->Running.always_ask_args).EndCheck();
-	sizer.BeginCheck( LANG(PREFERENCES_SIMPLE_ADD_CPP_EXTENSION,"Agregar la extension cpp si se omite al guardar") )
+	sizer.BeginCheck( LANG(PREFERENCES_SIMPLE_ADD_CPP_EXTENSION,"Agregar la extensión cpp si se omite al guardar") )
 		.Bind(m_binder,config->Init.always_add_extension).EndCheck();
 	
 	wxArrayString tc_array; Toolchain::GetNames(tc_array,false);	

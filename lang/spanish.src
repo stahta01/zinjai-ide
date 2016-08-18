@@ -1876,12 +1876,12 @@ LIBTOBUILD_FILE
 Archivo de salida
 LIBTOBUILD_EXTRA_LINK
 Opciones de enlazado
+LIBTOBUILD_TYPE
+Tipo de biblioteca
 LIBTOBUILD_DYNAMIC
 Dinamica
 LIBTOBUILD_STATIC
 Estatica
-LIBTOBUILD_TYPE
-Tipo de biblioteca
 LIBTOBUILD_SOURCES_IN
 Fuentes a incluir
 LIBTOBUILD_SOURCES_OUT
@@ -2050,6 +2050,8 @@ MAINW_ERROR_PRITING
 Ha ocurrido un error al intentar imprimir
 MAINW_CANT_OPEN_TEMPLATE_WHILE_PROJECT
 No puede abrir un ejemplo mientras trabaja en un proyecto.\nCierre el proyecto e intente nuevamente.
+MAINW_CANT_PROBLEM_WITH_ACCENTS_ON_LOAD
+El nombre del archivo o de algún directorio en su ruta\ncontiene acentos u otro caracteres especiales. En este\nsistema ZinjaI no puede guardar correctamente los\ncambios del archivo a menos que modifique su nombre o ruta\n
 MAINW_NO_EXTENSION_ADD_CPP_QUESTION
 No ha definido una extension en el nombre de archivo indicado.\nSi es un codigo fuente se recomienda utilizar la extension cpp\npara que el compilador pueda identificar el lenguaje.\nDesea agregar la extension cpp al nombre?
 MAINW_ALWAYS_APPEND_EXTENSION
@@ -2571,7 +2573,7 @@ Esperar una tecla luego de la ejecución
 PREFERENCES_SIMPLE_ALWAYS_ASK_ARGS
 Siempre pedir argumentos al ejecutar
 PREFERENCES_SIMPLE_ADD_CPP_EXTENSION
-Agregar la extension cpp si se omite al guardar
+Agregar la extensión cpp si se omite al guardar
 PREFERENCES_TOOLCHAIN
 Herramientas de compilación
 PREFERENCES_STYLE_SINTAX_HIGHLIGHT
@@ -2841,11 +2843,11 @@ No se ha definido ubicacion (primer campo en \"General\") para el ejecutable.\n 
 PROJECTCONFIG_STEPS_COMPILATION_SEQUENCE
 Secuencia de compilación:
 PROJECTCONFIG_STEPS_ADD
-Agregar
+Agregar...
 PROJECTCONFIG_STEPS_EDIT
-Editar
+Editar...
 PROJECTCONFIG_STEPS_RUN
-Ejecutar
+Ejecutar...
 PROJECTCONFIG_STEPS_DELETE
 Quitar
 PROJECTCONFIG_STEPS_MOVE_UP
@@ -2864,10 +2866,6 @@ PROJECTCONFIG_LIBS_EDIT
 Editar...
 PROJECTCONFIG_LIBS_DELETE
 Quitar
-PROJECTCONFIG_LIBS_UP
-Subir
-PROJECTCONFIG_LIBS_DOWN
-Bajar
 PROJECTCONFIG_LIBS_NOEXEC
 Generar solo bibliotecas (no generar ejecutable)
 PROJECTCONFIG_STEPS_WARNING_APPLY_NOW

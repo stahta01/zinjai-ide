@@ -1878,12 +1878,12 @@ LIBTOBUILD_FILE
 Output file
 LIBTOBUILD_EXTRA_LINK
 Extra arguments for linking
+LIBTOBUILD_TYPE
+Library type
 LIBTOBUILD_DYNAMIC
 Dynamic
 LIBTOBUILD_STATIC
 Static
-LIBTOBUILD_TYPE
-Library type
 LIBTOBUILD_SOURCES_IN
 Sources to include
 LIBTOBUILD_SOURCES_OUT
@@ -2052,6 +2052,8 @@ MAINW_ERROR_PRITING
 There was an error trying to print
 MAINW_CANT_OPEN_TEMPLATE_WHILE_PROJECT
 You cannot open an example without closing the project.\nClose the project and try again.
+MAINW_CANT_PROBLEM_WITH_ACCENTS_ON_LOAD
+The choosen file's name or path contains accents or some other\nspecial characters. ZinjaI cannot handle that location in\nthis system. Please use a different path or name.\n
 MAINW_NO_EXTENSION_ADD_CPP_QUESTION
 There is no extension in that filename. Do you want to append .cpp to it?
 MAINW_ALWAYS_APPEND_EXTENSION
@@ -2866,10 +2868,6 @@ PROJECTCONFIG_LIBS_EDIT
  Edit 
 PROJECTCONFIG_LIBS_DELETE
   Del  
-PROJECTCONFIG_LIBS_UP
-Move Up
-PROJECTCONFIG_LIBS_DOWN
-Move Down
 PROJECTCONFIG_LIBS_NOEXEC
 Generate only libraries (don't generate executable)
 PROJECTCONFIG_STEPS_WARNING_APPLY_NOW

@@ -2687,8 +2687,14 @@ mxSource *mxMainWindow::OpenFile (const wxString &filename) {
 *   cuando elegimo hacer lo mismo para todos en la primer pregunta), como flags por bits
 **/
 void mxMainWindow::OpenFileFromGui (wxFileName filename, int *multiple) {
-//	cerr<<"*"<<filename.GetFullPath()<<"*"<<endl;
-	if (!filename.FileExists()) {
+	bool file_exists = filename.FileExists();
+#ifndef __WIN32__
+	if (!file_exists) { // problems due to ansi-wx on utf8-linux
+		wxFileName new_filename(filename.GetFullPath().ToUTF8().data());
+		if (new_filename.FileExists()) { filename = new_filename; file_exists=true; }
+	}
+#endif
+	if (!file_exists) {
 		if (wxFileName::DirExists(DIR_PLUS_FILE(filename.GetFullPath(),"."))) {
 			SetExplorerPath(filename.GetFullPath());
 			ShowExplorerTreePanel();
@@ -3036,11 +3042,21 @@ void mxMainWindow::OnFileSaveAs (wxCommandEvent &event) {
 	IF_THERE_IS_SOURCE  {
 		mxSource *source=CURRENT_SOURCE;
 		wxFileDialog dlg (this, LANG(GENERAL_SAVE,"Guardar"),source->sin_titulo?config->Files.last_dir:source->GetPath(true),source->GetFileName(), "Any file (*)|*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
-//		dlg.SetDirectory(source->GetPath(true));
 		dlg.SetWildcard("Todos los archivos|*|Archivos de C/C++|"WILDCARD_CPP"|Fuentes|"WILDCARD_SOURCE"|Cabeceras|"WILDCARD_HEADER);
-//		dlg.SetFilterIndex(1);
 		if (dlg.ShowModal() == wxID_OK) {
 			wxFileName file = dlg.GetPath();
+#ifndef __WIN32__
+			if (file.GetFullPath().IsEmpty()) { // problems due to ansi-wx on utf8-linux
+				mxMessageDialog(this,LANG(MAINW_CANT_PROBLEM_WITH_ACCENTS_ON_LOAD,""
+										  "El nombre del archivo o de algún directorio en su ruta\n"
+										  "contiene acentos u otro caracteres especiales. En este\n"
+										  "sistema ZinjaI no puede guardar correctamente los\n"
+										  "cambios del archivo a menos que modifique su nombre o ruta."))
+					.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
+				OnFileSaveAs(event);
+				return;
+			}
+#endif
 			if (!project) {
 				if (file.GetExt().Len()==0) {
 					bool do_add = config->Init.always_add_extension;
