@@ -1817,14 +1817,14 @@ void mxSource::SetStyle(bool color) {
 			AUXSetStyle3(SH,HERE_Q,OPERATOR);
 			break;
 		}
-		Colourise(0,GetLength());
 	} else {
-		StyleClearAll();
+		ClearDocumentStyle();
 		SetLexer (wxSTC_LEX_NULL);
 		config_source.syntaxEnable=false;
 		StyleSetForeground (wxSTC_STYLE_DEFAULT, g_ctheme->DEFAULT_FORE);
 		StyleSetBackground (wxSTC_STYLE_DEFAULT, g_ctheme->DEFAULT_BACK);
 	}
+	Colourise(0,GetLength());
 }
 
 
