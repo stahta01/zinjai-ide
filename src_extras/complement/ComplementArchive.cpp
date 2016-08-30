@@ -9,6 +9,7 @@
 #include <wx/arrstr.h>
 #include <wx/sstream.h>
 #include "Application.h"
+#include "../../src/fix_filename.h"
 using namespace std;
 
 #ifdef __WIN32__
@@ -106,7 +107,7 @@ bool ExtractFiles(bool (*callback)(wxString message, int progress), const wxStri
 		if (name==_DESC_FILE) continue;
 		if (!entry->IsDir()) {
 			if (legal_name(name)) {
-				name = aTargetDir + name;
+				name = aTargetDir + fix_filename(name);
 				zip.OpenEntry(*entry);
 				if (!zip.CanRead()) return false;
 				if (!callback(wxString(spanish?"Descomprimiendo archivo ":"Uncompressing file ")<<name,2)) return true;

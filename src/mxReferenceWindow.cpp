@@ -9,6 +9,7 @@
 #include "mxComplementInstallerWindow.h"
 #include "raii.h"
 #include "mxMainWindow.h"
+#include "fix_filename.h"
 using namespace std;
 
 #define _index "index.html"
@@ -122,14 +123,15 @@ bool mxReferenceWindow::OnLink (wxString href) {
 	if (href.StartsWith("http:")) {
 		mxUT::OpenInBrowser(href);
 	} else if (href.StartsWith("file:")) {
-		mxUT::OpenInBrowser(DIR_PLUS_FILE(current_path,href.Mid(5)));
+		wxString fname = fix_filename(href.Mid(5));
+		mxUT::OpenInBrowser(DIR_PLUS_FILE(current_path,fname));
 	} else if (href[0]=='#') {
 		html->ScrollToAnchor(href.AfterFirst('#'));
 	} else if (href.Contains("#")) {
 		LoadHelp(DIR_PLUS_FILE(current_path,href.BeforeFirst('#')));
 		html->ScrollToAnchor(href.AfterFirst('#'));
 	} else {
-		LoadHelp(DIR_PLUS_FILE(current_path,href));
+		LoadHelp(DIR_PLUS_FILE(current_path,fix_filename(href)));
 	}
 	return true;
 }
