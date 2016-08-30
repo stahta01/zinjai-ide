@@ -2690,6 +2690,7 @@ void mxMainWindow::OpenFileFromGui (wxFileName filename, int *multiple) {
 	bool file_exists = filename.FileExists();
 #ifndef __WIN32__
 	if (!file_exists) { // problems due to ansi-wx on utf8-linux
+		wxString fname = filename.GetFullPath();
 		wxFileName new_filename(filename.GetFullPath().ToUTF8().data());
 		if (new_filename.FileExists()) { filename = new_filename; file_exists=true; }
 	}
@@ -3046,6 +3047,7 @@ void mxMainWindow::OnFileSaveAs (wxCommandEvent &event) {
 		if (dlg.ShowModal() == wxID_OK) {
 			wxFileName file = dlg.GetPath();
 #ifndef __WIN32__
+			// acentos en paths, no en nombres de archivos porque esos los detecta el file-picker
 			if (file.GetFullPath().IsEmpty()) { // problems due to ansi-wx on utf8-linux
 				mxMessageDialog(this,LANG(MAINW_CANT_PROBLEM_WITH_ACCENTS_ON_LOAD,""
 										  "El nombre del archivo o de algún directorio en su ruta\n"

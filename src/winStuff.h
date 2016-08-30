@@ -1,7 +1,7 @@
 #ifdef __WIN32__ 
 
-#ifndef winStuff_H
-#define winStuff_H
+#ifndef WINSTUFF_H
+#define WINSTUFF_H
 
 #include <tlhelp32.h>
 #include <Windows.h>

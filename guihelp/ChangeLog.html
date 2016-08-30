@@ -6,11 +6,13 @@
 <!--<I>Note 1: A more detailed and English changelog can be found in the <A href="http://sourceforge.net/p/zinjai/code/ci/master/log/?path=" target="_blank">git repository's history</A>.</I><BR><BR>
 <I>Nota 2: Nuevo código para categorizar los cambios: New=nueva funcionalidad, Imp=mejora sobre una funcionalidad existente, Fix=corrección de un bug</I><BR><UL>-->
 
-</UL><BR><B>Release 201608xx</B><BR><UL>
+</UL><BR><B>Release 20160829</B><BR><UL>
 	<LI>New: Se resaltan en el márgen izquierdo las lineas que generan errores o warnings luego de una compilación, y se muestra el mensaje de error simplificado al colocar el mouse sobre el mismo.</LI>
 	<LI>Imp: Se puede alterar el orden en que enlazan las bibliotecas que genera un proyecto.</LI>
 	<LI>Imp: En la configuración de una biblioteca generada por un proyecto ahora se puede indicar que no se enlace en el ejecutable final.</LI>
 	<LI>Imp: Agregada una opción en el menu contextual del trazado inverso para evitar que el step-in del depurador se detenga en una función particular.</LI>
+	<LI>Imp: Pequeños cambios estéticos en la página de bienvenida.</LI>
+	<LI>Fix: La tecla Escape sirve para ocultar cualquiera de los panel autoocultable con árboles que tenga el foco.</LI>
 	<LI>Fix: Se abren correctamente los archivos con caracteres especiales en su nombre o ruta en sistemas UTF8, y se avisa si hay problemas al guardar con un nuevo nombre (solución/limitación temporal hasta que se migre a wx3).</LI>
 	<LI>Fix: Corregido un error por el cual en algunos casos no se aplicaba correctamente el esquema de colores en los márgenes.</LI>
 	<LI>Fix: Corregido el funcionamiento de la opción para evitar que el step-in del depurador se detenga en ciertos fuentes.</LI>
@@ -18,6 +20,7 @@
 	<LI>Fix: Correcciones en el indentado inteligenta para casos en los que hay estructuras de control anidadas sin llaves que delimiten sus bloques.</LI>
 	<LI>Fix: Corregido el error por el cual se modificaba la selección cuando ésta abarcaba más de una línea de código al utilizar los atajos Ctrl+T y Ctrl+Shift+T.</LI>
 	<LI>Fix: Corregido un error por el cual ZinjaI se cerraba en su primer ejecución en GNU/Linux si no encontraba una terminal conocida.</LI>
+	<LI>Fix: Implementado un workaround para los nombres de archivos de la referencia C++ que no son válidos en sistemas de archivos de Windows.</LI>
 	
 </UL><BR><B>Release 20160523</B><BR><UL>
 	<LI>Imp: Agregada una opción en las preferencias para hacer que gdb se detenga cuando se lanza una excepción.</LI>

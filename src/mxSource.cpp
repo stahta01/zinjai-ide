@@ -28,6 +28,7 @@
 #include "mxInspectionBaloon.h"
 #include <wx/utils.h>
 #include "LocalRefactory.h"
+//#include "linStuff.h"
 using namespace std;
 
 // dwell time for margins
@@ -231,15 +232,11 @@ mxSource::mxSource (wxWindow *parent, wxString ptext, project_file_item *fitem)
 	: wxStyledTextCtrl (parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxVSCROLL)
 	, focus_helper(this), autocomp_helper(this)
 {
-
-	// LC_CTYPE and LANG env vars are altered in the launcher, so this is commented now
-	// with this patch, text shows ok, but files can be saved with utf8 encoding and then it's shown differently when oppened somewhere else with the same zinjai
-//#ifndef __WIN32__
-//	// esto evita problemas en los ubuntus en castellano donde al agregar acentos, ñs y esas cosas, se desfaza el cursor, o al borrar se borra mal
-//	if (wxLocale::GetSystemEncoding()==wxFONTENCODING_UTF8) 
-//		SetCodePage(wxSTC_CP_UTF8);
-//#endif
 	
+//#ifdef __linux__
+//	if (MyLocale::IsUTF8()) SetCodePage(wxSTC_CP_UTF8);
+//#endif
+
 //	AutoCompSetDropRestOfWord(true); // esto se torna muy molesto en muchos casos (por ejemplo, intentar agregar unsigned antes de int), mejor no usar
 	
 	calltip = nullptr;	calltip_mode = MXS_NULL; inspection_baloon = nullptr;

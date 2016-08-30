@@ -30,6 +30,7 @@
 #include "mxErrorRecovering.h"
 #include "mxSplashScreen.h"
 #include "error_recovery.h"
+//#include "linStuff.h"
 using namespace std;
 
 
@@ -70,6 +71,7 @@ SHOW_MILLIS("Entering OnInit...");
 	// si el launcher cambio el entorno para desactivar los menues de unity,
 	// restablecer esas variables para los proyectos que ejecutemos
 #ifdef __linux__
+//	MyLocale::Init();
 	RestoreEnvVarsChangedByLauncher();
 #endif
 	
