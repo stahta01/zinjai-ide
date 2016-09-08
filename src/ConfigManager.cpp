@@ -3,6 +3,9 @@
 #include <wx/wx.h>
 #include <wx/filename.h>
 #include <wx/textfile.h>
+#ifdef __APPLE__
+#	include <wx/stc/stc.h>
+#endif
 
 #include "mxUtils.h"
 #include "version.h"
@@ -281,7 +284,9 @@ bool ConfigManager::Load() {
 				else CFG_BOOL_READ_DN("fullpath_on_project_tree",Init.fullpath_on_project_tree);
 				else CFG_GENERIC_READ_DN("colour_theme",Init.colour_theme);
 				else CFG_GENERIC_READ_DN("complements_timestamp",Init.complements_timestamp);
-				
+#ifdef __APPLE__
+				else CFG_INT_READ_DN("mac_stc_zflags",Init.mac_stc_zflags);
+#endif
 			} else if (section=="Files") {
 				CFG_GENERIC_READ_DN("toolchain",Files.toolchain);
 				else CFG_GENERIC_READ_DN("debugger_command",Files.debugger_command);
@@ -503,6 +508,9 @@ bool ConfigManager::Save(){
 	CFG_BOOL_WRITE_DN("beautify_compiler_errors",Init.beautify_compiler_errors);
 	CFG_GENERIC_WRITE_DN("colour_theme",Init.colour_theme);
 	CFG_GENERIC_WRITE_DN("complements_timestamp",Init.complements_timestamp);
+#ifdef __APPLE__
+	CFG_GENERIC_WRITE_DN("mac_stc_zflags",Init.mac_stc_zflags);
+#endif				
 	fil.AddLine("");
 
 	fil.AddLine("[Debug]");
@@ -665,7 +673,7 @@ void ConfigManager::LoadDefaults(){
 #ifdef __WIN32__
 	Files.toolchain="gcc-mingw32";
 	Files.debugger_command="gdb";
-	Files.runner_command=DIR_PLUS_FILE(zinjai_bin_dir,"runner.exe");
+	Files.runner_command=DIR_PLUS_FILE("bin","runner.exe");
 	Files.terminal_command="";
 	Files.explorer_command="explorer";
 	Files.img_viewer="";
@@ -675,8 +683,8 @@ void ConfigManager::LoadDefaults(){
 #elif defined(__APPLE__)
 	Files.toolchain="gcc";
 	Files.debugger_command="gdb";
-	Files.runner_command=DIR_PLUS_FILE(zinjai_bin_dir,"runner.bin");
-	Files.terminal_command=DIR_PLUS_FILE(zinjai_bin_dir,"mac-terminal-wrapper.bin");
+	Files.runner_command=DIR_PLUS_FILE("bin","runner.bin");
+	Files.terminal_command=DIR_PLUS_FILE("bin","mac-terminal-wrapper.bin");
 	Files.explorer_command="open";
 	Files.img_viewer="open";
 	Files.doxygen_command="/Applications/Doxygen.app/Contents/Resources/doxygen";
@@ -773,6 +781,10 @@ void ConfigManager::LoadDefaults(){
 	Source.autocompFilters=true;
 	Source.callTips=true;
 	Source.autocompTips=true;
+#ifdef __APPLE__
+	Source.autocompTips=false;
+	Init.mac_stc_zflags=-1;
+#endif
 	Source.avoidNoNewLineWarning=true;
 
 	Running.cpp_compiler_options="-Wall -pedantic-errors -O0";
@@ -1019,6 +1031,22 @@ void ConfigManager::FinishiLoading ( ) {
 		menu_data->GetToolbarPosition(MenusAndToolsConfig::tbSTATUS)="t3";
 		menu_data->GetToolbarPosition(MenusAndToolsConfig::tbPROJECT)="T1";
 	}
+#ifdef __APPLE__
+	if (Init.mac_stc_zflags==-1) {
+		Init.mac_stc_zflags = 0;
+		if (mxMessageDialog(nullptr,LANG(CONFIG_MAC_DEADKEYS_PROBLEM_QUESTION,""
+						"¿Utiliza un teclado en español donde '[' y '{' se ingresan con\n"
+						"AltGr y las teclas que están a la derecha de las teclas 'P' y 'Ñ'?\n"
+						"\n"
+						"Nota: si más tarde detecta problemas con estas teclas puede volver\n"
+						"a cambiar esta configuación desde el cuadro de preferencias.\n"
+					)).IconQuestion().ButtonsYesNo().Run().yes) 
+		{
+			Init.mac_stc_zflags = ZF_FIXDEADKEYS_ESISO;
+		}
+	}
+	wxSTC_SetZaskarsFlags(Init.mac_stc_zflags);
+#endif
 }
 
 bool ConfigManager::Initialize(const wxString & a_path) {

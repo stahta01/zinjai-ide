@@ -226,6 +226,11 @@ wxPanel *mxPreferenceWindow::CreateGeneralPanel (mxBookCtrl *notebook) {
 		.Value(!wxFileExists(DIR_PLUS_FILE(config->config_dir,"ubuntu"))).EndCheck(init_disable_ubuntu_tweaks);
 #endif
 	
+#ifdef __APPLE__
+	sizer.BeginCheck( LANG(PREFERENCES_GENERAL_FIX_MAC_DEADKEYS,"Tratamiento especial de las telcla '[' y '{' (para teclados en español ISO)") )
+		.Value(config->Init.mac_stc_zflags==ZF_FIXDEADKEYS_ESISO).EndCheck(init_mac_zaskars_flags);
+#endif
+	
 	sizer.BeginButton( LANG(PREFERENCES_CUSTOMIZE_SHORTCUTS,"Personalizar atajos de teclado...") )
 		.Id(mxID_PREFERENCES_CUSTOMIZE_SHORTCUTS).EndButton();
 	
@@ -808,6 +813,10 @@ void mxPreferenceWindow::OnOkButton(wxCommandEvent &event) {
 		else { wxTextFile fil( DIR_PLUS_FILE(config->config_dir,"ubuntu") ); fil.Create(); fil.Write(); }
 	}
 #endif
+#ifdef __APPLE__
+	config->Init.mac_stc_zflags = init_mac_zaskars_flags->GetValue()?ZF_FIXDEADKEYS_ESISO:0;
+	wxSTC_SetZaskarsFlags(config->Init.mac_stc_zflags);
+#endif
 	
 	long int l;
 	if (config->Init.show_welcome && !g_welcome_panel) {
@@ -861,7 +870,7 @@ void mxPreferenceWindow::OnOkButton(wxCommandEvent &event) {
 	for (unsigned int i=0;i<ns->GetPageCount();i++)
 		((mxSource*)(ns->GetPage(i)))->LoadSourceConfig();
 	main_window->SetStatusBarFields(); // ocultar/mostrar nro de linea
-		
+	
 	if (debug->IsDebugging()) {
 		for (unsigned int i=0;i<ns->GetPageCount();i++)
 			((mxSource*)(ns->GetPage(i)))->SetReadOnlyMode(config->Debug.allow_edition?ROM_DEBUG:ROM_ADD_DEBUG);
@@ -1227,6 +1236,9 @@ void mxPreferenceWindow::ResetChanges() {
 	// general
 #ifdef __linux__
 	init_disable_ubuntu_tweaks->SetValue(!wxFileExists(DIR_PLUS_FILE(config->config_dir,"ubuntu")));
+#endif
+#ifdef __APPLE__
+	init_mac_zaskars_flags->SetValue(config->Init.mac_stc_zflags==ZF_FIXDEADKEYS_ESISO);
 #endif
 
 	// toolbars

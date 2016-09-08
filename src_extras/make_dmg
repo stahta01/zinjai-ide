@@ -1,68 +1,68 @@
 echo Updating Files...
 
-mkdir zinjai.app
-mkdir zinjai.app/Contents
-mkdir zinjai.app/Contents/Resources
+mkdir -p zinjai.app
+mkdir -p zinjai.app/Contents
+mkdir -p zinjai.app/Contents/Resources
 cp -u /mnt/ex/zinjai/compiling.txt zinjai.app/Contents/Resources/
 cp -u /mnt/ex/zinjai/readme.txt zinjai.app/Contents/Resources/
-mkdir zinjai.app/Contents/Resources/templates
+mkdir -p zinjai.app/Contents/Resources/templates
 #cp -Hur /mnt/ex/zinjai/templates-mac/* zinjai.app/Contents/Resources/templates/
-mkdir zinjai.app/Contents/Resources/src_extras
+mkdir -p zinjai.app/Contents/Resources/src_extras
 cp -u /mnt/ex/zinjai/src_extras/* zinjai.app/Contents/Resources/src_extras/
-mkdir zinjai.app/Contents/Resources/src_extras/complement
+mkdir -p zinjai.app/Contents/Resources/src_extras/complement
 cp -u /mnt/ex/zinjai/src_extras/complement/* zinjai.app/Contents/Resources/src_extras/complement
-mkdir zinjai.app/Contents/Resources/src_extras/img_viewer
+mkdir -p zinjai.app/Contents/Resources/src_extras/img_viewer
 cp -u /mnt/ex/zinjai/src_extras/img_viewer/* zinjai.app/Contents/Resources/src_extras/img_viewer
-mkdir zinjai.app/Contents/Resources/src_extras/wx_autocomp
+mkdir -p zinjai.app/Contents/Resources/src_extras/wx_autocomp
 cp -u /mnt/ex/zinjai/src_extras/wx_autocomp/* zinjai.app/Contents/Resources/src_extras/wx_autocomp
-mkdir zinjai.app/Contents/Resources/autocomp
+mkdir -p zinjai.app/Contents/Resources/autocomp
 cp -u /mnt/ex/zinjai/autocomp/* zinjai.app/Contents/Resources/autocomp/
-mkdir zinjai.app/Contents/Resources/colours
+mkdir -p zinjai.app/Contents/Resources/colours
 cp -u /mnt/ex/zinjai/colours/* zinjai.app/Contents/Resources/colours/
-mkdir zinjai.app/Contents/Resources/guihelp
+mkdir -p zinjai.app/Contents/Resources/guihelp
 cp -u /mnt/ex/zinjai/guihelp/* zinjai.app/Contents/Resources/guihelp/
-mkdir zinjai.app/Contents/Resources/third/lizard
+mkdir -p zinjai.app/Contents/Resources/third/lizard
 cp -u /mnt/ex/zinjai/third/lizard/* zinjai.app/Contents/Resources/third/lizard/
-mkdir zinjai.app/Contents/Resources/third/gprof2dot
+mkdir -p zinjai.app/Contents/Resources/third/gprof2dot
 cp -u /mnt/ex/zinjai/third/gprof2dot/* zinjai.app/Contents/Resources/third/gprof2dot/
-mkdir zinjai.app/Contents/Resources/imgs
+mkdir -p zinjai.app/Contents/Resources/imgs
 cp -u /mnt/ex/zinjai/imgs/*.png zinjai.app/Contents/Resources/imgs/
 cp -u /mnt/ex/zinjai/imgs/*.html zinjai.app/Contents/Resources/imgs/
-mkdir zinjai.app/Contents/Resources/src
+mkdir -p zinjai.app/Contents/Resources/src
 cp -u /mnt/ex/zinjai/src/* zinjai.app/Contents/Resources/src/
 cp -u /mnt/ex/zinjai/zinjai.zpr zinjai.app/Contents/Resources/
 cp -u /mnt/ex/zinjai/imgs/descripcion.txt zinjai.app/Contents/Resources/imgs/
 cp -u /mnt/ex/zinjai/imgs/*.ico zinjai.app/Contents/Resources/imgs/
-mkdir zinjai.app/Contents/Resources/imgs/16
+mkdir -p zinjai.app/Contents/Resources/imgs/16
 cp -u /mnt/ex/zinjai/imgs/16/* zinjai.app/Contents/Resources/imgs/16/
-mkdir zinjai.app/Contents/Resources/imgs/24
+mkdir -p zinjai.app/Contents/Resources/imgs/24
 cp -u /mnt/ex/zinjai/imgs/24/* zinjai.app/Contents/Resources/imgs/24/
-mkdir zinjai.app/Contents/Resources/imgs/32
+mkdir -p zinjai.app/Contents/Resources/imgs/32
 cp -u /mnt/ex/zinjai/imgs/32/* zinjai.app/Contents/Resources/imgs/32/
 cp -u /mnt/ex/zinjai/imgs/art.svg zinjai.app/Contents/Resources/imgs/
 cp -u /mnt/ex/zinjai/imgs/logos.svg zinjai.app/Contents/Resources/imgs/
 cp -u /mnt/ex/zinjai/debug_macros.gdb zinjai.app/Contents/Resources/
-mkdir zinjai.app/Contents/Resources/imgs/skins
+mkdir -p zinjai.app/Contents/Resources/imgs/skins
 cp -ru /mnt/ex/zinjai/skins/* zinjai.app/Contents/Resources/skins/
-mkdir zinjai.app/Contents/Resources/imgs/lang
+mkdir -p zinjai.app/Contents/Resources/imgs/lang
 cp -ru /mnt/ex/zinjai/lang/*.pre zinjai.app/Contents/Resources/lang/
 cp /mnt/ex/zinjai/lang/*.txt zinjai.app/Contents/Resources/lang/
-mkdir zinjai.app/Contents/Resources/imgs/parser
+mkdir -p zinjai.app/Contents/Resources/imgs/parser
 cp -u /mnt/ex/zinjai/parser/* zinjai.app/Contents/Resources/parser/
-mkdir zinjai.app/Contents/Resources/imgs/parser/common
+mkdir -p zinjai.app/Contents/Resources/imgs/parser/common
 cp -ru /mnt/ex/zinjai/parser/common/* zinjai.app/Contents/Resources/parser/common/
-mkdir zinjai.app/Contents/Resources/imgs/parser/cpp
+mkdir -p zinjai.app/Contents/Resources/imgs/parser/cpp
 cp -ru /mnt/ex/zinjai/parser/cpp/* zinjai.app/Contents/Resources/parser/cpp/
-mkdir zinjai.app/Contents/Resources/imgs/parser/hyper
+mkdir -p zinjai.app/Contents/Resources/imgs/parser/hyper
 cp -ru /mnt/ex/zinjai/parser/hyper/* zinjai.app/Contents/Resources/parser/hyper/
-mkdir zinjai.app/Contents/Resources/imgs/parser/misc
+mkdir -p zinjai.app/Contents/Resources/imgs/parser/misc
 cp -ru /mnt/ex/zinjai/parser/misc/* zinjai.app/Contents/Resources/parser/misc/
 rm -f zinjai.app/Contents/Resources/lang/spanish.*
 rm -f zinjai.app/Contents/Resources/lang/tools/mxLangTool/mxLangTool.exe
 cp /mnt/ex/zinjai/lang/*.sgn zinjai.app/Contents/Resources/lang/
 cp /mnt/ex/zinjai/lang/*.src zinjai.app/Contents/Resources/lang/
 cp /mnt/ex/zinjai/lang/spanish.pre zinjai.app/Contents/Resources/lang/
-mkdir zinjai.app/Contents/Resources/lang/tools
+mkdir -p zinjai.app/Contents/Resources/lang/tools
 cp /mnt/ex/zinjai/lang/tools/extract_enum.cpp zinjai.app/Contents/Resources/lang/tools/
 cp -ru /mnt/ex/zinjai/lang/tools/mxLangTool zinjai.app/Contents/Resources/lang/tools/
 cp -u /mnt/ex/zinjai/lang/tools/mxLangTool.exe zinjai.app/Contents/Resources/lang/tools/
@@ -81,7 +81,7 @@ rm -f zinjai.app/Contents/Resources/bin/cbrowser
 rm -f zinjai.app/Contents/Resources/bin/runner.bin
 rm -f zinjai.app/Contents/Resources/bin/mac-terminal-wrapper.bin
 rm -f zinjai.app/Contents/Resources/bin/updatem.bin
-make -f Makefile.ppc -C zinjai.app/Contents/Resources/src || exit 1
+make -i -f Makefile.ppc -C zinjai.app/Contents/Resources/src || exit 1
 make -f Makefile.ppc -C zinjai.app/Contents/Resources/src_extras || exit 1
 make -f Makefile.ppc -C zinjai.app/Contents/Resources/parser || exit 1
 echo Creating Package...

@@ -72,6 +72,10 @@ class mxPreferenceWindow : public mxDialog {
 	mxToolbarEditor *toolbar_editor_run;
 	mxToolbarEditor *toolbar_editor_view;
 	
+	
+#ifdef __APPLE__
+	wxCheckBox *init_mac_zaskars_flags;
+#endif
 #ifdef __linux__
 	wxCheckBox *init_disable_ubuntu_tweaks;
 #endif

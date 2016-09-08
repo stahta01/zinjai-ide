@@ -32,6 +32,8 @@ MAINW_VALGRIND_MISSING
 Valgrind isn't present in your syste or its path isn't correctly defined\nin ZinjaI's settings. To download Valgrind go to http://www.valgrind.org.\nIf it is already installed, check the path in "Paths 2" tab in\nPreference's dialog (from "File" menu).
 MAINW_CPPCHECK_MISSING
 CppCheck isn't present in your system or its path isn't correctly defined\nin ZinjaI's settings. To download Doxygen go to http://cppcheck.sourceforge.net.\nIf it is already installed, check the path in "Paths 2" tab in\nPreference's dialog (from "File" menu).
+CONFIG_MAC_DEADKEYS_PROBLEM_QUESTION
+Do you use Alt Gr plus the keys rigth to 'P' and 'Ã' for\ninserting '[' and '{' symbols (Spanish-ISO keyboard)?\n\nNote: if you experience problems with your keyboard later,\nyou'll be able to change this setting from Preferences diagog.
 CONFIG_GOTO_PACKAGE_WEBSITE
 Open website (<{1}>)
 CONFIG_OPEN_PREFERENCES
@@ -2466,6 +2468,8 @@ PREFERENCES_GENERAL_CHECK_FOR_UPDATES
 Check for updates on startup
 PREFERENCES_GENERAL_DISABLE_UBUNTU_TWEAKS
 Disable Unity's menu and scrollbar custom interface (*)
+PREFERENCES_GENERAL_FIX_MAC_DEADKEYS
+Enable fix for '['  and '{' keys (for Spanish-ISO keyboards)
 PREFERENCES_CUSTOMIZE_SHORTCUTS
 Customize keyboard shortcuts...
 PREFERENCES_GENERAL_ASTERIX_WILL_APPLY_NEXT_TIME

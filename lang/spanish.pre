@@ -34,6 +34,8 @@ MAINW_VALGRIND_MISSING
 Valgrind no se encuentra correctamente instalado/configurado\nen su pc. Si ya se encuentra instalado deve configurar su\nubiciacion en la pestaña en el cuadro de \"Preferencias\".
 MAINW_CPPCHECK_MISSING
 CppCheck no se encuentra correctamente instalado/configurado\nen su pc. Si ya se encuentra instalado debe configurar su\nubiciación en el cuadro de \"Preferencias\".
+CONFIG_MAC_DEADKEYS_PROBLEM_QUESTION
+¿Utiliza un teclado en español donde '[' y '{' se ingresan con\nAltGr y las teclas que están a la derecha de las teclas 'P' y 'Ñ'?\n\nNota: si más tarde detecta problemas con estas teclas puede volver\na cambiar esta configuación desde el cuadro de preferencias.\n
 CONFIG_GOTO_PACKAGE_WEBSITE
 Abrir sitio web (<{1}>)
 CONFIG_OPEN_PREFERENCES
@@ -2053,7 +2055,7 @@ Ha ocurrido un error al intentar imprimir
 MAINW_CANT_OPEN_TEMPLATE_WHILE_PROJECT
 No puede abrir un ejemplo mientras trabaja en un proyecto.\nCierre el proyecto e intente nuevamente.
 MAINW_CANT_PROBLEM_WITH_ACCENTS_ON_LOAD
-El nombre del archivo o de algún directorio en su ruta\ncontiene acentos u otro caracteres especiales. En este\nsistema ZinjaI no puede guardar correctamente los\ncambios del archivo a menos que modifique su nombre o ruta\n
+El nombre del archivo o de algún directorio en su ruta\ncontiene acentos u otro caracteres especiales. En este\nsistema ZinjaI no puede guardar correctamente los\ncambios del archivo a menos que modifique su nombre o ruta.
 MAINW_NO_EXTENSION_ADD_CPP_QUESTION
 No ha definido una extension en el nombre de archivo indicado.\nSi es un codigo fuente se recomienda utilizar la extension cpp\npara que el compilador pueda identificar el lenguaje.\nDesea agregar la extension cpp al nombre?
 MAINW_ALWAYS_APPEND_EXTENSION
@@ -2468,6 +2470,8 @@ PREFERENCES_GENERAL_CHECK_FOR_UPDATES
 Verificar si existen nuevas versiones al iniciar
 PREFERENCES_GENERAL_DISABLE_UBUNTU_TWEAKS
 Deshabilitar la interfaz de menúes y scrollbars especial de Unity (*)
+PREFERENCES_GENERAL_FIX_MAC_DEADKEYS
+Tratamiento especial de las telcla '[' y '{' (para teclados en español ISO)
 PREFERENCES_CUSTOMIZE_SHORTCUTS
 Personalizar atajos de teclado...
 PREFERENCES_GENERAL_ASTERIX_WILL_APPLY_NEXT_TIME

@@ -159,6 +159,9 @@ struct cfgInit {
 	bool beautify_compiler_errors; ///< trata de arreglar los horribles mensajes de error del compilador cuando se usan templates (como todo stl) o cosas estándar de implemetación "rebuscada" (como strings)
 	bool use_cache_for_subcommands; ///< activa el uso de cache en mxUT::ExecComas, para no ejecutar a cada rato el mismo subcomando
 	wxString complements_timestamp; ///< last time we applied complements patchs to configuration, to avoid doing twice
+#ifdef __APPLE__
+	int mac_stc_zflags; ///< activa algunos parches en scintilla para corregir problemas específicos en mac
+#endif
 };
 
 //! Elementos de la configuración relacionados a rutas de archivos y directorios
