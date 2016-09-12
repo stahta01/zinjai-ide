@@ -226,7 +226,7 @@ wxPanel *mxPreferenceWindow::CreateGeneralPanel (mxBookCtrl *notebook) {
 		.Value(!wxFileExists(DIR_PLUS_FILE(config->config_dir,"ubuntu"))).EndCheck(init_disable_ubuntu_tweaks);
 #endif
 	
-#ifdef __APPLE__
+#if defined(__APPLE__) && defined(__STC_ZASKAR)
 	sizer.BeginCheck( LANG(PREFERENCES_GENERAL_FIX_MAC_DEADKEYS,"Tratamiento especial de las telcla '[' y '{' (para teclados en español ISO)") )
 		.Value(config->Init.mac_stc_zflags==ZF_FIXDEADKEYS_ESISO).EndCheck(init_mac_zaskars_flags);
 #endif
@@ -813,7 +813,7 @@ void mxPreferenceWindow::OnOkButton(wxCommandEvent &event) {
 		else { wxTextFile fil( DIR_PLUS_FILE(config->config_dir,"ubuntu") ); fil.Create(); fil.Write(); }
 	}
 #endif
-#ifdef __APPLE__
+#if defined(__APPLE__) && defined(__STC_ZASKAR)
 	config->Init.mac_stc_zflags = init_mac_zaskars_flags->GetValue()?ZF_FIXDEADKEYS_ESISO:0;
 	wxSTC_SetZaskarsFlags(config->Init.mac_stc_zflags);
 #endif
@@ -1237,7 +1237,7 @@ void mxPreferenceWindow::ResetChanges() {
 #ifdef __linux__
 	init_disable_ubuntu_tweaks->SetValue(!wxFileExists(DIR_PLUS_FILE(config->config_dir,"ubuntu")));
 #endif
-#ifdef __APPLE__
+#if defined(__APPLE__) && defined(__STC_ZASKAR)
 	init_mac_zaskars_flags->SetValue(config->Init.mac_stc_zflags==ZF_FIXDEADKEYS_ESISO);
 #endif
 

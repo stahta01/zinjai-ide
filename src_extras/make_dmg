@@ -81,7 +81,7 @@ rm -f zinjai.app/Contents/Resources/bin/cbrowser
 rm -f zinjai.app/Contents/Resources/bin/runner.bin
 rm -f zinjai.app/Contents/Resources/bin/mac-terminal-wrapper.bin
 rm -f zinjai.app/Contents/Resources/bin/updatem.bin
-make -i -f Makefile.ppc -C zinjai.app/Contents/Resources/src || exit 1
+make -f Makefile.ppc -C zinjai.app/Contents/Resources/src || exit 1
 make -f Makefile.ppc -C zinjai.app/Contents/Resources/src_extras || exit 1
 make -f Makefile.ppc -C zinjai.app/Contents/Resources/parser || exit 1
 echo Creating Package...

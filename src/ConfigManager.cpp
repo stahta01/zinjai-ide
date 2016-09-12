@@ -103,8 +103,16 @@ void ConfigManager::DoInitialChecks() {
 	
 	// verificar si hay compilador
 	if (!Init.compiler_seen) {
-		if (mxUT::GetOutput("g++ --version").Len()) {
+		wxString gcc_version = mxUT::GetOutput("g++ --version");
+		if (gcc_version.Len()) {
 			Init.compiler_seen = true;
+#ifdef __APPLE__
+			// in new mac systems, g++ command is just a wrapper around clang
+			if (gcc_version.Contains("clang")) {
+				Files.toolchain = "clang"; 
+				Toolchain::SelectToolchain(); 
+			}
+#endif
 		} else {
 			// try to use clang if g++ not found
 			wxArrayString toolchains;
@@ -1031,7 +1039,7 @@ void ConfigManager::FinishiLoading ( ) {
 		menu_data->GetToolbarPosition(MenusAndToolsConfig::tbSTATUS)="t3";
 		menu_data->GetToolbarPosition(MenusAndToolsConfig::tbPROJECT)="T1";
 	}
-#ifdef __APPLE__
+#if defined(__APPLE__) && defined(__STC_ZASKAR)
 	if (Init.mac_stc_zflags==-1) {
 		Init.mac_stc_zflags = 0;
 		if (mxMessageDialog(nullptr,LANG(CONFIG_MAC_DEADKEYS_PROBLEM_QUESTION,""
