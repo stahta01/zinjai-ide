@@ -1,6 +1,7 @@
 #ifndef CONFIG_MANAGER_H
 #define CONFIG_MANAGER_H
 
+#include <wx/stc/stc.h>
 #include <wx/string.h>
 #include "mxInspectionGrid.h" // por IG_COLS_COUNT
 #include "mxBacktraceGrid.h" // por BG_COLS_COUNT

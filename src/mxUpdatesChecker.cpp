@@ -12,6 +12,7 @@
 #include "version.h"
 #include "mxArt.h"
 #include "mxTextDialog.h"
+#include "mxMessageDialog.h"
 
 BEGIN_EVENT_TABLE(mxUpdatesChecker, wxDialog)
 	EVT_BUTTON(wxID_CANCEL,mxUpdatesChecker::OnCloseButton)
@@ -129,8 +130,16 @@ void mxUpdatesChecker::OnCloseButton(wxCommandEvent &evt) {
 }
 
 void mxUpdatesChecker::OnChangesButton(wxCommandEvent &evt) {
+#ifdef __WIN3__
+	bool do_exit = mxMessageDialog(this,"Si decide actualizar ZinjaI ahora, deberá cerrar \n"
+						 "esta instancia antes de ejecutar el nuevo instalador.\n\n"
+						 "¿Desea cerrar ZinjaI ahora?").IconQuestion().ButtonsYesNo().Run().yes;
+#else
+	bool do_exit = false;
+#endif
 	mxUT::OpenZinjaiSite("actualizacion.php&os="ARCHITECTURE);
 	Close();
+	if (do_exit) main_window->Close();
 }
 
 void mxUpdatesChecker::BackgroundCheck() {

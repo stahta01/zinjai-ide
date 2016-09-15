@@ -292,7 +292,7 @@ bool ConfigManager::Load() {
 				else CFG_BOOL_READ_DN("fullpath_on_project_tree",Init.fullpath_on_project_tree);
 				else CFG_GENERIC_READ_DN("colour_theme",Init.colour_theme);
 				else CFG_GENERIC_READ_DN("complements_timestamp",Init.complements_timestamp);
-#ifdef __APPLE__
+#if defined(__APPLE__) && defined(__STC_ZASKAR)
 				else CFG_INT_READ_DN("mac_stc_zflags",Init.mac_stc_zflags);
 #endif
 			} else if (section=="Files") {
