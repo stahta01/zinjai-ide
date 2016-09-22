@@ -1966,6 +1966,10 @@ MAINW_PROJECT_FILE_POPUP_TOGGLE_FULL_PATH_OFF
 Mostrar solo nombres de archivos
 MAINW_PROJECT_FILE_POPUP_TOGGLE_FULL_PATH_ON
 Mostrar rutas relativas completas
+PREFERENCES_WRITING_BEAUTIFY_COMPILER_ERRORS
+Simplificar mensajes de error del compilador
+MAINW_REQUIRES_RECOMPILATION
+Los cambios tendrán efecto a partir de la próxima compilación
 MAINW_OPENING
 Abriendo
 MAINW_PROBLEM_RENAMING
@@ -2632,8 +2636,6 @@ PREFERENCES_WRITING_CHECK_FOR_EMPTY_LAST_LINE
 Controlar que quede una linea en blanco al final de cada archivo
 PREFERENCES_WRITING_SHOW_TOOLTIPS_FOR_VAR_TYPES
 Utilizar tooltips para identificar tipos de variables
-PREFERENCES_WRITING_BEAUTIFY_COMPILER_ERRORS
-Simplificar mensajes de error del compilador
 PREFERENCES_WRITTING_AUTOCODES_FILE
 Archivo de definiciones de plantillas de auto-código
 PREFERENCES_GENERAL_SPANISH_COMPILER_OUTPUT

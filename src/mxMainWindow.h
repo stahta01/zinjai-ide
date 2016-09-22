@@ -381,6 +381,7 @@ public:
 
 	void ShowSpecilaUnnamedSource(const wxString &tab_name, const wxArrayString &lines);
 	void OnCompilerTreeShowFull(wxCommandEvent &event);
+	void OnCompilerTreeToggleUnSTD(wxCommandEvent &event);
 	void OnCompilerTreePopup(wxTreeEvent &event);
 
 	void PopulateProjectFilePopupMenu(wxMenu &menu, project_file_item *fi, bool for_tab);

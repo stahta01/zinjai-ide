@@ -434,6 +434,7 @@ BEGIN_EVENT_TABLE(mxMainWindow, wxFrame)
 	EVT_TREE_ITEM_RIGHT_CLICK(mxID_TREE_PROJECT, mxMainWindow::OnProjectTreePopup)
 	EVT_TREE_ITEM_RIGHT_CLICK(mxID_TREE_COMPILER, mxMainWindow::OnCompilerTreePopup)
 	EVT_MENU(mxID_COMPILER_POPUP_FULL, mxMainWindow::OnCompilerTreeShowFull)
+	EVT_MENU(mxID_COMPILER_POPUP_USTD, mxMainWindow::OnCompilerTreeToggleUnSTD)
 	
 	EVT_MENU(mxID_PROJECT_POPUP_OPEN_FOLDER, mxMainWindow::OnProjectTreeOpenFolder)
 	EVT_MENU(mxID_PROJECT_POPUP_PROPERTIES, mxMainWindow::OnProjectTreeProperties)
@@ -724,8 +725,18 @@ void mxMainWindow::OnCompilerTreePopup(wxTreeEvent &event) {
 	mxHidenPanel::ignore_autohide=true;
 	wxMenu menu("");
 	menu.Append(mxID_COMPILER_POPUP_FULL, LANG(MAINW_OPEN_LAST_COMPILER_OUTPUT,"Abrir última salida"));
+	menu.AppendSeparator();
+	if (!current_toolchain.IsExtern())
+		menu.Append(mxID_COMPILER_POPUP_USTD,LANG(PREFERENCES_WRITING_BEAUTIFY_COMPILER_ERRORS,""
+												  "Simplificar mensajes de error del compilador")
+					)->Check(config->Init.beautify_compiler_errors);
 	project_tree.treeCtrl->PopupMenu(&menu);
 	mxHidenPanel::ignore_autohide=false;
+}
+
+void mxMainWindow::OnCompilerTreeToggleUnSTD(wxCommandEvent &event) {
+	config->Init.beautify_compiler_errors = !config->Init.beautify_compiler_errors;
+	mxMessageDialog(this,LANG(MAINW_REQUIRES_RECOMPILATION,"Los cambios tendrán efecto a partir de la próxima compilación")).IconInfo().ButtonsOk().Run();
 }
 
 void mxMainWindow::OnCompilerTreeShowFull(wxCommandEvent &event) {
