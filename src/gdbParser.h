@@ -21,6 +21,16 @@ void GdbParse_SkipString(const TString &s, int &i, int l) {
 	}
 }
 
+template<char open_char, char close_char, typename TString>
+void GdbParse_SkipGenericList(const TString &s, int &i, int l) {
+	int nesting=1; ++i;
+	while (i+1<l && nesting>0) {
+		i++;
+		if (s[i]==open_char) nesting++;
+		else if (s[i]==close_char) nesting--;
+	}
+}
+
 /**
 * @brief Saltea la lista de argumentos del template
 *
@@ -30,12 +40,12 @@ void GdbParse_SkipString(const TString &s, int &i, int l) {
 **/
 template<typename TString>
 void GdbParse_SkipTemplate(const TString &s, int &i, int l) {
-	int template_level=1; ++i;
-	while (i+1<l && template_level>0) {
-		i++;
-		if (s[i]=='<') template_level++;
-		else if (s[i]=='>') template_level--;
-	}
+	return GdbParse_SkipGenericList<'<','>'>(s,i,l);
+}
+
+template<typename TString>
+void GccParse_SkipTemplateActualArgs(const TString &s, int &i, int l) {
+	return GdbParse_SkipGenericList<'[',']'>(s,i,l);
 }
 
 /**

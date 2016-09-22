@@ -9,6 +9,7 @@
 #define CEM_SWAP_STRING_FLAG "<<cem swap>>"
 #define CEM_KEEP_STRING_FLAG "<<cem keep>>"
 #include "mxCompiler.h"
+#include "gdbParser.h"
 
 CompilerErrorsManager *errors_manager = nullptr;
 
@@ -117,60 +118,37 @@ CompilerErrorsManager::CEMState CompilerErrorsManager::InitExtern(const wxString
 /// hace más legibles errores reemplazando templates y tipos conocidos (como allocators, char_traits, etc)
 static void UnSTD(wxString &line) {
 	int p;
-	while ((p=line.find("[with "))!=wxNOT_FOUND) { // buscar un argumento actual para plantilla
-		int p0=p;  // pos donde inicia el argumento actual "[with booga=...."
-		int p1=p;  // pos donde termina el argumento actual "...]"
-		int lev=0; // auxiliar para ignorar corchetes anidados
-		p+=6; // salteat el "[with " y buscar el corchete que cierra
-		while (p1<int(line.Len())&&(lev>0||line[p1]!=']')) {
-			if (line[p1]=='[') lev++;
-			else if (line[p1]==']') lev--;
-			p1++;
+	while ( (p=line.find("[with ")) != wxNOT_FOUND ) { // buscar argumentos actuales de plantillas "[with T1 = int; T2 = float]"
+		// extraer la liste de argumentos de line (sacar de line, mover a temp_args)
+		int pe = p; GccParse_SkipTemplateActualArgs(line,pe,line.Len());
+		wxString temp_args = line.Mid(p+6,pe-p-5); line.erase(p,pe-p+2);
+		// tomar de a uno los reemplazos (estan separados por punto y coma)
+		temp_args.Last()=';';
+		int p0 = 0, p1 = 0, l=temp_args.Len();
+		while(p1<l) {
+			if (temp_args[p1]==';') {
+				wxString one_arg = temp_args.Mid(p0,p1-p0);
+				// dado un reemplazo, cortar los dos tipos ("Tin = Tout")
+				int pigual = one_arg.find(" = ");
+				if (pigual!=wxNOT_FOUND) {
+					wxString type_in = one_arg.Mid(0,pigual), type_out = one_arg.Mid(pigual+3);
+					// reemplazar en todos lados los tipos
+					int p_in=0;
+					while ((p_in=line.Mid(p_in).Find(type_in))!=wxNOT_FOUND) {
+						// ver que la ocurrencia sea a palabra completa
+						char cpre = p_in?tolower(line[p_in-1]):' '; 
+						int p_out = p_in+type_in.Len();
+						char cpos = p_out==int(line.Len())?' ':tolower(line[p_out]);
+						if ((cpre<'a'||cpre>'z')&&(cpre<'0'||cpre>'9')&&(cpos<'a'||cpos>'z')&&(cpos<'0'||cpos>'9')) {
+							line.replace(p_in,type_in.size(),type_out);
+							p_in=p+type_out.size();
+						} else 
+							p_in=p+type_in.size();
+					}				
+				}
+				p1 = p0 = p1+2;
+			} else ++p1;
 		}
-		int pos_last_igual=p0; 
-		int pos_igual=0; // posición donde encuentra un = que corresponda a esa lista de argumentos
-		while (pos_last_igual<p1 && (pos_igual=line.SubString(pos_last_igual+1,p1).Find("="))!=wxNOT_FOUND) {
-			pos_igual+=pos_last_igual+1; // para que quede como pos absoluta
-			pos_last_igual=pos_igual;
-			
-			// buscar que hay a la izquierda del igual
-			int pre_fin=pos_igual-1;  // pos donde termina el termino de la izquierda
-			while (pre_fin>0&&line[pre_fin]==' ') pre_fin--;
-			int pre_ini=pre_fin; // pos donde empieza el termino de la izquierda
-			lev=0; // no deberia ser necesario
-			while (pre_ini>=p0+6&&(lev>0||(line[pre_ini]!='['&&line[pre_ini]!=','))) {
-				if (line[pre_ini]=='>'||line[pre_ini]==')') lev++;
-				else if (line[pre_ini]=='<'||line[pre_ini]=='(') lev--;
-				pre_ini--;
-			}
-			pre_ini++; 
-			while (pre_ini<pre_fin&&line[pre_ini]==' ') pre_ini++;
-			wxString type_in=line.SubString(pre_ini,pre_fin); // tipo que sera reemplazado
-			
-			// buscar que hay a la derecha del igual
-			int pos_ini=pos_igual+1; // pos donde empieza el termino de la derecha
-			while (pos_ini<p1&&line[pos_ini]==' ') pos_ini++;
-			int pos_fin=pos_ini; // pos donde termina el termino de la derecha
-			lev=0; // no deberia ser necesario
-			while (pos_fin<p1&&(lev>0||(line[pos_fin]!=']'&&line[pos_fin]!=','))) {	
-				if (line[pos_fin]=='<'||line[pos_fin]=='(') lev++;
-				else if (line[pos_fin]==')'||line[pos_fin]=='>') lev--;
-				pos_fin++;
-			}
-			pos_fin--;
-			while (pos_fin>pos_ini&&line[pos_fin]==' ') pos_fin--;
-			wxString type_out=line.SubString(pos_ini,pos_fin); // tipo con el cual se reemplazará
-			
-			int p_in=0, diff=type_out.size()-type_in.size();
-			while ((p=line.SubString(p_in,p0).Find(type_in))!=wxNOT_FOUND && p+p_in<p0) {
-				p+=p_in; // pos absoluta donde reemplazar
-				line.replace(p,type_in.size(),type_out);
-				p0+=diff; p1=diff; pos_last_igual+=diff; // corregir las pos posteriores que interesen mantener
-				p_in=p+type_out.size(); // para que la proxima busqueda empiece despues (porque puede aparecer "[with t=t]")
-			}
-			
-		}
-		line.erase(p0,p1-p0+1);
 	}
 	
 	// quitar los allocators y otras cosas
