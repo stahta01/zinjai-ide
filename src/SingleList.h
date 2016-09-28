@@ -4,9 +4,11 @@
 #include "Cpp11.h"
 
 /** 
-* SingleList is a simple array based container, similar to std::vector, but here doesn't care about maintaining the order.
+* SingleList is a simple array based container, similar to std::vector, easier and sometimes faster
 *
-* So Remove can just swap the element to be removed with last one to make it faster.
+* It's easier because you don't need iterators, and sometimes faster because when
+* you don't care about order FastRemove can just swap the element to be removed 
+* with last one and make a pop.
 **/
 template<class T>
 class SingleList {

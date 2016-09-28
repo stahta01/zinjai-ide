@@ -18,8 +18,9 @@ int main(int argc, char *argv[]) {
 	cmd += " --ex \"bt full\"";
 	cmd += " --ex quit";
 	cmd += " --args zinjai.exe --for-gdb";
-	cmd += " > ";
+	cmd += " > \"";
 	cmd += out;
+	cmd += "\"";
 	system(cmd.c_str());
 	return 0;
 }

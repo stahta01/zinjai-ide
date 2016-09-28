@@ -1,9 +1,7 @@
 
 usar "cppcheck --errorlist --xml --xml-version=2" para los mensajes detallados de los errores?
 
-si el panel de compilacion tiene el foco, que con Esc se oculte y vuelva al código
 Que Stop pare también al make! (lo para, pero si lanzo varios hilos con -j solo para el primero)
-
 
 	* revisar el DIF_FULL_OUTPUT para tablas, y que pasa cuando el arreglo es char*
 
@@ -25,8 +23,6 @@ alguna forma de herencia de configuraciones de proyectos???? algo para los mil m
 		de otro perfil del mismo proyecto: "${THIS|debug_win32}"
 		ver cómo hacer con los pasos personalizados
 	problemas... recursivos, subcomandos y paths relativos entre ellos, inis en mingw/algo, etc
-
-corregir el problema del drag and drop que le jode a nestor
 
 
 importante: revisar el GetOutput y evaluar implementarlo por fuera de wx para evitar el problema del wxyield (llamada a g++ --dumpversion como ejemplo)

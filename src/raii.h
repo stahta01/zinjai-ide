@@ -101,4 +101,5 @@ public:
 	void RestoreNow() { if (old_dir.Len()) wxSetWorkingDirectory(old_dir); old_dir=""; }
 	~RaiiWorkDirChanger() { if (old_dir.Len()) wxSetWorkingDirectory(old_dir); }
 };
+
 #endif

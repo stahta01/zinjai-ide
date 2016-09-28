@@ -15,6 +15,7 @@
 #include "mxApplication.h" // SHOW_MILLIS
 #include "mxHelpWindow.h"
 #include <wx/settings.h>
+#include "mxAUI.h"
 
 mxWelcomePanel *g_welcome_panel = nullptr;
 
@@ -95,7 +96,7 @@ void mxWelcomePanel::OnLinkClicked (wxHtmlLinkEvent &event) {
 	} else if (action==_T("never_again")) {
 		config->Init.show_welcome=false;
 		main_window->ShowWelcome(false);
-		main_window->aui_manager.DetachPane(g_welcome_panel);
+		main_window->m_aui->DetachPane(g_welcome_panel);
 		g_welcome_panel=nullptr;
 		Destroy();
 		if (config->Init.new_file==0)

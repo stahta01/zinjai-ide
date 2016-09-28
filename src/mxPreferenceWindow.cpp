@@ -36,6 +36,7 @@
 #include "mxToolchainConfig.h"
 #include "SimpleTemplates.h"
 #include "mxThreeDotsUtils.h"
+#include "mxAUI.h"
 
 static cfgStyles s_old_config_styles; // aquí para evitar tener que hacer el include de ConfigManager en el .h
 
@@ -821,11 +822,11 @@ void mxPreferenceWindow::OnOkButton(wxCommandEvent &event) {
 	long int l;
 	if (config->Init.show_welcome && !g_welcome_panel) {
 		g_welcome_panel=new mxWelcomePanel(main_window);
-		main_window->aui_manager.AddPane(g_welcome_panel, wxAuiPaneInfo().Name("g_welcome_panel").CenterPane().PaneBorder(false).Hide());
+		main_window->m_aui->AddPane(g_welcome_panel, wxAuiPaneInfo().Name("g_welcome_panel").CenterPane().PaneBorder(false).Hide());
 		if (!project && !main_window->notebook_sources->GetPageCount()) main_window->ShowWelcome(true);
 	} else if (!config->Init.show_welcome && g_welcome_panel) {
 		main_window->ShowWelcome(false);
-		main_window->aui_manager.DetachPane(g_welcome_panel);
+		main_window->m_aui->DetachPane(g_welcome_panel);
 		g_welcome_panel->Destroy();
 		g_welcome_panel=nullptr;
 	}

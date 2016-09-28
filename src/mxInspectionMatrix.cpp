@@ -1,17 +1,18 @@
+#include <iostream>
 #include <wx/grid.h>
 //#include <wx/textdlg.h>
 #include <wx/checkbox.h>
+#include <wx/settings.h>
 //#include <wx/stattext.h>
 #include "mxInspectionMatrix.h"
 //#include "DebugManager.h"
 #include "mxMainWindow.h"
+#include "mxAUI.h"
 //#include "mxBitmapButton.h"
 //#include "Language.h"
 #include "mxSizers.h"
 #include "mxTextDialog.h"
 #include "Inspection.h"
-#include <iostream>
-#include <wx/settings.h>
 #include "gdbParser.h"
 
 BEGIN_EVENT_TABLE(mxInspectionMatrix, wxPanel)
@@ -48,7 +49,7 @@ mxInspectionMatrix::mxInspectionMatrix(const wxString &expression, bool is_frame
 		}
 	}
 	
-	main_window->AttachPane(this,expression,wxGetMousePosition()-wxPoint(25,10),sz);
+	main_window->m_aui->AttachGenericPane(this,expression,wxGetMousePosition()-wxPoint(25,10),sz);
 	
 	grid->SetRowLabelSize(wxGRID_AUTOSIZE);
 	adapt->SetValue(true);

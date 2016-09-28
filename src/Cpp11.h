@@ -58,13 +58,54 @@ public:
 
 #if __cplusplus >= 201103
 
-#define _CPP11_ENABLED 1
+#	define _CPP11_ENABLED 1
+#include <memory>
+using std::shared_ptr;
 	
 #else
 
 // missing keywords
+#include <cstddef>
 #define nullptr NULL
 #define override
+
+
+// unique_ptr emulation for c++03
+
+template<typename T> class make_unique;
+
+template<class T>
+class unique_ptr {
+	T *m_ptr;
+	unique_ptr(const unique_ptr &other); /// forbiden
+	unique_ptr& operator=(const unique_ptr &other); /// forbiden
+public:
+	unique_ptr(const make_unique<T> &mu) : m_ptr(mu.m_ptr) {}
+	unique_ptr& operator=(const make_unique<T> &mu) { reset(mu.m_ptr); return *this; }
+	unique_ptr() : m_ptr(nullptr) {}
+	unique_ptr(T *ptr) : m_ptr(ptr) {}
+	void reset(T *ptr) { delete m_ptr; m_ptr = ptr; }
+	T *release() { T *p = m_ptr; m_ptr = nullptr; return p; }
+	T &operator*() { return *m_ptr; }
+	T *operator->() { return m_ptr; }
+	operator const T*() { return m_ptr; }
+	~unique_ptr() { delete m_ptr; }
+};
+
+template<typename T>
+class make_unique {
+	T *m_ptr;
+	friend class unique_ptr<T>;
+public:
+	explicit make_unique() : m_ptr(new T()) {}
+	template<typename T1>
+	explicit make_unique(const T1 &t1) : m_ptr(new T(t1)) {}
+	template<typename T1, typename T2>
+	explicit make_unique(const T1 &t1, const T2 &t2) : m_ptr(new T(t1,t2)) {}
+	template<typename T1, typename T2, typename T3>
+	explicit make_unique(const T1 &t1, const T2 &t2, const T3 &t3) : m_ptr(new T(t1,t2,t3)) {}
+	operator T*() { return m_ptr; }
+};
 
 #endif // cpp11
 

@@ -2,6 +2,7 @@
 #include "mxInspectionExplorerDialog.h"
 #include "mxInspectionExplorerWidget.h"
 #include "mxMainWindow.h"
+#include "mxAUI.h"
 #include "mxSizers.h"
 
 mxInspectionExplorerDialog::mxInspectionExplorerDialog (const wxString & expression, bool frameless) : wxPanel(main_window,wxID_ANY) 
@@ -10,7 +11,7 @@ mxInspectionExplorerDialog::mxInspectionExplorerDialog (const wxString & express
 	exp = new mxInspectionExplorerWidget(this,expression,frameless);
 	sizer->Add(exp,sizers->Exp1);
 	SetSizer(sizer);
-	main_window->AttachPane(this,expression,wxDefaultPosition,wxSize(250,200));
+	main_window->m_aui->AttachGenericPane(this,expression,wxDefaultPosition,wxSize(250,200));
 }
 
 void mxInspectionExplorerDialog::AddExpression (wxString expression, bool frameless) {

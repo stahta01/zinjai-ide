@@ -37,6 +37,7 @@
 #include "MenusAndToolsConfig.h"
 #include "mxExternCompilerOutput.h"
 #include "asserts.h"
+#include "mxAUI.h"
 using namespace std;
 
 #define ICON_LINE(filename) (wxString("0 ICON \"")<<filename<<"\"")
@@ -2802,7 +2803,7 @@ void ProjectManager::ActivateWxfb(bool do_activate) {
 			GetWxfbConfiguration()->autoupdate_projects_temp_disabled = true;
 		}
 	}
-	main_window->aui_manager.Update(); // para que se de cuenta de el cambio en la barra de herramientas
+	main_window->m_aui->Update(); // para que se de cuenta de el cambio en la barra de herramientas
 }
 
 long int ProjectManager::CompileIcon(compile_and_run_struct_single *compile_and_run, wxString icon_name) {

@@ -3,6 +3,7 @@
 // por si mañana quiero que esta clase herede de un panel y contenga la lista
 #define lista this 
 #include "mxMainWindow.h"
+#include "mxAUI.h"
 
 BEGIN_EVENT_TABLE(mxBacktraceHistory,wxListBox)
 	EVT_LISTBOX(wxID_ANY, mxBacktraceHistory::OnSelect)
@@ -13,8 +14,8 @@ mxBacktraceHistory::mxBacktraceHistory ( )
 {
 	wxSize sz(100,150);
 	logging = true;
-	main_window->aui_manager.AddPane(this,wxAuiPaneInfo().Float().CloseButton(true).MaximizeButton(true).Resizable(true).Caption("Backtrace History").Show().BestSize(sz));
-	main_window->aui_manager.Update();	
+	main_window->m_aui->AddPane(this,wxAuiPaneInfo().Float().CloseButton(true).MaximizeButton(true).Resizable(true).Caption("Backtrace History").Show().BestSize(sz));
+	main_window->m_aui->Update();	
 	debug->UpdateBacktrace(false,true);
 }
 

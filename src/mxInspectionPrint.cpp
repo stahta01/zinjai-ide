@@ -1,3 +1,4 @@
+#include <cmath>
 #include <wx/grid.h>
 #include <wx/textdlg.h>
 #include <wx/checkbox.h>
@@ -7,7 +8,7 @@
 #include "mxBitmapButton.h"
 #include "mxSizers.h"
 #include "mxMainWindow.h"
-#include <cmath>
+#include "mxAUI.h"
 
 mxInspectionPrint::mxInspectionPrint(wxString expression, bool is_frameless) : wxPanel(main_window,wxID_ANY,wxDefaultPosition,wxDefaultSize) {
 	wxBoxSizer *sizer=new wxBoxSizer(wxVERTICAL);
@@ -37,7 +38,7 @@ mxInspectionPrint::mxInspectionPrint(wxString expression, bool is_frameless) : w
 			sz = wxSize(w*cs,h*cs+h0);
 		}
 	}
-	main_window->AttachPane(this,expression,wxGetMousePosition()-wxPoint(25,10),sz);
+	main_window->m_aui->AttachGenericPane(this,expression,wxGetMousePosition()-wxPoint(25,10),sz);
 }
 
 void mxInspectionPrint::OnDICreated (DebuggerInspection * di) {
@@ -51,7 +52,7 @@ void mxInspectionPrint::OnDIError (DebuggerInspection * di) {
 
 void mxInspectionPrint::OnDIValueChanged (DebuggerInspection * di) {
 	wxString val = di->GetValue();
-	if (val.StartsWith("0x")) { // si agun tipo de cadena, mostrarla sin comillas ni barras de escape
+	if (val.StartsWith("0x")) { // si es algun tipo de cadena, mostrarla sin comillas ni barras de escape
 		int p = val.Index(' ');
 		if (p!=wxNOT_FOUND && p+1<int(val.Len()) && val[p+1]=='\"') {
 			value->SetValue(mxUT::UnEscapeString(val.AfterFirst(' ')));

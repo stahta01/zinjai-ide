@@ -48,6 +48,7 @@
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>
 #include "mxCompilerArgEnabler.h"
+#include "mxAUI.h"
 using namespace std;
 
 /// @brief Muestra el cuadro de configuración de cppcheck (mxCppCheckConfigDialog)
@@ -1217,8 +1218,8 @@ void mxMainWindow::AuxToolsDisassemble2(wxString out_fname, bool full_scope) {
 	mxStyledOutput *out_dialog  = new mxStyledOutput(main_window,true,false);
 	out_dialog->SetZoom(-1);
 	out_dialog->SetTabWidth(8);
-	aui_manager.AddPane(out_dialog, wxAuiPaneInfo().Float().CloseButton(true).MaximizeButton(true).Resizable(true).Caption("Disassembly (objdump)").BestSize(500,300).Show());
-	aui_manager.Update();
+	m_aui->AddPane(out_dialog, wxAuiPaneInfo().Float().CloseButton(true).MaximizeButton(true).Resizable(true).Caption("Disassembly (objdump)").BestSize(500,300).Show());
+	m_aui->Update();
 	
 	// get required source range
 	mxSource *src=CURRENT_SOURCE;

@@ -4,6 +4,7 @@
 #include "mxHidenPanel.h"
 #include "mxMainWindow.h"
 #include "mxWelcomePanel.h"
+#include "mxAUI.h"
 
 BEGIN_EVENT_TABLE(mxHidenPanel,wxPanel)
 	EVT_PAINT(mxHidenPanel::OnPaint)
@@ -57,7 +58,7 @@ void mxHidenPanel::ToggleDock() {
 }
 
 void mxHidenPanel::ShowFloat(bool set_focus) {
-	wxAuiPaneInfo &pane = main_window->aui_manager.GetPane(control);
+	wxAuiPaneInfo &pane = main_window->m_aui->GetPane(control);
 	int px,py,pw,ph,ax,ay,aw,ah;
 	if (g_welcome_panel && g_welcome_panel->IsVisible()) {
 		g_welcome_panel->GetScreenPosition(&px,&py);
@@ -76,7 +77,7 @@ void mxHidenPanel::ShowFloat(bool set_focus) {
 		used_left_bottom=px+ph;
 	} else if (pos==HP_BOTTOM) {
 		ph/=3;
-		py=ay-ph/*-aui_manager.GetArtProvider()->GetMetric(wxAUI_DOCKART_CAPTION_SIZE)*/;
+		py=ay-ph/*-m_aui->GetArtProvider()->GetMetric(wxAUI_DOCKART_CAPTION_SIZE)*/;
 		if (used_left && used_left_bottom>px) { pw-=used_left; px+=used_left; }
 		if (used_right && used_right_bottom<px+pw) pw-=used_right;
 		used_bottom=ph;
@@ -96,13 +97,13 @@ void mxHidenPanel::ShowFloat(bool set_focus) {
 	pane.FloatingPosition(px,py);
 	timer->Start(200,false);
 	selected=false; showing=true; Refresh();
-	main_window->aui_manager.Update();
+	main_window->m_aui->Update();
 	if (!set_focus) main_window->Raise(); // los paneles flotando le sacan el foco a la main window y no se soluciona con setfocus
 }
 
 void mxHidenPanel::ShowDock() {
 	timer->Stop();
-	wxAuiPaneInfo &pane = main_window->aui_manager.GetPane(control);
+	wxAuiPaneInfo &pane = main_window->m_aui->GetPane(control);
 	pane.Show();
 	pane.Row(5);
 	pane.Position(5);
@@ -111,7 +112,7 @@ void mxHidenPanel::ShowDock() {
 	else if (pos==HP_BOTTOM) pane.Bottom();
 	else if (pos==HP_RIGHT) pane.Right();
 	showing=true;
-	main_window->aui_manager.Update();
+	main_window->m_aui->Update();
 	selected=true; Refresh();
 }
 
@@ -121,14 +122,14 @@ void mxHidenPanel::Hide() {
 	if (pos==HP_RIGHT) used_right=0;
 	timer->Stop();
 	selected=false; mouse_in=false; forced_show=false;
-	main_window->aui_manager.GetPane(control).Hide();
-	main_window->aui_manager.Update();
+	main_window->m_aui->GetPane(control).Hide();
+	main_window->m_aui->Update();
 	showing=false; selected=false; Refresh();
 }
 
 void mxHidenPanel::ToggleFull() {
 	if (selected) return;
-	wxAuiPaneInfo &pane = main_window->aui_manager.GetPane(control);
+	wxAuiPaneInfo &pane = main_window->m_aui->GetPane(control);
 	int px,py,pw,ph;
 	main_window->notebook_sources->GetScreenPosition(&px,&py);
 	main_window->notebook_sources->GetSize(&pw,&ph);
@@ -142,7 +143,7 @@ void mxHidenPanel::ToggleFull() {
 	pane.FloatingSize(pw,ph);
 	pane.FloatingPosition(px,py);
 	showing=true;
-	main_window->aui_manager.Update();
+	main_window->m_aui->Update();
 }
 
 void mxHidenPanel::ProcessClose() {
@@ -160,7 +161,7 @@ void mxHidenPanel::ForceShow(bool set_focus) {
 		if (set_focus) control->SetFocus();
 		return;
 	}
-	if  (!main_window->aui_manager.GetPane(control).IsShown()) 
+	if  (!main_window->m_aui->GetPane(control).IsShown()) 
 		ShowFloat(set_focus);
 }
 
@@ -204,9 +205,9 @@ bool mxHidenPanel::IsDocked() {
 void mxHidenPanel::Select() {
 	ShowDock();
 	// ver como hacer para que si estaba flotando aparezca otra vez en el mismo lugar
-//	wxAuiPaneInfo &pane = main_window->aui_manager.GetPane(control);
+//	wxAuiPaneInfo &pane = main_window->m_aui->GetPane(control);
 //	if (pane.IsDocked()) ShowDock();
-//	else { selected=true; pane.Show(); main_window->aui_manager.Update(); }
+//	else { selected=true; pane.Show(); main_window->m_aui->Update(); }
 }
 
 void mxHidenPanel::OnResize (wxSizeEvent & evt) {

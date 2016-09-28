@@ -41,6 +41,7 @@ class project_file_item;
 class mxExternCompilerOutput;
 class mxRegistersGrid;
 class mxGdbAsmPanel;
+class mxAUI;
 
 template<class T> class SingleList;
 
@@ -343,10 +344,7 @@ public:
 	void OnHelpUpdates (wxCommandEvent &event);
 
 
-private:
-	SingleList<wxWindow*> m_panes_to_destroy_on_close; // a wxaui pane content is not destroyed when the pane is closed... this will do it
 public:
-	void AttachPane(wxWindow *ctrl, wxString title, wxPoint position, wxSize size, bool handle_deletion=true);
 	void OnPaneClose (wxAuiManagerEvent &event);
 	
 	void OnClose (wxCloseEvent &event);
@@ -544,7 +542,7 @@ public:
 //		wxMenuItem *menuItem;
 	} symbols_tree; 
 
-	wxAuiManager aui_manager;
+	unique_ptr<mxAUI> m_aui;
 
 	wxTimer *parser_timer;
 
@@ -592,7 +590,8 @@ public:
 	void ShowQuickHelpPanel(bool hide_compiler_tree=true);
 	void ShowCompilerTreePanel();
 	void HideCompilerTreePanel();
-	void ShowExplorerTreePanel();
+	void ShowExplorerTreePanel(bool set_focus=true);
+	void HideExplorerTreePanel();
 	void ShowBeginnersPanel();
 	
 	void FocusToSource();

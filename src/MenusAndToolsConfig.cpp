@@ -6,6 +6,7 @@
 #include "mxMainWindow.h"
 #include "mxMessageDialog.h"
 #include "DebugManager.h"
+#include "mxAUI.h"
 
 MenusAndToolsConfig *menu_data;
 
@@ -842,13 +843,13 @@ void MenusAndToolsConfig::SetAccelerators() {
 void MenusAndToolsConfig::CreateWxToolbar(int tb_id) {
 	toolbars[tb_id].wx_toolbar = new wxToolBar(main_window, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTB_FLAT | wxTB_NODIVIDER | (toolbars[tb_id].position.left||toolbars[tb_id].position.right?wxTB_VERTICAL:wxTB_HORIZONTAL));
 	toolbars[tb_id].wx_toolbar->SetToolBitmapSize(wxSize(icon_size,icon_size)); 
-	main_window->aui_manager.AddPane(toolbars[tb_id].wx_toolbar, wxAuiPaneInfo().Name(wxString("toolbar_")+toolbars[tb_id].key).Caption(toolbars[tb_id].label).ToolbarPane().Hide());
+	main_window->m_aui->AddPane(toolbars[tb_id].wx_toolbar, wxAuiPaneInfo().Name(wxString("toolbar_")+toolbars[tb_id].key).Caption(toolbars[tb_id].label).ToolbarPane().Hide());
 }
 
 void MenusAndToolsConfig::UpdateToolbar(int tb_id, bool only_items) {
 	if (!only_items) {
 		// destroy the previous one
-		main_window->aui_manager.DetachPane(toolbars[tb_id].wx_toolbar);
+		main_window->m_aui->DetachPane(toolbars[tb_id].wx_toolbar);
 		toolbars[tb_id].wx_toolbar->Destroy();
 		toolbars[tb_id].wx_toolbar=nullptr;
 		CreateWxToolbar(tb_id);
@@ -952,7 +953,7 @@ void MenusAndToolsConfig::PopulateToolbar(int tb_id) {
 
 void MenusAndToolsConfig::AdjustToolbarSize(int tb_id) {
 	wxToolBar *wx_toolbar = toolbars[tb_id].wx_toolbar;
-	if (wx_toolbar) { wx_toolbar->Realize(); main_window->aui_manager.GetPane(wx_toolbar).BestSize(wx_toolbar->GetBestSize()); }
+	if (wx_toolbar) { wx_toolbar->Realize(); main_window->m_aui->GetPane(wx_toolbar).BestSize(wx_toolbar->GetBestSize()); }
 }
 
 void MenusAndToolsConfig::SetDebugMode (bool mode) {

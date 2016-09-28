@@ -16,6 +16,7 @@
 #include "mxWelcomePanel.h"
 #include "Language.h"
 #include "MenusAndToolsConfig.h"
+#include "mxAUI.h"
 
 BEGIN_EVENT_TABLE(mxErrorRecovering, wxDialog)
 	
@@ -169,17 +170,17 @@ bool mxErrorRecovering::RecoverSomething() {
 			
 			if (main_window->left_panels) {
 				_menu_item(mxID_VIEW_LEFT_PANELS)->Check(true);
-				main_window->aui_manager.GetPane(main_window->left_panels).Show();
+				main_window->m_aui->GetPane(main_window->left_panels).Show();
 				main_window->left_panels->SetSelection(config->Init.prefer_explorer_tree?2:0);
 			} else {
 				_menu_item(mxID_VIEW_EXPLORER_TREE)->Check(config->Init.prefer_explorer_tree);
 				_menu_item(mxID_VIEW_PROJECT_TREE)->Check(!config->Init.prefer_explorer_tree);
 				if (config->Init.prefer_explorer_tree) {
-					main_window->aui_manager.GetPane(main_window->explorer_tree.treeCtrl).Show();
-					main_window->aui_manager.GetPane(main_window->project_tree.treeCtrl).Hide();
+					main_window->m_aui->GetPane(main_window->explorer_tree.treeCtrl).Show();
+					main_window->m_aui->GetPane(main_window->project_tree.treeCtrl).Hide();
 				} else {
-					main_window->aui_manager.GetPane(main_window->explorer_tree.treeCtrl).Hide();
-					main_window->aui_manager.GetPane(main_window->project_tree.treeCtrl).Show();
+					main_window->m_aui->GetPane(main_window->explorer_tree.treeCtrl).Hide();
+					main_window->m_aui->GetPane(main_window->project_tree.treeCtrl).Show();
 					main_window->project_tree.treeCtrl->ExpandAll();
 				}
 			}

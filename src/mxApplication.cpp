@@ -31,6 +31,7 @@
 #include "mxSplashScreen.h"
 #include "error_recovery.h"
 //#include "linStuff.h"
+#include "mxAUI.h"
 using namespace std;
 
 
@@ -316,9 +317,9 @@ void mxApplication::LoadFilesOrWelcomePanel(const wxString &cmd_path) {
 	if ( (project || main_window->notebook_sources->GetPageCount()>0) && config->Init.show_beginner_panel && !config->Init.autohide_panels) {
 		if (config->Init.show_beginner_panel && !g_beginner_panel) {
 			g_beginner_panel = new mxBeginnerPanel(main_window);
-			main_window->aui_manager.InsertPane(g_beginner_panel, wxAuiPaneInfo().Name("beginner_panel").Caption("Panel de Asistencias").Right().Layer(0).Show(), wxAUI_INSERT_ROW);
+			main_window->m_aui->InsertPane(g_beginner_panel, wxAuiPaneInfo().Name("beginner_panel").Caption("Panel de Asistencias").Right().Layer(0).Show(), wxAUI_INSERT_ROW);
 			_menu_item(mxID_VIEW_BEGINNER_PANEL)->Check(true);
-			main_window->aui_manager.Update();
+			main_window->m_aui->Update();
 		}
 		
 	}
