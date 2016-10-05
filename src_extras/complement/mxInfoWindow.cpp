@@ -9,6 +9,7 @@
 #include <wx/filesys.h>
 #include <wx/fs_arc.h>
 #include "Application.h"
+#include "../../src/version.h"
 
 BEGIN_EVENT_TABLE(mxInfoWindow,wxFrame)
 	EVT_BUTTON(wxID_OK,mxInfoWindow::OnButtonOk)
@@ -76,7 +77,13 @@ mxInfoWindow::mxInfoWindow(wxString _dest, wxString _file):wxFrame(NULL,wxID_ANY
 	but_ok->Enable(true);
 	but_ok->SetFocus(); 
 	step=STEP_SHOWING_INFO;
-	
+	if (info.reqver>VERSION) {
+		wxMessageBox(spanish 
+					 ? "El complemento está diseñado para un versión más actual de ZinjaI.\n"
+					   "Se requiere actualizar ZinjaI para que el complemento funcione correctamente."
+					 : "This complement is designed for a newer version of ZinjaI.\n"
+					   "It is required to update ZinjaI for the complement to work properly.");
+	}
 }
 
 void mxInfoWindow::OnButtonOk (wxCommandEvent & evt) {
