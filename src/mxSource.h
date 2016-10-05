@@ -223,7 +223,6 @@ public:
 	void OnHighLightWord(wxCommandEvent &event);
 	void OnFindKeyword(wxCommandEvent &event);
 	void OnDoubleClick(wxStyledTextEvent &event);
-	static bool IsKeywordChar(char c);
 	
 	void OnKeyDown(wxKeyEvent &evt);
 
@@ -449,10 +448,6 @@ private:
 		SetLineIndentation(line_to_indent,GetLineIndentation(LineFromPosition(pos_to_get_amount))+(increase?config_source.tabWidth:0));
 	}
 public:
-	int SkipTemplateSpec(int pos_start, int pos_max=0);
-	/// sabiendo donde termina una lista de argumentos del template (pos_start, '>'), 
-	/// encuentra donde empiza (retorna la pos *antes* del '<')
-	int SkipTemplateSpecBack(int pos_start); 
 	
 	DECLARE_EVENT_TABLE();
 public:

@@ -28,6 +28,7 @@
 #include "mxInspectionBaloon.h"
 #include <wx/utils.h>
 #include "LocalRefactory.h"
+#include "mxSourceParsingAux.h"
 //#include "linStuff.h"
 using namespace std;
 
@@ -2140,43 +2141,6 @@ void mxSource::PopupMenuCodeTools() {
 	main_window->PopupMenu(&menu, main_window->ScreenToClient(pos));
 }
 
-
-bool mxSource::IsKeywordChar (char c) {
-	return II_IS_KEYWORD_CHAR(c);
-}
-
-/// aux function for FindTypeOf
-int mxSource::SkipTemplateSpec(int pos_start, int pos_max) {
-	if (!pos_max) pos_max = GetLength();
-	int tplt_deep = 1, p=pos_start, s; // s es para II_IS_COMMENT
-	while (++p<pos_max && tplt_deep!=0) {
-		if (!II_IS_COMMENT(p)) {
-			char c = GetCharAt(p);
-			if (c=='>')
-				tplt_deep--;
-			else if (c=='<')
-				tplt_deep++;
-		}
-	}
-	if (!tplt_deep) return p;
-	else return wxSTC_INVALID_POSITION;
-}
-
-int mxSource::SkipTemplateSpecBack(int pos_start) {
-	int tplt_deep = 1, p=pos_start, s; // s es para II_IS_COMMENT
-	while (--p>=0 && tplt_deep!=0) {
-		if (!II_IS_COMMENT(p)) {
-			char c = GetCharAt(p);
-			if (c=='<')
-				tplt_deep--;
-			else if (c=='>')
-				tplt_deep++;
-		}
-	}
-	if (!tplt_deep) return p;
-	else return wxSTC_INVALID_POSITION;
-}
-
 /**
 * Averigua el tipo de una variable dentro de un contexto. 
 * Primero busca en el código del archivo hacia atras y mira lo que parezca
@@ -2197,7 +2161,6 @@ wxString mxSource::FindTypeOfByKey(wxString &key, int &pos, bool include_templat
 	int p,s;
 	int p1,p2;
 	char c;
-	bool aux_bool;
 	
 	int p_ocur=wxSTC_INVALID_POSITION;
 	int p_type=wxSTC_INVALID_POSITION;
@@ -2420,35 +2383,11 @@ wxString mxSource::FindTypeOfByKey(wxString &key, int &pos, bool include_templat
 		
 		p_ocur = p = FindText(p_from, p_to, key, wxSTC_FIND_WHOLEWORD|wxSTC_FIND_MATCHCASE);
 		if (p!=wxSTC_INVALID_POSITION) { // si se encuentra la palabra
-			// retroceder al comienzo de la instruccion
-			p_to=p_ocur; aux_bool=false; /// @todo: revisar y ver de usar el GetStatementStartPos
-			while (p>0 && ( !II_IS_5(p,'{','(',';',':','}') || (aux_bool=II_SHOULD_IGNORE(p)) ) ) {
-				if (!aux_bool && (c==')'||c=='}')) {
-					p = BraceMatch(p);
-					if (p==wxSTC_INVALID_POSITION)
-						break;
-				}
-				p--;
-			}
-			// saltar el indentado
-			p++;
-			II_FRONT_NC(p,II_IS_NOTHING_4(p));
-			// avanzar el hipotetico nombre de la clase (va a quedar entre p1 y p2)
-			int p3;
-			do {
-				p1=p;
-				while ( II_IS_KEYWORD_CHAR(c) || II_SHOULD_IGNORE(p) ) {
-					p++;
-					c=GetCharAt(p);
-				}
-				p3=p2=p;
-				// avanzar espacios en blanco
-				while (II_IS_NOTHING_4(p)) {
-					p++;
-				}
- 			} while (TextRangeIs(p1,p2,"const") || TextRangeIs(p1,p2,"volatile") || TextRangeIs(p1,p2,"static") || TextRangeIs(p1,p2,"extern"));
-			// saltar los parametros del template si es template (mejorar: aqui no se tienen en cuenta comentarios y literales)
-			if (c=='<' && GetCharAt(p+1)!='<') p3=p=SkipTemplateSpec(p,p_ocur);
+			
+			int p_statementstart = GetStartSimple(this,p_ocur);
+			int p_typeend = GetTypeEnd(this,p_statementstart,GetLength());
+			
+			p = p_typeend;
 			if (p!=wxSTC_INVALID_POSITION) {
 				// ver si lo que sigue tiene cara de nombres de variable para la declaracion ¿?
 				while (II_IS_NOTHING_4(p)) p++;
@@ -2467,8 +2406,8 @@ wxString mxSource::FindTypeOfByKey(wxString &key, int &pos, bool include_templat
 								p--;
 							}
 						}
-						if (c==',' || p+1==p3 || c=='&') {
-							p_type=p1;
+						if (c==',' || p+1==p_typeend || c=='&') {
+							p_type=p_statementstart;
 							break;
 						}
 					}
@@ -2487,33 +2426,11 @@ wxString mxSource::FindTypeOfByKey(wxString &key, int &pos, bool include_templat
 		
 		while (II_IS_NOTHING_4(p_type)) p_type++;
 		
-		p2=WordEndPosition(p_type,true);
-		ret=GetTextRange(p_type,p2);
-		while ( !(ret!="unsigned" && ret!="const" && ret!="signed" && ret!="extern" && ret!="volatile" && ret!="long" && ret!="static" && (ret!="public" || GetCharAt(p2)!=':') && (ret!="protected" || GetCharAt(p2)!=':') && (ret!="private" || GetCharAt(p2)!=':') ) ) {
-			p_type=p2;
-			while (II_IS_NOTHING_4(p_type)) {
-				p_type++;
-			}
-			p2=WordEndPosition(p_type,true);
-			ret=GetTextRange(p_type,p2);
-		}
-		if (include_template_spec) {
-			while (p_type>2 && GetCharAt(p_type-1)==':'&&GetCharAt(p_type-2)==':') { // include namespace (cannot accept templated namespaces yet)
-				int orig_ptype = p_type; p_type-=3; char c=GetCharAt(p_type);
-				while(p_type>=0 && (c=='>' || II_IS_KEYWORD_CHAR(c))) {
-					if (c=='>') { // skip namespace's templates args
-						int p = SkipTemplateSpecBack(p_type);
-						if (p==wxSTC_INVALID_POSITION) break;
-						else p_type=p;
-					}
-					c=GetCharAt(--p_type);
-				}
-				ret = GetTextRange(++p_type,orig_ptype)+ret;
-			}
-			if (GetCharAt(p2)=='<') { // include template arguments
-				int p3 = SkipTemplateSpec(p2);
-				if (p3!=wxSTC_INVALID_POSITION) ret+=GetTextRange(p2,p3);
-			}
+		int p_endtype = GetTypeEnd(this,p_type,GetLength());
+		if (p_endtype!=mxINVALID_POS) {
+			ret = GetTextRangeEx(this,p_type,p_endtype);
+			if (!include_template_spec) 
+				ret = StripQualifiers(StripTemplateArgs(StripNamespaces(ret)));
 		}
 
 		p_ocur+=key.Len();
@@ -2851,7 +2768,7 @@ wxString mxSource::FindScope(int pos, wxString *args, bool full_scope, int *scop
 					if (GetTextRange(p,p+8)=="template") {
 						p+=8; II_FRONT(p,II_IS_NOTHING_4(p)); 
 						if (c=='<') { 
-							p = SkipTemplateSpec(p,l)+1;
+							p = SkipTemplateSpec(this,p,l)+1;
 							II_FRONT(p,II_IS_NOTHING_4(p)); 
 						}
 					}
@@ -4347,7 +4264,7 @@ bool mxSource::GetCurrentCall (wxString &ftype, wxString &fname, wxArrayString &
 			--scope_start; II_BACK(scope_start,II_IS_NOTHING_4(scope_start));
 			if (GetStyleAt(p)==wxSTC_C_WORD && TextRangeIs(p,"template")) { // saltear template
 				p+=8; II_FRONT(p,II_IS_NOTHING_4(p));
-				if (c=='<') p=SkipTemplateSpec('<',scope_start);
+				if (c=='<') p=SkipTemplateSpec(this,'<',scope_start);
 				if (p==wxSTC_INVALID_POSITION) p=scope_start;
 			}
 			int pend = p, p_last_blank=-1;

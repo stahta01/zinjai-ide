@@ -80,6 +80,7 @@
 #include "mxGdbAsmPanel.h"
 #include "CompilerErrorsManager.h"
 #include "mxAUI.h"
+#include "mxSourceParsingAux.h"
 using namespace std;
 
 #define SIN_TITULO (wxString("<")<<LANG(UNTITLED,"sin_titulo_")<<(++untitled_count)<<">")
@@ -3242,7 +3243,7 @@ void mxMainWindow::OnEditInsertInclude(wxCommandEvent &event) {
 		// separar la palabra
 		int pos=source->GetCurrentPos();
 		char c = source->GetCharAt(pos);
-		while (pos && !source->IsKeywordChar(c) && c!=')' && c!='>') {
+		while (pos && !IsKeywordChar(c) && c!=')' && c!='>') {
 			c = source->GetCharAt(--pos);
 		}
 		if (c==')') {
@@ -3251,7 +3252,7 @@ void mxMainWindow::OnEditInsertInclude(wxCommandEvent &event) {
 			c = source->GetCharAt(pos);
 		}
 		if (c=='>') { // si es template, saltear argumentos
-			int p2=source->SkipTemplateSpecBack(pos); 
+			int p2=SkipTemplateSpecBack(source,pos); 
 			if (p2!=wxSTC_INVALID_POSITION) pos=p2;
 			c = source->GetCharAt(pos);
 		}

@@ -4,6 +4,7 @@
 #include "Language.h"
 #include "mxMainWindow.h"
 #include "mxMessageDialog.h"
+#include "mxSourceParsingAux.h"
 
 #define GenerateFunction_error(retval) { \
 	mxMessageDialog(main_window,LANG(CODE_CANNOT_GENERATE_FUNCTION,"No se pudo determinar el prototipo de la función.")) \
@@ -85,7 +86,7 @@ void LocalRefactory::ExtractFunctionPost (mxSource * src, int line_proto, int li
 	int x = src->GetLineIndentPosition(line_call), e = src->GetLineEndPosition(line_call), p = wxSTC_INVALID_POSITION;
 	while (x<e && src->GetCharAt(x)!='(') {
 		char c = src->GetCharAt(x);
-		if (src->IsKeywordChar(c)) p=x;
+		if (IsKeywordChar(c)) p=x;
 		x++;
 	}
 	if (p!=wxSTC_INVALID_POSITION) {

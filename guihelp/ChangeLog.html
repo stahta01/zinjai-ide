@@ -7,7 +7,11 @@
 <I>Nota 2: Nuevo código para categorizar los cambios: New=nueva funcionalidad, Imp=mejora sobre una funcionalidad existente, Fix=corrección de un bug</I><BR><UL>-->
 
 </UL><BR><B>Release 20160829</B><BR><UL>
+	<LI>Imp: Mejoras varias en la determinación de tipos de variables locales y argumentos para el autocompletado.</LI>
+	<LI>Imp: Advertir al instalar un complemento si éste requiere una versión de ZinjaI posterior a la instalada.</LI>
+	<LI>Imp: Utilizar prototipos completos (con scopes e identificadores para argumentos) al generar índices de autocompletado.</LI>
 	<LI>Imp: Al encontrar una actualización en Windows, ZinjaI ahora avisa que se debe cerrar la versión actual antes de instalar la nueva y ofrece hacerlo.</LI>
+	<LI>Imp: Al genera índices de autocompletado, incluir los identificadores de los argumentos de funciones.</LI>
 	<LI>Fix: Correcciones en el algoritmo que reemplaza los tipos de datos genéricos de un template por sus tipos especializados en los mensajes de error del compilador.</LI>
 	<LI>Fix: Ahora se detecta correctamente al compilador instalado en un sistema mac cuando el comando g++ es solo un wrapper para clang.</LI>
 	<LI>Fix: Agregado un workaround para resolver el problema con las teclas "[" y "{" en sistemas Mac con teclados Español ISO.</LI>

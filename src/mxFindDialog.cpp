@@ -16,6 +16,7 @@
 #include "mxSizers.h"
 #include "Language.h"
 #include "mxCommonConfigControls.h"
+#include "mxSourceParsingAux.h"
 
 BEGIN_EVENT_TABLE(mxFindDialog, wxDialog)
 	EVT_BUTTON(mxID_HELP_BUTTON,mxFindDialog::OnHelpButton)
@@ -710,8 +711,8 @@ bool mxFindDialog::FindInProject(eFileType where) {
 					while (wxNOT_FOUND!=(p=str.Find(what))) {
 						bool is_ok=true;
 						if (last_flags&wxSTC_FIND_WHOLEWORD) {
-							is_ok = is_ok && !(p>0&&(mxSource::IsKeywordChar(str[p-1])));
-							is_ok = is_ok && !(p+what.Len()<str.Len()&&(mxSource::IsKeywordChar(str[p+what.Len()])));
+							is_ok = is_ok && !(p>0&&(IsKeywordChar(str[p-1])));
+							is_ok = is_ok && !(p+what.Len()<str.Len()&&(IsKeywordChar(str[p+what.Len()])));
 						}
 						if (is_ok) {
 							count++;
