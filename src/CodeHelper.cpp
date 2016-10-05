@@ -1135,13 +1135,13 @@ bool CodeHelper::GenerateAutocompletionIndex(wxString path, wxString filename) {
 		ref = fil->first_func_dec->next;
 		while (ref) {
 			if (PD_UNREF(pd_func,ref)->space==nullptr)
-				idx.Write(wxString("\t")<<PD_UNREF(pd_func,ref)->proto<<"\n");
+				idx.Write(wxString("\t")<<PD_UNREF(pd_func,ref)->full_proto<<"\n");
 			ref = ref->next;
 		}
 		ref = fil->first_func_def->next;
 		while (ref) {
 			if (PD_UNREF(pd_func,ref)->space==nullptr && PD_UNREF(pd_func,ref)->file_dec==nullptr)
-				idx.Write(wxString("\t")<<PD_UNREF(pd_func,ref)->proto<<"\n");
+				idx.Write(wxString("\t")<<PD_UNREF(pd_func,ref)->full_proto<<"\n");
 			ref = ref->next;
 		}
 		ref = fil->first_macro->next;
@@ -1177,7 +1177,7 @@ bool CodeHelper::GenerateAutocompletionIndex(wxString path, wxString filename) {
 			pd_func *met = cls->first_method->next;
 			while (met) {
 				if (met->properties&PD_CONST_PUBLIC)
-					idx.Write(wxString(_T("\t\t"))<<met->proto<<"\n");
+					idx.Write(wxString(_T("\t\t"))<<met->full_proto<<"\n");
 				met = met->next;
 			}
 			ref = ref->next;
