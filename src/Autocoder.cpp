@@ -3,6 +3,7 @@
 #include "mxSource.h"
 #include "mxUtils.h"
 #include "ProjectManager.h"
+#include "mxSourceParsingAux.h"
 
 Autocoder *g_autocoder=nullptr;
 
@@ -244,7 +245,7 @@ bool Autocoder::Apply(mxSource *src, auto_code *ac, bool args) {
 		if (p2==int(code.Len())) break;
 		int aux_pos = src->GetCurrentPos();
 		wxString key = code.Mid(p+8,p2-p-9);
-		wxString type = src->FindTypeOfByKey(key,aux_pos,true);
+		wxString type = StripQualifiers( src->FindTypeOfByKey(key,aux_pos,true) );
 		code=code.Mid(0,p)+(type.Len()?type:"???")+code.Mid(p2+1);
 	}
 	int pos_cursor=code.Find("#here#");

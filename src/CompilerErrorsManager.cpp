@@ -133,17 +133,17 @@ static void UnSTD(wxString &line) {
 				if (pigual!=wxNOT_FOUND) {
 					wxString type_in = one_arg.Mid(0,pigual), type_out = one_arg.Mid(pigual+3);
 					// reemplazar en todos lados los tipos
-					int p_in=0;
-					while ((p_in=line.Mid(p_in).Find(type_in))!=wxNOT_FOUND) {
+					for (int p_in=0, p; (p=line.Mid(p_in).Find(type_in))!=wxNOT_FOUND; ) {
+						p_in += p;
 						// ver que la ocurrencia sea a palabra completa
 						char cpre = p_in?tolower(line[p_in-1]):' '; 
 						int p_out = p_in+type_in.Len();
 						char cpos = p_out==int(line.Len())?' ':tolower(line[p_out]);
 						if ((cpre<'a'||cpre>'z')&&(cpre<'0'||cpre>'9')&&(cpos<'a'||cpos>'z')&&(cpos<'0'||cpos>'9')) {
 							line.replace(p_in,type_in.size(),type_out);
-							p_in=p+type_out.size();
+							p_in=p_in+type_out.size();
 						} else 
-							p_in=p+type_in.size();
+							p_in=p_in+type_in.size();
 					}				
 				}
 				p1 = p0 = p1+2;
@@ -206,6 +206,8 @@ static void UnSTD(wxString &line) {
 			p+=5;
 	}
 	line.Replace("typename::rebind<char>::other::size_type","size_t");
+	line.Replace("__gnu_cxx::","");
+	line.Replace("__cxx11::","");
 }
 
 wxString GetNiceErrorLine(const wxString &error_line) {

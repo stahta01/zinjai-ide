@@ -12,6 +12,7 @@ version_required=20131122
 custom_tabs=0
 tab_use_spaces=0
 explorer_path=../msuite-clean/quantech/zpr_base
+current_source=src/CompilerErrorsManager.cpp
 path_char=/
 [source]
 path=src/ProjectManager.cpp
@@ -20,7 +21,7 @@ marker=2219
 marker=2570
 [source]
 path=src/ConfigManager.cpp
-cursor=648:21
+cursor=1089:24
 marker=866
 [source]
 path=src/mxMainWindowTools.cpp
@@ -107,7 +108,8 @@ path=src/mxTipsWindow.cpp
 cursor=24:10
 [source]
 path=src/CompilerErrorsManager.cpp
-cursor=26:24
+cursor=118:35
+open=true
 [source]
 path=src/mxThreadGrid.cpp
 cursor=21:26
@@ -173,14 +175,13 @@ path=src/mxOSD.cpp
 cursor=107:1
 [source]
 path=src/mxSource.cpp
-cursor=2430:3
+cursor=4139:22
 breakpoint=1427
 breakpoint_annotation=
 breakpoint=2692
 breakpoint_annotation=
-breakpoint=2430
-breakpoint_annotation=
 marker=2384
+open=true
 [source]
 path=src/mxDrawClasses.cpp
 cursor=118:67
@@ -1259,6 +1260,9 @@ inline_suppr=1
 additional_files=
 exclude_list=
 [inspections]
-expr=ret
+expr=pos
+expr=c
+expr=pos_match
+expr=p_func_name
 [custom_tools]
 [end]

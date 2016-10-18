@@ -137,22 +137,22 @@ inline wxString StripNamespaces(const wxString &type) {
 }
 
 /// auxiliar funcion for the real StripTemplateArgs
-inline wxString stStripTemplateArgs(const wxString &type, int p) {
-	int nesting = 1, p0 = p;
+inline void stStripTemplateArgs(wxString &type, int p) {
+	int nesting = 1, p0 = p++;
 	do {
 		if (type[p]=='<') ++nesting;
 		else if (type[p]=='>') --nesting;
 		++p;
 	} while (p<int(type.Len()) && nesting!=0);
-	return type.Mid(0,p0)+type.Mid(p);
+	type.erase(p0,p-p0);
 }
 
 /// @brief given a type specification, removes all template actual arguments
 inline wxString StripTemplateArgs(const wxString &type) {
 	wxString ret = type;
-	for(size_t i=0;i<type.Len();i++)
-		if (type[i]=='<') stStripTemplateArgs(type,i--);
-	return type;
+	for(size_t i=0;i<ret.Len();i++)
+		if (ret[i]=='<') stStripTemplateArgs(ret,i--);
+	return ret;
 }
 
 /// @brief given a type specification, removes all leading "qualifiers" o "decorators".
