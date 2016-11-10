@@ -42,6 +42,9 @@ void er_unregister_source(mxSource *src) {
 
 void er_sigsev(int sig) {
 	
+	signal(SIGSEGV,NULL);
+	signal(SIGPIPE,NULL);
+	
 //cerr<<"ERROR RECOVERY 1"<<endl;
 	
 	ofstream fil1((g_er_dir+"error_log").c_str(),ios::ate|ios::app);
@@ -126,6 +129,13 @@ void er_sigsev(int sig) {
 						"proxima vez que inicie el entorno."))
 			.Title("OOOPS!!!").IconError().Run();
 	}
+	
+	// at least in windows, leaving gdb alive can turn the inferior into a zombie-like process
+	// that will not be possible to kill with the task manager and not be visible either
+	if (debug && debug->process && debug->pid) debug->process->Kill(debug->pid,wxSIGKILL);
+#ifndef __WIN32__
+	if (debug && debug->tty_process && debug->tty_pid) debug->tty_process->Kill(debug->tty_pid,wxSIGKILL);
+#endif
 	exit(sig);
 }
 
