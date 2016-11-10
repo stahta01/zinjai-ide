@@ -21,7 +21,7 @@ BEGIN_EVENT_TABLE(mxBySourceCompilingOpts,wxDialog)
 END_EVENT_TABLE()
 
 mxBySourceCompilingOpts::mxBySourceCompilingOpts(wxWindow *parent, project_file_item *item) 
-	: mxDialog( parent ,LANG(BYSRCOPTS_CAPTION,"Opciones de compilacion por fuente") )
+	: mxDialog( parent ,LANG(BYSRCOPTS_CAPTION,"Opciones de compilación por fuente") )
 {
 	BoolFlagGuard fg(mask_list_selection_event);
 	
@@ -42,13 +42,13 @@ mxBySourceCompilingOpts::mxBySourceCompilingOpts(wxWindow *parent, project_file_
 	left_sizer.Add(list,sizers->BA5_Exp1);
 	
 	right_sizer.BeginSection( LANG(BYSRCOPTS_FROM_PROFILE,"Tomar desde el perfil") ) 
-		.BeginCheck( LANG(PROJECTCONFIG_COMPILING_EXTRA_ARGS,"Parametros extra para la compilacion")) .EndCheck(fp_extra)
+		.BeginCheck( LANG(PROJECTCONFIG_COMPILING_EXTRA_ARGS,"Parametros extra para la compilación")) .EndCheck(fp_extra)
 		.BeginCheck( LANG(PROJECTCONFIG_COMPILING_MACROS,"Macros a definir") ).EndCheck(fp_macros)
 		.BeginCheck( LANG(PROJECTCONFIG_COMPILING_EXTRA_PATHS,"Directorios adicionales para buscar cabeceras") ).EndCheck(fp_includes)
 		.BeginCheck( LANG(PROJECTCONFIG_COMPILING_STD,"Estandar") ).EndCheck(fp_std)
 		.BeginCheck( LANG(PROJECTCONFIG_COMPILING_WARNINGS,"Nivel de advertencias") ).EndCheck(fp_warnings)
-		.BeginCheck( LANG(PROJECTCONFIG_COMPILING_DEBUG,"Informacion de depuracion") ).EndCheck(fp_debug)
-		.BeginCheck( LANG(PROJECTCONFIG_COMPILING_OPTIM,"Nivel de optimizacion") ).EndCheck(fp_optimizations)
+		.BeginCheck( LANG(PROJECTCONFIG_COMPILING_DEBUG,"Informacion de depuración") ).EndCheck(fp_debug)
+		.BeginCheck( LANG(PROJECTCONFIG_COMPILING_OPTIM,"Nivel de optimización") ).EndCheck(fp_optimizations)
 		.EndSection();
 	
 	right_sizer.BeginText( LANG(BYSRCOPTS_ADDITIONAL_ARGS,"Argumentos de compilación adicionales") ).MultiLine().EndText(additional_args);

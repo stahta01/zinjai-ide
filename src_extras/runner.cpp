@@ -49,7 +49,7 @@ const char *lang_press_key_to_close[] = {
 };
 
 const char *lang_error_running[] = {
-	"Error ejecuntado: ",
+	"Error ejecutando: ",
 	"Error running: "
 };
 

@@ -120,7 +120,7 @@ void mxCompiler::BuildOrRunProject(bool prepared, GenericAction *on_end) {
 	RaiiDeletePtr<GenericAction> ga_del(on_end);
 	if (project->GetWxfbActivated() && project->GetWxfbConfiguration()->working) return;
 	main_window->extern_compiler_output->Clear();
-	main_window->SetCompilingStatus(LANG(GENERAL_PREPARING_BUILDING,"Preparando compilacion..."),true);
+	main_window->SetCompilingStatus(LANG(GENERAL_PREPARING_BUILDING,"Preparando compilación..."),true);
 DEBUG_INFO("wxYield:in  mxCompiler::BuildOrRunProject");
 	wxYield();
 DEBUG_INFO("wxYield:out mxCompiler::BuildOrRunProject");
@@ -139,7 +139,7 @@ DEBUG_INFO("wxYield:out mxCompiler::BuildOrRunProject");
 			if (current_toolchain.IsExtern()) main_window->ShowCompilerTreePanel();
 			main_window->StartExecutionStuff(compile_and_run,current);
 		} else {
-			main_window->SetStatusText(LANG(MAINW_COMPILATION_INTERRUPTED,"Compilacion interrumpida."));
+			main_window->SetStatusText(LANG(MAINW_COMPILATION_INTERRUPTED,"Compilación interrumpida."));
 			delete compile_and_run;
 		}
 	} else {
@@ -363,7 +363,7 @@ void mxCompiler::ParseCompilerOutput(compile_and_run_struct_single *compile_and_
 					valgrind_cmd="";
 				} else {
 					compile_and_run->compiling=false;
-					main_window->SetCompilingStatus(LANG(MAINW_COMPILATION_INTERRUPTED,"Compilacion interrumpida!"),true);
+					main_window->SetCompilingStatus(LANG(MAINW_COMPILATION_INTERRUPTED,"Compilación interrumpida!"),true);
 					main_window->SetStatusProgress(0);
 					main_window->ShowCompilerTreePanel();
 					delete compile_and_run; compile_and_run=nullptr;
@@ -372,7 +372,7 @@ void mxCompiler::ParseCompilerOutput(compile_and_run_struct_single *compile_and_
 		} else { // si era un ejercicio simple, ver si hay que ejecutar
 			CheckForExecutablePermision(last_compiled->GetBinaryFileName().GetFullPath());
 			main_window->SetStatusProgress(0);
-			main_window->SetCompilingStatus(LANG(MAINW_COMPILING_DONE,"Compilacion Finalizada"),true);
+			main_window->SetCompilingStatus(LANG(MAINW_COMPILING_DONE,"Compilación Finalizada"),true);
 			errors_manager->CompilationFinished();
 			GenericAction *on_end = fms_move(compile_and_run->on_end);
 			valgrind_cmd=compile_and_run->valgrind_cmd;
@@ -384,7 +384,7 @@ void mxCompiler::ParseCompilerOutput(compile_and_run_struct_single *compile_and_
 		// informar y no seguir
 		if (!project || project->compile_was_ok) {
 			main_window->SetStatusProgress(0);
-			main_window->SetCompilingStatus(LANG(MAINW_COMPILATION_INTERRUPTED,"Compilacion interrumpida!"),true);
+			main_window->SetCompilingStatus(LANG(MAINW_COMPILATION_INTERRUPTED,"Compilación interrumpida!"),true);
 			compile_and_run->compiling=false;
 //			wxBell();
 			if (compile_and_run->output_type==MXC_EXTRA)
@@ -403,7 +403,7 @@ void mxCompiler::ParseCompilerOutput(compile_and_run_struct_single *compile_and_
 					return; // avoid final delete
 				} else {
 					main_window->SetStatusProgress(0);
-					main_window->SetStatusText(LANG(MAINW_COMPILATION_INTERRUPTED,"Compilacion interrumpida!"));
+					main_window->SetStatusText(LANG(MAINW_COMPILATION_INTERRUPTED,"Compilación interrumpida!"));
 				}
 			}
 		}

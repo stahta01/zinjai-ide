@@ -81,8 +81,8 @@ wxPanel *mxProjectGeneralConfig::CreateTabGeneral(wxNotebook *notebook) {
 wxPanel *mxProjectGeneralConfig::CreateTabAdvanced(wxNotebook *notebook) {
 	wxPanel *panel = new wxPanel(notebook, wxID_ANY );
 	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
-	sizer->Add(new wxButton(panel,mxID_RUN_CONFIG,LANG(PROJECTGENERAL_COMPILE_AND_RUN," Compilacion y Ejecucion (generales)... ")),sizers->BA5_Center);
-	sizer->Add(new wxButton(panel,mxID_PROJECT_CONFIG_BYSRC,LANG(PROJECTGENERAL_BYSRC_OPTIONS," Opciones de Compilacion (por fuente)... ")),sizers->BA5_Center);
+	sizer->Add(new wxButton(panel,mxID_RUN_CONFIG,LANG(PROJECTGENERAL_COMPILE_AND_RUN," Compilación y Ejecución (generales)... ")),sizers->BA5_Center);
+	sizer->Add(new wxButton(panel,mxID_PROJECT_CONFIG_BYSRC,LANG(PROJECTGENERAL_BYSRC_OPTIONS," Opciones de Compilación (por fuente)... ")),sizers->BA5_Center);
 	sizer->Add(new wxButton(panel,mxID_TOOLS_DOXY_CONFIG,LANG(PROJECTGENERAL_DOXYGEN," Configuración Doxygen... ")),sizers->BA5_Center);
 	sizer->Add(new wxButton(panel,mxID_TOOLS_CPPCHECK_CONFIG,LANG(PROJECTGENERAL_CPPCHECK," Configuración CppCheck... ")),sizers->BA5_Center);
 	sizer->Add(new wxButton(panel,mxID_TOOLS_WXFB_CONFIG,LANG(PROJECTGENERAL_WXFB," Integración con wxFormBuilder... ")),sizers->BA5_Center);
