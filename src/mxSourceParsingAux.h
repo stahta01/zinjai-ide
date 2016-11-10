@@ -92,8 +92,10 @@ inline int GetStartSimple(mxSource *src, int pos) {
 			if (chr==':') {
 				if(pos>0&&src->GetCharAt(pos-1)==':') --pos;
 				else { ++pos; break; }
-			} else if (chr=='{' || chr=='(' || chr==';' || chr=='}') {
+			} else if (chr=='{' || chr=='(' || chr==';' || chr=='}'/* || chr==','*/) { // not ',', because it can be a list of variables in a declaration
 				++pos; break;
+			} else if (chr=='>') {
+				pos = SkipTemplateSpecBack(src,pos);
 			} else if (chr==')'||chr=='}') {
 				pos = src->BraceMatch(pos);
 				if (pos==mxINVALID_POS) 

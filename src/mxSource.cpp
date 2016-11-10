@@ -2162,6 +2162,7 @@ wxString mxSource::FindTypeOfByKey(wxString &key, int &pos, bool include_templat
 	
 	int dims=0;
 	bool notSpace=true;
+	bool init_pos=true;
 	
 	wxString ret="",space="";
 	
@@ -2232,9 +2233,9 @@ wxString mxSource::FindTypeOfByKey(wxString &key, int &pos, bool include_templat
 	
 	while (true) {
 		
-		c=GetCharAt(p_from);
+		c = GetCharAt(p_from);
 		
-		if (c==')') { // ver si era una función/método
+		if (c==')' && !init_pos) { // ver si era una función/método
 			// avanzar despues del paréntesis y ver si abre una llave
 			p=p_from+1; int l=GetLength();
 			II_FRONT(p,II_IS_NOTHING_4(p))
@@ -2326,7 +2327,7 @@ wxString mxSource::FindTypeOfByKey(wxString &key, int &pos, bool include_templat
 				}
 			}
 			
-		} else	if (c=='}') { // saltear todo el contenido de ese bloque
+		} else	if (c=='}' && !init_pos) { // saltear todo el contenido de ese bloque
 			p_from = BraceMatch(p_from);
 			if (p_from==wxSTC_INVALID_POSITION)
 				break;
@@ -2343,6 +2344,8 @@ wxString mxSource::FindTypeOfByKey(wxString &key, int &pos, bool include_templat
 					break;
 			}
 		}
+		
+		init_pos = false;
 		
 		// reverse find ) or } from p_from
 		int p_llave_c = FindTextEx(p_from,0,"}"), p_par_c = FindTextEx(p_from,0,")"), p_to = 0;
@@ -2637,6 +2640,7 @@ wxString mxSource::FindTypeOfByPos(int p,int &dims, bool include_template_spec, 
 				dims=SRC_PARSING_ERROR;
 				return "";
 			}
+			c = GetCharAt(p-1); if (c=='*') dims--; else if (c=='&') dims++;
 			dims+=s;
 			return ans;
 		}
@@ -3531,9 +3535,9 @@ void mxSource::OnModifyOnRO (wxStyledTextEvent &event) {
 }
 
 bool mxSource::IsEmptyLine(int l, bool ignore_comments, bool ignore_preproc) {
-	int p=PositionFromLine(l), pf=(l==GetLineCount()-1)?GetLength():PositionFromLine(l+1);
+	int p = PositionFromLine(l), pf = (l==GetLineCount()-1)?GetLength():PositionFromLine(l+1);
 	while (p<pf) {
-		char c; int s;
+		char c; int s = 0;
 		if ( ! ( II_IS_4(p,' ','\t','\n','\r') 
 			|| (ignore_comments && II_IS_COMMENT(p))
 			|| (ignore_preproc && s==wxSTC_C_PREPROCESSOR)
@@ -4206,8 +4210,8 @@ bool mxSource::GetCurrentCall (wxString &ftype, wxString &fname, wxArrayString &
 						if (type=="") type="???";
 						else if (dims>0) { // array or ptr
 							one_arg = wxString("*")+one_arg;
-							while (--dims>0) one_arg<<"[]";
-						}
+							while (--dims>0) if (one_arg.Last()==']') one_arg = wxString("*")+one_arg; else one_arg<<"[]";
+						} else if (dims<0) type="???";
 					}
 					one_arg = type+" "+one_arg;
 					args.Add(one_arg);
@@ -4258,7 +4262,7 @@ bool mxSource::GetCurrentCall (wxString &ftype, wxString &fname, wxArrayString &
 		wxString key = GetCurrentKeyword(p);
 		ftype = FindTypeOfByKey(key,++p,true);
 		if (ftype=="") ftype="???";
-	} else {
+	} else if (c==';'||c=='{'||c=='}') {
 		ftype="void";
 	};
 	
