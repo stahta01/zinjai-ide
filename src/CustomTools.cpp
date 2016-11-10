@@ -82,7 +82,8 @@ mxCustomToolProcess::mxCustomToolProcess(const OneCustomTool &_tool) : tool(_too
 					parser->ParseSource(source,true);
 				}
 			}
-			mxSource *src=main_window->GetCurrentSource(); if (!src||!src->sin_titulo) break; // else salteo el break adrede
+			mxSource *src=main_window->GetCurrentSource(); 
+			if (!src||!src->sin_titulo) break; // else salteo el break adrede
 		}
 		case CT_PRE_SAVE_ONE: {
 			mxSource *src=main_window->GetCurrentSource();

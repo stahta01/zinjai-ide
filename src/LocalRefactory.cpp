@@ -67,7 +67,7 @@ void LocalRefactory::GenerateFunctionDef (mxSource * src, int pos) {
 	wxString func_proto = GetFunctionProto(src,pos);
 	// insert code, indent, move cursor there
 	int line_start = src->LineFromPosition(scope_start);
-	InsertText(src, line_start, func_proto+"{\n\n}\n");
+	InsertText(src, line_start, func_proto+" {\n\n}\n");
 	src->GotoPos(src->GetLineIndentPosition(line_start+1));
 }
 
