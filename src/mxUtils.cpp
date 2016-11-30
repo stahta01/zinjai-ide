@@ -585,31 +585,37 @@ wxString mxUT::ToHtml(wxString text, bool full) {
 }
 
 void mxUT::ParameterReplace(wxString &str, wxString from, wxString to, bool quotize) {
-	if (str.Find(' ')==wxNOT_FOUND)
+	if (to.Find(' ')==wxNOT_FOUND) {
 		str.Replace(from,to);
-	else {
-		wxString final;
-		int p=str.Find(from), l=str.Len();
-		while (p!=wxNOT_FOUND) {
-			int p1=p, p2=p;
-			// la clave puede ser parte de un argumento, por eso busca que hay pegado para atras y para adelante
-			while (p1>0 && str[p1]!=' ' && str[p1]!='\t')
-				p1--;
-			if (str[p1]==' ' || str[p1]=='\t')
-				p1++;
-			while (p2<l-1 && str[p2]!=' ' && str[p2]!='\t')
-				p2++;
-			if (str[p2]==' ' || str[p2]=='\t')
-				p2--;
-			final<<str.SubString(0,p1-1);
-			wxString mid = str.SubString(p1,p-1)+to+str.SubString(p+from.Len(),p2);
-			final<<(quotize?mxUT::Quotize(mid):mid);
-			str=str.Mid(p2+1);
-			p=str.Find(from);
-			l=str.Len();
+	} else {
+		int lstr = str.Len(), lfrom = from.Len(), lto=to.Len(), a0=0; char in_quotes=0;
+		for(int i=0;i<lstr;i++) { 
+			if (str[i]=='\\') { ++i; continue; }
+			if (in_quotes) { 
+				if (str[i]==in_quotes) in_quotes = 0; 
+			} else { 
+				if (str[i]=='\''||str[i]=='\"') in_quotes=str[i];
+				else if(str[i]==' '||str[i]==' ') a0 = i+1;
+			}
+			// see if substring starting on i matches "from"
+			int j=i, k=0;
+			while (k<lfrom && str[j]==from[k]) { ++k; ++j; }
+			if (k==lfrom) { // match found...
+				if (quotize && !in_quotes) { // if qoutes should be added
+					// find out where that argument ends
+					int a1 = j;
+					while (a1<lstr && str[a1]!=' ' && str[a1]!='\t' && str[a1]!='\"' && str[a1]!='\'') {
+						if (str[a1]=='\\') a1++; a1++;
+					}
+					// insert quotes and replace the argument
+					str = str.Mid(0,a0) + '\"' + str.Mid(a0,i-a0) + to + str.Mid(j,a1-j) + '\"' + str.Mid(a1);
+					i += lto; in_quotes='\"'; lstr = str.Len();
+				} else {
+					str = str.Mid(0,i) + to + str.Mid(j);
+					lstr = str.Len(); i += lto-1; lstr = str.Len();
+				}
+			}
 		}
-		final<<str;
-		str=final;
 	}
 }
 
