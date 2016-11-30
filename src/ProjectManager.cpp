@@ -3585,7 +3585,7 @@ void ProjectManager::SetEnvironment (bool set, bool for_running) {
 					mxUT::ParameterReplace(value,"${PROJECT_PATH}",project->path);
 					bool add = name.Last()=='+'; 
 					if (add) name.RemoveLast();
-					wxString old_value; wxGetEnv(name,&old_value);
+					wxString old_value; if (!wxGetEnv(name,&old_value)) old_value="<{[UNDEF]}>";
 					if (orig.find(old_value)==orig.end()) orig[name]=old_value;
 					if (add) value=old_value+value; else value.Replace(wxString("${")+name+"}",old_value);
 					wxSetEnv(name,value);
@@ -3595,7 +3595,8 @@ void ProjectManager::SetEnvironment (bool set, bool for_running) {
 			// restaurar valores originales (de cuando se invoco esta misma funcion con set=false)
 			HashStringString::iterator it=orig.begin();
 			while (it!=orig.end()) {
-				wxSetEnv(it->first,it->second);
+				if (it->second=="<{[UNDEF]}>") wxUnsetEnv(it->first);
+				else wxSetEnv(it->first,it->second);
 				++it;
 			}
 			orig.clear();

@@ -123,6 +123,7 @@ SHOW_MILLIS("About to load ConfigManager...");
 	
 	// inicialize mxUtils and ConfigManager
 	bool first_run = ConfigManager::Initialize(zpath);
+	wxSetEnv("ZINJAI_DIR",config->zinjai_dir);
 	
 	if (argc==2 && wxString(argv[1])=="--for-gdb") {
 		er_uninit();
