@@ -143,7 +143,7 @@ DEBUG_INFO("wxYield:out mxCompiler::BuildOrRunProject");
 			delete compile_and_run;
 		}
 	} else {
-		compiler->CheckForExecutablePermision(project->GetExePath());
+		if (!project->active_configuration->dont_generate_exe) compiler->CheckForExecutablePermision(project->GetExePath());
 		main_window->SetCompilingStatus(LANG(MAINW_BINARY_ALREADY_UPDATED,"El binario ya esta actualizado"),true);
 		if (on_end) on_end->Run(); 
 	}	
