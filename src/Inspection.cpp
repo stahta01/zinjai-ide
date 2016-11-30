@@ -19,7 +19,7 @@ SingleList<myDIGlobalEventHandler*> DebuggerInspection::global_consumers;
 	wxFFile g_inspection_log_file(_INSPECTION_LOG,"w+");
 #endif
 
-static wxString &RemoveEscapeChar(wxString &s) {
+static wxString RemoveEscapeChar(wxString s) {
 	int i=0, l=s.Len();
 	while (i<l) {
 		if (s[i]=='\\') { s.erase(i,1); l--; } 
@@ -81,7 +81,7 @@ void DebuggerInspection::UpdateAllVO(const wxString &voname) {
 			if (!u.new_num_children.IsEmpty()) { u.new_num_children.ToLong(&di.num_children); new_type=true; } 
 			if (!u.new_type.IsEmpty()) { di.value_type=u.new_type; new_type=true; }
 			if (di.flags.Get(DIF_IN_SCOPE)!=in_scope) { di.flags.Set(DIF_IN_SCOPE,in_scope); new_scope=true; }
-			if (in_scope && (new_type || !di.helper)) di.gdb_value=RemoveEscapeChar(u.value);
+			if (in_scope && (new_type || !di.helper)) di.gdb_value=/*RemoveEscapeChar(*/u.value/*)*/;
 			
 			if (di.dit_type==DIT_VARIABLE_OBJECT) {
 				if (in_scope) {
@@ -396,3 +396,8 @@ wxString DebuggerInspection::RewriteExpressionForBreaking(wxString main_expr) {
 	}
 	return main_expr;
 }
+
+wxString DebuggerInspection::GetValue ( ) const {
+	return RemoveEscapeChar(gdb_value);
+}
+
