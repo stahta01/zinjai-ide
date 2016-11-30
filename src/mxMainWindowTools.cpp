@@ -399,11 +399,20 @@ void mxMainWindow::OnToolsWxfbHelp(wxCommandEvent &event) {
 }
 
 void mxMainWindow::OnToolsWxfbHelpWx(wxCommandEvent &event) {
-	if (wxFileName::FileExists(DIR_PLUS_FILE(config->zinjai_dir,config->Help.wxhelp_index)))
+	
+	wxString help_file = config->Help.wxhelp_index;
+	if (help_file.IsEmpty()) {
+		wxString defb = DIR_PLUS_FILE(DIR_PLUS_FILE(config->zinjai_dir,"complements"),"docs");
+		wxString def2 = DIR_PLUS_FILE(DIR_PLUS_FILE(defb,"wx2"),"wx_contents.html");
+		wxString def3 = DIR_PLUS_FILE(DIR_PLUS_FILE(defb,"wx3"),"index.html");
+		if (wxFileExists(def3)) help_file = def3; else if (wxFileExists(def2)) help_file = def2;
+	}
+	
+	if (help_file.IsEmpty() || wxFileName::FileExists(DIR_PLUS_FILE(config->zinjai_dir,config->Help.wxhelp_index)))
 		mxUT::OpenInBrowser(DIR_PLUS_FILE(config->zinjai_dir,config->Help.wxhelp_index));
-	else if (mxMessageDialog(this,"ZinjaI no pudo encontrar la ayuda de wxWidgets. A continuacion le permitira buscarla\n"
-								  "manualmente y luego recordara esta seleccion (en cualquier momento se puede modificar\n"
-								  "desde el cuadro de Preferencias). Usualmente, el archivo indice es \"wx_contents.html\".")
+	else if (mxMessageDialog(this,"ZinjaI no pudo encontrar la ayuda de wxWidgets. A continuacion se le permitirá buscarla\n"
+								  "manualmente y luego se recordará esta seleccion (en cualquier momento se puede modificar\n"
+								  "desde el cuadro de Preferencias).")
 				.Title("Ayuda wxWidgets").IconInfo().ButtonsOkCancel().Run().ok) 
 	{
 		wxFileDialog dlg(this,"Indice de ayuda wxWidgets:",config->Help.wxhelp_index);

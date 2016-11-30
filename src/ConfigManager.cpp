@@ -298,9 +298,6 @@ bool ConfigManager::Load() {
 			} else if (section=="Files") {
 				CFG_GENERIC_READ_DN("toolchain",Files.toolchain);
 				else CFG_GENERIC_READ_DN("debugger_command",Files.debugger_command);
-//#ifdef __WIN32__
-//				else CFG_GENERIC_READ_DN("mingw_dir",Files.mingw_dir);
-//#endif
 				else CFG_GENERIC_READ_DN("terminal_command",Files.terminal_command);
 				else CFG_GENERIC_READ_DN("explorer_command",Files.explorer_command);
 				else CFG_GENERIC_READ_DN("c_template",Files.c_template);
@@ -447,6 +444,13 @@ bool ConfigManager::Load() {
 	if (Init.version<20160812) {
 		for(unsigned int i=0;i<Debug.blacklist.GetCount();i++)
 			Debug.blacklist[i] = wxString("file ")+mxUT::Quotize(Debug.blacklist[i]);
+	}
+	
+	if (Init.version<20160818) {
+		if (Files.toolchain=="gcc-mingw32") Files.toolchain="gcc5-mingw32";
+#ifdef __WIN32__
+		if (Help.wxhelp_index=="MinGW\\wx\\docs\\wx_contents.html") Help.wxhelp_index="";
+#endif
 	}
 
 	Init.autohiding_panels=Init.autohide_panels;
@@ -607,15 +611,8 @@ bool ConfigManager::Save(){
 	CFG_GENERIC_WRITE_DN("skin_dir",Files.skin_dir);
 	CFG_GENERIC_WRITE_DN("debugger_command",Files.debugger_command);
 	CFG_GENERIC_WRITE_DN("toolchain",Files.toolchain);
-//	CFG_GENERIC_WRITE_DN("compiler_command",Files.compiler_command);
-//	CFG_GENERIC_WRITE_DN("compiler_c_command",Files.compiler_c_command);
 	CFG_GENERIC_WRITE_DN("cppcheck_command",Files.cppcheck_command);
-#ifdef __WIN32__
-//	CFG_GENERIC_WRITE_DN("mingw_dir",Files.mingw_dir);
-#else
 	CFG_GENERIC_WRITE_DN("valgrind_command",Files.valgrind_command);
-#endif
-//	CFG_GENERIC_WRITE_DN("runner_command",Files.runner_command);
 	CFG_GENERIC_WRITE_DN("terminal_command",Files.terminal_command);
 	CFG_GENERIC_WRITE_DN("explorer_command",Files.explorer_command);
 	CFG_GENERIC_WRITE_DN("c_template",Files.c_template);
@@ -626,7 +623,6 @@ bool ConfigManager::Save(){
 	CFG_GENERIC_WRITE_DN("doxygen_command",Files.doxygen_command);
 	CFG_GENERIC_WRITE_DN("wxfb_command",Files.wxfb_command);
 	CFG_GENERIC_WRITE_DN("browser_command",Files.browser_command);
-//	CFG_GENERIC_WRITE_DN("graphviz_dir",Files.graphviz_dir);
 	CFG_GENERIC_WRITE_DN("project_folder",Files.project_folder);
 	CFG_GENERIC_WRITE_DN("last_dir",Files.last_dir);
 	CFG_GENERIC_WRITE_DN("last_project_dir",Files.last_project_dir);
@@ -669,17 +665,13 @@ void ConfigManager::LoadDefaults(){
 	if (!wxFileName::DirExists(config_dir))
 		config_dir = DIR_PLUS_FILE(wxFileName::GetHomeDir(),_if_win32("zinjai",".zinjai"));
 	EnsurePathExists(config_dir);
-//	m_filename = DIR_PLUS_FILE(zinjai_dir,"config.here");
-//	if (!wxFileName::FileExists(m_filename)) 
 	m_filename = DIR_PLUS_FILE(config_dir,"config");
 	
 	// establecer valores predeterminados para todas las estructuras
 	Files.temp_dir=DIR_PLUS_FILE(config_dir,"tmp");;
 	Files.skin_dir="imgs";
-//	Files.graphviz_dir="graphviz";
-//	Files.mingw_dir="MinGW";
 #ifdef __WIN32__
-	Files.toolchain="gcc-mingw32";
+	Files.toolchain="gcc5-mingw32";
 	Files.debugger_command="gdb";
 	Files.runner_command=DIR_PLUS_FILE("bin","runner.exe");
 	Files.terminal_command="";
@@ -815,11 +807,7 @@ void ConfigManager::LoadDefaults(){
 	Init.max_jobs=wxThread::GetCPUCount();
 	if (Init.max_jobs<1) Init.max_jobs=1;
 	
-#ifdef __WIN32__
-	Help.wxhelp_index="MinGW\\wx\\docs\\wx_contents.html";
-#else
-	Help.wxhelp_index="docs/wx/wx_contents.html";
-#endif
+	Help.wxhelp_index="";
 	Help.cppreference_dir="cppreference/en";
 	Help.guihelp_dir="guihelp";
 	Help.autocomp_indexes="AAA_Directivas_de_Preprocesador,AAA_Estandar_C,AAA_Estandar_Cpp,AAA_STL,AAA_Palabras_Reservadas,AAA_Estandar_Cpp_11,AAA_STL_11,AAA_Palabras_Reservadas_11";
