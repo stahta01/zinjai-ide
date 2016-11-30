@@ -8,6 +8,7 @@
 
 class mxCreateComplementWindow : public wxFrame {
 private:
+	bool autoclose;
 	int step;
 	wxTextCtrl *dest;
 	wxTextCtrl *folder;
@@ -22,11 +23,11 @@ private:
 	complement_info info;
 protected:
 public:
-	mxCreateComplementWindow(wxString path);
+	mxCreateComplementWindow(wxString in_path, wxString out_fname="");
 	void OnButtonCreate(wxCommandEvent &evt);
 	void OnButtonCancel(wxCommandEvent &evt);
 	void OnButtonFolder(wxCommandEvent &evt);
-	void SetFolder(wxString path);
+	void SetFolder(wxString in_path);
 	void OnButtonDest(wxCommandEvent &evt);
 	void OnClose(wxCloseEvent &evt);
 	void Notify(const wxString &message);

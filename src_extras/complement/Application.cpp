@@ -10,23 +10,24 @@ bool spanish=false;
 
 bool mxApplication::OnInit() {
 	wxString zpath,fname;
+	bool for_autobuilding = false;
 	for(int i=1;i<argc;i++) { 
 		wxString argvi(argv[i]);
 		if (argvi.StartsWith("--lang=")) {
 			spanish=argvi=="--lang=spanish";
+		} else if (argvi=="--build") {
+			for_autobuilding = true;
 		} else {
 			if (zpath.Len()==0) zpath=argvi; else fname=argvi;
 		}
 	}
-//	wxMessageBox(zpath);
-//	wxMessageBox(fname);
 #ifndef __WIN32__
 	cerr<<(spanish?"\nNo cierre esta ventana.\n":"\nDo not close this window.\n");
 #endif
-	if (fname.Len())
+	if (fname.Len() && !for_autobuilding )
 		new mxInfoWindow(zpath,fname);
 	else
-		new mxCreateComplementWindow(zpath);
+		new mxCreateComplementWindow(zpath,fname);
 	return true;
 }
 

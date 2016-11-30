@@ -73,8 +73,11 @@ void FindFiles(wxArrayString &array, wxString where, wxString sub, wxArrayString
 	
 }
 	
-mxCreateComplementWindow::mxCreateComplementWindow(wxString path):wxFrame(NULL,wxID_ANY,spanish?"Generación de complementos":"Complement Generation",wxDefaultPosition,wxDefaultSize) {
-	create_win=this; step=STEP_ASKING;
+mxCreateComplementWindow::mxCreateComplementWindow(wxString in_path, wxString out_fname)
+	: wxFrame(NULL,wxID_ANY,spanish?"Generación de complementos":"Complement Generation",wxDefaultPosition,wxDefaultSize)
+	, autoclose(false), step(STEP_ASKING)
+{
+	create_win=this;
 	wxFileSystem::AddHandler(new wxArchiveFSHandler);
 	
 	SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
@@ -139,9 +142,18 @@ mxCreateComplementWindow::mxCreateComplementWindow(wxString path):wxFrame(NULL,w
 	SetSizerAndFit(sizer);
 
 	Show(); 
-	
-	if (path.Len()) SetFolder(path);
 	text->SetFocus();
+	
+	if (in_path.Len()) {
+		SetFolder(in_path);
+		if (out_fname.Len()) {
+			autoclose = true;
+			dest->SetValue(out_fname);
+			wxCommandEvent evt;
+			OnButtonCreate(evt);
+		}
+	}
+
 
 }
 
@@ -208,6 +220,7 @@ void mxCreateComplementWindow::OnButtonCreate (wxCommandEvent & evt) {
 		if (step==STEP_ABORTING) { _return; }
 		
 		Notify(spanish?"Generación Finalizada.":"Generation completed.");
+		if (autoclose) Close();
 		step=STEP_DONE; but_create->SetLabel(spanish?"Aceptar":"Ok"); but_cancel->SetLabel(spanish?"Cerrar":"Close"); but_create->Enable();
 	}
 }
