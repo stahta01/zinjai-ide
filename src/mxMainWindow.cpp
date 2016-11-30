@@ -5046,7 +5046,10 @@ void mxMainWindow::OnAfterEventsTimer (wxTimerEvent & event) {
 
 void mxMainWindow::SetFocusToSourceAfterEvents () {
 	class SetFocusToSourceAfterEventsAction : public mxMainWindow::AfterEventsAction {
-		public: void Run() override { main_window->SetFocusToSource(); }
+		public: void Run() override { 
+			if (config->Init.autohiding_panels) main_window->Raise(); 
+			main_window->SetFocusToSource(); // only set "local" focus, first raise must set the focus to the main window
+		}
 	};
 	CallAfterEvents(new SetFocusToSourceAfterEventsAction());
 }
