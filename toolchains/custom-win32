@@ -1,9 +1,9 @@
 type=extern
-desc=custom building script
+desc=custom building script (for mingw32-gcc5)
 build_command=${ARG1}
 clean_command=${ARG2}
-argument1=Build Command=build.sh
-argument2=Clean Command=clean.sh
+argument1=Build Command=build.bat
+argument2=Clean Command=clean.bat
 use_return_vale=0
-base_path=MinGW
-bin_path=MinGW/bin
+base_path=MinGW32-gcc5
+bin_path=MinGW32-gcc5/bin

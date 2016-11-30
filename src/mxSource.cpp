@@ -2318,7 +2318,7 @@ wxString mxSource::FindTypeOfByKey(wxString &key, int &pos, bool include_templat
 						int pend=p+1;
 						p = WordStartPosition(p,true);
 						if (notSpace) {
-							space = GetTextRange(p+1,pend);
+							space = GetTextRange(p,pend);
 							notSpace=false;
 						}
 					}

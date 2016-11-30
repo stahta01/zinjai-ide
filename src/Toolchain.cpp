@@ -113,8 +113,8 @@ Toolchain::Toolchain () {
 	c_compiler="mingw32-gcc";
 	c_linker_options="-static-libgcc";
 	cpp_linker_options="-static-libgcc -static-libstdc++";
-	base_path="MinGW";
-	bin_path="MinGW\\bin";
+	base_path="mingw32-gcc5";
+	bin_path="mingw32-gcc5\\bin";
 #else
 	linker="g++";
 	cpp_compiler="g++";

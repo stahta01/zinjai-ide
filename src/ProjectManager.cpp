@@ -549,7 +549,7 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 	main_window->SetStatusText(wxString(LANG(GENERAL_READY,"Listo")));
 	
 #ifdef __WIN32__
-	if (!project_template && version_saved<20130723) { // changes mingw default calling convention
+	if (!project_template && version_saved<20161116) { // changes mingw default calling convention
 		mxMessageDialog::mdAns ret =
 			mxMessageDialog(main_window,LANG(PROJECT_MINGW_CC_PROBLEM_DESC,""
 				"El proyecto que está abriendo fue guardado con una versión de ZinjaI que utilizaba\n"
@@ -1765,6 +1765,7 @@ wxString ProjectManager::GetCustomStepCommand(const compile_extra_step *step, wx
 //#endif
 	mxUT::ParameterReplace(command,"${DEPS}",deps);
 	mxUT::ParameterReplace(command,"${OUTPUT}",output);
+	mxUT::ParameterReplace(command,"${ZINJAI_DIR}",config->zinjai_dir);
 	return command;
 }
 
