@@ -6,13 +6,18 @@
 <!--<I>Note 1: A more detailed and English changelog can be found in the <A href="http://sourceforge.net/p/zinjai/code/ci/master/log/?path=" target="_blank">git repository's history</A>.</I><BR><BR>
 <I>Nota 2: Nuevo código para categorizar los cambios: New=nueva funcionalidad, Imp=mejora sobre una funcionalidad existente, Fix=corrección de un bug</I><BR><UL>-->
 
-</UL><BR><B>Release 20160829</B><BR><UL>
+</UL><BR><B>Release 201612xx</B><BR><UL>
+	<LI>New: Agregado un nuevo perfil de colores por defecto que simula las combinaciones sobre fondo azul de los IDEs para DOS de los 80/90.</LI>
 	<LI>Imp: Actualizado el toolchain basado en mingw incluido en el instalador para Windows (ahora incluye mingw32-gcc-5.3 y gdb-7.12).</LI>
+	<LI>Imp: Mejorado el reemplazo de variables en los argumentos de compilación (se detecta mejor cuando agregar comillas a un argumento).</LI>
+	<LI>Imp: Mejoras en la restauración de variables de entorno luego de modificarlas para la ejecución de un proyecto.</LI>
 	<LI>Imp: Mejoras varias en la determinación de tipos de variables locales y argumentos para el autocompletado.</LI>
 	<LI>Imp: Advertir al instalar un complemento si éste requiere una versión de ZinjaI posterior a la instalada.</LI>
 	<LI>Imp: Utilizar prototipos completos (con scopes e identificadores para argumentos) al generar índices de autocompletado.</LI>
-	<LI>Imp: Al encontrar una actualización en Windows, ZinjaI ahora avisa que se debe cerrar la versión actual antes de instalar la nueva y ofrece hacerlo.</LI>
+	<LI>Imp: Al encontrar una actualización, en Windows, ZinjaI ahora avisa que se debe cerrar la versión actual antes de instalar la nueva y ofrece hacerlo.</LI>
 	<LI>Imp: Al genera índices de autocompletado, incluir los identificadores de los argumentos de funciones.</LI>
+	<LI>Fix: Crear la carpeta para guardar los nuevos perfiles de colores si no existe al intentar guardar uno.</LI>
+	<LI>Fix: Nuevas entradas en la lista de mejoras automáticas de inspecciones, para std::list en versiones de gcc que la definen dentro de un namespace adicional.</LI>
 	<LI>Fix: Intentar finalizar el proceso de gdb en caso de que ZinjaI se cierre anormalmente por un error.</LI>
 	<LI>Fix: Correcciones en el algoritmo que reemplaza los tipos de datos genéricos de un template por sus tipos especializados en los mensajes de error del compilador.</LI>
 	<LI>Fix: Ahora se detecta correctamente al compilador instalado en un sistema mac cuando el comando g++ es solo un wrapper para clang.</LI>
