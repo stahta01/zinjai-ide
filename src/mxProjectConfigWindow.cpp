@@ -689,10 +689,22 @@ wxPanel *mxProjectConfigWindow::CreateLibsPanel (wxNotebook *notebook) {
 	
 
 //#warning LA FUNCIONALIDAD DEL BOTON PARA IMPORTAR BIBLIOTECAS NO ESTA IMPLEMENTADA
-//	wxBoxSizer *sizer_i = new wxBoxSizer(wxHORIZONTAL);
-//	sizer_i->Add(new wxStaticText(panel,mxID_PROJECT_CONFIG_IMPORT_LIBS,"Bibliotecas a utilizar:"),sizers->BA5_Center);
-//	sizer_i->Add(new wxButton(panel,wxID_ANY," Importar configuración desde plantilla... "),sizers->BA10);
-//	sizer->Add(sizer_i,sizers->BB5_Exp0);
+//	sizer.BeginLine()
+//		.BeginLabel(/*LANG(PROJECTCONFIG_USE_LIBS,*/"Utilizar bibliotecas externas: "/*)*/).EndLabel()
+//		.BeginButton( /*LANG(PROJECTCONFIG_IMPORT_LIBS,*/"Importar configuración desde plantilla..."/*)*/ ).Id(mxID_PROJECT_CONFIG_IMPORT_LIBS).EndButton()
+//		.EndLine();
+	
+	/* cosas a importar:
+		variables de entorno
+		parametros extra comp
+		macros a definir
+		directorios adicionales hs
+		parametros extra link
+		directorios adicionales libs
+		bibliotecas a enlazar
+		indices de autocompletado?
+	*/
+	
 	
 	sizer.BeginLabel( LANG(PROJECTCONFIG_LIBS_TO_GENERATE,"Bibliotecas a generar*") ).RegisterIn(wx_extern).EndLabel();
 	

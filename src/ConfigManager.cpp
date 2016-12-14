@@ -3,6 +3,7 @@
 #include <wx/wx.h>
 #include <wx/filename.h>
 #include <wx/textfile.h>
+#include <wx/dir.h>
 #ifdef __APPLE__
 #	include <wx/stc/stc.h>
 #endif
@@ -14,7 +15,6 @@
 #include "ProjectManager.h"
 #include "mxPreferenceWindow.h"
 #include "Language.h"
-#include <wx/dir.h>
 #include "mxMainWindow.h"
 #include "mxColoursEditor.h"
 #include "Toolchain.h"
@@ -136,7 +136,7 @@ void ConfigManager::DoInitialChecks() {
 	// verificar si hay depurador
 	if (!Init.debugger_seen) {
 		Init.debugger_seen = CheckComplaintAndInstall(
-			nullptr, "gdb --version",
+			nullptr, config->Files.debugger_command+" --version",
 			LANG(CONFIG_DEBUGGER,"Depurador"),
 			LANG(CONFIG_DEBUGGER_NOT_FOUND,"No se ha encontrado el depurador (gdb). Debe instalarlo con\n"
 			"el gestor de paquetes que corresponda a su distribución\n"
@@ -446,7 +446,7 @@ bool ConfigManager::Load() {
 			Debug.blacklist[i] = wxString("file ")+mxUT::Quotize(Debug.blacklist[i]);
 	}
 	
-	if (Init.version<20160818) {
+	if (Init.version<20161130) {
 		if (Files.toolchain=="gcc-mingw32") Files.toolchain="gcc5-mingw32";
 #ifdef __WIN32__
 		if (Help.wxhelp_index=="MinGW\\wx\\docs\\wx_contents.html") Help.wxhelp_index="";

@@ -406,10 +406,12 @@ void mxMainWindow::OnToolsWxfbHelpWx(wxCommandEvent &event) {
 		wxString def2 = DIR_PLUS_FILE(DIR_PLUS_FILE(defb,"wx2"),"wx_contents.html");
 		wxString def3 = DIR_PLUS_FILE(DIR_PLUS_FILE(defb,"wx3"),"index.html");
 		if (wxFileExists(def3)) help_file = def3; else if (wxFileExists(def2)) help_file = def2;
+	} else {
+		help_file = DIR_PLUS_FILE(config->zinjai_dir,help_file);
 	}
 	
-	if (help_file.IsEmpty() || wxFileName::FileExists(DIR_PLUS_FILE(config->zinjai_dir,config->Help.wxhelp_index)))
-		mxUT::OpenInBrowser(DIR_PLUS_FILE(config->zinjai_dir,config->Help.wxhelp_index));
+	if (help_file.IsEmpty() || !wxFileName::FileExists(DIR_PLUS_FILE(config->zinjai_dir,config->Help.wxhelp_index)))
+		mxUT::OpenInBrowser(help_file);
 	else if (mxMessageDialog(this,"ZinjaI no pudo encontrar la ayuda de wxWidgets. A continuacion se le permitirá buscarla\n"
 								  "manualmente y luego se recordará esta seleccion (en cualquier momento se puede modificar\n"
 								  "desde el cuadro de Preferencias).")

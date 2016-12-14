@@ -3577,12 +3577,11 @@ void ProjectManager::SetEnvironment (bool set, bool for_running) {
 				wxArrayString array;
 				mxUT::Split(active_configuration->env_vars,array,false,false);
 				for(unsigned int i=0;i<array.GetCount();i++) {  
-					wxString name=array[i].BeforeFirst('='); 
-					wxString value=array[i].AfterFirst('='); 
-					if (!name.Len()) continue;
-					mxUT::ParameterReplace(value,"${MINGW_DIR}",current_toolchain.mingw_dir);
-					mxUT::ParameterReplace(value,"${TEMP_DIR}",temp_folder);
-					mxUT::ParameterReplace(value,"${PROJECT_PATH}",project->path);
+					if (!array[i].Contains("=")) continue;
+					wxString name = array[i].BeforeFirst('='), value = array[i].AfterFirst('='); 
+					mxUT::ParameterReplace(value,"${MINGW_DIR}",current_toolchain.mingw_dir,false);
+					mxUT::ParameterReplace(value,"${TEMP_DIR}",temp_folder,false);
+					mxUT::ParameterReplace(value,"${PROJECT_PATH}",project->path,false);
 					bool add = name.Last()=='+'; 
 					if (add) name.RemoveLast();
 					wxString old_value; if (!wxGetEnv(name,&old_value)) old_value="<{[UNDEF]}>";
