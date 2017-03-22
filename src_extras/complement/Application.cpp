@@ -4,6 +4,7 @@
 #include "mxCreateComplementWindow.h"
 #include <iostream>
 #include <wx/msgdlg.h>
+#include "mac-stuff.h"
 using namespace std;
 
 bool spanish=false;
@@ -21,6 +22,9 @@ bool mxApplication::OnInit() {
 			if (zpath.Len()==0) zpath=argvi; else fname=argvi;
 		}
 	}
+	
+	fix_mac_focus_problem();
+	
 #ifndef __WIN32__
 	cerr<<(spanish?"\nNo cierre esta ventana.\n":"\nDo not close this window.\n");
 #endif

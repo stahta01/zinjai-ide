@@ -390,7 +390,8 @@ void mxNewWizard::OnProjectCreate() {
 				h_file.AddLine(wxString("\t~")+name+"();");
 			for(unsigned int i=0;i<virtual_methods.GetCount();i++) 
 				if (virtual_methods[i].StartsWith("public "))
-					h_file.AddLine(wxString("\t")+virtual_methods[i].AfterFirst(' ')+";");
+					h_file.AddLine(wxString("\t")+virtual_methods[i].AfterFirst(' ')
+								   + ( project->active_configuration->std_cpp.Contains("++1") ? " override" : "") + ";");
 			h_file.AddLine("};");
 			
 			h_file.AddLine("");
