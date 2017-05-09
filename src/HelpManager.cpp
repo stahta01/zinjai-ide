@@ -146,7 +146,7 @@ void HelpManager::HelpFor(pd_class *aclass, wxString &content, wxString &index) 
 	wxString attribs;
 	pd_var *avar = aclass->first_attrib->next;
 	while (avar!=nullptr) {
-		if (avar->properties&(PD_CONST_ENUM_CONST||PD_CONST_ENUM)) { avar = avar->next; continue; }
+		if (avar->properties&(PD_CONST_ENUM_CONST|PD_CONST_ENUM)) { avar = avar->next; continue; }
 		wxString one_attrib ="<LI>";
 		if (!aclass->is_union) {
 			if (avar->properties&PD_CONST_PUBLIC) one_attrib<<"public ";

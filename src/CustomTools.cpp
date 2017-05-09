@@ -92,7 +92,7 @@ mxCustomToolProcess::mxCustomToolProcess(const OneCustomTool &_tool) : tool(_too
 	}
 	
 	wxString name=tool.name; 
-	if (!name.Len()) name=" "; name.Replace("\"","\\\"");
+	if (!name.Len()) name=" "; else name.Replace("\"","\\\"");
 	
 	wxString project_path, project_bin, bin_workdir, current_source, current_dir, temp_dir, args;
 	mxSource *src=main_window->GetCurrentSource();

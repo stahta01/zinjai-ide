@@ -353,7 +353,7 @@ void mxMainWindow::OnToolsWxfbLoadRes(wxCommandEvent &event) {
 	if (project) {
 		
 		wxFileDialog dlg (this, "Abrir Archivo", project?project->last_dir:config->Files.last_dir, " ", "Any file (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST );
-		dlg.SetWildcard("wxFormBuilder projects|"WILDCARD_WXFB);
+		dlg.SetWildcard("wxFormBuilder projects|" WILDCARD_WXFB);
 		if (dlg.ShowModal() != wxID_OK) return;
 		
 		project->last_dir=dlg.GetDirectory();
@@ -496,7 +496,7 @@ void mxMainWindow::OnToolsDiffToHimself(wxCommandEvent &event) {
 void mxMainWindow::OnToolsDiffToDiskFile(wxCommandEvent &event) {
 	IF_THERE_IS_SOURCE {
 		wxFileDialog dlg (this, "Abrir Archivo", project?project->last_dir:config->Files.last_dir, " ", "Any file (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST );
-		dlg.SetWildcard("Archivos de C/C++|"WILDCARD_CPP"|Fuentes|"WILDCARD_SOURCE"|Cabeceras|"WILDCARD_HEADER"|Todos los archivos|*");
+		dlg.SetWildcard("Archivos de C/C++|" WILDCARD_CPP "|Fuentes|" WILDCARD_SOURCE "|Cabeceras|" WILDCARD_HEADER "|Todos los archivos|*");
 		if (dlg.ShowModal() == wxID_OK) {
 			if (project)
 				project->last_dir=dlg.GetDirectory();

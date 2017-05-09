@@ -400,7 +400,8 @@ void mxInspectionGrid::OnClearAll(wxCommandEvent &evt) {
 
 void mxInspectionGrid::OnClearOne(wxCommandEvent &evt) {
 	vector<int> sel; mxGrid::GetSelectedRows(sel,true);
-	if (sel.empty()) return; int min=sel.back();
+	if (sel.empty()) return; 
+	int min=sel.back();
 	for(unsigned int i=0;i<sel.size();i++) DeleteInspection(sel[i],false);
 	mxGrid::Select(min);
 }

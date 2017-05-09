@@ -276,11 +276,12 @@ void mxNewWizard::OnProjectCreate() {
 				// eliminar repetidos
 				for(unsigned int i=0;i<virtual_methods.GetCount();i++) {  
 					for(unsigned int j=i+1;j<virtual_methods.GetCount();j++) {  
-						if (virtual_methods[i].AfterFirst(' ')==virtual_methods[j].AfterFirst(' ')) 
+						if (virtual_methods[i].AfterFirst(' ')==virtual_methods[j].AfterFirst(' ')) {
 							if (virtual_methods[i].EndsWith(" =0") && !virtual_methods[j].EndsWith(" =0")) {
 								virtual_methods[i]=virtual_methods[j]; // si hay una version virtual pura y otra no pura, quedarse con la que no
 							}
 							virtual_methods.RemoveAt(j--);
+						}
 					}
 				}
 				// preguntar cuales va a querer implementar
@@ -1083,10 +1084,10 @@ void mxNewWizard::OnButtonNewFilePath(wxCommandEvent &evt) {
 	wxFileDialog dlg(this, LANG(NEWWIZARD_CREATE_FILE,"Crear Archivo"), fname.GetPath(), fname.GetFullName(), wxString(LANG(WILDCARD_ANY,"Todos los archivos"))<<"|*", wxFD_SAVE);
 	switch (onproject_radio->GetSelection()) {
 	case 0:
-		dlg.SetWildcard(wxString(LANG(WILDCARD_SOURCES,"Fuentes"))<<"|"WILDCARD_SOURCE"|"<<LANG(WILDCARD_ANY,"Todos los archivos")<<"|*");
+		dlg.SetWildcard(wxString(LANG(WILDCARD_SOURCES,"Fuentes"))<<"|" WILDCARD_SOURCE"|"<<LANG(WILDCARD_ANY,"Todos los archivos")<<"|*");
 		break;
 	case 1:
-		dlg.SetWildcard(wxString(LANG(WILDCARD_HEADERS,"Cabeceras"))<<"|"WILDCARD_HEADER"|"<<LANG(WILDCARD_ANY,"Todos los archivos")<<"|*");
+		dlg.SetWildcard(wxString(LANG(WILDCARD_HEADERS,"Cabeceras"))<<"|" WILDCARD_HEADER"|"<<LANG(WILDCARD_ANY,"Todos los archivos")<<"|*");
 		break;
 	}
 	if (dlg.ShowModal() == wxID_OK) {

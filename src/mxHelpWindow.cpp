@@ -53,7 +53,8 @@ mxHelpWindow::mxHelpWindow(wxString file) : mxGenericHelpWindow(LANG(HELPW_CAPTI
 		}
 	}
 	
-	if (!file.Len()) file="index"; LoadHelp(file);
+	if (!file.Len()) file="index"; 
+	LoadHelp(file);
 	
 	wxBoxSizer *forum_sizer = new wxBoxSizer(wxHORIZONTAL); wxButton *button;
 	forum_sizer->Add(new wxStaticText(this,wxID_ANY,LANG(HELPW_FORUM_TEXT,"¿Lo que buscas no está en la ayuda, está desactualizado, erróneo o incompleto? ")),sizers->Center);

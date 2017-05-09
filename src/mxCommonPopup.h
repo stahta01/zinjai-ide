@@ -51,7 +51,8 @@ public:
 	
 	mxCommonPopup &ResetMenu() { 
 		m_base_path = m_caption = ""; m_comma_split = false; m_text_ctrl = nullptr; m_combo_box = nullptr;
-		while(m_menu.GetMenuItemCount()) m_menu.Remove(m_menu.FindItemByPosition(0)); return *this;
+		while(m_menu.GetMenuItemCount()) m_menu.Remove(m_menu.FindItemByPosition(0)); 
+		return *this;
 	}
 	mxCommonPopup &CommonPopup(wxTextCtrl *text_ctrl) { ResetMenu(); m_text_ctrl = text_ctrl; return *this; }
 	mxCommonPopup &CommonPopup(wxComboBox *combo_box) { ResetMenu(); m_combo_box = combo_box; return *this; }

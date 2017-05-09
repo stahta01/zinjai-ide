@@ -120,7 +120,8 @@ bool Autocoder::LoadFromFile(wxString filename) {
 				if (str[i]=='(') {
 					++i;
 					while (true) {
-						while (str[i]==' '||str[i]=='\t') i++; li=i;
+						while (str[i]==' '||str[i]=='\t') i++;
+						li=i;
 						while(i<l && str[i]!=',' && str[i]!=')') i++;
 						wxString par=str.Mid(li,i-li);
 						while (par.Len() && (par.Last()==' '||par.Last()=='\t')) par.RemoveLast();
@@ -194,11 +195,13 @@ bool Autocoder::Apply(mxSource *src, auto_code *ac, bool args) {
 		int parentesis=0,li=++i;
 		while (i<l) {
 			if (str[i]=='\'') {
-				i++; if (str[i]=='\\') i++; i++;
+				i++; if (str[i]=='\\') i++;
+				i++;
 			} else if (str[i]=='\"') {
 				i++; 
 				while (str[i]!='\"') {
-					if (str[i]=='\\') i++; i++;
+					if (str[i]=='\\') i++; 
+					i++;
 				}
 			} else if (str[i]=='(') {
 				parentesis++;

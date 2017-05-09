@@ -86,11 +86,11 @@ void mxGCovSideBar::Refresh (mxSource *src) {
 
 void mxGCovSideBar::LoadData (bool force) {
 	static bool reloading=false;
-	if (hits) delete [] hits; hits=nullptr;
+	/*if (hits) */delete [] hits; hits=nullptr;
 	mxSource *src=main_window->GetCurrentSource();
 	if (!src) return;
 	
-	if (reloading) return; reloading=true;
+	if (reloading) return; else reloading=true;
 	
 	mxOSDGuard osd;
 	

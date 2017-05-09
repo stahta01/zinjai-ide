@@ -409,7 +409,8 @@ mxSource::~mxSource () {
 	
 	bool only_view=next_source_with_same_file==this; // there can be more than one view of the same source
 	
-	if (diff_brother) diff_brother->SetDiffBrother(nullptr); diff_brother=nullptr;
+	if (diff_brother) diff_brother->SetDiffBrother(nullptr); 
+	diff_brother=nullptr;
 	while (first_diff_info) delete first_diff_info;
 	
 	g_navigation_history.OnClose(this);
@@ -1141,7 +1142,7 @@ void mxSource::OnCharAdded (wxStyledTextEvent &event) {
 				p=PositionFromLine(GetCurrentLine())-1;
 				while (p>=0 && ((c=GetCharAt(p))==' ' || c=='\t'  || c=='\r'  || c=='\n' || (s=GetStyleAt(p))==wxSTC_C_COMMENT || s==wxSTC_C_COMMENTLINE || s==wxSTC_C_COMMENTDOC || s==wxSTC_C_PREPROCESSOR || s==wxSTC_C_COMMENTDOCKEYWORD || s==wxSTC_C_COMMENTDOCKEYWORDERROR))
 					p--;
-				if (p>0) 
+				if (p>0) {
 					if (c=='}') {
 						p=BraceMatch(p);
 						if (p==wxSTC_INVALID_POSITION)
@@ -1160,6 +1161,7 @@ void mxSource::OnCharAdded (wxStyledTextEvent &event) {
 					}
 					if (p>0)
 						SetLineIndentation(GetCurrentLine(),GetLineIndentation(LineFromPosition(p)));
+				}
 			}
 			
 		} else if (chr==':') {
@@ -1614,7 +1616,8 @@ void mxSource::Indent(int min, int max) {
 	int ps1=GetSelectionStart() ,ps2=GetSelectionStart();
 	int ls1=LineFromPosition(ps1), ls2=LineFromPosition(ps2);
 	int ds1=ps1-GetLineIndentPosition(ls1), ds2=ps2-GetLineIndentPosition(ls2);
-	if (ds1<0) ds1=0; if (ds2<0) ds2=0;
+	if (ds1<0) ds1=0; 
+	if (ds2<0) ds2=0;
 	// para evitar que al llamar a charadd se autocomplete o cierre algo
 	RaiiRestoreValue<int> restore_autocomp(config_source.autoCompletion,0);
 	RaiiRestoreValue<bool> restore_autoclose(config_source.autocloseStuff,false);
@@ -2115,7 +2118,8 @@ void mxSource::PopulatePopupMenuCodeTools(wxMenu &menu) {
 	// determinar si toda la seleccion corresponde a un mismo scope como para poder hacer refactory local con esas lineas como grupo
 	bool single_scope = p1==p2;
 	if (!single_scope) {
-		if (p2<p1) swap(p1,p2); int a1,a2; single_scope = true;
+		if (p2<p1) swap(p1,p2); 
+		int a1,a2; single_scope = true;
 		for(int i=0;i<2;i++) {
 			single_scope = single_scope &&GetCurrentScopeLimits(i?p1:p2,a1,a2,true); // scope mas interno de pX
 			while (single_scope && (a1>=p1&&a2<=p2) ) { // mientras esté totalmente contenido... ir un scope más "arriba"

@@ -198,7 +198,8 @@ void mxBreakList::OnGotoButton(wxCommandEvent &evt) {
 
 
 void mxBreakList::PopulateGrid ( ) {
-	if (grid->GetNumberRows()) grid->DeleteRows(0,grid->GetNumberRows()); ids.clear();
+	if (grid->GetNumberRows()) grid->DeleteRows(0,grid->GetNumberRows());
+	ids.clear();
 	
 	bool ask_debug=debug->CanTalkToGDB();
 	if (ask_debug) debug->PopulateBreakpointsList(this,true);

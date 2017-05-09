@@ -137,7 +137,7 @@ void mxUpdatesChecker::OnChangesButton(wxCommandEvent &evt) {
 #else
 	bool do_exit = false;
 #endif
-	mxUT::OpenZinjaiSite("actualizacion.php&os="ARCHITECTURE);
+	mxUT::OpenZinjaiSite("actualizacion.php&os=" ARCHITECTURE);
 	Close();
 	if (do_exit) main_window->Close();
 }

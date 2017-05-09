@@ -865,7 +865,8 @@ bool DebugManager::UpdateBacktrace(const BTInfo &stack, bool is_current) {
 					int j=0, l=s.Len();
 					const wxChar * choa = s.c_str();
 					// choa+j = level="0",args={{name="...
-					while (j<l && choa[j]!='{' && choa[j]!='[')	j++; j++;
+					while (j<l && choa[j]!='{' && choa[j]!='[')	j++;
+					j++;
 					// choa+j = {name="...
 					while (j<l) {
 						while (j<l && choa[j]!='{' && choa[j]!='[')

@@ -829,7 +829,7 @@ void mxMainWindow::OnProjectTreeRename(wxCommandEvent &event) {
 	wxFileName fn(DIR_PLUS_FILE(project->path,project->GetNameFromItem(project_tree.selected_item,true)));
 	wxFileDialog dlg (this, "Renombrar",fn.GetPath(),fn.GetFullName(), "Any file (*)|*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	dlg.SetDirectory(fn.GetPath());
-	dlg.SetWildcard("Todos los archivos|"WILDCARD_ALL"|Archivos de C/C++|"WILDCARD_CPP"|Fuentes|"WILDCARD_SOURCE"|Cabeceras|"WILDCARD_HEADER);
+	dlg.SetWildcard("Todos los archivos|" WILDCARD_ALL "|Archivos de C/C++|" WILDCARD_CPP "|Fuentes|" WILDCARD_SOURCE "|Cabeceras|" WILDCARD_HEADER);
 	if (dlg.ShowModal() == wxID_OK) {
 		if (!project->RenameFile(project_tree.selected_item,dlg.GetPath())) {
 			mxMessageDialog(main_window,LANG(MAINW_PROBLEM_RENAMING,"No se pudo renombrar el archivo"))
@@ -869,7 +869,7 @@ void mxMainWindow::OnProjectTreeAddSelected(wxCommandEvent &event) {
 
 void mxMainWindow::OnProjectTreeAdd(wxCommandEvent &event) {
 	wxFileDialog dlg (this, "Abrir Archivo", project?project->last_dir:config->Files.last_dir, " ", "Any file (*)|*", wxFD_OPEN | wxFD_MULTIPLE);
-	dlg.SetWildcard("Archivos de C/C++|"WILDCARD_CPP"|Fuentes|"WILDCARD_SOURCE"|Cabeceras|"WILDCARD_HEADER"|Todos los archivos|*");
+	dlg.SetWildcard("Archivos de C/C++|" WILDCARD_CPP "|Fuentes|" WILDCARD_SOURCE "|Cabeceras|" WILDCARD_HEADER "|Todos los archivos|*");
 	if (project_tree.selected_parent==project_tree.sources)
 		dlg.SetFilterIndex(1);
 	else if (project_tree.selected_parent==project_tree.headers)
@@ -2853,7 +2853,7 @@ void mxMainWindow::OpenFileFromGui (wxFileName filename, int *multiple) {
 
 void mxMainWindow::OnFileOpen (wxCommandEvent &event) {
 	wxFileDialog dlg (this, "Abrir Archivo", project?project->last_dir:config->Files.last_dir, " ", "Any file (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_MULTIPLE);
-	dlg.SetWildcard("Archivos de C/C++ y Proyectos|"WILDCARD_CPP_EXT"|Fuentes|"WILDCARD_SOURCE"|Cabeceras|"WILDCARD_HEADER"|Proyectos|"WILDCARD_PROJECT"|Todos los archivos|*");
+	dlg.SetWildcard("Archivos de C/C++ y Proyectos|" WILDCARD_CPP_EXT "|Fuentes|" WILDCARD_SOURCE "|Cabeceras|" WILDCARD_HEADER "|Proyectos|" WILDCARD_PROJECT "|Todos los archivos|*");
 	if (dlg.ShowModal() == wxID_OK) {
 		if (project)
 			project->last_dir=dlg.GetDirectory();
@@ -3034,7 +3034,7 @@ void mxMainWindow::OnFileSaveAs (wxCommandEvent &event) {
 	IF_THERE_IS_SOURCE  {
 		mxSource *source=CURRENT_SOURCE;
 		wxFileDialog dlg (this, LANG(GENERAL_SAVE,"Guardar"),source->sin_titulo?config->Files.last_dir:source->GetPath(true),source->GetFileName(), "Any file (*)|*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
-		dlg.SetWildcard("Todos los archivos|*|Archivos de C/C++|"WILDCARD_CPP"|Fuentes|"WILDCARD_SOURCE"|Cabeceras|"WILDCARD_HEADER);
+		dlg.SetWildcard("Todos los archivos|*|Archivos de C/C++|" WILDCARD_CPP "|Fuentes|" WILDCARD_SOURCE "|Cabeceras|" WILDCARD_HEADER);
 		if (dlg.ShowModal() == wxID_OK) {
 			wxFileName file = dlg.GetPath();
 #ifndef __WIN32__
@@ -5038,7 +5038,8 @@ void mxMainWindow::OnAfterEventsTimer (wxTimerEvent & event) {
 	call_after_events = nullptr;
 	while (current) {
 		AfterEventsAction *next = current->m_next;
-		if (current->m_do_run) current->Run(); delete current;
+		if (current->m_do_run) current->Run(); 
+		delete current;
 		current = next;
 	}
 	if (call_after_events) after_events_timer->Start(50,true);

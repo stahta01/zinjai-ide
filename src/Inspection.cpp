@@ -46,7 +46,8 @@ void DebuggerInspection::UpdateAllVO(const wxString &voname) {
 			//		^done,changelist=[reason="signal-received",signal-name="SIGTRAP",signal-meaning= // indica que revento
 			//		"Trace/breakpoint trap",frame={..,args=[{name="...",value="..."},...},...,       // tipo backtrace, esos name= no son inspecciones
 			// 		{name="...",in_scope="...",type_changed="...",has_more="..."},...]               // pero puede haber inspecciones, name= fuera de frame={...}
-			while (i<l && s[i]!='{') i++; int ii=i; GdbParse_SkipList(s,ii,l); i=ii+1; // saltear la info del frame, y @TODO: avisar de alguna forma del problema
+			while (i<l && s[i]!='{') i++;
+			int ii=i; GdbParse_SkipList(s,ii,l); i=ii+1; // saltear la info del frame, y @TODO: avisar de alguna forma del problema
 			there_was_an_error_evaluating_an_inspecction=true;
 		} else
 		if (s[i]=='n' && s[i+1]=='a' && s[i+2]=='m' && s[i+3]=='e' && s[i+4]=='=') { // por cada "name=" empieza un vo...

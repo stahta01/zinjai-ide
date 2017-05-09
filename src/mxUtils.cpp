@@ -605,7 +605,8 @@ void mxUT::ParameterReplace(wxString &str, wxString from, wxString to, bool quot
 					// find out where that argument ends
 					int a1 = j;
 					while (a1<lstr && str[a1]!=' ' && str[a1]!='\t' && str[a1]!='\"' && str[a1]!='\'') {
-						if (str[a1]=='\\') a1++; a1++;
+						if (str[a1]=='\\') a1++; 
+						a1++;
 					}
 					// insert quotes and replace the argument
 					str = str.Mid(0,a0) + '\"' + str.Mid(a0,i-a0) + to + str.Mid(j,a1-j) + '\"' + str.Mid(a1);
