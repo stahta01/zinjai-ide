@@ -2359,7 +2359,9 @@ wxString mxSource::FindTypeOfByKey(wxString &key, int &pos, bool include_templat
 			p_to = p_llave_c>p_par_c ? p_llave_c : p_par_c;
 		
 		// reverse find the keyword in current "scope"
-		p_ocur = p = FindTextEx(p_from, p_to, key, wxSTC_FIND_WHOLEWORD|wxSTC_FIND_MATCHCASE);
+//		p_ocur = p = FindTextEx(p_from, p_to, key, wxSTC_FIND_WHOLEWORD|wxSTC_FIND_MATCHCASE);
+		// why reverse??? in a single scope, the first one is the one
+		p_ocur = p = FindTextEx(p_to,p_from, key, wxSTC_FIND_WHOLEWORD|wxSTC_FIND_MATCHCASE);
 		if (p!=wxSTC_INVALID_POSITION) { // si se encuentra la palabra
 			
 			int p_statementstart = GetStartSimple(this,p_ocur);
