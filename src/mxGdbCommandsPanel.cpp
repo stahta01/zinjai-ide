@@ -124,6 +124,9 @@ void mxGdbCommandsPanel::OnInput (wxCommandEvent & event) {
 	if (!cmd.Len()) return;
 	output->AppendText(wxString("> ")+cmd+"\n");
 	wxString ans = debug->SendCommand(cmd);
+	ProcessAnswer(ans);
+}
+void mxGdbCommandsPanel::ProcessAnswer(wxString &ans) {
 	if (ans.Len() && ans.Last()!='\n') ans<<"\n";
 #ifdef __WIN32__
 	ans.Replace("\r","");
@@ -154,9 +157,17 @@ void mxGdbCommandsPanel::OnInput (wxCommandEvent & event) {
 		reg_msg = wxString("   ~ ")<<reg_msg<<"\n";
 	}
 	output->AppendText(reg_msg+mi_msg);
+	if (mi_msg.Contains("   ^ running\n")) {
+		ans = debug->HowDoesItRuns(false); // cuando el usuario pone a ejecutar por su cuenta
+		ProcessAnswer(ans);
+	}
 }
 
 void mxGdbCommandsPanel::SetFocusToInput ( ) {
 	input->SetFocus();
+}
+
+void mxGdbCommandsPanel::PrintMessage (const wxString & str) {
+	output->AppendText(wxString("\n!!! ")+str+"\n\n");
 }
 

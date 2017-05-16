@@ -2891,7 +2891,7 @@ void mxSource::OnToolTipTime (wxStyledTextEvent &event) {
 			e = WordEndPosition(p,true);
 			s = WordStartPosition(p,true);
 		}
-		if (s!=e) {
+		if (s!=e && LineFromPosition(s)==LineFromPosition(e)) {
 			while ( s>2 && (GetTextRange(s-1,s)=="." || GetTextRange(s-2,s)=="->" || GetTextRange(s-2,s)=="::")) {
 				int s2=s-1; if (GetTextRange(s-1,s)!=".") s2--;
 				int s3 = WordStartPosition(s2,true);
@@ -2899,7 +2899,7 @@ void mxSource::OnToolTipTime (wxStyledTextEvent &event) {
 			}
 			wxString key = GetTextRange(s,e);
 			wxString ans = debug->InspectExpression(key);
-			if (ans.Len()) {
+			if (ans.Len() && ans!=key) {
 				wxRect r=GetScreenRect();
 				int x=event.GetX()+r.GetLeft(),y=event.GetY()+r.GetTop();
 				ShowInspection(wxPoint(x,y),key,ans);

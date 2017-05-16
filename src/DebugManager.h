@@ -182,7 +182,7 @@ public:
 	void Pause();
 	void Continue();
 	bool MarkCurrentPoint(wxString cf="", int cline=-1, int cmark=-1);
-	void HowDoesItRuns(bool raise_zinjai_window=false);
+	wxString HowDoesItRuns(bool raise_zinjai_window=false);
 	void SetStateText(wxString text, bool refresh=false);
 	void SetBreakPoints(mxSource *source, bool quiet=false);
 	int LiveSetBreakPoint(BreakPointInfo *_bpi);

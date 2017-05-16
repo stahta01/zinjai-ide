@@ -488,7 +488,8 @@ bool DebugManager::Run() {
 	}
 }
 
-void DebugManager::HowDoesItRuns(bool raise_zinjai_window) {
+wxString DebugManager::HowDoesItRuns(bool raise_zinjai_window) {
+	wxString retval;
 #ifdef __WIN32__
 	static wxString sep="\\",wrong_sep="/";
 #else
@@ -499,16 +500,16 @@ void DebugManager::HowDoesItRuns(bool raise_zinjai_window) {
 	
 	while (true) { // para que vuelva a este punto cuando llega a un break point que no debe detener la ejecucion
 		running = true; 
-		wxString ans = WaitAnswer();
+		wxString ans = WaitAnswer(); retval+=ans;
 		running = false;
 		wxString state_text=LANG(DEBUG_STATUS_UNKNOWN,"Estado desconocido"); 
-		if (!process || status==DBGST_STOPPING) return;
+		if (!process || status==DBGST_STOPPING) return retval;
 		int st_pos = ans.Find(_T("*stopped"));
 		if (st_pos==wxNOT_FOUND) {
 			_IF_DEBUGMODE(wxMessageBox(wxString("HowDoesItRuns answer: ")<<ans));
 			SetStateText(state_text);
 			_DBG_LOG_CALL(Log(wxString()<<"ERROR RUNNING: "<<ans));
-			return;
+			return retval;
 		}
 		ans=ans.Mid(st_pos);
 		wxString how = GetValueFromAns(ans,"reason",true);
@@ -633,7 +634,7 @@ void DebugManager::HowDoesItRuns(bool raise_zinjai_window) {
 			current_source->ShowBaloon(bpi->annotation,current_source->PositionFromLine(current_source->GetCurrentLine()));
 		}
 		if (raise_zinjai_window && config->Debug.raise_main_window) main_window->Raise();
-		return;
+		return retval;
 	}
 }
 
