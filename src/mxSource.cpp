@@ -1053,7 +1053,7 @@ void mxSource::OnUpdateUI (wxStyledTextEvent &event) {
 //		}
 //		last_s1=GetSelectionStart(); last_s2=GetSelectionEnd();
 //	}
-	if (multi_sel) ApplyRectEdit();
+	if (multi_sel) multi_sel.ApplyRectEdit(this);
 }
 
 /// aux function for FindTypeOf and OnCharAdded
@@ -2068,7 +2068,7 @@ void mxSource::OnPopupMenuInside(wxMouseEvent &evt, bool fix_current_pos) {
 		if (wxFileName::FileExists(the_one.GetFullPath()))
 			mxUT::AddItemToMenu(&menu,_menu_item_2(mnHIDDEN,mxID_FILE_OPEN_SELECTED),LANG1(SOURCE_POPUP_OPEN_SELECTED,"&Abrir \"<{1}>\"",GetTextRange(p1,p2)));
 	}
-	if (p1!=p2 && !highlithed_word.IsEmpty()) {
+	if (p1!=p2 && !m_highlithed_word.IsEmpty()) {
 		bool have_hl=false, have_no_hl=false;
 		for(int i=p1;i<p2;i++) {  
 			if (GetStyleAt(i)==wxSTC_C_GLOBALCLASS) {
@@ -3597,6 +3597,8 @@ void mxSource::OnKeyDown(wxKeyEvent &evt) {
 		}
 	} else if (config_source.autotextEnabled && evt.GetKeyCode()==WXK_TAB && ApplyAutotext()){
 		return;
+	} else if (evt.GetKeyCode()==WXK_RETURN && multi_sel && multi_sel.ProcessEnter()) {
+			multi_sel.End(this); return;
 	} else {
 		evt.Skip();
 		// autocompletion list selected item could have been changed
@@ -3812,15 +3814,22 @@ void mxSource::OnFindKeyword(wxCommandEvent &event) {
 	main_window->FindAll(GetCurrentKeyword());
 }
 
-void mxSource::OnHighLightWord (wxCommandEvent & event) {
-	SetKeyWords(3,highlithed_word=GetCurrentKeyword());
+void mxSource::HighLightWord(const wxString &word) {
+	SetKeyWords(3,m_highlithed_word=word);
 	Colourise(0,GetLength());
+}
+
+void mxSource::HighLightCurrentWord() {
+	HighLightWord(GetCurrentKeyword());
+}
+
+void mxSource::OnHighLightWord (wxCommandEvent & event) {
+	HighLightCurrentWord();
 }
 
 void mxSource::OnDoubleClick (wxStyledTextEvent & event) {
 	event.Skip();
-	wxCommandEvent e;
-	OnHighLightWord(e);
+	HighLightCurrentWord();
 }
 
 void mxSource::UpdateExtras ( ) {
@@ -3972,49 +3981,48 @@ void mxSource::OnEditMakeUpperCase (wxCommandEvent & event) {
 /// para el scintilla de wx2.8, veo que el de 3.0 ya lo tiene resuelto 
 /// (ver SetAdditionalSelectionTyping)... cuando logre migrar a wx3 tendre
 /// que cambiar esto :(
-void mxSource::InitRectEdit (bool keep_rect_select) {
-	multi_sel.Reset();
+void mxSource::MultiSelController::InitRectEdit (mxSource *src, bool keep_rect_select) {
+	this->Reset();
 	// get ordered selection limits
-	int beg=GetSelectionStart(), end=GetSelectionEnd(); if (beg>end) swap(beg,end);
+	int beg = src->GetSelectionStart(), end = src->GetSelectionEnd(); if (beg>end) swap(beg,end);
 	// get lines range
-	int line_from = LineFromPosition(beg);
-	int line_to = LineFromPosition(end);
+	int line_from = src->LineFromPosition(beg), line_to = src->LineFromPosition(end);
 	// check for multiline selection
-	int cbeg = GetColumn(beg), cend=GetColumn(end);
-	end = FindColumn(line_from,cend);
+	int cbeg = src->GetColumn(beg), cend = src->GetColumn(end);
+	end = src->FindColumn(line_from,cend);
 	int word_width = end-beg;
 	if (line_from==line_to || word_width<0) return;
 	for(int i=line_from+1;i<=line_to;i++) {
-		int p1 = FindColumn(i,cbeg);
-		int p2 = FindColumn(i,cend);
+		int p1 = src->FindColumn(i,cbeg);
+		int p2 = src->FindColumn(i,cend);
 		if (p2-p1!=word_width) continue;
-		multi_sel.AddPos(this,i,p1);
+		this->AddPos(src,i,p1);
 	}
 	// rember original text and positions in order to detect changes later
-	multi_sel.SetEditRegion(this,line_from,beg,end);
+	this->SetEditRegion(src,line_from,beg,end);
 	// enable rectangular edition, and remember if selection is kept (in that case, first keystroke will modify all lines before ApplyRectEdit)
-	if (!keep_rect_select) SetSelection(beg,beg+multi_sel.ref_str.Len());
-	multi_sel.Begin(this,keep_rect_select,false,!keep_rect_select);
+	if (!keep_rect_select) src->SetSelection(beg,beg+m_ref_str.Len());
+	this->BeginEdition(src,keep_rect_select,!keep_rect_select);
 }
 
-void mxSource::ApplyRectEdit ( ) {
+void mxSource::MultiSelController::ApplyRectEdit (mxSource *src) {
 	// si cambia de linea, se termina la edicion
-	if (GetCurrentLine()!=multi_sel.line) {
-		multi_sel.End(this); return;
+	if (src->GetCurrentLine()!=m_line) {
+		this->End(src); return;
 	}
 	// cur = pos actual, lbeg y lend son las pos globales de inicio y fin de la linea editada
-	int cur = GetCurrentPos();
+	int cur = src->GetCurrentPos();
 	// [pbeg,pend) son las pos actuales donde empieza y termina la zona de edicion
-	int pbline = PositionFromLine(multi_sel.line), peline=GetLineEndPosition(multi_sel.line);
-	int pbeg = pbline+multi_sel.offset_beg, pend = peline-multi_sel.offset_end;
+	int pbline = src->PositionFromLine(m_line), peline = src->GetLineEndPosition(m_line);
+	int pbeg = pbline+m_offset_beg, pend = peline-m_offset_end;
 	// si se salio de la zona de edicion, termina la edicion
 	if (cur<pbeg || cur>pend) {
-		multi_sel.End(this);
+		this->End(src);
 		return;
 	}
 	// new_str es el nuevo contenido en esa linea, ref_str el viejo, ambos para toda la zona de edicion
-	wxString new_str = GetTextRange(pbeg,pend), &ref_str = multi_sel.ref_str;
-	if (multi_sel.keep_highlight && new_str.Len()) { wxStyledTextEvent e; OnHighLightWord(e); }
+	wxString new_str = src->GetTextRange(pbeg,pend), &ref_str = m_ref_str;
+	if (m_keep_highlight && new_str.Len()) { HighLightCurrentWord(); }
 	// lr y ln son los largos de ambos contenidos
 	int i=0, lr=ref_str.Len(), ln=new_str.Len(); 
 	// acotar la parte modificada, avanzando desde afuera hacia adentro mientras no haya cambio
@@ -4024,13 +4032,13 @@ void mxSource::ApplyRectEdit ( ) {
 	if (i==lr && lr==ln) return;
 	// cortar las partes que son diferentes de cada cadena de ref
 	wxString sfrom = ref_str.Mid(i,lr-i), sto = new_str.Mid(i,ln-i);
-	UndoActionGuard undo_action(this);
+	UndoActionGuard undo_action(src);
 	int dbeg = pbeg+i; /*dend = pbeg+sfrom.Len();*/ // ahora dbeg y dend acotan solo la parte modificada, en terminos de la cadena original
-	int doffset = (dbeg-pbline) - multi_sel.offset_beg;
-	int prev_line = multi_sel.line, delta_for_next = sto.Len()-sfrom.Len(); // si hay dos ediciones en la misma linea, la primera cambia el offset de la segunda
+	int doffset = (dbeg-pbline) - m_offset_beg;
+	int prev_line = m_line, delta_for_next = sto.Len()-sfrom.Len(); // si hay dos ediciones en la misma linea, la primera cambia el offset de la segunda
 	// para cada linea de la seleccion...
-	for(unsigned int i=0;i<multi_sel.positions.size();i++) {
-		MultiSel::EditPos &rs=multi_sel.positions[i];
+	for(unsigned int i=0;i<m_positions.size();i++) {
+		MultiSelController::EditPos &rs = m_positions[i];
 		if (prev_line==rs.line) {
 			rs.offset += delta_for_next;
 		} else {
@@ -4038,27 +4046,27 @@ void mxSource::ApplyRectEdit ( ) {
 			delta_for_next = 0;
 		};
 		// obtener posiciones para la linea actual, segun columnas
-		int tbeg = PositionFromLine(rs.line)+rs.offset+doffset;
+		int tbeg = src->PositionFromLine(rs.line)+rs.offset+doffset;
 		// ? -> si realmente habia un seleccion rectangular, la edicion ya borro lo seleccionado, por eso contraer a 0 el area original
-		int tend = tbeg+ ( multi_sel.was_rect_select ? 0 : sfrom.Len() ); 
+		int tend = tbeg+ ( m_was_rect_select ? 0 : sfrom.Len() ); 
 		// reemplazar desde tbeg a tend, con sto
-		SetTargetStart(tbeg); SetTargetEnd(tend); ReplaceTarget(sto);
+		src->SetTargetStart(tbeg); src->SetTargetEnd(tend); src->ReplaceTarget(sto);
 		delta_for_next += sto.Len()-sfrom.Len();
 		if (tbeg<pbeg) { pbeg+=sto.Len()-sfrom.Len(); pend+=sto.Len()-sfrom.Len(); } // por si la que editamos no es la primera que aparece
 	}
 	// la selección ya no será rectangular
-	multi_sel.was_rect_select=false;
+	m_was_rect_select=false;
 	// guardar la linea modificada como nueva referencia para la próxima edición
-	multi_sel.SetEditRegion(this,multi_sel.line,pbeg,pend);	
+	this->SetEditRegion(src,m_line,pbeg,pend);	
 }
 
 void mxSource::OnClickUp(wxMouseEvent & evt) {
 	evt.Skip();
-	if (evt.AltDown() && SelectionIsRectangle()) InitRectEdit(true);
+	if (evt.AltDown() && SelectionIsRectangle()) multi_sel.InitRectEdit(this,true);
 }
 
 void mxSource::OnEditRectangularEdition (wxCommandEvent & evt) {
-	InitRectEdit(false);
+	multi_sel.InitRectEdit(this,false);
 }
 
 void mxSource::HideInspection ( ) {
@@ -4277,15 +4285,15 @@ bool mxSource::GetCurrentCall (wxString &ftype, wxString &fname, wxArrayString &
 
 void mxSource::OnEditHighLightedWordEdition (wxCommandEvent & evt) {
 	int pbeg = GetSelectionStart(), pend = GetSelectionEnd();
-	if (pbeg==pend) { OnHighLightWord(evt); return; }
+	if (pbeg==pend) { HighLightCurrentWord(); return; }
 	if (pbeg>pend) swap(pbeg,pend);
-	if (highlithed_word.IsEmpty() || !config_source.syntaxEnable) return;
+	if (m_m_highlithed_word.IsEmpty() || !config_source.syntaxEnable) return;
 	multi_sel.Reset();
 	int p0, p1;
 	bool first = true;
 	for(int i=pbeg;i<pend;i++) { 
 		if (GetStyleAt(i)==wxSTC_C_GLOBALCLASS) {
-			int i1 = i+highlithed_word.Len();
+			int i1 = i+m_highlithed_word.Len();
 			if (first) {
 				multi_sel.SetEditRegion(this,LineFromPosition(i),i,i1);
 				first = false; p0=i; p1=i1;
@@ -4296,35 +4304,35 @@ void mxSource::OnEditHighLightedWordEdition (wxCommandEvent & evt) {
 		}
 	}
 	if (!first) { SetSelectionStart(p0); SetSelectionEnd(p1); }
-	if (multi_sel.positions.size()) multi_sel.Begin(this,false,true);
+	if (multi_sel.HasPositions()) multi_sel.BeginEdition(this,false).SetKeepHighligth();
 }
 
-void mxSource::MultiSel::SetEditRegion(mxSource *src, int line, int pbeg, int pend) {
-	this->line = line; 
-	offset_beg = pbeg-src->PositionFromLine(line);
-	offset_end = src->GetLineEndPosition(line)-pend;
-	ref_str = src->GetTextRange(pbeg,pend);
+void mxSource::MultiSelController::SetEditRegion(mxSource *src, int line, int pbeg, int pend) {
+	m_line = line; 
+	m_offset_beg = pbeg-src->PositionFromLine(line);
+	m_offset_end = src->GetLineEndPosition(line)-pend;
+	m_ref_str = src->GetTextRange(pbeg,pend);
 }
 
-void mxSource::MultiSel::Begin(mxSource *src, bool was_rect_select, bool keep_highlight, bool notify, GenericAction *aon_end) { 
-	this->was_rect_select = was_rect_select;
-	this->keep_highlight = keep_highlight;
-	this->on_end=aon_end;
-	is_on=true; 
+mxSource::MultiSelController &mxSource::MultiSelController::BeginEdition(mxSource *src, bool rectangular, bool notify) { 
+	m_was_rect_select = rectangular;
+	m_is_on = true; 
 	if (notify) main_window->SetStatusText(LANG(MAINW_PRESS_ESC_TO_FINISH_RECT_EDIT,"Presione ESC o mueva el cursor de texto a otra linea para volver al modo de edición normal."));
+	return *this;
 }
 
-void mxSource::MultiSel::End(mxSource *src) {
-	if (keep_highlight) { 
-		src->SetKeyWords(3,src->highlithed_word=""); 
+
+void mxSource::MultiSelController::End(mxSource *src) {
+	if (m_keep_highlight) { 
+		src->SetKeyWords(3,src->m_highlithed_word=""); 
 		src->Colourise(0,src->GetLength()); 
 	}
-	is_on=false;
+	m_is_on=false;
 	main_window->SetStatusText(LANG(GENERAL_READY,"Listo"));
-	if (on_end) {
-		on_end->Run();
-		delete on_end;
-		on_end = nullptr;
+	if (m_on_end) {
+		m_on_end->Run();
+		delete m_on_end;
+		m_on_end = nullptr;
 	}
 }
 

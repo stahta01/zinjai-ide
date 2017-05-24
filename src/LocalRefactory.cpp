@@ -1,6 +1,6 @@
+#include <wx/msgdlg.h>
 #include "LocalRefactory.h"
 #include "mxSource.h"
-#include <wx/msgdlg.h>
 #include "Language.h"
 #include "mxMainWindow.h"
 #include "mxMessageDialog.h"
@@ -126,8 +126,8 @@ void LocalRefactory::ExtractFunction (mxSource * src, int pos) {
 	_LAMBDA_1(lmbRefUpdateProto, s_lmbRefUpdateProto,lmb_arg, {
 		LocalRefactory::ExtractFunctionPost(lmb_arg.src,lmb_arg.line_start,lmb_arg.lmin);
 	});
-	src->multi_sel.Begin(src,false,true,true,new lmbRefUpdateProto(lmb_arg));
-	src->EnsureCaretVisible();
+	src->multi_sel.BeginEdition(src,false,true).SetKeepHighligth().SetEndsOnEnter().SetOnEndAction(new lmbRefUpdateProto(lmb_arg));
+	src->HighLightWord("foo"); src->EnsureCaretVisible();
 }
 
 void LocalRefactory::SurroundIf (mxSource * src, int pos) {

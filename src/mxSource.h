@@ -218,9 +218,11 @@ public:
 	void OnSetFocus (wxFocusEvent &event);
 
 private:
-	wxString highlithed_word;
+	wxString m_highlithed_word;
 public:
 	void OnHighLightWord(wxCommandEvent &event);
+	void HighLightWord(const wxString &word);
+	void HighLightCurrentWord();
 	void OnFindKeyword(wxCommandEvent &event);
 	void OnDoubleClick(wxStyledTextEvent &event);
 	
@@ -410,36 +412,62 @@ private:
 	
 	
 private:
-	struct MultiSel {
-		
+	class MultiSelController {
+	
 		struct EditPos { int line, offset; };
-		vector<EditPos> positions;
-		GenericAction *on_end;
-		void Reset() { on_end=nullptr; is_on=false; was_rect_select=false; keep_highlight=false; positions.clear(); }
+		vector<EditPos> m_positions;
+		
+		bool m_is_on; ///< si estamos o no editando "rectangularmente"
+		bool m_ends_on_enter; ///< si el enter se procesa normalmente, o es para finalizar el multisel
+		bool m_was_rect_select; ///< para saber al aplicar un cambio si habia en el estado anterior una seleccion rectangular (porque en ese caso se modicaron todas las lineas)
+		bool m_keep_highlight; ///< si hay que marcar la nueva edicion como highlighted word
+		GenericAction *m_on_end; ///< action to run on exit of multiple edition mode
+		
+		int m_line, m_offset_beg, m_offset_end; ///< dentro de la linea, en que posicion estamos editando (posicion en la que empezaria ref_str, y cuanto mide)
+		wxString m_ref_str; ///< string de la primer linea de la seleccion rectangular, para comparar y ver como cambio y hacer lo mismo en las otras
+		
+	public:
+		MultiSelController():m_is_on(false){}
+		
+		// methods to start and setupd multiple-edition operation
+		
+		void Reset() { 
+			m_on_end = nullptr; 
+			m_is_on = false; 
+			m_was_rect_select = false; 
+			m_keep_highlight = false; 
+			m_ends_on_enter = false; 
+			m_positions.clear(); 
+		}
 		void AddPos(mxSource *src, int line, int position) { 
 			EditPos e; e.line = line; 
 			e.offset = position-src->PositionFromLine(line); 
-			positions.push_back(e); 
+			m_positions.push_back(e); 
 		}
-		
-		bool is_on; ///< si estamos o no editando "rectangularmente"
-		bool was_rect_select; ///< para saber al aplicar un cambio si habia en el estado anterior una seleccion rectangular (porque en ese caso se modicaron todas las lineas)
-		bool keep_highlight; ///< si hay que marcar la nueva edicion como highlighted word
-		int line, offset_beg, offset_end; ///< dentro de la linea, en que posicion estamos editando (posicion en la que empezaria ref_str, y cuanto mide)
-//		int line_from, line_to; ///< cuales lineas estamos editando "rectangularmente" (desde line_from hasta line_to, incluidos ambos extremos)
-		wxString ref_str; ///< string de la primer linea de la seleccion rectangular, para comparar y ver como cambio y hacer lo mismo en las otras
-		MultiSel():is_on(false){}
 		void SetEditRegion(mxSource *src, int line, int pbeg, int pend);
-		void Begin(mxSource *src, bool was_rect_select, bool keep_highlight, bool notify=true, GenericAction *aon_end=nullptr);
+		bool HasPositions() const { return !m_positions.empty(); }
+		
+		void InitRectEdit(mxSource *src, bool keep_rect_select);
+		MultiSelController &BeginEdition(mxSource *src, bool rectangular, bool notify = true); ///< warning: call Reset() before this one
+		
+		MultiSelController &SetKeepHighligth() { m_keep_highlight = true; return *this; }
+		MultiSelController &SetEndsOnEnter() { m_ends_on_enter = true; return *this; }
+		MultiSelController &SetOnEndAction(GenericAction *on_end_function=nullptr) { m_on_end = on_end_function; return *this; }
 		void End(mxSource *src);
-		operator bool() { return is_on; }
+		
+		// methods to query multisel state
+		
+		operator bool() { return m_is_on; } ///< to see if a multiline edition operation is going on
+		bool ProcessEnter() const { return m_ends_on_enter; }
+		
+		
+		// method that do the actual edition
+		void ApplyRectEdit(mxSource *src);
 		
 	} multi_sel;
 	void OnClickUp(wxMouseEvent &evt);
 	void OnEditRectangularEdition(wxCommandEvent &evt);
 	void OnEditHighLightedWordEdition(wxCommandEvent &evt);
-	void InitRectEdit(bool keep_rect_select);
-	void ApplyRectEdit();
 	
 	// helper functions for autocomp parsing
 	template<int N> bool TextRangeWas(int pos_end, const char (&word)[N]);
