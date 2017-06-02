@@ -23,7 +23,9 @@ BEGIN_EVENT_TABLE(mxComplementInstallerWindow, wxDialog)
 	EVT_CLOSE(mxComplementInstallerWindow::OnClose)
 END_EVENT_TABLE()
 
-mxComplementInstallerWindow::mxComplementInstallerWindow(wxWindow *parent):wxDialog(parent,wxID_ANY,LANG(COMPLEMENTS_CAPTION,"Instalación de Complementos"),wxDefaultPosition,wxDefaultSize) {
+mxComplementInstallerWindow::mxComplementInstallerWindow(wxWindow *parent) 
+	: wxDialog(parent,wxID_ANY,LANG(COMPLEMENTS_CAPTION,"Instalación de Complementos"),wxDefaultPosition,wxDefaultSize) 
+{
 	
 	wxBoxSizer *iSizer = new wxBoxSizer(wxHORIZONTAL);
 	wxBoxSizer *tSizer = new wxBoxSizer(wxVERTICAL);
@@ -37,23 +39,19 @@ mxComplementInstallerWindow::mxComplementInstallerWindow(wxWindow *parent):wxDia
 	wxBitmapButton *help_button = new wxBitmapButton (this,mxID_HELP_BUTTON,*(bitmaps->buttons.help));
 	
 	bottomSizer->Add(help_button,sizers->BA5_Exp0);
-	bottomSizer->Add(download_button,sizers->BA5_Exp0);
+//	bottomSizer->Add(download_button,sizers->BA5_Exp0);
 	bottomSizer->AddStretchSpacer();
 	bottomSizer->Add(cancel_button,sizers->BA5);
-	bottomSizer->Add(ok_button,sizers->BA5);
+//	bottomSizer->Add(ok_button,sizers->BA5);
 	
-	mxDialog::AddStaticText(tSizer,this,LANG(COMPLEMENTS_WHATIS,""
-		"Los complementos consisten en packs de archivos adicionales\n"
-		"para ZinjaI, que pueden incluir bibliotecas, documentación,\n"
-		"temas de íconos, plantillas de proyectos, indices para el \n"
-		"autocompletado, etc."
-		));
-	mxDialog::AddStaticText(tSizer,this,LANG(COMPLEMENTS_INSTRUCCIONS,""
-		"Para instalar un complemento debe: 1) descargarlo desde la\n"
-		"sección de descargas del sitio de ZinjaI (haga click\n"
-		"en el botón \"Descargar...\" para ir al sitio); 2) presionar\n"
-		"\"Instalar...\"; 3) seleccionar el archivo descargado.\n"
-		));
+	mxDialog::AddStaticText(tSizer,this,LANG(COMPLEMENTS_INSTRUCCIONS_INSTALL,""
+		"Si ya ha descargado el archivo del\ncomplemento (archivo .zcp):" ));
+	tSizer->Add(ok_button,sizers->Center);
+	tSizer->AddStretchSpacer();
+	mxDialog::AddStaticText(tSizer,this,LANG(COMPLEMENTS_INSTRUCCIONS_DOWNLOAD,""
+		"Si aún no descargó dicho archivo:" ));
+	tSizer->Add(download_button,sizers->Center);
+	tSizer->AddStretchSpacer();
 	
 	iSizer->Add(new wxStaticBitmap(this,wxID_ANY, bitmaps->GetBitmap("upgrade.png")),sizers->BA10);
 	iSizer->Add(tSizer,sizers->Exp1);
@@ -70,15 +68,14 @@ mxComplementInstallerWindow::mxComplementInstallerWindow(wxWindow *parent):wxDia
 }
 
 void mxComplementInstallerWindow::OnOkButton (wxCommandEvent & evt) {
-	
 	wxFileDialog dlg (this, LANG(COMPLEMENTS_CAPTION,"Instalación de Complementos"), config->Files.last_dir, " ", _T("Complement files (zcp)|*.zcp;*.ZCP|Any file (*)|*"), wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 	if (dlg.ShowModal() == wxID_OK) {
 		wxFileName fname=dlg.GetPath();
 		config->Files.last_dir=fname.GetPath();
 		Install(dlg.GetPath());
+		Hide();
+		Destroy();
 	}
-	Hide();
-	Destroy();
 }
 
 void mxComplementInstallerWindow::OnHelpButton (wxCommandEvent & evt) {

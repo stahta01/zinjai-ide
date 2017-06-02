@@ -5,11 +5,13 @@
 #include <wx/button.h>
 #include "ComplementArchive.h"
 #include <wx/gauge.h>
+#include <wx/checkbox.h>
 
 class mxInfoWindow : public wxFrame {
 private:
 	complement_info info;
-	wxString file,dest; int step;
+	wxCheckBox *show_details;
+	wxString file,dest; int step; bool should_stop, details;
 	wxTextCtrl *text;
 	wxButton *but_ok;
 	wxButton *but_cancel;
@@ -22,7 +24,9 @@ public:
 	void OnClose(wxCloseEvent &evt);
 	void Notify(const wxString &message);
 	void Progress(int progress);
-	int GetStep();
+	bool ShouldStop() { return should_stop; }
+	void DontStop() { should_stop=false; }
+	void Finish();
 	DECLARE_EVENT_TABLE();
 };
 

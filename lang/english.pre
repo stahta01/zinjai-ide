@@ -940,6 +940,14 @@ OPENSHARED_ERROR_GETTING_SOURCE
 There was a error retrieving the shared source. Try updating the shared sources' list.
 ERRORRECOVERY_OOPS_MESSAGE
 There was a problem and ZinjaI will be closed.\nLuckly, all your files have been save for recovery\nand changes won't be loosed. Next time you start\nZinjaI you will be asked to open them again.
+CAPTION_COMPILER_OUTPUT
+Compiler Output
+CAPTION_QUIKHELP
+Quick Help
+MAINW_AUTOHIDE_BACKTRACE
+Backtrace
+CAPTION_BACKTRACE
+Backtrace
 ABOUT_CAPTION
 About...
 ABOUT_CLOSE
@@ -1276,10 +1284,10 @@ COMPLEMENTS_DOWNLOAD
 &Download...
 COMPLEMENTS_INSTALL
 &Install...
-COMPLEMENTS_WHATIS
-Complements are additional files packed for ZinjaI that\ncan include libraries, documentation, icon themes, project\ntemplates, autocompletion indexes, and more.
-COMPLEMENTS_INSTRUCCIONS
-In order to install a complement you must: 1) download the\ncomplement file from ZinjaI's web site (use "Download..."\nbutton to open the site); 2) click on "Install..." button;\n3) select the downloaded file.
+COMPLEMENTS_INSTRUCCIONS_INSTALL
+If you have already downloaded the\ncomplement file (a .zcp file):
+COMPLEMENTS_INSTRUCCIONS_DOWNLOAD
+If you have not yet downloaded this file:
 COMPLEMENTS_SUDO_WARNING
 ZinjaI is installed in a directory where your user cannot write.\nIn order to continue with the installation, a confirmation and/or\nroot password will be requested. ¿Continue?
 CPPCHECK_CONFIG_CAPTION
@@ -1940,18 +1948,10 @@ CAPTION_PROJECT_TREE
 Project Tree
 CAPTION_SYMBOLS_TREE
 Symbols Tree
-CAPTION_COMPILER_OUTPUT
-Compiler Output
-CAPTION_QUIKHELP
-Quick Help
 CAPTION_INSPECTIONS
 Inspections
 MAINW_AUTOHIDE_INSPECTIONS
 Inspections
-CAPTION_BACKTRACE
-Backtrace
-MAINW_AUTOHIDE_BACKTRACE
-Backtrace
 CAPTION_THREADLIST
 Threads List
 MAINW_AUTOHIDE_THREADS
@@ -2866,6 +2866,10 @@ PROJECTCONFIG_STEPS_WARNING_APPLY_NOW_LINE_1
 Note: this changes will apply inmediatly, even if
 PROJECTCONFIG_STEPS_WARNING_APPLY_NOW_LINE_2
 you press Cancel button later.
+PROJECTCONFIG_USE_LIBS
+/
+PROJECTCONFIG_IMPORT_LIBS
+/
 PROJECTCONFIG_LIBS_TO_GENERATE
 Libraries to generate
 PROJECTCONFIG_LIBS_ADD

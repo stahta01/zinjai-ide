@@ -938,6 +938,14 @@ OPENSHARED_ERROR_GETTING_SOURCE
 Ha ocurrido un error al intentar obtener el fuente.\nPruebe actualizar la lista de fuentes compartidos.
 ERRORRECOVERY_OOPS_MESSAGE
 Ha ocurrido un error grave y ZinjaI se cerrara.\nPor suerte, se han podido guardar todos sus\narchivos y proyectos para recuperarlos la\nproxima vez que inicie el entorno.
+CAPTION_COMPILER_OUTPUT
+Resultados de la Compilación
+CAPTION_QUIKHELP
+Búsqueda/Ayuda Rapida
+MAINW_AUTOHIDE_BACKTRACE
+Trazado Inverso
+CAPTION_BACKTRACE
+Trazado Inverso
 ABOUT_CAPTION
 Acerca de...
 ABOUT_CLOSE
@@ -1105,13 +1113,13 @@ La condicion actual no es valida
 BREAKOPTS_ERROR_SETTING_CONDITION
 La condición ingresada no es correcta.\n¿Colocar el punto de control incondicionalmente?.
 BYSRCOPTS_CAPTION
-Opciones de compilacion por fuente
+Opciones de compilación por fuente
 BYSRCOPTS_FILTER
 Filtrar
 BYSRCOPTS_FROM_PROFILE
 Tomar desde el perfil
 PROJECTCONFIG_COMPILING_EXTRA_ARGS
-Parametros extra para la compilacion
+Parametros extra para la compilación
 PROJECTCONFIG_COMPILING_MACROS
 Macros a definir
 PROJECTCONFIG_COMPILING_EXTRA_PATHS
@@ -1121,9 +1129,9 @@ Estandar
 PROJECTCONFIG_COMPILING_WARNINGS
 Nivel de advertencias
 PROJECTCONFIG_COMPILING_DEBUG
-Informacion de depuracion
+Informacion de depuración
 PROJECTCONFIG_COMPILING_OPTIM
-Nivel de optimizacion
+Nivel de optimización
 BYSRCOPTS_ADDITIONAL_ARGS
 Argumentos de compilación adicionales
 BYSRCOPT_ALL_PROFILES
@@ -1241,9 +1249,9 @@ valores por defecto
 COMPILECONF_POPUP_COPY_FROM_TEMPLATE
 copiar de plantilla...
 GENERAL_PREPARING_BUILDING
-Preparando compilacion...
+Preparando compilación...
 MAINW_COMPILATION_INTERRUPTED
-Compilacion interrumpida.
+Compilación interrumpida.
 MAINW_BINARY_ALREADY_UPDATED
 El binario ya esta actualizado
 MAINW_COMPILER_OUTPUT_PARSING_ERROR
@@ -1274,10 +1282,10 @@ COMPLEMENTS_DOWNLOAD
 &Descargar...
 COMPLEMENTS_INSTALL
 &Instalar...
-COMPLEMENTS_WHATIS
-Los complementos consisten en packs de archivos adicionales\npara ZinjaI, que pueden incluir bibliotecas, documentación,\ntemas de íconos, plantillas de proyectos, indices para el \nautocompletado, etc.
-COMPLEMENTS_INSTRUCCIONS
-Para instalar un complemento debe: 1) descargarlo desde la\nsección de descargas del sitio de ZinjaI (haga click\nen el botón \"Descargar...\" para ir al sitio); 2) presionar\n\"Instalar...\"; 3) seleccionar el archivo descargado.\n
+COMPLEMENTS_INSTRUCCIONS_INSTALL
+Si ya ha descargado el archivo del\ncomplemento (archivo .zcp):
+COMPLEMENTS_INSTRUCCIONS_DOWNLOAD
+Si aún no descargó dicho archivo:
 COMPLEMENTS_SUDO_WARNING
 ZinjaI está instalado en un directorio para el cual su usuario no\ntiene permisos de escritura. Se le solicitará confirmación y/o contraseña\nde root/administrador para continuar con la instalación. ¿Continuar?
 CPPCHECK_CONFIG_CAPTION
@@ -1577,7 +1585,7 @@ No se puede determinar el tipo mientras el parser esta analizando fuentes
 EXEINFO_FILE_TYPE
 Tipo de Archivo
 EXTRASTEP_CAPTION
-Paso de Compilacion Personalizado
+Paso de Compilación Personalizado
 EXTRASTEP_NAME
 Nombre
 EXTRASTEP_COMMAND
@@ -1938,18 +1946,10 @@ CAPTION_PROJECT_TREE
 Arbol de Archivos
 CAPTION_SYMBOLS_TREE
 Arbol de Simbolos
-CAPTION_COMPILER_OUTPUT
-Resultados de la Compilación
-CAPTION_QUIKHELP
-Ayuda Rapida
 CAPTION_INSPECTIONS
 Inspecciones
 MAINW_AUTOHIDE_INSPECTIONS
 Inspecciones
-CAPTION_BACKTRACE
-Trazado Inverso
-MAINW_AUTOHIDE_BACKTRACE
-Trazado Inverso
 CAPTION_THREADLIST
 Hilos de Ejecución
 MAINW_AUTOHIDE_THREADS
@@ -2864,6 +2864,10 @@ PROJECTCONFIG_STEPS_WARNING_APPLY_NOW_LINE_1
 Nota: estos cambios se aplican inmediatamente,
 PROJECTCONFIG_STEPS_WARNING_APPLY_NOW_LINE_2
 aunque luego seleccione cancelar
+PROJECTCONFIG_USE_LIBS
+/
+PROJECTCONFIG_IMPORT_LIBS
+/
 PROJECTCONFIG_LIBS_TO_GENERATE
 Bibliotecas a generar*
 PROJECTCONFIG_LIBS_ADD
@@ -2911,9 +2915,9 @@ Indices de autocompletado adicionales
 PROJECTGENERAL_AUTOIMPROVE_TEMPLATES
  Mejora de inspecciones según tipo 
 PROJECTGENERAL_COMPILE_AND_RUN
- Compilacion y Ejecucion (generales)... 
+ Compilación y Ejecución (generales)... 
 PROJECTGENERAL_BYSRC_OPTIONS
- Opciones de Compilacion (por fuente)... 
+ Opciones de Compilación (por fuente)... 
 PROJECTGENERAL_DOXYGEN
  Configuración Doxygen... 
 PROJECTGENERAL_CPPCHECK

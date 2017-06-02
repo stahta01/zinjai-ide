@@ -1,7 +1,7 @@
 GPP=g++ -fshow-column
 GCC=gcc
-FLAGS= -O2 `wx-config --cppflags --unicode=no`
-LIBS= -s  `wx-config --libs` 
+FLAGS= -O2 `wx-config --cppflags --unicode=no --version=2.8`
+LIBS= -s  `wx-config --libs --unicode=no --version=2.8` 
 OBJS=release.lnx/Application.o release.lnx/mxWindow.o release.lnx/LangFile.o 
 
 all: release.lnx ../mxLangTool.bin
