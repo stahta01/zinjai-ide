@@ -49,7 +49,6 @@ ConfigManager::ConfigManager(wxString a_path):custom_tools(MAX_CUSTOM_TOOLS) {
 	zinjai_bin_dir = DIR_PLUS_FILE(zinjai_dir,"bin");
 	zinjai_third_dir = DIR_PLUS_FILE(zinjai_dir,"third");
 	LoadDefaults();
-	er_init(config_dir.char_str());
 }
 
 void ConfigManager::DoInitialChecks() {
@@ -1043,6 +1042,10 @@ void ConfigManager::FinishiLoading ( ) {
 	}
 	wxSTC_SetZaskarsFlags(Init.mac_stc_zflags);
 #endif
+	
+	// initialize error recovery system
+	er_init(temp_dir.char_str());
+	
 }
 
 bool ConfigManager::Initialize(const wxString & a_path) {
