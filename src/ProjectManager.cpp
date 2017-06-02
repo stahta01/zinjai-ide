@@ -43,7 +43,7 @@ using namespace std;
 #define ICON_LINE(filename) (wxString("0 ICON \"")<<filename<<"\"")
 #define MANIFEST_LINE(filename) (wxString("1 RT_MANIFEST \"")<<filename<<"\"")
 
-ProjectManager *project=nullptr;
+ProjectManager *project = nullptr;
 extern char path_sep;
 
 wxString doxygen_configuration::get_tag_index() { 
@@ -2094,12 +2094,14 @@ void ProjectManager::AnalizeConfig(wxString path, bool exec_comas, wxString ming
 	co_includes<<mxUT::Split(active_configuration->headers_dirs,"-I");
 	mxUT::ParameterReplace(co_includes,"${MINGW_DIR}",mingw_dir);
 	mxUT::ParameterReplace(co_includes,"${TEMP_DIR}",temp_folder_short);
+	mxUT::ParameterReplace(co_includes,"${ZINJAI_DIR}",config->zinjai_dir);
 	compiling_options<<co_includes<<" ";
 	
 	// parametros variables
 	wxString co_extra = active_configuration->compiling_extra;
 	mxUT::ParameterReplace(co_extra,"${MINGW_DIR}",mingw_dir);
 	mxUT::ParameterReplace(co_extra,"${TEMP_DIR}",temp_folder_short);
+	mxUT::ParameterReplace(co_extra,"${ZINJAI_DIR}",config->zinjai_dir);
 	// reemplazar subcomandos y agregar extras
 	if (exec_comas) co_extra = mxUT::ExecComas(path, co_extra);
 	
@@ -2144,6 +2146,7 @@ void ProjectManager::AnalizeConfig(wxString path, bool exec_comas, wxString ming
 	mxUT::ParameterReplace(linking_extra,"${TEMP_DIR}",temp_folder_short);
 	mxUT::ParameterReplace(linking_options,"${MINGW_DIR}",mingw_dir);
 	mxUT::ParameterReplace(linking_options,"${TEMP_DIR}",temp_folder_short);
+	mxUT::ParameterReplace(linking_options,"${ZINJAI_DIR}",config->zinjai_dir);
 	// reemplazar subcomandos y agregar extras
 	if (exec_comas)
 		linking_options<<" "<<mxUT::ExecComas(path,linking_extra);
@@ -2193,6 +2196,7 @@ void ProjectManager::AnalizeConfig(wxString path, bool exec_comas, wxString ming
 		} else {
 			wxString custom_options = it->second;
 			mxUT::ParameterReplace(custom_options,"${MINGW_DIR}",mingw_dir,false);
+			mxUT::ParameterReplace(custom_options,"${ZINJAI_DIR}",config->zinjai_dir,false);
 			mxUT::ParameterReplace(custom_options,"${TEMP_DIR}",temp_folder_short,false);
 			mxUT::ParameterReplace(custom_options,"${DBG}",co_debug,false);
 			mxUT::ParameterReplace(custom_options,"${DEF}",co_defines,false);

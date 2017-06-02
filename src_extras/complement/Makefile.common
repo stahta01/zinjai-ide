@@ -3,7 +3,7 @@ OBJS=${OBJS_DIR}/Application.o ${OBJS_DIR}/mxInfoWindow.o ${OBJS_DIR}/Complement
 ${OBJS_DIR}/Application.o: Application.cpp Application.h mxInfoWindow.h ComplementArchive.h mxCreateComplementWindow.h
 	${GPP} ${CXXFLAGS} -c Application.cpp -o $@
 
-${OBJS_DIR}/mxInfoWindow.o: mxInfoWindow.cpp mxInfoWindow.h ComplementArchive.h Application.h
+${OBJS_DIR}/mxInfoWindow.o: mxInfoWindow.cpp mxInfoWindow.h ComplementArchive.h Application.h ../../src/version.h
 	${GPP} ${CXXFLAGS} -c mxInfoWindow.cpp -o $@
 
 ${OBJS_DIR}/ComplementArchive.o: ComplementArchive.cpp ComplementArchive.h Application.h ../../src/fix_filename.h

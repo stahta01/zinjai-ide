@@ -155,9 +155,6 @@ SHOW_MILLIS("Initializing help system...");
 
 SHOW_MILLIS("Finishing config manager's initialization...");
 	
-	// inicialize ProjectManager
-	project = nullptr;
-	
 	// verifica si hay compilador, terminal, etc instalado y configurado...
 	// ...y carga el resto de la configuracion (toolchains, colores, atajos, toolbars, etc)
 	config->FinishiLoading(); 

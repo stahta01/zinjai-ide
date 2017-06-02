@@ -3755,6 +3755,7 @@ wxString mxSource::GetCompilerOptions(bool parsed) {
 		mxUT::Split(comp_opts,args,false,true);
 		for(unsigned int i=0;i<args.GetCount();i++) args[i]=current_toolchain.FixArgument(cpp_or_just_c,args[i]);
 		comp_opts=mxUT::UnSplit(args);
+		mxUT::ParameterReplace(comp_opts,"${ZINJAI_DIR}",config->zinjai_dir);
 		mxUT::ParameterReplace(comp_opts,"${MINGW_DIR}",current_toolchain.mingw_dir);
 		comp_opts = mxUT::ExecComas(working_folder.GetFullPath(),comp_opts);
 	}
@@ -4022,7 +4023,7 @@ void mxSource::MultiSelController::ApplyRectEdit (mxSource *src) {
 	}
 	// new_str es el nuevo contenido en esa linea, ref_str el viejo, ambos para toda la zona de edicion
 	wxString new_str = src->GetTextRange(pbeg,pend), &ref_str = m_ref_str;
-	if (m_keep_highlight && new_str.Len()) { HighLightCurrentWord(); }
+	if (m_keep_highlight && new_str.Len()) { src->HighLightCurrentWord(); }
 	// lr y ln son los largos de ambos contenidos
 	int i=0, lr=ref_str.Len(), ln=new_str.Len(); 
 	// acotar la parte modificada, avanzando desde afuera hacia adentro mientras no haya cambio
@@ -4287,7 +4288,7 @@ void mxSource::OnEditHighLightedWordEdition (wxCommandEvent & evt) {
 	int pbeg = GetSelectionStart(), pend = GetSelectionEnd();
 	if (pbeg==pend) { HighLightCurrentWord(); return; }
 	if (pbeg>pend) swap(pbeg,pend);
-	if (m_m_highlithed_word.IsEmpty() || !config_source.syntaxEnable) return;
+	if (m_highlithed_word.IsEmpty() || !config_source.syntaxEnable) return;
 	multi_sel.Reset();
 	int p0, p1;
 	bool first = true;
