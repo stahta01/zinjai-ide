@@ -15,14 +15,14 @@
 
 #ifdef _ZINJAI_DEBUG
 #	define DEBUG_BREAK asm("int3;nop")
-#	define EXPECT_OR(cond,else_action) if ( !(cond) ) DEBUG_BREAK; else else_action
-#	define ENSURES_OR(cond,else_action) if ( !(cond) ) DEBUG_BREAK; else else_action
 #	define EXPECT(cond) if ( !(cond) ) DEBUG_BREAK
 #	define ENSURES(cond) if ( !(cond) ) DEBUG_BREAK
+#	define EXPECT_OR(cond,else_action) EXPECT(cond); if (!(cond)) else_action
+#	define ENSURES_OR(cond,else_action) ENSURES(cond); if (!(cond)) else_action
 #else
 #	define DEBUG_BREAK
-#	define EXPECT_OR(cond,else_action) if ( cond ) else_action
-#	define ENSURES_OR(cond,else_action) if ( cond ) else_action
+#	define EXPECT_OR(cond,else_action) if ( !(cond) ) else_action
+#	define ENSURES_OR(cond,else_action) if ( !(cond) ) else_action
 #	define EXPECT(cond) 
 #	define ENSURES(cond) 
 #endif

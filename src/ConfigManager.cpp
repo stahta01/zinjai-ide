@@ -353,6 +353,9 @@ bool ConfigManager::Load() {
 		} 
 	}
 	
+#ifdef __APPLE__
+	if (Init.version<20170605) Files.terminal_command = DIR_PLUS_FILE("bin","mac-terminal-wrapper.bin"); // some installations still have an invalid configuration
+#endif
 	if (Init.version<20100806) Files.terminal_command.Replace("ZinjaI - Consola de Ejecucion","${TITLE}"); // NO USAR ACENTOS, PUEDE ROMER EL X!!!! (me daba un segfault en la libICE al poner el ó en EjeuciÓn)
 	if (Init.version<20101112 && Help.autocomp_indexes.Len()) Help.autocomp_indexes<<",STL_Iteradores";
 	if (Init.version<20110418) Debug.use_colours_for_inspections=true;

@@ -2640,10 +2640,10 @@ void ProjectManager::MoveExtraSteps(project_configuration *conf, compile_extra_s
 		if (idx==0 || conf->extra_steps[idx-1]->pos!=step->pos) {
 			EXPECT_OR( step->pos!=CES_BEFORE_SOURCES, return );
 			if (step->pos==CES_BEFORE_EXECUTABLE) {
-				if (conf->libs_to_build.GetSize())
+//				if (conf->libs_to_build.GetSize())
 					step->pos=CES_BEFORE_LIBS;
-				else
-					step->pos=CES_BEFORE_SOURCES;
+//				else
+//					step->pos=CES_BEFORE_SOURCES;
 			} else if (step->pos==CES_BEFORE_LIBS) {
 				step->pos=CES_BEFORE_SOURCES;
 			} else if (step->pos==CES_AFTER_LINKING)
@@ -2658,15 +2658,15 @@ void ProjectManager::MoveExtraSteps(project_configuration *conf, compile_extra_s
 			if (step->pos==CES_BEFORE_EXECUTABLE)
 				step->pos=CES_AFTER_LINKING;
 			else if (step->pos==CES_BEFORE_SOURCES) {
-				if (conf->libs_to_build.GetSize())
+//				if (conf->libs_to_build.GetSize())
 					step->pos=CES_BEFORE_LIBS;
-				else
-					step->pos=CES_BEFORE_EXECUTABLE;
+//				else
+//					step->pos=CES_BEFORE_EXECUTABLE;
 			} else if (step->pos==CES_BEFORE_LIBS) {
-				if (conf->libs_to_build.GetSize())
+//				if (conf->libs_to_build.GetSize())
 					step->pos=CES_BEFORE_EXECUTABLE;
-				else
-					step->pos=CES_AFTER_LINKING;
+//				else
+//					step->pos=CES_AFTER_LINKING;
 			}
 		} else if (step->next) {
 			EXPECT_OR( idx+1<conf->extra_steps.GetSize(), return );
@@ -2697,7 +2697,7 @@ bool ProjectManager::DeleteExtraStep(project_configuration *conf, compile_extra_
 compile_extra_step *ProjectManager::GetExtraStep(project_configuration *conf, wxString name) {
 	if (!conf) conf=active_configuration;
 	for(JavaVectorIterator<compile_extra_step> step(conf->extra_steps);step.IsValid();step.Next()) {
-		if (step->name!=name) return step;
+		if (step->name==name) return step;
 	}
 	return nullptr;
 }

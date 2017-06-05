@@ -822,7 +822,7 @@ void mxProjectConfigWindow::OnStepsEdit(wxCommandEvent &evt) {
 void mxProjectConfigWindow::ReloadSteps(wxString selection) {
 	int count=0, sel=0, last_count=steps_list->GetCount();
 	for(int k=0;k<4;k++) { 
-		int current_pos = k<2 ? (k==0?CES_BEFORE_SOURCES:CES_BEFORE_LIBS) : (k==3?CES_BEFORE_EXECUTABLE:CES_AFTER_LINKING) ;
+		int current_pos = k<2 ? (k==0?CES_BEFORE_SOURCES:CES_BEFORE_LIBS) : (k==2?CES_BEFORE_EXECUTABLE:CES_AFTER_LINKING) ;
 		for(JavaVectorIterator<compile_extra_step> step(configuration->extra_steps); step.IsValid(); step.Next()) {
 			if (step->pos!=current_pos) continue;
 			if (count<last_count) steps_list->SetString(count,step->name);
@@ -833,7 +833,7 @@ void mxProjectConfigWindow::ReloadSteps(wxString selection) {
 		wxString label = k<2 ?
 			(k==0 ? LANG(PROJECTCONFIG_STEPS_COMPILE_SOURCES,"**Compilar Fuentes del Proyecto**") 
 			      : LANG(PROJECTCONFIG_STEPS_LINK_LIBS,"**Generar Bibliotecas**") ) :
-			(k==3 ? LANG(PROJECTCONFIG_STEPS_LINK_EXE,"**Enlazar Ejecutable**")
+			(k==2 ? LANG(PROJECTCONFIG_STEPS_LINK_EXE,"**Enlazar Ejecutable**")
 				  : "") ;
 		if (!label.IsEmpty()) {
 			if (count<last_count) steps_list->SetString(count,label);
