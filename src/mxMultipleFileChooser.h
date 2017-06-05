@@ -9,13 +9,14 @@ class wxCheckBox;
 
 class mxMultipleFileChooser : public wxDialog {
 private:
+	bool m_from_new_project_wizard;
 	wxString search_base;
 	wxTextCtrl *basedir, *filter;
 	wxCheckBox *subdirs;
 	wxCheckListBox *list;
 	wxComboBox *cmb_where;
 public:
-	mxMultipleFileChooser(wxString apath="", bool modal=false);
+	mxMultipleFileChooser(wxString apath="", bool from_new_project_wizard=false);
 	void OnButtonOk(wxCommandEvent &event);
 	void OnButtonCancel(wxCommandEvent &event);
 	void OnListRightClick(wxMouseEvent &event);

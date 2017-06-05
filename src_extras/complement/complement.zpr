@@ -21,7 +21,7 @@ cursor=25:25
 open=true
 [source]
 path=mxInfoWindow.cpp
-cursor=35:1
+cursor=95:29
 open=true
 [source]
 path=ComplementArchive.cpp

@@ -28,7 +28,11 @@ BEGIN_EVENT_TABLE(mxMultipleFileChooser, wxDialog)
 	EVT_CLOSE(mxMultipleFileChooser::OnClose)
 END_EVENT_TABLE()
 
-mxMultipleFileChooser::mxMultipleFileChooser(wxString apath, bool modal) : wxDialog(main_window, wxID_ANY, LANG(MULTIFILE_CAPTION,"Agregar Archivos al Proyecto"), wxDefaultPosition, wxDefaultSize ,wxALWAYS_SHOW_SB | wxALWAYS_SHOW_SB | wxDEFAULT_FRAME_STYLE | wxSUNKEN_BORDER) {
+mxMultipleFileChooser::mxMultipleFileChooser(wxString apath, bool from_new_project_wizard) 
+	: wxDialog(main_window, wxID_ANY, LANG(MULTIFILE_CAPTION,"Agregar Archivos al Proyecto"), 
+			   wxDefaultPosition, wxDefaultSize ,wxALWAYS_SHOW_SB | wxALWAYS_SHOW_SB | wxDEFAULT_FRAME_STYLE | wxSUNKEN_BORDER),
+	  m_from_new_project_wizard(from_new_project_wizard)
+{
 	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
 	
 	basedir = mxDialog::AddDirCtrl(sizer,this,LANG(MULTIFILE_DIR,"1) Seleccione el directorio donde buscar los archivos"),apath.Len()?apath:project->last_dir,mxID_MULTIPLEFILE_DIR);
@@ -69,7 +73,7 @@ mxMultipleFileChooser::mxMultipleFileChooser(wxString apath, bool modal) : wxDia
 		OnButtonFind(evt);
 	}
 	
-	if (modal)
+	if (m_from_new_project_wizard)
 		ShowModal();
 	else
 		Show();
@@ -80,10 +84,12 @@ mxMultipleFileChooser::mxMultipleFileChooser(wxString apath, bool modal) : wxDia
 void mxMultipleFileChooser::OnButtonOk(wxCommandEvent &event) {
 	int n=list->GetCount(); if (n==0) return;
 	int nn=0; for (int i=0;i<n;i++) if (list->IsChecked(i)) nn++;
-	mxMessageDialog::mdAns x =
-		mxMessageDialog(this,LANG1(MULTIFILE_CONFIRM_ADD,"¿Desea agregar <{1}> archivos al proyecto?",wxString()<<nn))
-			.Title(LANG(GENERAL_CONFIRM,"Confirmacion")).ButtonsYesNo().IconQuestion().Run();
-	if (x.no) return;
+	if (!m_from_new_project_wizard) {
+		mxMessageDialog::mdAns x =
+			mxMessageDialog(this,LANG1(MULTIFILE_CONFIRM_ADD,"¿Desea agregar <{1}> archivos al proyecto?",wxString()<<nn))
+				.Title(LANG(GENERAL_CONFIRM,"Confirmacion")).ButtonsYesNo().IconQuestion().Run();
+		if (x.no) return;
+	}
 	mxOSDGuard osd(main_window,LANG(OSD_ADDING_FILES,"Agregando archivos..."));
 	int iw=cmb_where->GetSelection();
 	eFileType where=FT_NULL;
