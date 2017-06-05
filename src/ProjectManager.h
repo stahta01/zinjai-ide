@@ -217,12 +217,12 @@ struct cppcheck_configuration {
 	wxString additional_files; ///< lista de archivos no registrados en el proyecto a agregar para el analisis
 	bool save_in_project; ///< indica si hay que guardar esta configuración en el archivo de proyecto
 	//! inicializa la configuración con los valores por defecto
-	cppcheck_configuration() {
+	cppcheck_configuration(bool do_save_in_project) {
 		exclude_headers=true;
 		copy_from_config=true;
 		style="all";
 		inline_suppr=true;
-		save_in_project=false;
+		save_in_project=do_save_in_project;
 	}
 };
 
@@ -467,24 +467,25 @@ class ProjectManager {
 	void operator=(const ProjectManager &); ///< esta clase no es copiable
 	
 	friend wxString doxygen_configuration::get_tag_index();
-public:
-	GenericAction *post_compile_action; ///< what to do if building finishes ok, is set in last CompileNext call
-	compile_step *first_compile_step;
 	bool loading; ///< indica que se esta cargando, para que otros eventos sepan
-	time_t compile_startup_time;
+	compile_step *first_compile_step;
 	int version_required; ///< minima version de ZinjaI requerida para abrir el proyecto sin perder nada
 	int steps_count; ///< temporal para contar los pasos totales para una compilacion
 	int current_step; ///< temporal para contar cuantos pasos van durante una compilacion
 	float actual_progress; ///< temporal para calcular el porcentaje de progreso segun las cuentas de pasos
 	float progress_step; ///< temporal para guardar de a cuanto avanza la barra de progreso al avanzar un paso
+public:
+	time_t compile_startup_time;
+	GenericAction *post_compile_action; ///< what to do if building finishes ok, is set in last CompileNext call
 	bool force_relink;	///< indica si debe reenlazar si o si en la proxima compilacion, aunque el exe esté al día
-	cppcheck_configuration *cppcheck; ///< configuracion para ejecutar cppcheck, nullptr si no esta definido en el proyecto
 
 private:
+	cppcheck_configuration *cppcheck; ///< configuracion para ejecutar cppcheck, nullptr si no esta definido en el proyecto
 	wxfb_configuration *wxfb; ///< configuración de la integración con wxfb (si es nullptr no está activada)
 	doxygen_configuration *doxygen; ///< configuracion para el Doxyfile, nullptr si no esta definido en el proyecto
 	valgrind_configuration *valgrind;
 public:
+	cppcheck_configuration *GetCppCheckConfiguration(bool save_in_project=false);
 	doxygen_configuration* GetDoxygenConfiguration();
 	valgrind_configuration* GetValgrindConfiguration();
 	wxfb_configuration* GetWxfbConfiguration(bool create_activated=true);

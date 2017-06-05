@@ -29,7 +29,7 @@ public:
 // fms stands for faked-move-semantics, this project should still compile in pre c++11 compilers
 template<class T> void fms_move(T *&des, T *&src) { des=src; src=nullptr; }
 template<class T> T *fms_move(T *&src) { T *des=src; src=nullptr; return des; }
-template<class T> T *&fms_delete(T *&des) { if (des) delete des; des=nullptr; return des; }
+template<class T> T *&fms_delete(T *&des) { delete des; des=nullptr; return des; }
 
 class BoolFlag;
 

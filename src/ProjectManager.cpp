@@ -152,8 +152,7 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 				extra_step = new compile_extra_step;
 				active_configuration->extra_steps.Add(extra_step);
 			} else if (section=="cppcheck" && !cppcheck) { 
-				cppcheck=new cppcheck_configuration();
-				cppcheck->save_in_project=true;
+				GetCppCheckConfiguration(true);
 			} else if (section=="doxygen" && !doxygen) { 
 				GetDoxygenConfiguration();
 			} else if (section=="valgrind" && !doxygen) { 
@@ -3655,5 +3654,19 @@ void ProjectManager::MoveLibToBuild (project_configuration * conf, int pos, bool
 	project_library *lib2 = conf->libs_to_build.Release(pos2);
 	conf->libs_to_build.Set(pos,lib2);
 	conf->libs_to_build.Set(pos2,lib1);
+}
+
+/**
+* Gets a valid cppcheck_configuration. Creates and initializes it if it does not exists.
+*
+* @param save_in_project   if it needs to create a new instance, and this param is 
+*                          true, this configuration will be stored in project's file;
+*                          otherwise, it will be temporal and will be loose when
+*                          closing the project
+**/
+cppcheck_configuration * ProjectManager::GetCppCheckConfiguration(bool save_in_project) {
+	if (!cppcheck)
+		cppcheck = new cppcheck_configuration(save_in_project);
+	return cppcheck;
 }
 

@@ -63,16 +63,16 @@ void mxMainWindow::OnToolsCppCheckRun(wxCommandEvent &event) {
 	mxOutputView *cppcheck = new mxOutputView("CppCheck",mxOV_EXTRA_NULL,"","",mxVO_CPPCHECK,DIR_PLUS_FILE(config->temp_dir,"cppcheck.out"));
 	
 	wxString file_args, cppargs, toargs, extra_args, path;
+	cppcheck_configuration *project_cppcheck_config = project ? project->GetCppCheckConfiguration() : nullptr;
 	
 	if (project) {
 		
 		// files
 		project->SaveAll(false);
-		if (!project->cppcheck) project->cppcheck=new cppcheck_configuration;
 		wxArrayString files,exclude_list;
-		mxUT::Split(project->cppcheck->exclude_list,exclude_list,true,false);
+		mxUT::Split(project_cppcheck_config->exclude_list,exclude_list,true,false);
 		project->GetFileList(files,FT_SOURCE,true);
-		if (!project->cppcheck->exclude_headers) project->GetFileList(files,FT_HEADER,true);
+		if (!project_cppcheck_config->exclude_headers) project->GetFileList(files,FT_HEADER,true);
 		wxString list(DIR_PLUS_FILE(config->temp_dir,"cppcheck.lst"));
 		wxFile flist(list,wxFile::write);
 		char el='\n';
@@ -89,16 +89,16 @@ void mxMainWindow::OnToolsCppCheckRun(wxCommandEvent &event) {
 		toargs=project->cpp_compiling_options;
 		
 		// extra_args
-		if (project->cppcheck->copy_from_config)
-			extra_args<<mxUT::Split(project->cppcheck->config_d,"-D")<<" "<<mxUT::Split(project->cppcheck->config_u,"-U");
+		if (project_cppcheck_config->copy_from_config)
+			extra_args<<mxUT::Split(project_cppcheck_config->config_d,"-D")<<" "<<mxUT::Split(project_cppcheck_config->config_u,"-U");
 		
 		// cppargs
-		cppargs<<mxUT::Split(project->cppcheck->style,"--enable=")<<" ";
-		cppargs<<mxUT::Split(project->cppcheck->platform,"--platform=")<<" ";
-		cppargs<<mxUT::Split(project->cppcheck->standard,"--std=")<<" ";
-		cppargs<<mxUT::Split(project->cppcheck->suppress_ids,"--suppress=")<<" ";
-		if (project->cppcheck->suppress_file.Len()) cppargs<<"--suppressions_list="<<mxUT::Quotize(DIR_PLUS_FILE(project->path,project->cppcheck->suppress_file))<<" ";
-		if (project->cppcheck->inline_suppr) cppargs<<"--inline-suppr ";
+		cppargs<<mxUT::Split(project_cppcheck_config->style,"--enable=")<<" ";
+		cppargs<<mxUT::Split(project_cppcheck_config->platform,"--platform=")<<" ";
+		cppargs<<mxUT::Split(project_cppcheck_config->standard,"--std=")<<" ";
+		cppargs<<mxUT::Split(project_cppcheck_config->suppress_ids,"--suppress=")<<" ";
+		if (project_cppcheck_config->suppress_file.Len()) cppargs<<"--suppressions_list="<<mxUT::Quotize(DIR_PLUS_FILE(project->path,project_cppcheck_config->suppress_file))<<" ";
+		if (project_cppcheck_config->inline_suppr) cppargs<<"--inline-suppr ";
 		
 		// path
 		path=project->path;
@@ -126,13 +126,13 @@ void mxMainWindow::OnToolsCppCheckRun(wxCommandEvent &event) {
 	wxArrayString array;
 	mxUT::Split(toargs,array,false,true);
 	for (unsigned int i=0;i<array.GetCount();i++) {
-		if ((!project || project->cppcheck->copy_from_config) && array[i].StartsWith("-D")) {
+		if ((!project || project_cppcheck_config->copy_from_config) && array[i].StartsWith("-D")) {
 			if (array[i].Len()==2) {
 				args<<" -D "<<array[++i];
 			} else {
 				args<<" -D "<<array[i].Mid(2);
 			}
-		} else if ((!project || project->cppcheck->copy_from_config) && array[i].StartsWith("\"-D")) {
+		} else if ((!project || project_cppcheck_config->copy_from_config) && array[i].StartsWith("\"-D")) {
 			if (array[i]=="\"-D\"")
 				args<<" -D "<<array[++i];
 			else

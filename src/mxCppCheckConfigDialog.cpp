@@ -35,13 +35,9 @@ BEGIN_EVENT_TABLE(mxCppCheckConfigDialog,wxDialog)
 END_EVENT_TABLE()
 
 mxCppCheckConfigDialog::mxCppCheckConfigDialog(wxWindow *parent)
-	: mxDialog(parent, LANG(CPPCHECK_CONFIG_CAPTION,"Configuración de CppCheck") )
+	: mxDialog(parent, LANG(CPPCHECK_CONFIG_CAPTION,"Configuración de CppCheck") ),
+	  project_cppcheck_config(project->GetCppCheckConfiguration(true))
 {
-	if (!project->cppcheck) { 
-		project->cppcheck = new cppcheck_configuration();
-		project->cppcheck->save_in_project=true;
-	}
-	ccc = project->cppcheck;
 	CreateSizer(this)
 		.BeginNotebook()
 			.AddPage(this,&mxCppCheckConfigDialog::CreateGeneralPanel, "General")
@@ -57,36 +53,36 @@ wxPanel *mxCppCheckConfigDialog::CreateGeneralPanel(wxNotebook *notebook) {
 	CreatePanelAndSizer sizer(notebook);
 	
 	sizer.BeginCheck( LANG(CPPCHECK_COPY_FROM_CONFIG,"Copiar configuración (macros definidas) de las opciones del proyecto") )
-		.Value(ccc->copy_from_config).Id(mxID_CPPCHECK_COPYCONFIG).EndCheck(copy_from_config);
+		.Value(project_cppcheck_config->copy_from_config).Id(mxID_CPPCHECK_COPYCONFIG).EndCheck(copy_from_config);
 		
 	sizer.BeginText( LANG(CPPCHECK_CONFIG_D,"  Configuraciones a verificar") )
-		.Value(ccc->config_d).Button(mxID_CPPCHECK_CONFIG_D).EndText(config_d);
+		.Value(project_cppcheck_config->config_d).Button(mxID_CPPCHECK_CONFIG_D).EndText(config_d);
 	
 	sizer.BeginText( LANG(CPPCHECK_CONFIG_U,"  Configuraciones a saltear") )
-		.Value(ccc->config_u).Button(mxID_CPPCHECK_CONFIG_U).EndText(config_u);
+		.Value(project_cppcheck_config->config_u).Button(mxID_CPPCHECK_CONFIG_U).EndText(config_u);
 	
 	config_u->Enable(!copy_from_config->GetValue()); config_d->Enable(!copy_from_config->GetValue());
 	
 	sizer.BeginText( LANG(CPPCHECK_STYLE,"Verificaciones adicionales") )
-		.Value(ccc->style).Button(mxID_CPPCHECK_STYLE).EndText(style);
+		.Value(project_cppcheck_config->style).Button(mxID_CPPCHECK_STYLE).EndText(style);
 	
 	sizer.BeginText( LANG(CPPCHECK_PLATFORM,"Verificaciones especificas de una plataforma") )
-		.Value(ccc->platform).Button(mxID_CPPCHECK_PLATFORM).EndText(platform);
+		.Value(project_cppcheck_config->platform).Button(mxID_CPPCHECK_PLATFORM).EndText(platform);
 	
 	sizer.BeginText( LANG(CPPCHECK_STANDARD,"Verificaciones especificas de un estándar") )
-		.Value(ccc->standard).Button(mxID_CPPCHECK_STANDARD).EndText(standard);
+		.Value(project_cppcheck_config->standard).Button(mxID_CPPCHECK_STANDARD).EndText(standard);
 	
 	sizer.BeginText( LANG(CPPCHECK_SUPPRESS_IDS,"Supresiones") )
-		.Value(ccc->suppress_ids).Button(mxID_CPPCHECK_SUPPRESS_IDS).EndText(suppress_ids);
+		.Value(project_cppcheck_config->suppress_ids).Button(mxID_CPPCHECK_SUPPRESS_IDS).EndText(suppress_ids);
 									 
 	sizer.BeginText( LANG(CPPCHECK_SUPPRESS_FILE,"Archivo con lista de supresiones") )
-		.Value(ccc->suppress_file).Button(mxID_CPPCHECK_SUPPRESS_FILE).EndText(suppress_file);
+		.Value(project_cppcheck_config->suppress_file).Button(mxID_CPPCHECK_SUPPRESS_FILE).EndText(suppress_file);
 									  
 	sizer.BeginCheck( LANG(CPPCHECK_INLINE_SUPPR,"Habilitar supresiones inline") )
-		.Value(ccc->inline_suppr).EndCheck(inline_suppr);
+		.Value(project_cppcheck_config->inline_suppr).EndCheck(inline_suppr);
 	
 	sizer.BeginCheck( LANG(CPPCHECK_SAVE,"Guardar esta configuración con el proyecto") )
-		.Value(ccc->save_in_project).EndCheck(save_in_project);
+		.Value(project_cppcheck_config->save_in_project).EndCheck(save_in_project);
 	
 	sizer.Set();
 	return sizer.GetPanel();
@@ -112,10 +108,10 @@ wxPanel *mxCppCheckConfigDialog::CreateFilesPanel (wxNotebook * notebook) {
 	src_sizer->Add(szsrc_in,sizers->Exp1);
 	
 	wxArrayString files,exclude_list;
-	mxUT::Split(project->cppcheck->additional_files,files,true,false);
-	mxUT::Split(project->cppcheck->exclude_list,exclude_list,true,false);
+	mxUT::Split(project_cppcheck_config->additional_files,files,true,false);
+	mxUT::Split(project_cppcheck_config->exclude_list,exclude_list,true,false);
 	project->GetFileList(files,FT_SOURCE,true);
-	if (!project->cppcheck->exclude_headers) project->GetFileList(files,FT_HEADER,true);
+	if (!project_cppcheck_config->exclude_headers) project->GetFileList(files,FT_HEADER,true);
 	for (unsigned int i=0;i<files.GetCount();i++) {
 		if (exclude_list.Index(files[i])==wxNOT_FOUND) {
 			sources_in->Append(files[i]);
@@ -127,10 +123,10 @@ wxPanel *mxCppCheckConfigDialog::CreateFilesPanel (wxNotebook * notebook) {
 	sizer.GetSizer()->Add(src_sizer,sizers->Exp1);
 	
 	sizer.BeginText( LANG(CPPCHECK_ADDITIONAL_FILES,"Archivos adicionales a analizar") )
-		.Value(ccc->additional_files).Button(mxID_CPPCHECK_ADDITIONAL_FILES).EndText(additional_files);
+		.Value(project_cppcheck_config->additional_files).Button(mxID_CPPCHECK_ADDITIONAL_FILES).EndText(additional_files);
 	
 	sizer.BeginCheck( LANG(CPPCHECK_EXCLUDE_HEADERS,"Omitir archivos de cabeceras") )
-		.Value(ccc->exclude_headers).Id(mxID_CPPCHECK_EXCLUDE_HEADERS).EndCheck(exclude_headers);
+		.Value(project_cppcheck_config->exclude_headers).Id(mxID_CPPCHECK_EXCLUDE_HEADERS).EndCheck(exclude_headers);
 	
 	sizer.SetAndFit();
 	return sizer.GetPanel();
@@ -213,21 +209,21 @@ void mxCppCheckConfigDialog::OnButtonExcludeFile (wxCommandEvent & evt) {
 
 void mxCppCheckConfigDialog::OnButtonOk (wxCommandEvent & evt) {
 	if (!project) return;
-	ccc->exclude_list.Clear();
+	project_cppcheck_config->exclude_list.Clear();
 	for (unsigned int i=0;i<sources_out->GetCount();i++)
-		ccc->exclude_list<<mxUT::Quotize(sources_out->GetString(i))<<" ";
-	ccc->copy_from_config=copy_from_config->GetValue();
-	ccc->config_d=config_d->GetValue();
-	ccc->config_u=config_u->GetValue();
-	ccc->style=style->GetValue();
-	ccc->platform=platform->GetValue();
-	ccc->standard=standard->GetValue();
-	ccc->suppress_file=suppress_file->GetValue();
-	ccc->suppress_ids=suppress_ids->GetValue();
-	ccc->inline_suppr=inline_suppr->GetValue();
-	ccc->save_in_project=save_in_project->GetValue();
-	ccc->exclude_headers=exclude_headers->GetValue();
-	ccc->additional_files=additional_files->GetValue();
+		project_cppcheck_config->exclude_list<<mxUT::Quotize(sources_out->GetString(i))<<" ";
+	project_cppcheck_config->copy_from_config=copy_from_config->GetValue();
+	project_cppcheck_config->config_d=config_d->GetValue();
+	project_cppcheck_config->config_u=config_u->GetValue();
+	project_cppcheck_config->style=style->GetValue();
+	project_cppcheck_config->platform=platform->GetValue();
+	project_cppcheck_config->standard=standard->GetValue();
+	project_cppcheck_config->suppress_file=suppress_file->GetValue();
+	project_cppcheck_config->suppress_ids=suppress_ids->GetValue();
+	project_cppcheck_config->inline_suppr=inline_suppr->GetValue();
+	project_cppcheck_config->save_in_project=save_in_project->GetValue();
+	project_cppcheck_config->exclude_headers=exclude_headers->GetValue();
+	project_cppcheck_config->additional_files=additional_files->GetValue();
 	Close();
 }
 
@@ -251,7 +247,7 @@ void mxCppCheckConfigDialog::OnButtonExcludeHeaders (wxCommandEvent & evt) {
 		}
 	} else {
 		wxArrayString exclude_list;
-		mxUT::Split(project->cppcheck->exclude_list,exclude_list,true,false);
+		mxUT::Split(project_cppcheck_config->exclude_list,exclude_list,true,false);
 		for (unsigned int i=0;i<files.GetCount();i++) {
 			if (exclude_list.Index(files[i])==wxNOT_FOUND) {
 				sources_in->Append(files[i]);

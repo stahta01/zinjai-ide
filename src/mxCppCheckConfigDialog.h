@@ -25,7 +25,7 @@ private:
 	wxCheckBox *save_in_project;
 	wxCheckBox *exclude_headers;
 	wxTextCtrl *additional_files;
-	cppcheck_configuration *ccc;
+	cppcheck_configuration *project_cppcheck_config;
 protected:
 public:
 	mxCppCheckConfigDialog(wxWindow *parent);
