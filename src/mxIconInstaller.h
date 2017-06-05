@@ -10,10 +10,10 @@ class mxIconInstaller : public wxDialog {
 private:
 	wxCheckBox *desktop;
 	wxCheckBox *menu;
-//	wxCheckBox *zpr;
-//	wxCheckBox *cpp;
+	wxCheckBox *zpr;
+	wxCheckBox *cpp;
 	bool icon_installed;
-	bool xdg_not_found;
+	bool xdg_found;
 public:
 	mxIconInstaller(bool first_run=false);
 	void OnButtonOk(wxCommandEvent &evt);
