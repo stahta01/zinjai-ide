@@ -2979,7 +2979,7 @@ mxSource *mxMainWindow::NewFileFromTemplate(wxString filename, bool is_full_path
 	
 	// copy the file's content (without header) to source
 	wxTextFile file(full_path);
-	if (!file.Exists() && filename!="default.tpl") return NewFileFromTemplate("default.tpl");
+	if (!file.Exists() && filename!="default_14.tpl") return NewFileFromTemplate("default_14.tpl");
 	file.Open();
 	if (file.IsOpened()) {
 		wxString line = file.GetFirstLine();
@@ -3260,9 +3260,9 @@ void mxMainWindow::OnEditInsertInclude(wxCommandEvent &event) {
 //			mxMessageDialog(main_window,LANG(MAINW_INSERT_HEADIR_NO_WORD,"Debe colocar el cursor de texto sobre el nombre de la clase que desee incluir."),LANG(GENERAL_ERROR,"Error"),mxMD_OK|mxMD_INFO).ShowModal();
 //			return;
 //		}
-		int s=source->WordStartPosition(pos,true);
-		int e=source->WordEndPosition(pos,true);
-		wxString key = source->GetTextRange(s,e);
+		int keyw_start=source->WordStartPosition(pos,true);
+		int keyw_end=source->WordEndPosition(pos,true);
+		wxString key = source->GetTextRange(keyw_start,keyw_end);
 		
 		if (key.Len()==0) { // si no hay palabra quejarse
 			mxMessageDialog(main_window,LANG(MAINW_INSERT_HEADIR_NO_WORD,""
@@ -3271,11 +3271,17 @@ void mxMainWindow::OnEditInsertInclude(wxCommandEvent &event) {
 				.Title(LANG(GENERAL_ERROR,"Error")).IconInfo().Run();
 			return;
 		} else { // conseguir el h y darselo al source para que haga lo que corresponda
-			wxString header = g_code_helper->GetInclude(source->sin_titulo?wxString(""):source->source_filename.GetPathWithSep(),key);
-			if (!header.Len()) {
+			wxString optional_namespace;
+			wxString header = g_code_helper->GetInclude(source->sin_titulo?wxString(""):source->source_filename.GetPathWithSep(),key,&optional_namespace);
+			if (header.Len()) {
+				if (keyw_start>2 && source->GetCharAt(keyw_start-1)==':'&&source->GetCharAt(keyw_start-2)==':')
+					optional_namespace.Clear(); // [some] namespace already present
+			} else {
+				int s = keyw_start, e = keyw_end;
 				wxString bkey=key, type = source->FindTypeOfByPos(e-1,s);
 				if ( s!=SRC_PARSING_ERROR && type.Len() ) {
-					header = g_code_helper->GetInclude(source->sin_titulo?wxString(""):source->source_filename.GetPathWithSep(),type);
+					header = g_code_helper->GetInclude(source->sin_titulo?wxString(""):source->source_filename.GetPathWithSep(),type,&optional_namespace);
+					optional_namespace.Clear();
 				} else { // buscar el scope y averiguar si es algo de la clase
 					type = source->FindScope(s);
 					if (type.Len()) {
@@ -3287,6 +3293,7 @@ void mxMainWindow::OnEditInsertInclude(wxCommandEvent &event) {
 					}
 					if (type.Len()) {
 						header=g_code_helper->GetInclude(source->sin_titulo?wxString(""):source->source_filename.GetPathWithSep(),type);
+						optional_namespace.Clear();
 					}
 				}
 			}
@@ -3297,7 +3304,7 @@ void mxMainWindow::OnEditInsertInclude(wxCommandEvent &event) {
 						.Title(LANG(GENERAL_ERROR,"Error")).IconInfo().Run();
 				} else {
 					header.Replace("\\","/");
-					source->AddInclude(header);
+					source->AddInclude(header,optional_namespace);
 				}
 			} else if (key=="Clippo") {
 				new mxSplashScreen(clpeg,GetPosition().x+GetSize().x-215,GetPosition().y+GetSize().y-230);

@@ -1,3 +1,5 @@
+namespace std
+
 <typeindex>
 	class type_index
 		const char * name ()
@@ -903,3 +905,21 @@
 	class atomic
 		T operator
 		atomic & operator= (const atomic &)
+
+<functional>
+	class function<T>
+<memory>
+	class unique_ptr<T>
+		T * get() const
+		T* release()
+		void reset()
+	class shared_ptr<T>
+		T * get() const
+		void reset()
+		bool unique() const
+		long use_count() const
+	class weak_ptr<T>
+		shared_ptr<T> lock() const
+	unique_ptr<T> make_unique(...)
+	shared_ptr<T> make_shared(...)
+	

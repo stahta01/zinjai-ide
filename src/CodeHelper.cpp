@@ -93,6 +93,7 @@ bool CodeHelper::AutocompleteFromArray(mxSource *source, CodeHelperSpecialArray 
 // key es en realidad scope??
 bool CodeHelper::AutocompleteScope(mxSource *source, wxString &key, wxString typed, bool consider_inherit, bool add_reserved_words/*, int max_str_dist*/) {
 	UnTemplate(key);
+	if (IsOptionalNamespace(key)) return typed.IsEmpty()?false:AutocompleteGeneral(source,key,typed);
 	unsigned int len=typed.Len();
 	typed.MakeLower();
 	HashStringParserClass::iterator it=parser->h_classes.find(key);
@@ -309,27 +310,34 @@ wxString ExtractIdentifierFromDeclaration(const wxString &decl) {
 }
 
 bool CodeHelper::AutocompleteGeneral(mxSource *source, wxString scope, wxString typed, wxString *args, int scope_start) {
-	UnTemplate(typed); UnTemplate(scope);
+	wxString optional_namespace; bool use_opt_namespace = false;
+	if (IsOptionalNamespace(scope)) { optional_namespace=scope; scope.Clear(); use_opt_namespace=true; }
+	else { UnTemplate(scope); }
+	UnTemplate(typed); 
 	unsigned int len=typed.Len();
 	typed.MakeLower();
 	g_autocomp_list.Init();
-	pd_var *aux_var = parser->first_global;
+	pd_var *aux_var = parser->first_global->next;
 	while (aux_var) {
-		if (ShouldAddToAutocomp(typed,len,aux_var->name)) {
+		if ((!use_opt_namespace || (aux_var->file && aux_var->file->opt_namespace==optional_namespace)) 
+			 && ShouldAddToAutocomp(typed,len,aux_var->name)) 
+		{
 			g_autocomp_list.Add(aux_var->name,((aux_var->properties&(PD_CONST_ENUM_CONST|PD_CONST_ENUM))?"$19":"$14"),aux_var->full_proto);
 		}
 		aux_var = aux_var->next;
 	}
 
-	pd_func *aux_func = parser->first_function;
+	pd_func *aux_func = parser->first_function->next;
 	while (aux_func) {
-		if (ShouldAddToAutocomp(typed,len,aux_func->name)) {
+		if ((!use_opt_namespace || (aux_func->file_dec && aux_func->file_dec->opt_namespace==optional_namespace)) 
+			&& ShouldAddToAutocomp(typed,len,aux_func->name)) 
+		{
 			g_autocomp_list.Add(aux_func->name,"$3",aux_func->full_proto);
 		}
 		aux_func = aux_func->next;
 	}
 	
-	pd_macro *aux_macro = parser->first_macro;
+	pd_macro *aux_macro = parser->first_macro->next;
 	while (aux_macro) {
 		if (ShouldAddToAutocomp(typed,len,aux_macro->name)) {
 			g_autocomp_list.Add(aux_macro->name,((aux_macro->props&(PD_CONST_ENUM|PD_CONST_ENUM_CONST))?"$19":((aux_macro->props&PD_CONST_TYPEDEF)?"$18":"$2")),aux_macro->proto);
@@ -337,9 +345,11 @@ bool CodeHelper::AutocompleteGeneral(mxSource *source, wxString scope, wxString 
 		aux_macro = aux_macro->next;
 	}
 	
-	pd_class *aux_class = parser->first_class;
+	pd_class *aux_class = parser->first_class->next;
 	while (aux_class) {
-		if (ShouldAddToAutocomp(typed,len,aux_class->name)) {
+		if ((!use_opt_namespace || (aux_class->file && aux_class->file->opt_namespace==optional_namespace)) 
+			&& ShouldAddToAutocomp(typed,len,aux_class->name)) 
+		{
 			if (aux_class->file) {
 				g_autocomp_list.Add(aux_class->name,"$4",wxString("class ")+aux_class->name);
 			} else
@@ -619,6 +629,7 @@ wxString CodeHelper::GetCalltip(wxString scope, wxString key, bool onlyScope, bo
 
 void CodeHelper::ResetStdData() {
 	
+	optional_namespaces.Clear();	
 	actual_indexes.Clear();
 	reserved_words.keywords.Clear();
 	doxygen_directives.keywords.Clear();
@@ -704,7 +715,7 @@ bool CodeHelper::LoadData(wxString index) {
 	wxTextFile fil(filepath);
 	actual_indexes.Add(index);
 	fil.Open();
-	wxString header;
+	wxString header, current_namespace;
 	unsigned int tabs;
 	int pos;
 	pd_file *aux_file=nullptr;
@@ -726,9 +737,14 @@ bool CodeHelper::LoadData(wxString index) {
 			doxygen_directives.keywords.Add(str.Mid(1));
 		} else if (str.Len() && str[0]=='#') {
 			preproc_directives.keywords.Add(str.Mid(1));
+		} else if (str.StartsWith("namespace ")) { // optional namespace
+			current_namespace = str.Mid(10);
+			if (optional_namespaces.Index(current_namespace)==wxNOT_FOUND)
+				optional_namespaces.Add(current_namespace);
 		} else if (tabs==0) { // es el nombre de la cabecera
 			header=str;
 			CH_REGISTER_FILE(aux_file, header);
+			aux_file->opt_namespace = current_namespace;
 		} else if (tabs==1) {
 			if (str.Mid(0,6)==_("class ")) { // es una clase
 				for (int i=0, l=str.Len(); i<l; i++) {
@@ -930,12 +946,14 @@ bool CodeHelper::LoadData(wxString index) {
 	return true;
 }
 
-wxString CodeHelper::GetInclude(wxString path, wxString key) {
+wxString CodeHelper::GetInclude(wxString path, wxString key, wxString *namespace_placeholder) {
 	pd_class *aux_class = parser->first_class->next;
 	while (aux_class) {
 		if (aux_class->name==key) {
-			if (!aux_class->prev)
+			if (!aux_class->prev) {
+				if (namespace_placeholder) (*namespace_placeholder)=aux_class->file->opt_namespace;
 				return aux_class->file->name;
+			}
 			else if (aux_class->file) {
 				wxFileName fn(aux_class->file->name);
 				if (project) {
@@ -958,6 +976,7 @@ wxString CodeHelper::GetInclude(wxString path, wxString key) {
 	while (aux_func) {
 		if (aux_func->name==key) {
 			if (!aux_func->prev) {
+				if (namespace_placeholder) (*namespace_placeholder)=aux_func->file_dec->opt_namespace;
 				return aux_func->file_dec->name;
 			} else if (aux_func->file_dec) {
 				wxFileName fn(aux_func->file_dec->name);
@@ -977,6 +996,7 @@ wxString CodeHelper::GetInclude(wxString path, wxString key) {
 	while (aux_var) {
 		if (aux_var->name==key) {
 			if (!aux_var->prev) {
+				if (namespace_placeholder) (*namespace_placeholder)=aux_var->file->opt_namespace;
 				return aux_var->file->name;
 			} else {
 				wxFileName fn(aux_var->file->name);
@@ -1450,3 +1470,6 @@ void CodeHelper::AutocompleteLocals (mxSource * source, wxString typed, int scop
 	}
 }
 
+bool CodeHelper::IsOptionalNamespace (const wxString &opt_namespace) const {
+	return optional_namespaces.Index(opt_namespace)!=wxNOT_FOUND;
+}

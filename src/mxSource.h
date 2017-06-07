@@ -280,7 +280,7 @@ public:
 	void ShowDiffChange();
 	void GotoDiffChange(bool forward);
 	
-	bool AddInclude(wxString header);
+	bool AddInclude(wxString header, wxString optional_namespace="");
 	int GetStatementStartPos(int pos, bool skip_coma=false, bool skip_white=true, bool first_stop=false); ///< given an absolute text position, finds where that statements starts (skipping comments and indentation at the begginning unless skip_whites=false)
 	int FindTextEx(int pfrom, int pto, const wxString &text, int flags=0);
 	wxString FindTypeOfByKey(wxString &key, int &pos, bool include_template_spec=false); // en pos retorna los asteriscos y en key el scope de la funcion

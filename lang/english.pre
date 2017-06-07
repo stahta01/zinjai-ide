@@ -45,7 +45,7 @@ Automatic installation failled.
 CONFIG_ABOUT_TO_APTGET
 The missing software will be installed next in a new terminal.\nThis action may require root password.\nZinjaI will continue when the new terminal is closed.
 CONFIG_APTGET_BUILD_ESSENTIAL
-Try to install the compiler now.
+Try to install it now.
 MAINW_CUSTOM_TOOL_UNDEFINED
 This tool is not completelly configured.\nUse item "Settings..." in "Custom Tools" submenu from "Tools" menu.
 GENERAL_ERROR
@@ -3008,8 +3008,8 @@ SOURCE_UNCOMMENTED_FOR_HEADER
 Uncommented line <{1}>: "#include <{2}>".
 SOURCE_ADDED_HEADER
 Added header: <{1}>
-SOURCE_ADDED_USING_NAMESPACE_STD
-Added "using namespace std;"
+SOURCE_ADDED_USING_NAMESPACE
+Agregado \"using namespace <{1}>;\"
 SOURCE_HEADER_WAS_ALREADY
 No changes, headear was already present: 
 SOURCE_POPUP_REMOVE_BREAKPOINT

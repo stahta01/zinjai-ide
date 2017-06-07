@@ -755,6 +755,7 @@ struct pd_file { // archivos, para que el parser sepa que borrar
 	int ref_count; // cuantas veces se llama a este archivo (puefullprotode estar incluido varias veces)
 	wxString name; // nombre completo del archivo (absoluto para includes del proyecto, entre < y > para includes del sistema)
 	wxDateTime time; // momento en que se actualizo por ultima vez la informacion de este archivo
+	wxString opt_namespace; // namespace para todo lo definido dentro del archivo, para usar en un "using namespace bla;"
 	// listas de cosas definidas en ese archivo
 	pd_ref *first_class;
 	pd_ref *first_method_dec;

@@ -1,3 +1,5 @@
+namespace std
+
 <ios>
 	
 	class ios_base

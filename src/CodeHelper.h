@@ -68,12 +68,13 @@ private:
 	CodeHelperSpecialArray reserved_words;
 	CodeHelperSpecialArray preproc_directives;
 	CodeHelperSpecialArray doxygen_directives;
+	wxArrayString optional_namespaces;
 	CodeHelper(int ml, int mode);
 public:
 	static void Initialize();
 	bool LoadData(wxString index);
 	void ResetStdData();
-	wxString GetInclude(wxString path, wxString key);
+	wxString GetInclude(wxString path, wxString key, wxString *optional_namespaces=nullptr);
 	wxString GetIncludeForClass(wxString path, wxString key);
 	bool AutocompleteAutocode(mxSource *source, wxString key/*, int max_str_dist=3*/);
 	bool AutocompleteGeneral(mxSource *source, wxString scope, wxString key, wxString *args=nullptr, int scope_start=-1);
@@ -105,6 +106,8 @@ public:
 	
 	/// @param mode  0=case-sensitive start, 1=case-insesitive start, 2=case-insensitive any, 3=case-insensitive Levenshtein
 	void SetAutocompletionMatchingMode(int mode);
+	
+	bool IsOptionalNamespace(const wxString &opt_namespace) const;
 	
 };
 

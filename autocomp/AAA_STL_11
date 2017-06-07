@@ -1,3 +1,5 @@
+namespace std
+
 <unordered_set>
 	bool operator!=(const unordered_multiset<Key,Hash,Pred,Alloc> &,const unordered_multiset<Key,Hash,Pred,Alloc> &)
 	bool operator==(const unordered_multiset<Key,Hash,Pred,Alloc> &,const unordered_multiset<Key,Hash,Pred,Alloc> &)

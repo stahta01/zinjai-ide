@@ -1,3 +1,5 @@
+namespace std
+
 <cmath>
 	double cos ( double x );
 	float cos ( float x );
