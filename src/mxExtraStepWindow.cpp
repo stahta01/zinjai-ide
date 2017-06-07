@@ -41,7 +41,7 @@ mxExtraStepWindow::mxExtraStepWindow(wxWindow *parent, project_configuration *co
 		position = AddComboBox(mySizer,this,LANG(EXTRASTEP_LOCATION_ON_SEQ,"Ubicacion en la secuencia"),pos_array,0);
 	} else
 		position = nullptr;
-	link_output = AddCheckBox(mySizer,this,LANG(EXTRASTEP_LINK_FORCE_RELINK,"Enlazar el archivo de salida en el ejecutable"),step?step->link_output:true);
+	link_output = AddCheckBox(mySizer,this,LANG(EXTRASTEP_LINK_FORCE_RELINK,"Enlazar el archivo de salida en el ejecutable"),step?step->link_output:false);
 	delclean = AddCheckBox(mySizer,this,LANG(EXTRASTEP_DELETE_ON_CLEAN,"Eliminar al limpiar el proyecto"),step?step->delete_on_clean:true);
 	check_rv = AddCheckBox(mySizer,this,LANG(EXTRASTEP_CHECK_EXIT_CODE,"Verificar codigo de salida"),step?step->check_retval:false);
 	hide_win = AddCheckBox(mySizer,this,LANG(EXTRASTEP_HIDE_RUNNING_WINDOW,"Ocultar ventana de ejecucion"),step?step->hide_window:true);

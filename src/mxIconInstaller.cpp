@@ -80,10 +80,9 @@ void mxIconInstaller::OnClose (wxCloseEvent & evt) {
 
 void mxIconInstaller::InstallIcons ( ) {
 	if (icon_installed) return;
-	wxString icon_file=DIR_PLUS_FILE(config->temp_dir,"zinjai.png");
 	
 	for (const char (*sz)[5] = icon_sizes; (*sz)[0]!='\0';++sz) {
-		wxCopyFile(DIR_PLUS_FILE(config->zinjai_dir,DIR_PLUS_FILE("imgs",wxString("zinjai-")<<*sz<<"x"<<*sz<<".png")),icon_file,true);
+		wxString icon_file = DIR_PLUS_FILE(config->zinjai_dir,wxString("imgs/icons")<<*sz<<"/zinjai.png");
 		mxExecute(wxString("xdg-icon-resource install --novendor --size ")<<*sz<<" \""<<icon_file<<"\"",wxEXEC_NODISABLE|wxEXEC_SYNC);
 	}
 	
