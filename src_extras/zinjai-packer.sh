@@ -21,6 +21,7 @@ if [ "$1" = "prepare" ]; then
   mkdir zinjai/lang/tools
   mkdir zinjai/lang/tools/mxLangTool
   mkdir zinjai/imgs
+  mkdir zinjai/imgs/icons
   mkdir zinjai/imgs/16
   mkdir zinjai/imgs/24
   mkdir zinjai/imgs/32
@@ -67,6 +68,7 @@ elif [ "$1" = "update" ]; then
   scp $2/zinjai/imgs/16/*				zinjai/imgs/16/
   scp $2/zinjai/imgs/24/*				zinjai/imgs/24/
   scp $2/zinjai/imgs/32/*				zinjai/imgs/32/
+  scp -r $2/zinjai/imgs/icons/*				zinjai/imgs/icons/
   scp -r $2/zinjai/skins/*				zinjai/skins/
 
   scp $2/zinjai/debug_macros.gdb			zinjai/

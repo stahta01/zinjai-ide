@@ -1,5 +1,5 @@
 
-# copy zinjai/cppreference/en/cpp/header/*.html to cppref and run this script	
+# copy zinjai/cppreference/en/cpp/header/*.html to cppref and run this script
 
 echo "Dump..."
 rm -rf dump

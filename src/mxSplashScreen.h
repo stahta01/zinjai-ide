@@ -8,7 +8,7 @@
 #define SPLASH_FILE "splashvb.png"
 #else
 //#warning SHOULD DEFINE CORRECT SPLASH BEFORE RELEASE
-#define SPLASH_FILE "splashv2n.png"
+#define SPLASH_FILE "splashv2m.png"
 #endif
 
 /**

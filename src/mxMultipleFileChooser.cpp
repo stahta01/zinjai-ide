@@ -73,12 +73,13 @@ mxMultipleFileChooser::mxMultipleFileChooser(wxString apath, bool from_new_proje
 		OnButtonFind(evt);
 	}
 	
+	basedir->SetFocus();
+	
 	if (m_from_new_project_wizard)
 		ShowModal();
 	else
 		Show();
 	
-	basedir->SetFocus();
 }
 
 void mxMultipleFileChooser::OnButtonOk(wxCommandEvent &event) {
