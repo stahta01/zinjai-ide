@@ -69,10 +69,13 @@ cp -u /mnt/ex/zinjai/lang/tools/mxLangTool.exe zinjai.app/Contents/Resources/lan
 echo Compiling...
 export PATH=/opt/mac/bin:/opt/mac/wx/bin:$PATH
 
+VERSION=$(cat zinjai.app/Contents/Resources/src/version.h |grep VERSION|cut -d ' ' -f 3)
+
+
 if mount|grep mnt; then sudo umount mnt; fi
-dd if=/dev/zero of=zinjai-ppc.dmg bs=512k count=81
-mkfs.hfsplus -v ZinjaI zinjai-ppc.dmg
-sudo mount -o loop zinjai-ppc.dmg mnt || exit 1
+dd if=/dev/zero of=zinjai-ppc-$VERSION.dmg bs=512k count=81
+mkfs.hfsplus -v ZinjaI zinjai-ppc-$VERSION.dmg
+sudo mount -o loop zinjai-ppc-$VERSION.dmg mnt || exit 1
 rm -f zinjai.app/Contents/MacOS/zinjai
 rm -f zinjai.app/Contents/Resources/bin/img_viewer.bin
 rm -f zinjai.app/Contents/Resources/bin/complement.bin
@@ -89,9 +92,9 @@ sudo cp -r zinjai.app mnt/ || exit 1
 sudo umount mnt
 
 if mount|grep mnt; then sudo umount mnt; fi
-dd if=/dev/zero of=zinjai-m32.dmg bs=512k count=80
-mkfs.hfsplus -v ZinjaI zinjai-m32.dmg
-sudo mount -o loop zinjai-m32.dmg mnt || exit 1
+dd if=/dev/zero of=zinjai-m32-$VERSION.dmg bs=512k count=80
+mkfs.hfsplus -v ZinjaI zinjai-m32-$VERSION.dmg
+sudo mount -o loop zinjai-m32-$VERSION.dmg mnt || exit 1
 rm -f zinjai.app/Contents/MacOS/zinjai
 rm -f zinjai.app/Contents/Resources/bin/img_viewer.bin
 rm -f zinjai.app/Contents/Resources/bin/complement.bin
