@@ -12,7 +12,7 @@ version_required=20131122
 custom_tabs=0
 tab_use_spaces=0
 explorer_path=../msuite-clean/quantech/zpr_base
-current_source=src/mxSplashScreen.h
+current_source=guihelp/tips_english
 path_char=/
 [source]
 path=src/ProjectManager.cpp
@@ -905,7 +905,8 @@ path=lang/spanish.src
 cursor=569:17
 [other]
 path=guihelp/tips_english
-cursor=10:51
+cursor=0:0
+open=true
 [other]
 path=src/lang_index_macros.h
 cursor=0:0
