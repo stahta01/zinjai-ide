@@ -25,7 +25,6 @@ public:
 	wxPanel *CreateDependPanel (wxNotebook *notebook);
 	void OnCloseButton(wxCommandEvent &evt);
 	void OnHelpButton(wxCommandEvent &evt);
-	void OnLocationButton(wxCommandEvent &evt);
 	void OnStripButton(wxCommandEvent &evt);
 	void OnTimer(wxTimerEvent &evt);
 	static void RunForProject(wxWindow *parent);

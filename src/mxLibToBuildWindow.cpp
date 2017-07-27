@@ -63,7 +63,7 @@ mxLibToBuildWindow::mxLibToBuildWindow(mxProjectConfigWindow *parent, project_co
 	
 	project->AssociateLibsAndSources(m_configuration);
 
-	for(LocalListIterator<project_file_item*> item(&project->files_sources); item.IsValid(); item.Next()) {
+	for(LocalListIterator<project_file_item*> item(&project->files.sources); item.IsValid(); item.Next()) {
 		if (m_lib && item->lib==m_lib)
 			m_sources_in->Append(item->name);
 		else
@@ -104,7 +104,7 @@ void mxLibToBuildWindow::OnOkButton(wxCommandEvent &evt) {
 			if (it!=m_lib) it->default_lib = false;
 		}
 	}
-	for (LocalListIterator<project_file_item*> fi(&project->files_sources);
+	for (LocalListIterator<project_file_item*> fi(&project->files.sources);
 		 fi.IsValid() ; fi.Next()) 
 	{
 		if (m_sources_in->FindString(fi->name)!=wxNOT_FOUND) {

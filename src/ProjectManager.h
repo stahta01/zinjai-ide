@@ -366,14 +366,15 @@ class project_library;
 * y lineas resaltadas y algunas banderas.
 **/
 struct project_file_item { // para armar las listas (doblemente enlazadas) de archivos del proyecto
-	wxString name;
+	wxString name; ///< path relativo al path del proyecto
 	wxTreeItemId item;
 	SourceExtras extras; ///< breakpoints, highlighted lines, cursor position
 	bool force_recompile; ///< indica que se debe recompilar independientemente de la fecha de modificacion (por ejemplo, si lo va a modificar un paso adicional)
 	project_library *lib; ///< a que biblioteca pertenece (no siempre es correcto, se rehace con analize_config)
 	bool read_only; ///< indica que se debe abrir como solo lectura (porque es generado por una herramienta externa)
 	bool hide_symbols; ///< indica si sus métodos y funciones se deben tener en cuenta para el cuadro "Ir a funcion/clase/método"
-	eFileType where; ///< indica en qué categoria de archivos está asociado al proyecto (s=sources, h=headers, o=otros)
+	wxString inherited_from; ///< si no está vacio indica que el archivo no es propio del proyecto actual, sino heredado de otro, del que dice (path relativo, podría ser además herencia indirecta)
+	eFileType where; ///< indica en qué categoria de archivos está asociado al proyecto
 	wxString compiling_options; ///< campo generado por AnaliceConfig, con las opciones finales y reales, ya procesadas
 	void Init() { // parte comun a ambos constructores
 		force_recompile=false;
@@ -399,6 +400,7 @@ struct project_file_item { // para armar las listas (doblemente enlazadas) de ar
 		return DIR_PLUS_FILE(temp_dir,wxFileName(name).GetName()+".o");
 	}
 };
+
 
 enum ces_type{
 	CNS_VOID, ///< primer paso, ficticio, solo para inicializar la lista de pasos
@@ -451,7 +453,6 @@ struct stripping_info {
 		};
 };
 
-
 /** 
 * @brief Representa un proyecto
 * 
@@ -498,10 +499,8 @@ public:
 	wxString project_name; ///< el nombre bonito del proyecto
 	wxString filename; ///< el archivo del proyecto
 	wxString path; ///< la carpeta del proyecto
-	GlobalList<project_file_item*> files_all;
-	LocalList<project_file_item*> files_sources;
-	LocalList<project_file_item*> files_headers;
-	LocalList<project_file_item*> files_others;
+
+
 	wxString autocomp_extra; ///< indices de autocompletado adicionales para este proyecto
 	wxString autocodes_file; ///< archivo con definiciones de autocodigos adicionales
 	wxString macros_file; ///< archivo con definiciones de macros para gdb
@@ -537,12 +536,31 @@ public:
 	ProjectManager(wxFileName filename); ///< loads a project from a file (just_created=true when its called from new project wizard)
 	~ProjectManager();
 	wxString GetFileName();
+	
+	
+	struct FilesList {
+		GlobalList<project_file_item*> all;
+		LocalList<project_file_item*> sources;
+		LocalList<project_file_item*> headers;
+		LocalList<project_file_item*> others;
+		FilesList() {
+			sources.Init(&all);
+			headers.Init(&all);
+			others.Init(&all);
+		}
+		project_file_item *FindFromItem(wxTreeItemId &tree_item);
+		~FilesList() {
+			for (GlobalListIterator<project_file_item*> it(&all); it.IsValid(); it.Next()) delete *it;
+		}
+	};
+	wxString inherits_from; ///< lista de otros zprs de los cuales hereda archivos
+	FilesList files; ///< archivos asociados al proyecto
+	
+	
 	int GetFileList(wxArrayString &array, eFileType cuales=FT_NULL, bool relative_paths=false);
-	project_file_item *FindFromFullPath(wxString name); ///< busca a partir del nombre de archivo (solo, sin path)
 	project_file_item *FindFromName(wxString name); ///< busca a partir del nombre de archivo (solo, sin path)
-	project_file_item *FindFromItem(wxTreeItemId &tree_item);
+	project_file_item *FindFromFullPath(wxFileName file); ///< busca una archivo en el proyecto por su ruta completa
 	wxString GetNameFromItem(wxTreeItemId &tree_item, bool relative=false);
-	project_file_item *HasFile(wxFileName file); ///< busca una archivo en el proyecto por su ruta completa
 	bool Save(bool as_template=false);
 	void MoveFirst(wxTreeItemId &tree_item);
 	

@@ -65,7 +65,7 @@ void Parser::ParseProject(bool show_progress) {
 //	project->SaveAll(false);
 
 	for(int i=0;i<2;i++) { 
-		LocalListIterator<project_file_item*> item(i==0?&project->files_sources:&project->files_headers);
+		LocalListIterator<project_file_item*> item(i==0?&project->files.sources:&project->files.headers);
 		while(item.IsValid()) {
 			actions.insert(actions.end(),parserAction::ParseProjectFile(project,DIR_PLUS_FILE(project->path,item->name),item->hide_symbols));
 			item.Next();
@@ -81,7 +81,7 @@ void Parser::ParseProject(bool show_progress) {
 
 void Parser::ParseSource(mxSource *src, bool dontsave) {
 	if (src->lexer!=wxSTC_LEX_CPP) return;
-	project_file_item *item=project?project->HasFile(src->source_filename):nullptr;
+	project_file_item *item=project?project->FindFromFullPath(src->source_filename):nullptr;
 	if (project && (!item || item->where==FT_OTHER)) return; // if we are in project mode and the source is not attached to the project, don't parse
 	actions.insert(actions.end(),parserAction::ParseSource(src,dontsave));
 	Parse();

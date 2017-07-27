@@ -21,6 +21,7 @@
 #include "MenusAndToolsConfig.h"
 #include "CustomTools.h"
 #include "mxSplashScreen.h"
+#include "IniFile.h"
 
 ConfigManager *config;
 
@@ -147,210 +148,224 @@ void ConfigManager::DoInitialChecks() {
 }
 	
 bool ConfigManager::Load() {
-	wxTextFile fil(m_filename);
-	if (!fil.Exists()) return false;
-	fil.Open();
-	wxString section, key, value;
-	long l;
+	IniFileReader fil(m_filename);
+	if (!fil.IsOk()) return false;
 	wxArrayString last_files; // para compatibilidad hacia atras, guarda el historial unificado y despues lo divide
-	for ( wxString str = fil.GetFirstLine(); !fil.Eof(); str = fil.GetNextLine() ) {
-//		wxYield();
-		if (str[0]=='#') {
-			continue;
-		} else if (str[0]=='[') {
-			section=str.AfterFirst('[').BeforeFirst(']');
+	for ( wxString section = fil.GetNextSection(); !section.IsEmpty(); section = fil.GetNextSection() ) {
 		
-		} else {
-			key=str.BeforeFirst('=');
-			value=str.AfterFirst('=');
-			if (section=="Styles") {
-				CFG_INT_READ_DN("print_size",Styles.print_size);
-				else CFG_INT_READ_DN("font_size",Styles.font_size);
-				else CFG_GENERIC_READ_DN("font_name",Styles.font_name);
-				else CFG_GENERIC_READ_DN("colour_theme",Init.colour_theme);
-				else if (key=="dark") { if (mxUT::IsTrue(value)) Init.colour_theme="inverted.zcs";	} // just for backward compatibility
-				
-			} else if (section=="Source") {
-				CFG_INT_READ_DN("tabWidth",Source.tabWidth);
-				else CFG_INT_READ_DN("edgeColumn",Source.edgeColumn);
-				else CFG_INT_READ_DN("alignComments",Source.alignComments);
-				else CFG_BOOL_READ_DN("tabUseSpaces",Source.tabUseSpaces);
-				else CFG_BOOL_READ_DN("indentPaste",Source.indentPaste);
-				else CFG_BOOL_READ_DN("smartIndent",Source.smartIndent);
-				else CFG_BOOL_READ_DN("bracketInsertion",Source.bracketInsertion);
-				else CFG_BOOL_READ_DN("syntaxEnable",Source.syntaxEnable);
-				else CFG_BOOL_READ_DN("foldEnable",Source.foldEnable);
-				else CFG_BOOL_READ_DN("indentEnable",Source.indentEnable);
-				else CFG_BOOL_READ_DN("whiteSpace",Source.whiteSpace);
-				else CFG_BOOL_READ_DN("lineNumber",Source.lineNumber);
-				else CFG_BOOL_READ_DN("overType",Source.overType);
-				else CFG_BOOL_READ_DN("autocompFilters",Source.autocompFilters);
-				else CFG_BOOL_READ_DN("callTips",Source.callTips);
-				else CFG_BOOL_READ_DN("autocompTips",Source.autocompTips);
-				else CFG_BOOL_READ_DN("autotextEnabled",Source.autotextEnabled);
-				else CFG_BOOL_READ_DN("autocloseStuff",Source.autocloseStuff);
-				else CFG_BOOL_READ_DN("toolTips",Source.toolTips);
-				else CFG_INT_READ_DN("autoCompletion",Source.autoCompletion);
-				else CFG_BOOL_READ_DN("avoidNoNewLineWarning",Source.avoidNoNewLineWarning);
+		if (section=="Styles") {
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				if (p.Key()=="print_size") Styles.print_size = p.AsInt();
+				else if (p.Key()=="font_size") Styles.font_size = p.AsInt();
+				else if (p.Key()=="font_name") Styles.font_name = p.AsString();
+				else if (p.Key()=="colour_theme") Init.colour_theme = p.AsString();
+				else if (p.Key()=="dark") { if (p.AsBool()) Init.colour_theme="inverted.zcs";	} // just for backward compatibility
+			}
 			
-			} else if (section=="Debug") {
-				CFG_BOOL_READ_DN("autohide_panels",Debug.autohide_panels);
-				else CFG_BOOL_READ_DN("autohide_toolbars",Debug.autohide_toolbars);
-				else CFG_BOOL_READ_DN("allow_edition",Debug.allow_edition);
-				else CFG_GENERIC_READ_DN("format",Debug.format);
-				else CFG_GENERIC_READ_DN("macros_file",Debug.macros_file);
-				else CFG_BOOL_READ_DN("compile_again",Debug.compile_again);
-				else CFG_BOOL_READ_DN("use_colours_for_inspections",Debug.use_colours_for_inspections);
-				else CFG_BOOL_READ_DN("inspections_can_have_side_effects",Debug.inspections_can_have_side_effects);
-				else CFG_BOOL_READ_DN("raise_main_window",Debug.raise_main_window);
-				else CFG_BOOL_READ_DN("always_debug",Debug.always_debug);
-//				else CFG_BOOL_READ_DN("close_on_normal_exit",Debug.close_on_normal_exit);
-				else CFG_BOOL_READ_DN("show_do_that",Debug.show_do_that);
-				else CFG_BOOL_READ_DN("catch_throw",Debug.catch_throw);
-				else CFG_BOOL_READ_DN("auto_solibs",Debug.auto_solibs);
-				else CFG_BOOL_READ_DN("readnow",Debug.readnow);
-				else CFG_BOOL_READ_DN("inspections_on_right",Debug.inspections_on_right);
-				else CFG_BOOL_READ_DN("show_thread_panel",Debug.show_thread_panel);
-				else CFG_BOOL_READ_DN("show_log_panel",Debug.show_log_panel);
-				else CFG_BOOL_READ_DN("return_focus_on_continue",Debug.return_focus_on_continue);
-				else CFG_BOOL_READ_DN("improve_inspections_by_type",Debug.improve_inspections_by_type);
+		} else if (section=="Source") {
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				if (p.Key()=="tabWidth") Source.tabWidth = p.AsInt();
+				else if (p.Key()=="edgeColumn") Source.edgeColumn = p.AsInt();
+				else if (p.Key()=="alignComments") Source.alignComments = p.AsInt();
+				else if (p.Key()=="tabUseSpaces") Source.tabUseSpaces = p.AsBool();
+				else if (p.Key()=="indentPaste") Source.indentPaste = p.AsBool();
+				else if (p.Key()=="smartIndent") Source.smartIndent = p.AsBool();
+				else if (p.Key()=="bracketInsertion") Source.bracketInsertion = p.AsBool();
+				else if (p.Key()=="syntaxEnable") Source.syntaxEnable = p.AsBool();
+				else if (p.Key()=="foldEnable") Source.foldEnable = p.AsBool();
+				else if (p.Key()=="indentEnable") Source.indentEnable = p.AsBool();
+				else if (p.Key()=="whiteSpace") Source.whiteSpace = p.AsBool();
+				else if (p.Key()=="lineNumber") Source.lineNumber = p.AsBool();
+				else if (p.Key()=="overType") Source.overType = p.AsBool();
+				else if (p.Key()=="autocompFilters") Source.autocompFilters = p.AsBool();
+				else if (p.Key()=="callTips") Source.callTips = p.AsBool();
+				else if (p.Key()=="autocompTips") Source.autocompTips = p.AsBool();
+				else if (p.Key()=="autotextEnabled") Source.autotextEnabled = p.AsBool();
+				else if (p.Key()=="autocloseStuff") Source.autocloseStuff = p.AsBool();
+				else if (p.Key()=="toolTips") Source.toolTips = p.AsBool();
+				else if (p.Key()=="autoCompletion") Source.autoCompletion = p.AsInt();
+				else if (p.Key()=="avoidNoNewLineWarning") Source.avoidNoNewLineWarning = p.AsBool();
+			}		
+		} else if (section=="Debug") {
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				if (p.Key()=="autohide_panels") Debug.autohide_panels = p.AsBool();
+				else if (p.Key()=="autohide_toolbars") Debug.autohide_toolbars = p.AsBool();
+				else if (p.Key()=="allow_edition") Debug.allow_edition = p.AsBool();
+				else if (p.Key()=="format") Debug.format = p.AsString();
+				else if (p.Key()=="macros_file") Debug.macros_file = p.AsString();
+				else if (p.Key()=="compile_again") Debug.compile_again = p.AsBool();
+				else if (p.Key()=="use_colours_for_inspections") Debug.use_colours_for_inspections = p.AsBool();
+				else if (p.Key()=="inspections_can_have_side_effects") Debug.inspections_can_have_side_effects = p.AsBool();
+				else if (p.Key()=="raise_main_window") Debug.raise_main_window = p.AsBool();
+				else if (p.Key()=="always_debug") Debug.always_debug = p.AsBool();
+//				else if (p.Key()=="close_on_normal_exit") Debug.close_on_normal_exit = p.AsBool();
+				else if (p.Key()=="show_do_that") Debug.show_do_that = p.AsBool();
+				else if (p.Key()=="catch_throw") Debug.catch_throw = p.AsBool();
+				else if (p.Key()=="auto_solibs") Debug.auto_solibs = p.AsBool();
+				else if (p.Key()=="readnow") Debug.readnow = p.AsBool();
+				else if (p.Key()=="inspections_on_right") Debug.inspections_on_right = p.AsBool();
+				else if (p.Key()=="show_thread_panel") Debug.show_thread_panel = p.AsBool();
+				else if (p.Key()=="show_log_panel") Debug.show_log_panel = p.AsBool();
+				else if (p.Key()=="return_focus_on_continue") Debug.return_focus_on_continue = p.AsBool();
+				else if (p.Key()=="improve_inspections_by_type") Debug.improve_inspections_by_type = p.AsBool();
 #ifdef __linux__
-				else CFG_BOOL_READ_DN("enable_core_dump",Debug.enable_core_dump);
+				else if (p.Key()=="enable_core_dump") Debug.enable_core_dump = p.AsBool();
 #endif
 #ifdef __WIN32__
-				else CFG_BOOL_READ_DN("no_debug_heap",Debug.no_debug_heap);
+				else if (p.Key()=="no_debug_heap") Debug.no_debug_heap = p.AsBool();
 #endif
-				else CFG_BOOL_READ_DN("use_blacklist",Debug.use_blacklist);
-				else if (key=="blacklist") Debug.blacklist.Add(value);
-				else if (key=="inspection_improving_template") {
-					Debug.inspection_improving_template_from.Add(value.BeforeFirst('|'));
-					Debug.inspection_improving_template_to.Add(value.AfterFirst('|'));
+				else if (p.Key()=="use_blacklist") Debug.use_blacklist = p.AsBool();
+				else if (p.Key()=="blacklist") Debug.blacklist.Add(p.AsString());
+				else if (p.Key()=="inspection_improving_template") {
+					Debug.inspection_improving_template_from.Add(p.AsString().BeforeFirst('|'));
+					Debug.inspection_improving_template_to.Add(p.AsString().AfterFirst('|'));
 				}
-			} else if (section=="Running") {
-				CFG_GENERIC_READ_DN("compiler_options",Running.cpp_compiler_options); //just for backward compatibility
-				else CFG_GENERIC_READ_DN("cpp_compiler_options",Running.cpp_compiler_options);
-				else CFG_GENERIC_READ_DN("c_compiler_options",Running.c_compiler_options);
-				else CFG_BOOL_READ_DN("wait_for_key",Running.wait_for_key);
-				else CFG_BOOL_READ_DN("always_ask_args",Running.always_ask_args);
-				else CFG_BOOL_READ_DN("check_includes",Running.check_includes);
-			
-			} else if (section=="Help") {
-//				CFG_GENERIC_READ_DN("quickhelp_index",Help.quickhelp_index);
-				CFG_GENERIC_READ_DN("wxhelp_index",Help.wxhelp_index);
-				else CFG_GENERIC_READ_DN("autocomp_indexes",Help.autocomp_indexes);
-				else CFG_INT_READ_DN("min_len_for_completion",Help.min_len_for_completion);
-				else CFG_BOOL_READ_DN("show_extra_panels",Help.show_extra_panels);
-			
-			} else if (section=="Init") {
-				CFG_BOOL_READ_DN("left_panels",Init.left_panels);
-				else CFG_BOOL_READ_DN("show_beginner_panel",Init.show_beginner_panel);
-				else CFG_BOOL_READ_DN("show_welcome",Init.show_welcome);
-				else CFG_BOOL_READ_DN("show_tip_on_startup",Init.show_tip_on_startup);
-				else CFG_INT_READ_DN("new_file",Init.new_file);
-				else CFG_INT_READ_DN("version",Init.version);
-				else CFG_INT_READ_DN("pos_x",Init.pos_x);
-				else CFG_INT_READ_DN("pos_y",Init.pos_y);
-				else CFG_INT_READ_DN("size_x",Init.size_x);
-				else CFG_INT_READ_DN("size_y",Init.size_y);
-				else CFG_BOOL_READ_DN("lang_es",Init.lang_es);
-				else CFG_BOOL_READ_DN("maximized",Init.maximized);
-				else CFG_INT_READ_DN("zinjai_server_port",Init.zinjai_server_port);
-//				else CFG_BOOL_READ_DN("load_sharing_server",Init.load_sharing_server);
-				else CFG_BOOL_READ_DN("save_project",Init.save_project);
-//				else CFG_BOOL_READ_DN("close_files_for_project",Init.close_files_for_project);
-				else CFG_BOOL_READ_DN("always_add_extension",Init.always_add_extension);
-				else CFG_BOOL_READ_DN("autohide_menus_fs",Init.autohide_menus_fs);
-				else CFG_BOOL_READ_DN("autohide_panels_fs",Init.autohide_panels_fs);
-				else CFG_BOOL_READ_DN("autohide_toolbars_fs",Init.autohide_toolbars_fs);
-				else CFG_BOOL_READ_DN("check_for_updates",Init.check_for_updates);
-				else CFG_BOOL_READ_DN("prefer_explorer_tree",Init.prefer_explorer_tree);
-				else CFG_BOOL_READ_DN("cppcheck_seen",Init.cppcheck_seen);
-#ifndef __WIN32__
-				else CFG_BOOL_READ_DN("valgrind_seen",Init.valgrind_seen);
-				else CFG_BOOL_READ_DN("compiler_seen",Init.compiler_seen);
-				else CFG_BOOL_READ_DN("debugger_seen",Init.debugger_seen);
-#endif
-				else CFG_BOOL_READ_DN("doxygen_seen",Init.doxygen_seen);
-				else CFG_BOOL_READ_DN("wxfb_seen",Init.wxfb_seen);
-				else CFG_BOOL_READ_DN("show_explorer_tree",Init.show_explorer_tree);
-				else CFG_BOOL_READ_DN("graphviz_dot",Init.graphviz_dot);
-				else CFG_INT_READ_DN("history_len",Init.history_len);
-				else CFG_INT_READ_DN("inherit_num",Init.inherit_num);
-//				else CFG_GENERIC_READ_DN("forced_compiler_options",Init.forced_compiler_options);
-//				else CFG_GENERIC_READ_DN("forced_linker_options",Init.forced_linker_options);
-				else CFG_GENERIC_READ_DN("proxy",Init.proxy);
-				else CFG_GENERIC_READ_DN("language_file",Init.language_file);
-				else CFG_INT_READ_DN("max_errors",Init.max_errors);
-				else CFG_INT_READ_DN("max_jobs",Init.max_jobs);
-				else CFG_INT_READ_DN("wrap_mode",Init.wrap_mode);
-				else CFG_BOOL_READ_DN("singleton",Init.singleton);
-				else CFG_BOOL_READ_DN("stop_compiling_on_error",Init.stop_compiling_on_error);
-				else CFG_BOOL_READ_DN("autohide_panels",Init.autohide_panels);
-				else CFG_BOOL_READ_DN("use_cache_for_subcommands",Init.use_cache_for_subcommands);
-				else CFG_BOOL_READ_DN("beautify_compiler_errors",Init.beautify_compiler_errors);
-				else CFG_BOOL_READ_DN("fullpath_on_project_tree",Init.fullpath_on_project_tree);
-				else CFG_GENERIC_READ_DN("colour_theme",Init.colour_theme);
-				else CFG_GENERIC_READ_DN("complements_timestamp",Init.complements_timestamp);
-#if defined(__APPLE__) && defined(__STC_ZASKAR)
-				else CFG_INT_READ_DN("mac_stc_zflags",Init.mac_stc_zflags);
-#endif
-			} else if (section=="Files") {
-				CFG_GENERIC_READ_DN("toolchain",Files.toolchain);
-				else CFG_GENERIC_READ_DN("debugger_command",Files.debugger_command);
-				else CFG_GENERIC_READ_DN("terminal_command",Files.terminal_command);
-				else CFG_GENERIC_READ_DN("explorer_command",Files.explorer_command);
-				else CFG_GENERIC_READ_DN("c_template",Files.c_template);
-				else CFG_GENERIC_READ_DN("cpp_template",Files.cpp_template);
-				else CFG_GENERIC_READ_DN("default_template",Files.default_template);
-				else CFG_GENERIC_READ_DN("default_project",Files.default_project);
-				else CFG_GENERIC_READ_DN("autocodes_file",Files.autocodes_file);
-				else CFG_GENERIC_READ_DN("skin_dir",Files.skin_dir);
-				else CFG_GENERIC_READ_DN("temp_dir",Files.temp_dir);
-				else CFG_GENERIC_READ_DN("img_viewer",Files.img_viewer);
-				else CFG_GENERIC_READ_DN("xdot_command",Files.xdot_command);
-//				else CFG_GENERIC_READ_DN("graphviz_dir",Files.graphviz_dir);
-				else CFG_GENERIC_READ_DN("browser_command",Files.browser_command);
-				else CFG_GENERIC_READ_DN("cppcheck_command",Files.cppcheck_command);
-#ifndef __WIN32__
-				else CFG_GENERIC_READ_DN("valgrind_command",Files.valgrind_command);
-#endif
-				else CFG_GENERIC_READ_DN("doxygen_command",Files.doxygen_command);
-				else CFG_GENERIC_READ_DN("wxfb_command",Files.wxfb_command);
-				else CFG_GENERIC_READ_DN("project_folder",Files.project_folder);
-				else CFG_GENERIC_READ_DN("last_project_dir",Files.last_project_dir);
-				else CFG_GENERIC_READ_DN("last_dir",Files.last_dir);
-				else if (key.StartsWith("last_file_")) {
-					last_files.Add(value);
-				} else if (key.StartsWith("last_source_")) {
-					if (key.Mid(12).ToLong(&l) && l>=0 && l<CM_HISTORY_MAX_LEN)
-						Files.last_source[l]=value;
-				} else if (key.StartsWith("last_project_")	) {
-					if (key.Mid(13).ToLong(&l) && l>=0 && l<CM_HISTORY_MAX_LEN)
-						Files.last_project[l]=value;
-				}
-				
-			} else if (section=="Columns") {
-				if (key.StartsWith("inspections_grid_")	) {
-					if (key.Mid(17).ToLong(&l) && l>=0 && l<IG_COLS_COUNT)
-						Cols.inspections_grid[l]=mxUT::IsTrue(value);
-				} else if (key.StartsWith("backtrace_grid_")	) {
-					if (key.Mid(15).ToLong(&l) && l>=0 && l<BG_COLS_COUNT)
-						Cols.backtrace_grid[l]=mxUT::IsTrue(value);
-				}
-//				} else if (key.StartsWith("threadlist_grid_")	) {
-//					if (key.Mid(15).ToLong(&l) && l>=0 && l<TG_COLS_COUNT)
-//						Cols.threadlist_grid[l]=mxUT::IsTrue(value);
-//				}
-				
-			} else if (section=="CustomTools") {
-				custom_tools.ParseConfigLine(key,value);
-				
-			} else if (section=="Toolbars") {
-				if (!s_delayed_config_lines) s_delayed_config_lines = new DelayedConfigLines;
-				s_delayed_config_lines->toolbars_keys.Add(key);
-				s_delayed_config_lines->toolbars_values.Add(value);
 			}
-		} 
+			
+		} else if (section=="Running") {
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				if (p.Key()=="compiler_options") Running.cpp_compiler_options = p.AsString(); //just for backward compatibility
+				else if (p.Key()=="cpp_compiler_options") Running.cpp_compiler_options = p.AsString();
+				else if (p.Key()=="c_compiler_options") Running.c_compiler_options = p.AsString();
+				else if (p.Key()=="wait_for_key") Running.wait_for_key = p.AsBool();
+				else if (p.Key()=="always_ask_args") Running.always_ask_args = p.AsBool();
+				else if (p.Key()=="check_includes") Running.check_includes = p.AsBool();
+			}
+		
+		} else if (section=="Help") {
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+//				if (p.Key()=="quickhelp_index") Help.quickhelp_index = p.AsString();
+				if (p.Key()=="wxhelp_index") Help.wxhelp_index = p.AsString();
+				else if (p.Key()=="autocomp_indexes") Help.autocomp_indexes = p.AsString();
+				else if (p.Key()=="min_len_for_completion") Help.min_len_for_completion = p.AsInt();
+				else if (p.Key()=="show_extra_panels") Help.show_extra_panels = p.AsBool();
+			}
+			
+		} else if (section=="Init") {
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				if (p.Key()=="left_panels") Init.left_panels = p.AsBool();
+				else if (p.Key()=="show_beginner_panel") Init.show_beginner_panel = p.AsBool();
+				else if (p.Key()=="show_welcome") Init.show_welcome = p.AsBool();
+				else if (p.Key()=="show_tip_on_startup") Init.show_tip_on_startup = p.AsBool();
+				else if (p.Key()=="new_file") Init.new_file = p.AsInt();
+				else if (p.Key()=="version") Init.version = p.AsInt();
+				else if (p.Key()=="pos_x") Init.pos_x = p.AsInt();
+				else if (p.Key()=="pos_y") Init.pos_y = p.AsInt();
+				else if (p.Key()=="size_x") Init.size_x = p.AsInt();
+				else if (p.Key()=="size_y") Init.size_y = p.AsInt();
+				else if (p.Key()=="lang_es") Init.lang_es = p.AsBool();
+				else if (p.Key()=="maximized") Init.maximized = p.AsBool();
+				else if (p.Key()=="zinjai_server_port") Init.zinjai_server_port = p.AsInt();
+//				else if (p.Key()=="load_sharing_server") Init.load_sharing_server = p.AsBool();
+				else if (p.Key()=="save_project") Init.save_project = p.AsBool();
+//				else if (p.Key()=="close_files_for_project") Init.close_files_for_project = p.AsBool();
+				else if (p.Key()=="always_add_extension") Init.always_add_extension = p.AsBool();
+				else if (p.Key()=="autohide_menus_fs") Init.autohide_menus_fs = p.AsBool();
+				else if (p.Key()=="autohide_panels_fs") Init.autohide_panels_fs = p.AsBool();
+				else if (p.Key()=="autohide_toolbars_fs") Init.autohide_toolbars_fs = p.AsBool();
+				else if (p.Key()=="check_for_updates") Init.check_for_updates = p.AsBool();
+				else if (p.Key()=="prefer_explorer_tree") Init.prefer_explorer_tree = p.AsBool();
+				else if (p.Key()=="cppcheck_seen") Init.cppcheck_seen = p.AsBool();
+#ifndef __WIN32__
+				else if (p.Key()=="valgrind_seen") Init.valgrind_seen = p.AsBool();
+				else if (p.Key()=="compiler_seen") Init.compiler_seen = p.AsBool();
+				else if (p.Key()=="debugger_seen") Init.debugger_seen = p.AsBool();
+#endif
+				else if (p.Key()=="doxygen_seen") Init.doxygen_seen = p.AsBool();
+				else if (p.Key()=="wxfb_seen") Init.wxfb_seen = p.AsBool();
+				else if (p.Key()=="show_explorer_tree") Init.show_explorer_tree = p.AsBool();
+				else if (p.Key()=="graphviz_dot") Init.graphviz_dot = p.AsBool();
+				else if (p.Key()=="history_len") Init.history_len = p.AsInt();
+				else if (p.Key()=="inherit_num") Init.inherit_num = p.AsInt();
+				//				else if (p.Key()=="forced_compiler_options") Init.forced_compiler_options = p.AsString();
+				//				else if (p.Key()=="forced_linker_options") Init.forced_linker_options = p.AsString();
+				else if (p.Key()=="proxy") Init.proxy = p.AsString();
+				else if (p.Key()=="language_file") Init.language_file = p.AsString();
+				else if (p.Key()=="max_errors") Init.max_errors = p.AsInt();
+				else if (p.Key()=="max_jobs") Init.max_jobs = p.AsInt();
+				else if (p.Key()=="wrap_mode") Init.wrap_mode = p.AsInt();
+				else if (p.Key()=="singleton") Init.singleton = p.AsBool();
+				else if (p.Key()=="stop_compiling_on_error") Init.stop_compiling_on_error = p.AsBool();
+				else if (p.Key()=="autohide_panels") Init.autohide_panels = p.AsBool();
+				else if (p.Key()=="use_cache_for_subcommands") Init.use_cache_for_subcommands = p.AsBool();
+				else if (p.Key()=="beautify_compiler_errors") Init.beautify_compiler_errors = p.AsBool();
+				else if (p.Key()=="fullpath_on_project_tree") Init.fullpath_on_project_tree = p.AsBool();
+				else if (p.Key()=="colour_theme") Init.colour_theme = p.AsString();
+				else if (p.Key()=="complements_timestamp") Init.complements_timestamp = p.AsString();
+#if defined(__APPLE__) && defined(__STC_ZASKAR)
+				else if (p.Key()=="mac_stc_zflags") Init.mac_stc_zflags = p.AsInt();
+#endif
+			}
+			
+		} else if (section=="Files") {
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				if (p.Key()=="toolchain") Files.toolchain = p.AsString();
+				else if (p.Key()=="debugger_command") Files.debugger_command = p.AsString();
+				else if (p.Key()=="terminal_command") Files.terminal_command = p.AsString();
+				else if (p.Key()=="explorer_command") Files.explorer_command = p.AsString();
+				else if (p.Key()=="c_template") Files.c_template = p.AsString();
+				else if (p.Key()=="cpp_template") Files.cpp_template = p.AsString();
+				else if (p.Key()=="default_template") Files.default_template = p.AsString();
+				else if (p.Key()=="default_project") Files.default_project = p.AsString();
+				else if (p.Key()=="autocodes_file") Files.autocodes_file = p.AsString();
+				else if (p.Key()=="skin_dir") Files.skin_dir = p.AsString();
+				else if (p.Key()=="temp_dir") Files.temp_dir = p.AsString();
+				else if (p.Key()=="img_viewer") Files.img_viewer = p.AsString();
+				else if (p.Key()=="xdot_command") Files.xdot_command = p.AsString();
+				//				else if (p.Key()=="graphviz_dir") Files.graphviz_dir = p.AsString();
+				else if (p.Key()=="browser_command") Files.browser_command = p.AsString();
+				else if (p.Key()=="cppcheck_command") Files.cppcheck_command = p.AsString();
+#ifndef __WIN32__
+				else if (p.Key()=="valgrind_command") Files.valgrind_command = p.AsString();
+#endif
+				else if (p.Key()=="doxygen_command") Files.doxygen_command = p.AsString();
+				else if (p.Key()=="wxfb_command") Files.wxfb_command = p.AsString();
+				else if (p.Key()=="project_folder") Files.project_folder = p.AsString();
+				else if (p.Key()=="last_project_dir") Files.last_project_dir = p.AsString();
+				else if (p.Key()=="last_dir") Files.last_dir = p.AsString();
+				else if (p.Key().StartsWith("last_file_")) {
+					last_files.Add(p.AsString());
+				} else if (p.Key().StartsWith("last_source_")) {
+					long l;
+					if (p.Key().Mid(12).ToLong(&l) && l>=0 && l<CM_HISTORY_MAX_LEN)
+						Files.last_source[l]=p.AsString();
+				} else if (p.Key().StartsWith("last_project_")	) {
+					long l;
+					if (p.Key().Mid(13).ToLong(&l) && l>=0 && l<CM_HISTORY_MAX_LEN)
+						Files.last_project[l]=p.AsString();
+				}
+			}
+			
+		} else if (section=="Columns") {
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				if (p.Key().StartsWith("inspections_grid_")	) {
+					long l;
+					if (p.Key().Mid(17).ToLong(&l) && l>=0 && l<IG_COLS_COUNT)
+						Cols.inspections_grid[l] = p.AsBool();
+				} else if (p.Key().StartsWith("backtrace_grid_")	) {
+					long l;
+					if (p.Key().Mid(15).ToLong(&l) && l>=0 && l<BG_COLS_COUNT)
+						Cols.backtrace_grid[l] = p.AsBool();
+				}
+//				} else if (p.Key().StartsWith("threadlist_grid_")	) {
+//					if (p.Key().Mid(15).ToLong(&l) && l>=0 && l<TG_COLS_COUNT)
+//						Cols.threadlist_grid[l] = p.AsBool();
+//				}
+			}
+			
+		} else if (section=="CustomTools") {
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				custom_tools.ParseConfigLine(p.Key(),p.AsString());
+			}
+			
+		} else if (section=="Toolbars") {
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				if (!s_delayed_config_lines) s_delayed_config_lines = new DelayedConfigLines;
+				s_delayed_config_lines->toolbars_keys.Add(p.Key());
+				s_delayed_config_lines->toolbars_values.Add(p.AsString());
+			}
+		}
+		
 	}
 	
 #ifdef __APPLE__
@@ -399,7 +414,6 @@ bool ConfigManager::Load() {
 	
 	if (Init.version<20140606 && Files.terminal_command=="xterm -T \"${TITLE}\" -e") Files.terminal_command="xterm -T \"${TITLE}\" -fa \"Liberation Mono\" -fs 12 -e";
 		
-	fil.Close();
 	if (last_files.GetCount()) {
 		int ps=0, pp=0;
 		for (unsigned int i=0;i<last_files.GetCount();i++) {

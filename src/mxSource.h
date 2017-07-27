@@ -267,6 +267,7 @@ public:
 	void SetModify(bool modif=true);
 	void MarkError(int line, bool focus=true);
 	void SelectError(int indic, int p1, int p2);
+	int GetStyleAt(int p) { return wxStyledTextCtrl::GetStyleAt(p)&(~wxSTC_INDICS_MASK); }
 	/**
 	* @brief uses markers and m_cem_ref to track changes since the compiler error was generated
 	* @param line   base 1 line number (should be used only for compiler generated errors)

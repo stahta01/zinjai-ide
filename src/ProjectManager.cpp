@@ -38,10 +38,12 @@
 #include "mxExternCompilerOutput.h"
 #include "asserts.h"
 #include "mxAUI.h"
+#include "IniFile.h"
 using namespace std;
 
 #define ICON_LINE(filename) (wxString("0 ICON \"")<<filename<<"\"")
 #define MANIFEST_LINE(filename) (wxString("1 RT_MANIFEST \"")<<filename<<"\"")
+#define UNKNOWN_FATHER "<unknown father>"
 
 ProjectManager *project = nullptr;
 extern char path_sep;
@@ -52,21 +54,60 @@ wxString doxygen_configuration::get_tag_index() {
 	else return "";
 }
 
-
-static void fix_path_char(wxChar file_path_char, wxString &value) {
+static wxString fix_path_char(wxChar file_path_char, wxString value) {
 #ifdef __WIN32__
-	#define real_path_char '\\'
+#	define real_path_char '\\'
 #else
-	#define real_path_char '/'
+#	define real_path_char '/'
 #endif
 	if (real_path_char!=file_path_char)
 		for (unsigned int i=0;i<value.Len();i++)
 			if (value[i]==file_path_char)
 				value[i]=real_path_char;
+	return value;
 }
+
+/// funcion auxiliar para leer datos de un proyecto desde el cual se heredan archivos
+static bool ReadProjectFilesList(const wxString &zpr_full_path, ProjectManager::FilesList &out_list, wxArrayString &recursive_inheritances) {
+	IniFileReader fil(zpr_full_path);
+	if (!fil.IsOk()) {
+		errors_manager->AddZinjaiError(false,LANG1(PROJECT_ERROR_OPENING_FATHER,"Error abriendo el proyecto \"<{1}>\" para heredar sus archivos.",zpr_full_path));
+		return false;
+	}
+	wxString project_path = wxFileName(zpr_full_path).GetPath();
+	wxChar file_path_char = _if_win32('\\','/');
+	for ( wxString section = fil.GetNextSection(); !section.IsEmpty(); section = fil.GetNextSection() ) {
+		
+		if (section=="general") {
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				if (p.Key()=="inherits_from") {
+					wxArrayString aux_array;
+					mxUT::Split(fix_path_char(file_path_char,p.AsString()),aux_array,true,false);
+					for(unsigned int i=0;i<aux_array.GetCount();i++)
+						recursive_inheritances.Add(DIR_PLUS_FILE(project_path,aux_array[i]));
+				} else if (p.Key()=="path_char") file_path_char = p.AsChar();
+			}
+		} else if (section=="source" || section=="header" || section=="other") {
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				if (p.Key()=="path") {
+					wxString filepath = DIR_PLUS_FILE(project_path,fix_path_char(file_path_char,p.AsString()));
+					if      (section=="source") out_list.sources.Add( new project_file_item(filepath,wxTreeItemId(),FT_SOURCE) );
+					else if (section=="header") out_list.headers.Add( new project_file_item(filepath,wxTreeItemId(),FT_HEADER) );
+					else if (section=="other")  out_list.others.Add ( new project_file_item(filepath,wxTreeItemId(),FT_OTHER ) );
+				}
+			}
+		}
+		
+	}
+	return true;
+}
+
 	
 // abrir un proyecto existente
 ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_TOOLS) {
+	
+	errors_manager->Reset(true);
+	
 	loading=true;
 	mxOSDGuard osd(main_window,wxString(LANG(OSD_LOADING_PROJECT_PRE,"Abriendo "))<<name.GetName()<<LANG(OSD_LOADING_PROJECT_POST,"..."));
 	
@@ -101,13 +142,6 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 	wxString current_source="";
 	configurations_count=0;
 	
-	// inicializar listas con el elemento ficticio begin
-	files_sources.Init(&files_all);
-	files_headers.Init(&files_all);
-	files_others.Init(&files_all);
-//	first_source = new project_file_item;
-//	first_other = new project_file_item;
-//	first_header = new project_file_item;
 	// inicializar el arbol de proyecto
 	main_window->project_tree.treeCtrl->DeleteChildren(main_window->project_tree.sources);
 	main_window->project_tree.treeCtrl->DeleteChildren(main_window->project_tree.headers);
@@ -119,191 +153,162 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 	path=name.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR);
 	last_dir=path;
 	default_fext_source="cpp"; default_fext_header="h";
-	wxTextFile fil(DIR_PLUS_FILE(path,filename));
 	executable_name=DIR_PLUS_FILE(path,name.GetName()+_T(BINARY_EXTENSION));
-	if (!fil.Exists()) return;
-	fil.Open();
-#ifdef __WIN32__
-	wxChar file_path_char='\\';
-#else
-	wxChar file_path_char='/';
-#endif
-	wxString section, key, value;
-	project_file_item *last_file = nullptr;
-	BreakPointInfo *last_breakpoint = nullptr;
-	long l;
-	compile_extra_step *extra_step=nullptr;
-	project_library *lib_to_build=nullptr;
-	for ( wxString str = fil.GetFirstLine(); !fil.Eof(); str = fil.GetNextLine() ) {
-		//wxYield();
-		if (str[0]=='#') {
-			continue;
-		} else if (str[0]=='[') {
-			last_file=nullptr;
-			section=str.AfterFirst('[').BeforeFirst(']');
-			if (section=="config") { // agregar una configuracion en blanco a la lista
-				active_configuration=configurations[configurations_count++]=new project_configuration(name.GetName(),"");
-				extra_step = nullptr;
-				lib_to_build = nullptr;
-			} else if (section=="lib_to_build") { // agregar una biblioteca a generar por el projecto
-				lib_to_build = new project_library;
-				active_configuration->libs_to_build.Add(lib_to_build);
-			} else if (section=="extra_step") { // agregar un paso de compilación adicional a la configuración actual del proyecto
-				extra_step = new compile_extra_step;
-				active_configuration->extra_steps.Add(extra_step);
-			} else if (section=="cppcheck" && !cppcheck) { 
-				GetCppCheckConfiguration(true);
-			} else if (section=="doxygen" && !doxygen) { 
-				GetDoxygenConfiguration();
-			} else if (section=="valgrind" && !doxygen) { 
-				GetValgrindConfiguration();
-			} else if (section=="wxfb" && !wxfb) { 
-				GetWxfbConfiguration(true);
-			} else if (section=="inspections") { 
-				if (first_inspection_grid) first_inspection_grid=false;
-				else inspections_grid = main_window->inspection_ctrl->AddGrid(false);
-			}
-		} else {
-			// separar clave y valor, y arreglar valor si es un path
-			key=str.BeforeFirst('=');
-			value=str.AfterFirst('=');
-			// interpretar clave y valor
-			if (section=="general") {
-				if (key=="files_to_open") {
-					mxUT::ToInt(value,files_to_open);
-					if(files_to_open>0) {
-						files_to_open++;
-						main_window->SetStatusProgress((100*num_files_opened)/files_to_open);
-					}
+	wxChar file_path_char = _if_win32('\\','/');
+	
+	IniFileReader fil(DIR_PLUS_FILE(path,filename));
+	if (!fil.IsOk()) return;
+	
+	for ( wxString section = fil.GetNextSection(); !section.IsEmpty(); section = fil.GetNextSection() ) {
+			
+		if (section=="general") {
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				if (p.Key()=="files_to_open") {
+					files_to_open = p.AsInt()+1; // +1 por el zpr?
+					main_window->SetStatusProgress((100*num_files_opened)/files_to_open);
 				}
-				else CFG_BOOL_READ_DN("project_template",project_template);
-				else CFG_GENERIC_READ_DN("active_configuration",conf_name);
-				else CFG_GENERIC_READ_DN("current_source",current_source);
-				else CFG_CHAR_READ_DN("path_char",file_path_char);
-				else CFG_GENERIC_READ_DN("project_name",project_name);
-				else CFG_GENERIC_READ_DN("autocodes_file",autocodes_file);
-				else CFG_GENERIC_READ_DN("macros_file",macros_file);
-				else CFG_GENERIC_READ_DN("default_fext_source",default_fext_source);
-				else CFG_GENERIC_READ_DN("default_fext_header",default_fext_header);
-				else CFG_GENERIC_READ_DN("autocomp_extra",autocomp_extra);
-				else CFG_INT_READ_DN("version_saved",version_saved);
-				else CFG_INT_READ_DN("version_required",version_required);
-				else CFG_INT_READ_DN("custom_tabs",custom_tabs); 
-				else CFG_BOOL_READ_DN("tab_use_spaces",tab_use_spaces);
-				else CFG_GENERIC_READ_DN("explorer_path",last_dir);
-				else CFG_BOOL_READ_DN("tab_use_spaces",tab_use_spaces);
+				else if (p.Key()=="project_template") project_template = p.AsBool();
+				else if (p.Key()=="active_configuration") conf_name = p.AsString();
+				else if (p.Key()=="current_source") current_source = p.AsString();
+				else if (p.Key()=="path_char") file_path_char = p.AsChar();
+				else if (p.Key()=="project_name") project_name = p.AsString();
+				else if (p.Key()=="autocodes_file") autocodes_file = p.AsString();
+				else if (p.Key()=="macros_file") macros_file = p.AsString();
+				else if (p.Key()=="default_fext_source") default_fext_source = p.AsString();
+				else if (p.Key()=="default_fext_header") default_fext_header = p.AsString();
+				else if (p.Key()=="autocomp_extra") autocomp_extra = p.AsString();
+				else if (p.Key()=="version_saved") version_saved = p.AsInt();
+				else if (p.Key()=="version_required") version_required = p.AsInt();
+				else if (p.Key()=="custom_tabs") custom_tabs = p.AsInt(); 
+				else if (p.Key()=="tab_use_spaces") tab_use_spaces = p.AsBool();
+				else if (p.Key()=="explorer_path") last_dir = p.AsString();
+				else if (p.Key()=="tab_use_spaces") tab_use_spaces = p.AsBool();
+				else if (p.Key()=="inherits_from") inherits_from = p.AsString();
+				else if (p.Key()=="inspection_improving_template") {
+					inspection_improving_template_from.Add(p.AsString().BeforeFirst('|'));
+					inspection_improving_template_to.Add(p.AsString().AfterFirst('|'));
+				}
 				// para compatibilidad hacia atrás con proyectos de zinjai viejos
-				else CFG_BOOL_READ_DN("use_wxfb",GetWxfbConfiguration()->activate_integration);
-				else CFG_BOOL_READ_DN("auto_wxfb",GetWxfbConfiguration()->autoupdate_projects);
-				else if (key=="inspection_improving_template") {
-					inspection_improving_template_from.Add(value.BeforeFirst('|'));
-					inspection_improving_template_to.Add(value.AfterFirst('|'));
-				}
-			} else if (section=="lib_to_build" && lib_to_build) {
-				CFG_GENERIC_READ_DN("path",lib_to_build->path);
-				else CFG_GENERIC_READ_DN("libname",lib_to_build->libname);
-				else CFG_GENERIC_READ_DN("sources",lib_to_build->sources);
-				else CFG_GENERIC_READ_DN("extra_link",lib_to_build->extra_link);
-				else CFG_BOOL_READ_DN("is_static",lib_to_build->is_static);
-				else CFG_BOOL_READ_DN("default_lib",lib_to_build->default_lib);
-				else CFG_BOOL_READ_DN("do_link",lib_to_build->do_link);
-			} else if (section=="extra_step" && extra_step) {
-				CFG_GENERIC_READ_DN("name",extra_step->name);
-				else CFG_GENERIC_READ_DN("output",extra_step->out);
-				else CFG_GENERIC_READ_DN("deps",extra_step->deps);
-				else CFG_GENERIC_READ_DN("command",extra_step->command);
-				else CFG_BOOL_READ_DN("check_retval",extra_step->check_retval);
-				else CFG_BOOL_READ_DN("hide_win",extra_step->hide_window);
-				else CFG_BOOL_READ_DN("delete_on_clean",extra_step->delete_on_clean);
-				else CFG_BOOL_READ_DN("link_output",extra_step->link_output);
-				else if (key=="position") {
-					if (value=="before_sources")
+				else if (p.Key()=="use_wxfb") GetWxfbConfiguration()->activate_integration = p.AsBool();
+				else if (p.Key()=="auto_wxfb") GetWxfbConfiguration()->autoupdate_projects = p.AsBool();
+			}
+			
+		} else if (section=="lib_to_build") { // agregar una biblioteca a generar por el projecto
+			project_library *lib_to_build = new project_library;
+			active_configuration->libs_to_build.Add(lib_to_build);
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				if (p.Key()=="path") lib_to_build->path = p.AsString();
+				else if (p.Key()=="libname") lib_to_build->libname = p.AsString();
+				else if (p.Key()=="sources") lib_to_build->sources = p.AsString();
+				else if (p.Key()=="extra_link") lib_to_build->extra_link = p.AsString();
+				else if (p.Key()=="is_static") lib_to_build->is_static = p.AsBool();
+				else if (p.Key()=="default_lib") lib_to_build->default_lib = p.AsBool();
+				else if (p.Key()=="do_link") lib_to_build->do_link = p.AsBool();
+			}
+			
+		} else if (section=="extra_step") { // agregar un paso de compilación adicional a la configuración actual del proyecto
+			compile_extra_step *extra_step = new compile_extra_step;;
+			active_configuration->extra_steps.Add(extra_step);
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				if (p.Key()=="name") extra_step->name = p.AsString();
+				else if (p.Key()=="output") extra_step->out = p.AsString();
+				else if (p.Key()=="deps") extra_step->deps = p.AsString();
+				else if (p.Key()=="command") extra_step->command = p.AsString();
+				else if (p.Key()=="check_retval") extra_step->check_retval = p.AsBool();
+				else if (p.Key()=="hide_win") extra_step->hide_window = p.AsBool();
+				else if (p.Key()=="delete_on_clean") extra_step->delete_on_clean = p.AsBool();
+				else if (p.Key()=="link_output") extra_step->link_output = p.AsBool();
+				else if (p.Key()=="position") {
+					if (p.AsString()=="before_sources")
 						extra_step->pos=CES_BEFORE_SOURCES;
-					else if (value=="before_executable" || value=="before_linking")
+					else if (p.AsString()=="before_executable" || p.AsString()=="before_linking")
 						extra_step->pos=CES_BEFORE_EXECUTABLE;
-					else if (value=="before_libs")
+					else if (p.AsString()=="before_libs")
 						extra_step->pos=CES_BEFORE_LIBS;
-					else if (value=="after_linking")
+					else if (p.AsString()=="after_linking")
 						extra_step->pos=CES_AFTER_LINKING;
-				} 
-			} else if (section=="config") {
-				if (key.StartsWith("toolchain_argument_")) {
-					long l=-1; key.Mid(19).ToLong(&l);
-					if (l>=0&&l<TOOLCHAIN_MAX_ARGS) 
-						active_configuration->toolchain_arguments[l]=value;
 				}
-				else CFG_GENERIC_READ_DN("name",active_configuration->name);
-				else CFG_GENERIC_READ_DN("toolchain",active_configuration->toolchain);
-				else CFG_GENERIC_READ_DN("working_folder",active_configuration->working_folder);
-				else CFG_BOOL_READ_DN("always_ask_args",active_configuration->always_ask_args);
-				else CFG_GENERIC_READ_DN("args",active_configuration->args);
-				else CFG_INT_READ_DN("exec_method",active_configuration->exec_method);
-				else CFG_GENERIC_READ_DN("exec_script",active_configuration->exec_script);
-				else CFG_GENERIC_READ_DN("env_vars",active_configuration->env_vars);
-				else CFG_INT_READ_DN("wait_for_key",active_configuration->wait_for_key);
-				else CFG_GENERIC_READ_DN("temp_folder",active_configuration->temp_folder);
-				else CFG_GENERIC_READ_DN("output_file",active_configuration->output_file);
-				else CFG_GENERIC_READ_DN("manifest_file",active_configuration->manifest_file);
-				else CFG_GENERIC_READ_DN("icon_file",active_configuration->icon_file);
-				else CFG_GENERIC_READ_DN("macros",active_configuration->macros);
-				else CFG_GENERIC_READ_DN("compiling_extra",active_configuration->compiling_extra);
-				else CFG_GENERIC_READ_DN("headers_dirs",active_configuration->headers_dirs);
-				else CFG_INT_READ_DN("warnings_level",active_configuration->warnings_level);
-				else CFG_BOOL_READ_DN("warnings_as_errors",active_configuration->warnings_as_errors);
-				else CFG_BOOL_READ_DN("pedantic_errors",active_configuration->pedantic_errors);
-				else CFG_GENERIC_READ_DN("std_c",active_configuration->std_c);
-				else CFG_GENERIC_READ_DN("std_cpp",active_configuration->std_cpp);
-				else CFG_INT_READ_DN("debug_level",active_configuration->debug_level);
-				else CFG_INT_READ_DN("optimization_level",active_configuration->optimization_level);
-				else CFG_BOOL_READ_DN("enable_lto",active_configuration->enable_lto);
-				else CFG_GENERIC_READ_DN("linking_extra",active_configuration->linking_extra);
-				else CFG_GENERIC_READ_DN("libraries_dirs",active_configuration->libraries_dirs);
-				else CFG_GENERIC_READ_DN("libraries",active_configuration->libraries);
-				else CFG_INT_READ_DN("strip_executable",active_configuration->strip_executable);
-				else CFG_BOOL_READ_DN("console_program",active_configuration->console_program);
-				else CFG_BOOL_READ_DN("dont_generate_exe",active_configuration->dont_generate_exe);
-				else if (key=="by_src_comp_args") {
-					wxString full = mxUT::Line2Text(value);
+			}
+			
+		} else if (section=="config") {
+			active_configuration=configurations[configurations_count++] = new project_configuration(name.GetName(),"");
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				if (p.Key().StartsWith("toolchain_argument_")) {
+					long l=-1; p.Key().Mid(19).ToLong(&l);
+					if (l>=0&&l<TOOLCHAIN_MAX_ARGS) 
+						active_configuration->toolchain_arguments[l]=p.AsString();
+				}
+				else if (p.Key()=="name") active_configuration->name = p.AsString();
+				else if (p.Key()=="toolchain") active_configuration->toolchain = p.AsString();
+				else if (p.Key()=="working_folder") active_configuration->working_folder = p.AsString();
+				else if (p.Key()=="always_ask_args") active_configuration->always_ask_args = p.AsBool();
+				else if (p.Key()=="args") active_configuration->args = p.AsString();
+				else if (p.Key()=="exec_method") active_configuration->exec_method = p.AsInt();
+				else if (p.Key()=="exec_script") active_configuration->exec_script = p.AsString();
+				else if (p.Key()=="env_vars") active_configuration->env_vars = p.AsString();
+				else if (p.Key()=="wait_for_key") active_configuration->wait_for_key = p.AsInt();
+				else if (p.Key()=="temp_folder") active_configuration->temp_folder = p.AsString();
+				else if (p.Key()=="output_file") active_configuration->output_file = p.AsString();
+				else if (p.Key()=="manifest_file") active_configuration->manifest_file = p.AsString();
+				else if (p.Key()=="icon_file") active_configuration->icon_file = p.AsString();
+				else if (p.Key()=="macros") active_configuration->macros = p.AsString();
+				else if (p.Key()=="compiling_extra") active_configuration->compiling_extra = p.AsString();
+				else if (p.Key()=="headers_dirs") active_configuration->headers_dirs = p.AsString();
+				else if (p.Key()=="warnings_level") active_configuration->warnings_level = p.AsInt();
+				else if (p.Key()=="warnings_as_errors") active_configuration->warnings_as_errors = p.AsBool();
+				else if (p.Key()=="pedantic_errors") active_configuration->pedantic_errors = p.AsBool();
+				else if (p.Key()=="std_c") active_configuration->std_c = p.AsString();
+				else if (p.Key()=="std_cpp") active_configuration->std_cpp = p.AsString();
+				else if (p.Key()=="debug_level") active_configuration->debug_level = p.AsInt();
+				else if (p.Key()=="optimization_level") active_configuration->optimization_level = p.AsInt();
+				else if (p.Key()=="enable_lto") active_configuration->enable_lto = p.AsBool();
+				else if (p.Key()=="linking_extra") active_configuration->linking_extra = p.AsString();
+				else if (p.Key()=="libraries_dirs") active_configuration->libraries_dirs = p.AsString();
+				else if (p.Key()=="libraries") active_configuration->libraries = p.AsString();
+				else if (p.Key()=="strip_executable") active_configuration->strip_executable = p.AsInt();
+				else if (p.Key()=="console_program") active_configuration->console_program = p.AsBool();
+				else if (p.Key()=="dont_generate_exe") active_configuration->dont_generate_exe = p.AsBool();
+				else if (p.Key()=="by_src_comp_args") {
+					wxString full = mxUT::Line2Text(p.AsString());
 					(*(active_configuration->by_src_compiling_options))[full.BeforeFirst('\n')]=full.AfterFirst('\n');
 				}
-
-			} else if ( section=="source" || section=="header" || section=="other" ) {
-				if (key=="path") {
-					fix_path_char(file_path_char,value);
+			}
+			
+		} else if ( section=="source" || section=="header" || section=="other" ) {
+			project_file_item *last_file = nullptr;
+			BreakPointInfo *last_breakpoint = nullptr;
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				if (p.Key()=="path") {
+					wxString filepath = fix_path_char(file_path_char,p.AsString());
 					if (section=="source")
-						last_file = AddFile(FT_SOURCE,value,false);
+						last_file = AddFile(FT_SOURCE,filepath,false);
 					else if (section=="header")
-						last_file = AddFile(FT_HEADER,value,false);
+						last_file = AddFile(FT_HEADER,filepath,false);
 					else if (section=="other")
-						last_file = AddFile(FT_OTHER,value,false);
-				} else if (key=="cursor") {
-					if (last_file) 
-						last_file->extras.SetCurrentPos(value);
-				} else if (key=="readonly") {
-					if (last_file) last_file->read_only=mxUT::IsTrue(value);
-				} else if (key=="hide_symbols") {
-					if (last_file) last_file->hide_symbols=mxUT::IsTrue(value);
-				} else if (key=="marker") {
-					value.ToLong(&l);
-					if (last_file)
-						last_file->extras.AddHighlightedLine(l);
-				} else if (key=="breakpoint") {
-					value.ToLong(&l);
-					if (last_file && l>0) {
-						last_breakpoint=new BreakPointInfo(last_file,l);
-					} else last_breakpoint=nullptr;
-				} else if (key=="breakpoint_ignore") {
-					value.ToLong(&l);
-					if (last_breakpoint) last_breakpoint->ignore_count=l;
-				} else if (key=="breakpoint_only_once"||key=="breakpoint_action") {
-					value.ToLong(&l); if (last_breakpoint) last_breakpoint->action=l;
-				} else if (key=="enabled") {
-					if (last_breakpoint) last_breakpoint->enabled=mxUT::IsTrue(value);
-				} else if (key=="breakpoint_condition") {
-					if (last_breakpoint) last_breakpoint->cond=value;
-				} else if (key=="breakpoint_annotation") {
-					if (last_breakpoint) last_breakpoint->annotation=mxUT::Line2Text(value);
-				} else if (key=="open" && mxUT::IsTrue(value)) {
+						last_file = AddFile(FT_OTHER,filepath,false);
+				} else if (p.Key()=="cursor") {
+					if (last_file) last_file->extras.SetCurrentPos(p.AsString());
+				} else if (p.Key()=="readonly") {
+					if (last_file) last_file->read_only = p.AsBool();
+				} else if (p.Key()=="inherited") {
+					if (last_file && p.AsBool()) last_file->inherited_from = UNKNOWN_FATHER;
+				} else if (p.Key()=="hide_symbols") {
+					if (last_file) last_file->hide_symbols = p.AsBool();
+				} else if (p.Key()=="marker") {
+					if (last_file) last_file->extras.AddHighlightedLine(p.AsInt());
+				} else if (p.Key()=="breakpoint") {
+					if (last_file) last_breakpoint = new BreakPointInfo(last_file,p.AsInt());
+				} else if (p.Key()=="breakpoint_ignore") {
+					if (last_breakpoint) last_breakpoint->ignore_count = p.AsInt();
+				} else if (p.Key()=="breakpoint_only_once"||p.Key()=="breakpoint_action") {
+					if (last_breakpoint) last_breakpoint->action = p.AsInt();
+				} else if (p.Key()=="enabled") {
+					if (last_breakpoint) last_breakpoint->enabled = p.AsBool();
+				} else if (p.Key()=="breakpoint_condition") {
+					if (last_breakpoint) last_breakpoint->cond = p.AsString();
+				} else if (p.Key()=="breakpoint_annotation") {
+					if (last_breakpoint) last_breakpoint->annotation = p.AsMultiLineText();
+				} else if (p.Key()=="open" && p.AsBool()) {
 					if (files_to_open>0)
 						main_window->SetStatusProgress((100*(++num_files_opened))/files_to_open);
 					if (last_file) {
@@ -311,62 +316,112 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 //						if (src && src!=EXTERNAL_SOURCE) src->MoveCursorTo(last_file->extras.GetCurrentPos(),true);
 					}
 				}
-			} else if (section=="wxfb") {
-				CFG_BOOL_READ_DN("autoupdate_projects",wxfb->autoupdate_projects);
-				else CFG_BOOL_READ_DN("update_class_list",wxfb->update_class_list);
-				else CFG_BOOL_READ_DN("update_methods",wxfb->update_methods);
-				else CFG_BOOL_READ_DN("dont_show_base_classes_in_goto",wxfb->dont_show_base_classes_in_goto);
-				else CFG_BOOL_READ_DN("set_wxfb_sources_as_readonly",wxfb->set_wxfb_sources_as_readonly);
-			} else if (section=="valgrind") {
-				CFG_GENERIC_READ_DN("arguments",valgrind->arguments);
-				else CFG_GENERIC_READ_DN("suppressions",valgrind->suppressions);
-			} else if (section=="doxygen") {
-				CFG_GENERIC_READ_DN("name",doxygen->name);
-				else CFG_GENERIC_READ_DN("version",doxygen->version);
-				else CFG_GENERIC_READ_DN("destdir",doxygen->destdir);
-				else CFG_GENERIC_READ_DN("extra_files",doxygen->extra_files);
-				else CFG_TEXT_READ_DN("extra_conf",doxygen->extra_conf);
-				else CFG_GENERIC_READ_DN("base_path",doxygen->base_path);
-				else CFG_GENERIC_READ_DN("exclude_files",doxygen->exclude_files);
-				else CFG_GENERIC_READ_DN("lang",doxygen->lang);
-				else CFG_BOOL_READ_DN("do_headers",doxygen->do_headers);
-				else CFG_BOOL_READ_DN("do_cpps",doxygen->do_cpps);
-				else CFG_BOOL_READ_DN("hideundocs",doxygen->hideundocs);
-				else CFG_BOOL_READ_DN("latex",doxygen->latex);
-				else CFG_BOOL_READ_DN("html",doxygen->html);
-				else CFG_BOOL_READ_DN("html_searchengine",doxygen->html_searchengine);
-				else CFG_BOOL_READ_DN("html_navtree",doxygen->html_navtree);
-				else CFG_BOOL_READ_DN("use_in_quickhelp",doxygen->use_in_quickhelp);
-				else CFG_BOOL_READ_DN("preprocess",doxygen->preprocess);
-				else CFG_BOOL_READ_DN("extra_static",doxygen->extra_static);
-				else CFG_BOOL_READ_DN("extra_private",doxygen->extra_private);
-			} else if (section=="cppcheck") {
-				CFG_BOOL_READ_DN("copy_from_config",cppcheck->copy_from_config);
-				else CFG_BOOL_READ_DN("exclude_headers",cppcheck->exclude_headers);
-				else CFG_GENERIC_READ_DN("config_d",cppcheck->config_d);
-				else CFG_GENERIC_READ_DN("config_u",cppcheck->config_u);
-				else CFG_GENERIC_READ_DN("style",cppcheck->style);
-				else CFG_GENERIC_READ_DN("platform",cppcheck->platform);
-				else CFG_GENERIC_READ_DN("standard",cppcheck->standard);
-				else CFG_GENERIC_READ_DN("suppress_file",cppcheck->suppress_file);
-				else CFG_GENERIC_READ_DN("suppress_ids",cppcheck->suppress_ids);
-				else CFG_GENERIC_READ_DN("additional_files",cppcheck->additional_files);
-				else CFG_GENERIC_READ_DN("exclude_list",cppcheck->exclude_list);
-				else CFG_BOOL_READ_DN("inline_suppr",cppcheck->inline_suppr);
-			} else if (section=="inspections") {
-				if (key=="expr") inspections_grid->ModifyExpression(-1,value,true,true);
-			} else if (section=="custom_tools") {
-				custom_tools.ParseConfigLine(key,value);
+			}
+			
+		} else if (section=="wxfb") {
+			GetWxfbConfiguration(true);
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				if (p.Key()=="autoupdate_projects") wxfb->autoupdate_projects = p.AsBool();
+				else if (p.Key()=="update_class_list") wxfb->update_class_list = p.AsBool();
+				else if (p.Key()=="update_methods") wxfb->update_methods = p.AsBool();
+				else if (p.Key()=="dont_show_base_classes_in_goto") wxfb->dont_show_base_classes_in_goto = p.AsBool();
+				else if (p.Key()=="set_wxfb_sources_as_readonly") wxfb->set_wxfb_sources_as_readonly = p.AsBool();
+			}
+			
+		} else if (section=="valgrind") {
+			GetValgrindConfiguration();
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				if (p.Key()=="arguments") valgrind->arguments = p.AsString();
+				else if (p.Key()=="suppressions") valgrind->suppressions = p.AsString();
+			}
+			
+		} else if (section=="doxygen") {
+			GetDoxygenConfiguration();
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				if (p.Key()=="name") doxygen->name = p.AsString();
+				else if (p.Key()=="version") doxygen->version = p.AsString();
+				else if (p.Key()=="destdir") doxygen->destdir = p.AsString();
+				else if (p.Key()=="extra_files") doxygen->extra_files = p.AsString();
+				else if (p.Key()=="extra_conf") doxygen->extra_conf = p.AsMultiLineText();
+				else if (p.Key()=="base_path") doxygen->base_path = p.AsString();
+				else if (p.Key()=="exclude_files") doxygen->exclude_files = p.AsString();
+				else if (p.Key()=="lang") doxygen->lang = p.AsString();
+				else if (p.Key()=="do_headers") doxygen->do_headers = p.AsBool();
+				else if (p.Key()=="do_cpps") doxygen->do_cpps = p.AsBool();
+				else if (p.Key()=="hideundocs") doxygen->hideundocs = p.AsBool();
+				else if (p.Key()=="latex") doxygen->latex = p.AsBool();
+				else if (p.Key()=="html") doxygen->html = p.AsBool();
+				else if (p.Key()=="html_searchengine") doxygen->html_searchengine = p.AsBool();
+				else if (p.Key()=="html_navtree") doxygen->html_navtree = p.AsBool();
+				else if (p.Key()=="use_in_quickhelp") doxygen->use_in_quickhelp = p.AsBool();
+				else if (p.Key()=="preprocess") doxygen->preprocess = p.AsBool();
+				else if (p.Key()=="extra_static") doxygen->extra_static = p.AsBool();
+				else if (p.Key()=="extra_private") doxygen->extra_private = p.AsBool();
+			}
+			
+		} else if (section=="cppcheck") {
+			GetCppCheckConfiguration(true);
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				if (p.Key()=="copy_from_config") cppcheck->copy_from_config = p.AsBool();
+				else if (p.Key()=="exclude_headers") cppcheck->exclude_headers = p.AsBool();
+				else if (p.Key()=="config_d") cppcheck->config_d = p.AsString();
+				else if (p.Key()=="config_u") cppcheck->config_u = p.AsString();
+				else if (p.Key()=="style") cppcheck->style = p.AsString();
+				else if (p.Key()=="platform") cppcheck->platform = p.AsString();
+				else if (p.Key()=="standard") cppcheck->standard = p.AsString();
+				else if (p.Key()=="suppress_file") cppcheck->suppress_file = p.AsString();
+				else if (p.Key()=="suppress_ids") cppcheck->suppress_ids = p.AsString();
+				else if (p.Key()=="additional_files") cppcheck->additional_files = p.AsString();
+				else if (p.Key()=="exclude_list") cppcheck->exclude_list = p.AsString();
+				else if (p.Key()=="inline_suppr") cppcheck->inline_suppr = p.AsBool();
+			}
+			
+		} else if (section=="inspections") {
+			if (first_inspection_grid) first_inspection_grid=false;
+			else inspections_grid = main_window->inspection_ctrl->AddGrid(false);
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				if (p.Key()=="expr") inspections_grid->ModifyExpression(-1,p.AsString(),true,true);
+			}
+			
+		} else if (section=="custom_tools") {
+			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
+				custom_tools.ParseConfigLine(p.Key(),p.AsString());
+			}
+			
+		}
+	}
+		
+	// completar los archivos heredados
+	inherits_from = fix_path_char(file_path_char,inherits_from);
+	wxArrayString project_inheritances; 
+	mxUT::Split(inherits_from,project_inheritances,true,false);
+	for(unsigned int i=0;i<project_inheritances.GetCount();i++) {
+		project_inheritances[i] = DIR_PLUS_FILE(path,project_inheritances[i]);
+	}
+	for(unsigned int i=0;i<project_inheritances.GetCount();i++) {  
+		FilesList flist; 
+		wxString zpr_full_path = project_inheritances[i];
+		wxString zpr_relative_path = mxUT::Relativize(zpr_full_path,path);
+		if (ReadProjectFilesList(zpr_full_path,flist,project_inheritances)) {
+			for (GlobalListIterator<project_file_item*> it(&flist.all); it.IsValid(); it.Next()) {
+				project_file_item *item = FindFromFullPath(it->name);
+				if (!item) item = AddFile(it->where,it->name,false);
+				item->inherited_from = zpr_relative_path;
 			}
 		}
 	}
-	fil.Close();
-	modified=false;
-	force_relink=false;
-
+	// limpiar los que estaban en este zpr como heredados pero desaparecieron de los padres
+	for (GlobalListIterator<project_file_item*> it(&files.all); it.IsValid(); it.Next()) 
+		if (it->inherited_from==UNKNOWN_FATHER) 
+			DeleteFile(*it,false);
+	// y ordenar los arboles en la gui
 	main_window->project_tree.treeCtrl->SortChildren(main_window->project_tree.sources);
 	main_window->project_tree.treeCtrl->SortChildren(main_window->project_tree.others);
 	main_window->project_tree.treeCtrl->SortChildren(main_window->project_tree.headers);
+	
+	modified=false;
+	force_relink=false;
+
 	
 	last_dir=DIR_PLUS_FILE(path,last_dir);
 	wxFileName explorer_fname(last_dir);
@@ -478,8 +533,7 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 	
 	// configurar interface de la ventana principal para modo proyecto
 	if (current_source!="") {
-		fix_path_char(file_path_char,current_source);
-		main_window->OpenFile(DIR_PLUS_FILE(path,current_source),false);
+		main_window->OpenFile(DIR_PLUS_FILE(path,fix_path_char(file_path_char,current_source)),false);
 	}
 	
 	main_window->notebook_sources->Thaw();
@@ -568,6 +622,8 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 	}
 #endif
 	
+	errors_manager->CompilationFinished();
+	
 }
 
 // liberar memoria al destruir el proyecto
@@ -580,13 +636,10 @@ ProjectManager::~ProjectManager() {
 	main_window->PrepareGuiForProject(false);
 
 	// vaciar las listas
-	GlobalListIterator<project_file_item*> it(&files_all);
-	while (it.IsValid()) {
+	for (GlobalListIterator<project_file_item*> it(&files.all); it.IsValid(); it.Next()) {
 		// si el fuente queda abierto al cerrar el proyecto, pasarle la propiedad del SourceExtras
 		mxSource *source = main_window->IsOpen(it->item);
 		if (source) new SourceExtras(source,true);
-		delete *it;
-		it.Next();
 	}
 	
 	// limipiar las configuraciones
@@ -618,11 +671,11 @@ project_file_item *ProjectManager::AddFile (eFileType where, wxFileName filename
 	
 	// check if the file already exists somewhere in the project, if not create it (also updates main_window->project_tree)
 	project_file_item *fitem=nullptr;
-	GlobalListIterator<project_file_item*> git(&files_all);
+	GlobalListIterator<project_file_item*> git(&files.all);
 	while (git.IsValid()) { 
 		if (git->name==name) {
 			if (git->where==where) return *git;
-			fitem=*git; files_all.Remove(git);
+			fitem=*git; files.all.Remove(git);
 			main_window->project_tree.treeCtrl->Delete(fitem->item);
 			break;
 		}
@@ -638,13 +691,13 @@ project_file_item *ProjectManager::AddFile (eFileType where, wxFileName filename
 				project_library *lib = project->GetDefaultLib(configurations[i]);
 				if (lib) lib->sources<<" "<<mxUT::Quotize(name);
 			}
-			files_sources.Add(fitem);
+			files.sources.Add(fitem);
 			break;
 		case FT_HEADER:
-			files_headers.Add(fitem);
+			files.headers.Add(fitem);
 			break;
 		default:
-			files_others.Add(fitem);
+			files.others.Add(fitem);
 			if (wxfb && fitem->name.Right(4).Lower()==".fbp") WxfbGetFiles();
 			break;
 	};
@@ -711,6 +764,8 @@ bool ProjectManager::Save (bool as_template) {
 	for(unsigned int i=0;i<inspection_improving_template_from.GetCount();i++)
 		CFG_GENERIC_WRITE_DN("inspection_improving_template",inspection_improving_template_from[i]+"|"+inspection_improving_template_to[i]);
 	
+	CFG_GENERIC_WRITE_DN("inherits_from",inherits_from);
+	
 	if (main_window->notebook_sources->GetPageCount()>0) {
 		mxSource *source=(mxSource*)(main_window->notebook_sources->GetPage(main_window->notebook_sources->GetSelection()));
 		if (!source->sin_titulo) {
@@ -728,11 +783,12 @@ bool ProjectManager::Save (bool as_template) {
 	wxString section;
 	for(int i=0;i<3;i++) { 
 		section=i==0?"[source]":(i==1?"[header]":"[other]");
-		LocalListIterator<project_file_item*> item(i==0?&files_sources:(i==1?&files_headers:&files_others));
+		LocalListIterator<project_file_item*> item(i==0?&files.sources:(i==1?&files.headers:&files.others));
 		while (item.IsValid()) {
 			fil.AddLine(section);
 			CFG_GENERIC_WRITE_DN("path",item->name);
 			if (item->read_only) CFG_GENERIC_WRITE_DN("readonly",1);
+			if (!item->inherited_from.IsEmpty()) CFG_GENERIC_WRITE_DN("inherited",1);
 			if (item->hide_symbols) CFG_GENERIC_WRITE_DN("hide_symbols",1);
 			source=main_window->IsOpen(DIR_PLUS_FILE(path,item->name));
 			if (source) source->UpdateExtras();
@@ -922,8 +978,8 @@ wxString ProjectManager::GetFileName() {
 	return filename.Mid(0,filename.Len()-4);
 }
 
-project_file_item *ProjectManager::FindFromItem(wxTreeItemId &tree_item) {
-	GlobalListIterator<project_file_item*> it(&files_all);
+project_file_item *ProjectManager::FilesList::FindFromItem(wxTreeItemId &tree_item) {
+	GlobalListIterator<project_file_item*> it(&all);
 	while (it.IsValid()) {
 		if (it->item==tree_item) return *it;
 		it.Next();
@@ -932,7 +988,7 @@ project_file_item *ProjectManager::FindFromItem(wxTreeItemId &tree_item) {
 }
 
 project_file_item *ProjectManager::FindFromName(wxString name) {
-	GlobalListIterator<project_file_item*> it(&files_all);
+	GlobalListIterator<project_file_item*> it(&files.all);
 	while (it.IsValid()) {
 		if (wxFileName(it->name).GetFullName()==name || DIR_PLUS_FILE(path,it->name)==name)
 			return *it;
@@ -941,10 +997,13 @@ project_file_item *ProjectManager::FindFromName(wxString name) {
 	return nullptr;
 }
 
-project_file_item *ProjectManager::FindFromFullPath(wxString name) {
-	GlobalListIterator<project_file_item*> it(&files_all);
+/**
+* @return puntero al project_file_item del archivo si lo encuenctra, nullptr si no lo encuentra
+**/
+project_file_item *ProjectManager::FindFromFullPath(wxFileName file) {
+	GlobalListIterator<project_file_item*> it(&files.all);
 	while (it.IsValid()) {
-		if (DIR_PLUS_FILE(path,it->name)==name)
+		if (wxFileName(DIR_PLUS_FILE(path,it->name))==file)
 			return *it;
 		it.Next();
 	}
@@ -952,7 +1011,7 @@ project_file_item *ProjectManager::FindFromFullPath(wxString name) {
 }
 
 wxString ProjectManager::GetNameFromItem(wxTreeItemId &tree_item, bool relative) {
-	project_file_item *item=FindFromItem(tree_item);
+	project_file_item *item=files.FindFromItem(tree_item);
 	if (item)
 		if (relative) 
 			return item->name;
@@ -962,29 +1021,18 @@ wxString ProjectManager::GetNameFromItem(wxTreeItemId &tree_item, bool relative)
 		return "";
 }
 
-/**
-* @return puntero al project_file_item del archivo si lo encuenctra, nullptr si no lo encuentra
-**/
-project_file_item *ProjectManager::HasFile(wxFileName file) {
-	GlobalListIterator<project_file_item*> it(&files_all);
-	while (it.IsValid()) {
-		if (wxFileName(DIR_PLUS_FILE(path,it->name))==file)
-			return *it;
-		it.Next();
-	}
-	return nullptr;
-}
+
 
 
 bool ProjectManager::RenameFile(wxTreeItemId &tree_item, wxString new_name) {
-	project_file_item *item = FindFromItem(tree_item);
+	project_file_item *item = files.FindFromItem(tree_item);
 	if (item) {
 		wxFileName fname=new_name;
 		fname.MakeRelativeTo(path);
 		new_name=fname.GetFullPath();
 		wxString src = DIR_PLUS_FILE(path,item->name);
 		wxString dst = DIR_PLUS_FILE(path,new_name);
-		if ( !HasFile(new_name) && !wxFileName::DirExists(dst) && 
+		if ( !FindFromFullPath(new_name) && !wxFileName::DirExists(dst) && 
 			(!wxFileName::FileExists(dst) || 
 				mxMessageDialog(main_window,LANG(PROJMNGR_CONFIRM_REPLACE,""
 												 "Ya existe un archivo con ese nombre. Desea Reemplazarlo?"))
@@ -1016,22 +1064,22 @@ bool ProjectManager::RenameFile(wxTreeItemId &tree_item, wxString new_name) {
 void ProjectManager::MoveFile(wxTreeItemId &tree_item, eFileType where) {
 	modified=true;
 	// eliminar el item de la lista
-	project_file_item *item=FindFromItem(tree_item);
+	project_file_item *item = files.FindFromItem(tree_item);
 	if (!item) return; /// shouldn't happen
-	files_all.FindAndRemove(item);
+	files.all.FindAndRemove(item);
 	// eliminar del arbol	
 	main_window->project_tree.treeCtrl->Delete(item->item);
 	item->item = main_window->AddToProjectTreeProject(item->name,where);
 	// elegir la lista adecuada y agregarlo al arbol de proyecto
 	switch (where) {
 		case FT_SOURCE:
-			files_sources.Add(item);
+			files.sources.Add(item);
 			break;
 		case FT_HEADER:
-			files_headers.Add(item);
+			files.headers.Add(item);
 			break;
 		default:
-			files_others.Add(item);
+			files.others.Add(item);
 			break;
 	};
 	// if it was moved to source or hedear, parse it (could came from others), else remove its data from parser
@@ -1064,7 +1112,7 @@ void ProjectManager::DeleteFile(project_file_item *item, bool also_delete_from_d
 	// quitar el archivo del arbol de proyecto
 	main_window->project_tree.treeCtrl->Delete(item->item);
 	// eliminar el item de la lista
-	files_all.FindAndRemove(item);
+	files.all.FindAndRemove(item);
 	if (wxfb && wxfb->projects.Contains(fullpath)) WxfbGetFiles();
 	delete item;
 }
@@ -1073,7 +1121,7 @@ bool ProjectManager::DeleteFile(wxTreeItemId tree_item) {
 	bool also=false;
 	modified=true;
 	while (true) {
-		project_file_item *item=FindFromItem(tree_item);
+		project_file_item *item = files.FindFromItem(tree_item);
 		if (!item) return also;
 		mxSource *src = main_window->IsOpen(tree_item);
 		if (src) new SourceExtras(src); // "tranfers ownership" of extras to the mxSource
@@ -1089,8 +1137,8 @@ bool ProjectManager::DeleteFile(wxTreeItemId tree_item) {
 		if (ans.cancel || ans.no) return false;
 		wxString comp = mxUT::GetComplementaryFile(DIR_PLUS_FILE(project->path,item->name));
 		DeleteFile(item,ans.check1);
-		if (comp.Len()==0 || !HasFile(comp)) return true;
-		tree_item=HasFile(comp)->item; also=true;
+		if (comp.Len()==0 || !FindFromFullPath(comp)) return true;
+		tree_item=FindFromFullPath(comp)->item; also=true;
 	}
 }
 
@@ -1177,7 +1225,7 @@ bool ProjectManager::PrepareForBuilding(project_file_item *only_one) {
 				steps_count++;
 				step = step->next = new compile_step(CNS_EXTRA,extra_step);
 				if (extra_step->out.Len()) {
-					project_file_item *fitem = project->HasFile(DIR_PLUS_FILE(path,extra_step->out));
+					project_file_item *fitem = project->FindFromFullPath(DIR_PLUS_FILE(path,extra_step->out));
 					if (fitem) fitem->force_recompile=true;
 					if (extra_step->link_output) force_relink=true;
 				}
@@ -1202,7 +1250,7 @@ bool ProjectManager::PrepareForBuilding(project_file_item *only_one) {
 		for (unsigned int i=0;i<dif_mac.GetCount();i++)
 			if (dif_mac[i].Contains('='))
 				dif_mac[i]=dif_mac[i].BeforeFirst('=');
-		LocalListIterator<project_file_item*> litem(&files_headers);
+		LocalListIterator<project_file_item*> litem(&files.headers);
 		while (litem.IsValid()) {
 			if (!litem->force_recompile && DependsOnMacro(*litem,dif_mac))
 				litem->force_recompile=true;
@@ -1216,7 +1264,7 @@ bool ProjectManager::PrepareForBuilding(project_file_item *only_one) {
 	for (unsigned int i=0;i<header_dirs_array.GetCount();i++) 
 		header_dirs_array[i]=DIR_PLUS_FILE(path,header_dirs_array[i]);
 	
-	LocalListIterator<project_file_item*> item(&files_sources);
+	LocalListIterator<project_file_item*> item(&files.sources);
 	compile_step *prev_to_sources=step;
 	wxDateTime now=wxDateTime::Now();
 	while(item.IsValid()) {
@@ -1452,7 +1500,7 @@ bool ProjectManager::PrepareForBuilding(project_file_item *only_one) {
 	first_compile_step = step;
 	
 	// resetear los flags de force_recompile
-	GlobalListIterator<project_file_item*> gitem(&files_all);
+	GlobalListIterator<project_file_item*> gitem(&files.all);
 	while(gitem.IsValid()) {
 		gitem->force_recompile = false;
 		gitem.Next();
@@ -1471,7 +1519,7 @@ bool ProjectManager::PrepareForBuilding(project_file_item *only_one) {
 **/
 void ProjectManager::SaveAll(bool save_project) {
 	// guardar los fuentes
-	GlobalListIterator<project_file_item*> item(&files_all);
+	GlobalListIterator<project_file_item*> item(&files.all);
 	while (item.IsValid()) {
 		mxSource *source=main_window->IsOpen(DIR_PLUS_FILE(path,item->name));
 		if (source && source->GetModify()) {
@@ -1514,7 +1562,7 @@ long int ProjectManager::CompileFile(compile_and_run_struct_single *compile_and_
 	if (!wxFileName::DirExists(temp_folder))
 		wxFileName::Mkdir(temp_folder,0777,wxPATH_MKDIR_FULL);
 	
-	GlobalListIterator<project_file_item*> item(&files_all);
+	GlobalListIterator<project_file_item*> item(&files.all);
 	while (item.IsValid()) {
 		if (wxFileName(DIR_PLUS_FILE(path,item->name))==filename)
 			return CompileFile(compile_and_run,*item);
@@ -1781,7 +1829,7 @@ void ProjectManager::ExportMakefile(wxString make_file, bool exec_comas, wxStrin
 	
 	// calcular cuantos pasos hay en cada etapa para saber que porcentajes de progreso mostrar en cada comando (para el cmake-style)
 	int steps_extras = active_configuration->extra_steps.GetSize(), 
-		steps_objs = files_sources.GetSize(), 
+		steps_objs = files.sources.GetSize(), 
 		steps_libs = active_configuration->libs_to_build.GetSize();
 	int steps_total = steps_extras+steps_objs+steps_libs+(active_configuration->dont_generate_exe?0:1);
 	
@@ -1806,7 +1854,7 @@ void ProjectManager::ExportMakefile(wxString make_file, bool exec_comas, wxStrin
 	if (mktype==MKTYPE_CONFIG) fil.AddLine(wxString("OBJS_DIR=")+old_temp_folder);
 	if (mktype!=MKTYPE_OBJS) {
 		bool have_c_source=false;
-		LocalListIterator<project_file_item*> item(&files_sources);
+		LocalListIterator<project_file_item*> item(&files.sources);
 		while(!have_c_source && item.IsValid()) {
 			have_c_source = !item->IsCppOrJustC();
 			item.Next();
@@ -1909,7 +1957,7 @@ void ProjectManager::ExportMakefile(wxString make_file, bool exec_comas, wxStrin
 			wxString libdep = mxUT::Quotize(lib->filename);
 			wxString objs;
 			libdep<<":";
-			for(LocalListIterator<project_file_item*> item(&files_sources); item.IsValid();item.Next()) {
+			for(LocalListIterator<project_file_item*> item(&files.sources); item.IsValid();item.Next()) {
 				if (item->lib==lib)
 					objs<<" "<<mxUT::Quotize(item->GetBinName(temp_folder));
 			}
@@ -1928,7 +1976,7 @@ void ProjectManager::ExportMakefile(wxString make_file, bool exec_comas, wxStrin
 		for (unsigned int i=0;i<header_dirs_array.GetCount();i++) 
 			header_dirs_array[i]=DIR_PLUS_FILE(path,header_dirs_array[i]);
 		
-		LocalListIterator<project_file_item*> item(&files_sources);
+		LocalListIterator<project_file_item*> item(&files.sources);
 		int steps_current=0;
 		while(item.IsValid()) {
 			wxString bin_full_path = mxUT::Quotize(item->GetBinName(temp_folder));
@@ -1968,7 +2016,7 @@ void ProjectManager::Clean() {
 	// preparar las rutas y nombres adecuados
 	AnalizeConfig(path,true,current_toolchain.mingw_dir);
 	// borrar los objetos
-	LocalListIterator<project_file_item*> item(&files_sources);
+	LocalListIterator<project_file_item*> item(&files.sources);
 	while(item.IsValid()) {
 		wxString bin_name = item->GetBinName(temp_folder);
 		wxString gcov_file = DIR_PLUS_FILE(temp_folder,wxFileName(item->name).GetName()+".gcno");
@@ -2184,7 +2232,7 @@ void ProjectManager::AnalizeConfig(wxString path, bool exec_comas, wxString ming
 		objects_list<<" "<<extra_step_objs;
 	}
 	
-	LocalListIterator<project_file_item*> item(&files_sources);
+	LocalListIterator<project_file_item*> item(&files.sources);
 	while(item.IsValid()) {
 		wxString *olist = item->lib?&(item->lib->objects_list):&objects_list;
 		(*olist)<<mxUT::Quotize(item->GetBinName(temp_folder))<<" ";
@@ -2245,7 +2293,7 @@ void ProjectManager::AnalizeConfig(wxString path, bool exec_comas, wxString ming
 int ProjectManager::GetFileList(wxArrayString &array, eFileType cuales, bool relative_paths) {
 	int i=0;
 	if (cuales==FT_NULL) {
-		GlobalListIterator<project_file_item*> item(&files_all);
+		GlobalListIterator<project_file_item*> item(&files.all);
 		while (item.IsValid()) {
 			i++;
 			if (relative_paths)
@@ -2255,7 +2303,7 @@ int ProjectManager::GetFileList(wxArrayString &array, eFileType cuales, bool rel
 			item.Next();
 		}
 	} else {
-		LocalListIterator<project_file_item*> item(cuales==FT_SOURCE?&files_sources:(cuales==FT_HEADER?&files_headers:&files_others));
+		LocalListIterator<project_file_item*> item(cuales==FT_SOURCE?&files.sources:(cuales==FT_HEADER?&files.headers:&files.others));
 		while (item.IsValid()) {
 			i++;
 			if (relative_paths)
@@ -2349,14 +2397,14 @@ bool ProjectManager::GenerateDoxyfile(wxString fname) {
 	wxArrayString input;
 	
 	if (doxygen->do_headers) {
-		LocalListIterator<project_file_item*> item(&files_headers);
+		LocalListIterator<project_file_item*> item(&files.headers);
 		while (item.IsValid()) {
 			input.Add(item->name);
 			item.Next();
 		}
 	}
 	if (doxygen->do_cpps) {
-		LocalListIterator<project_file_item*> item(&files_sources);
+		LocalListIterator<project_file_item*> item(&files.sources);
 		while (item.IsValid()) {
 			input.Add(item->name);
 			item.Next();
@@ -2441,9 +2489,9 @@ wxString ProjectManager::GetPath() {
 }
 
 void ProjectManager::MoveFirst(wxTreeItemId &tree_item) {
-	for(int i=0;i<files_sources.GetSize();i++) { 
-		if (files_sources[i]->item==tree_item) {
-			files_sources.Swap(0,i);
+	for(int i=0;i<files.sources.GetSize();i++) { 
+		if (files.sources[i]->item==tree_item) {
+			files.sources.Swap(0,i);
 			break;
 		}
 	}
@@ -2483,7 +2531,7 @@ wxString ProjectManager::WxfbGetSourceFile(wxString fbp_file) {
 void ProjectManager::WxfbGetFiles() {
 	wxfb->projects.Clear();
 	wxfb->sources.Clear();
-	LocalListIterator<project_file_item*> item(&files_others);
+	LocalListIterator<project_file_item*> item(&files.others);
 	while(item.IsValid()) { // por cada archivo .fbp (deberian estar en "otros")
 		if (item->name.Right(4).Lower()==".fbp") {
 			wxFileName fbp_file=DIR_PLUS_FILE(path,item->name);
@@ -2536,7 +2584,7 @@ void ProjectManager::WxfbSetFileProperties(bool change_read_only, bool read_only
 		wxString base = wxfb->sources[i];
 		char exts[][5]={".cpp",".h",".xrc"};
 		for(int j=0;j<3;j++) { 
-			project_file_item *item = HasFile(base+exts[i]);
+			project_file_item *item = FindFromFullPath(base+exts[i]);
 			if (!item) continue;
 			if (change_read_only) SetFileReadOnly(item,read_only_value);
 			if (change_hide_symbols) SetFileHideSymbols(item,hide_symbols_value);
@@ -2582,12 +2630,12 @@ bool ProjectManager::WxfbGenerate(wxString fbp_file, wxString fbase, bool force_
 		if (wxFileName::FileExists(fbase+".cpp")) {
 			mxSource *src = main_window->FindSource(fbase+".cpp");
 			if (src) src->Reload();
-			if (project->HasFile(fbase+".cpp")) parser->ParseFile(fbase+".cpp");
+			if (project->FindFromFullPath(fbase+".cpp")) parser->ParseFile(fbase+".cpp");
 		}
 		if (wxFileName::FileExists(fbase+".h")) {
 			mxSource *src = main_window->FindSource(fbase+".h");
 			if (src) src->Reload();
-			if (project->HasFile(fbase+".h")) parser->ParseFile(fbase+".h");
+			if (project->FindFromFullPath(fbase+".h")) parser->ParseFile(fbase+".h");
 		}
 		
 	} else {
@@ -2881,7 +2929,8 @@ int ProjectManager::GetRequiredVersion() {
 	for (int i=0;i<MAX_PROJECT_CUSTOM_TOOLS;i++) if (custom_tools[i].command.Len()) have_custom_tools=true;
 	
 	version_required=0;
-	if (libs_dont_link) version_required=20160711;
+	if (!inherits_from.IsEmpty()) version_required=20170726;
+	else if (libs_dont_link) version_required=20160711;
 	else if (use_lto_or_werror) version_required=20160225;
 	else if (inspection_improving_template_to.GetCount()) version_required=20150227;
 	else if (by_src_args) version_required=20150220;
@@ -2909,7 +2958,7 @@ int ProjectManager::GetRequiredVersion() {
 
 void ProjectManager::UpdateSymbols() {
 	for(int i=0;i<2;i++) {
-		LocalListIterator<project_file_item*> item(i==0?&files_sources:&files_headers);
+		LocalListIterator<project_file_item*> item(i==0?&files.sources:&files.headers);
 		while(item.IsValid()) {
 			wxString name = DIR_PLUS_FILE(path,item->name);
 			mxSource *source=main_window->IsOpen(name);
@@ -2952,7 +3001,7 @@ void ProjectManager::SaveLibsAndSourcesAssociation(project_configuration *conf) 
 	for(JavaVectorIterator<project_library> lib(conf->libs_to_build); lib.IsValid(); lib.Next()) { 
 		lib->sources.Clear();
 	}
-	for (LocalListIterator<project_file_item*> fi(&files_sources); fi.IsValid(); fi.Next()) {
+	for (LocalListIterator<project_file_item*> fi(&files.sources); fi.IsValid(); fi.Next()) {
 		if (fi->lib) {
 			if (fi->lib->sources.Len())
 				fi->lib->sources<<" ";
@@ -2967,13 +3016,13 @@ void ProjectManager::SaveLibsAndSourcesAssociation(project_configuration *conf) 
 // parte de la PrepareForBuilding
 void ProjectManager::AssociateLibsAndSources(project_configuration *conf) {
 	if (!conf) conf=active_configuration;
-	for (LocalListIterator<project_file_item*> fi(&files_sources); fi.IsValid(); fi.Next()) { fi->lib=nullptr; }
+	for (LocalListIterator<project_file_item*> fi(&files.sources); fi.IsValid(); fi.Next()) { fi->lib=nullptr; }
 	wxArrayString srcs;
 	for(JavaVectorIterator<project_library> lib(conf->libs_to_build); lib.IsValid(); lib.Next()) {
 		srcs.Clear();
 		mxUT::Split(lib->sources,srcs);
 		for (unsigned int i=0;i<srcs.GetCount();i++) {
-			LocalListIterator<project_file_item*> fi(&files_sources);
+			LocalListIterator<project_file_item*> fi(&files.sources);
 			while(fi.IsValid()) {
 				if (!fi->lib && fi->name==srcs[i]) {
 					fi->lib=lib;
@@ -3020,7 +3069,7 @@ void ProjectManager::DrawGraph() {
 	wxString graph_file=DIR_PLUS_FILE(config->temp_dir,"graph.dot");
 	wxTextFile fil(graph_file);
 	
-	int c=files_sources.GetSize()+files_headers.GetSize();
+	int c=files.sources.GetSize()+files.headers.GetSize();
 	
 	draw_graph_item *dgi = new draw_graph_item[c];
 	c=0;
@@ -3035,7 +3084,7 @@ void ProjectManager::DrawGraph() {
 	fil.AddLine("\tsplines=true;");
 	
 	for(int i=0;i<2;i++) { 
-		LocalListIterator<project_file_item*> fi(i==0?&files_headers:&files_sources);
+		LocalListIterator<project_file_item*> fi(i==0?&files.headers:&files.sources);
 		while(fi.IsValid()) {
 			dgi[c].name = fi->name;
 			wxString fullname = DIR_PLUS_FILE(path,fi->name);
@@ -3360,7 +3409,7 @@ void ProjectManager::WxfbAutoCheckStep2(WxfbAutoCheckData *old_data) {
 			wxString fname1 = pd_aux->file->name;
 			wxString fname2 = mxUT::GetComplementaryFile(fname1);
 			// buscarlos en el proyecto
-			project_file_item *fitem1=HasFile(fname1),*fitem2=HasFile(fname2);
+			project_file_item *fitem1=FindFromFullPath(fname1),*fitem2=FindFromFullPath(fname2);
 			if (!fitem1&&!fitem2) continue;
 			if (!fitem1) fname1=""; 
 			if (!fitem2) fname2="";
