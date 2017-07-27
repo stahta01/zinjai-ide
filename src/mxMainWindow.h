@@ -527,6 +527,8 @@ public:
 //		wxMenuItem *menuItem;
 		wxTreeItemId selected_item, selected_parent;
 		wxTreeItemId root ,sources, headers, others;
+		wxColor hidden_colour; ///< for "dimming" inherited files
+		void SetInherited(wxTreeItemId item, bool inherited);
 	} project_tree;
 	
 	//! Componentes del árbol de resultados de la compilación

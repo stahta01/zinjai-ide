@@ -407,6 +407,7 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 				project_file_item *item = FindFromFullPath(it->name);
 				if (!item) item = AddFile(it->where,it->name,false);
 				item->inherited_from = zpr_relative_path;
+				main_window->project_tree.SetInherited(item->item,true);
 			}
 		}
 	}

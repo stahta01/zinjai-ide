@@ -1574,10 +1574,24 @@ wxTreeCtrl* mxMainWindow::CreateProjectTree() {
 
 	project_tree.treeCtrl->ExpandAll();
 	
+	wxColour fg_colour = project_tree.treeCtrl->GetItemTextColour(project_tree.sources);
+//	wxColour bg_colour = project_tree.treeCtrl->GetItemBackgroundColour(project_tree.sources); // item background does not works, at least on linux with wx28
+	wxColour bg_colour = project_tree.treeCtrl->GetBackgroundColour();
+	
+	project_tree.hidden_colour 
+		= wxColour(
+				   (2*int(fg_colour.Red())  +int(bg_colour.Red())  )/3,
+				   (2*int(fg_colour.Green())+int(bg_colour.Green()))/3,
+				   (2*int(fg_colour.Blue()) +int(bg_colour.Blue()) )/3);
+	
 	if (config->Init.autohiding_panels)
 		autohide_handlers[ATH_PROJECT] = new mxHidenPanel(this,project_tree.treeCtrl,HP_LEFT,LANG(MAINW_AUTOHIDE_PROJECT,"Proyecto"));
 	
 	return project_tree.treeCtrl;
+}
+
+void mxMainWindow::project_tree_struct::SetInherited(wxTreeItemId item, bool inherited) {
+	treeCtrl->SetItemTextColour( item, inherited ? hidden_colour : treeCtrl->GetItemTextColour(sources) );
 }
 
 wxTreeCtrl* mxMainWindow::CreateSymbolsTree() {
