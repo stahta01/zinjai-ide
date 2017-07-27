@@ -1,5 +1,5 @@
 GPP=g++
-CXXFLAGS=-O2 `wx-config --cppflags --unicode=no --version=2.8`
+CXXFLAGS=-O3 `wx-config --cppflags --unicode=no --version=2.8`
 LDFLAGS=-s -lwx_gtk2_stc-2.8 `wx-config --unicode=no --libs --version=2.8` 
 OBJS_DIR=../../release.lnx/complement
 

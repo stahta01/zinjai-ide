@@ -6,6 +6,7 @@
 ./c/numeric/math.html:Common mathematical functions
 ./c/numeric/math/asin.html:asin, asinf, asinl
 ./c/numeric/math/logb.html:logb, logbf, logbl
+./c/numeric/math/float_t.html:float_t, double_t
 ./c/numeric/math/modf.html:modf, modff, modfl
 ./c/numeric/math/ceil.html:ceil, ceilf, ceill
 ./c/numeric/math/pow.html:pow, powf, powl
@@ -49,7 +50,7 @@
 ./c/numeric/math/acosh.html:acosh, acoshf, acoshl
 ./c/numeric/math/rint.html:rint, rintf, rintl, lrint, lrintf, lrintl, llrint, llrintf, llrintl
 ./c/numeric/math/log1p.html:log1p, log1pf, log1pl
-./c/numeric/math/scalbn.html:scalbln, scalbnf, scalbnl, scalbln, scalblnf, scalblnl
+./c/numeric/math/scalbn.html:scalbn, scalbnf, scalbnl, scalbln, scalblnf, scalblnl
 ./c/numeric/math/tgamma.html:tgamma, tgammaf, tgammal
 ./c/numeric/math/log2.html:log2, log2f, log2l
 ./c/numeric/math/copysign.html:copysign, copysignf, copysignl
@@ -77,7 +78,7 @@
 ./c/numeric/random/srand.html:srand
 ./c/numeric/random/rand.html:rand
 ./c/numeric/random/RAND_MAX.html:RAND_MAX
-./c/numeric/complex/I.html:I 
+./c/numeric/complex/I.html:IÂ 
 ./c/numeric/complex/catanh.html:catanhf, catanh, catanhl
 ./c/numeric/complex/cacos.html:cacosf, cacos, cacosl
 ./c/numeric/complex/cexp.html:cexpf, cexp, cexpl
@@ -158,7 +159,12 @@
 ./c/atomic/atomic_exchange.html:atomic_exchange, atomic_exchange_explicit
 ./c/chrono.html:Date and time utilities
 ./c/links.html:Useful resources
+./c/experimental/fpext4.html:Floating-point extensions part 4: supplementary functions
+./c/experimental/fpext1.html:Floating-point extensions part 1: binary floating-point arithmetic
 ./c/experimental/dynamic.html:Dynamic memory extensions
+./c/experimental/dynamic/strndup.html:strndup
+./c/experimental/dynamic/strdup.html:strdup
+./c/experimental/dynamic/getline.html:getline, getwline, getdelim, getwdelim
 ./c/error/abort_handler_s.html:abort_handler_s
 ./c/error/set_constraint_handler_s.html:set_constraint_handler_s, constraint_handler_t
 ./c/error/static_assert.html:static_assert
@@ -297,7 +303,7 @@
 ./c/io/fwprintf.html:wprintf, fwprintf, swprintf, wprintf_s, fwprintf_s, swprintf_s
 ./c/io/freopen.html:freopen, freopen_s
 ./c/io/putchar.html:putchar
-./c/io/fputwc.html:fputwc
+./c/io/fputwc.html:fputwc, putwc
 ./c/io/feof.html:feof
 ./c/io/rewind.html:rewind
 ./c/io/perror.html:perror
@@ -316,10 +322,12 @@
 ./c/io/vfprintf.html:vprintf, vfprintf, vsprintf, vsnprintf, vprintf_s, vfprintf_s
 ./c/io/fprintf.html:printf, fprintf, sprintf, snprintf, printf_s, fprintf_s
 ./c/string/multibyte/wcsrtombs.html:wcsrtombs, wcsrtombs_s
+./c/string/multibyte/char32_t.html:char32_t
 ./c/string/multibyte/mbsrtowcs.html:mbsrtowcs, mbsrtowcs_s
 ./c/string/multibyte/wcrtomb.html:wcrtomb, wcrtomb_s
 ./c/string/multibyte/mbsinit.html:mbsinit
 ./c/string/multibyte/wctomb.html:wctomb, wctomb_s
+./c/string/multibyte/char16_t.html:char16_t
 ./c/string/multibyte/mblen.html:mblen
 ./c/string/multibyte/c32rtomb.html:c32rtomb
 ./c/string/multibyte/c16rtomb.html:c16rtomb
@@ -484,7 +492,6 @@
 ./c/language/character_constant.html:character constant
 ./c/language/if.html:if statement
 ./c/language/operator_logical.html:Logical operators
-./c/language/conversions.html:Conversions
 ./c/language/declarations.html:Declarations
 ./c/language/scope.html:Scope
 ./c/language/static_assert.html:static assert declaration
@@ -527,13 +534,14 @@
 ./c/language/return.html:return statement
 ./c/language/history.html:History of C
 ./c/language/analyzability.html:Analyzability
-./c/language/operator_alternative.html:Alternative operator representations (since C95)
+./c/language/operator_alternative.html:Alternative operators and tokens
 ./c/language/string_literal.html:string literals
 ./c/language/alignof.html:_Alignof operator
 ./c/language/name_space.html:Lookup and name spaces
 ./c/language/functions.html:Functions
 ./c/language/constant_expression.html:Constant expressions
 ./c/language/struct.html:Struct declaration
+./c/language/conformance.html:Conformance
 ./c/language/basic_concepts.html:Basic concepts
 ./c/language/operator_arithmetic.html:Arithmetic operators
 ./c/language/for.html:for loop
@@ -541,6 +549,7 @@
 ./c/language/enum.html:Enumerations
 ./c/language/continue.html:continue statement
 ./c/language/variadic.html:Variadic arguments
+./c/language/behavior.html:Undefined behavior
 ./c/algorithm/qsort.html:qsort, qsort_s
 ./c/algorithm/bsearch.html:bsearch, bsearch_s
 ./c/preprocessor.html:Preprocessor
@@ -605,6 +614,7 @@
 ./cpp/numeric/valarray/cos.html:std::cos(std::valarray)
 ./cpp/numeric/valarray/log.html:std::log(std::valarray)
 ./cpp/numeric/ratio.html:Compile-time rational arithmetic
+./cpp/numeric/lcm.html:std::lcm
 ./cpp/numeric/fenv.html:Floating-point environment
 ./cpp/numeric/math.html:Common mathematical functions
 ./cpp/numeric/math/asin.html:std::asin
@@ -765,7 +775,7 @@
 ./cpp/numeric/random/shuffle_order_engine/seed.html:std::shuffle_order_engine::seed
 ./cpp/numeric/random/shuffle_order_engine/operator_ltltgtgt.html:operator&lt;&lt;,&gt;&gt;(std::shuffle_order_engine)
 ./cpp/numeric/random/shuffle_order_engine/operator_cmp.html:operator==,!=(std::shuffle_order_engine)
-./cpp/numeric/random/shuffle_order_engine/operator().html:std::shuffle_order_engine::seed
+./cpp/numeric/random/shuffle_order_engine/operator().html:std::shuffle_order_engine::operator()
 ./cpp/numeric/random/shuffle_order_engine/min.html:std::shuffle_order_engine::min
 ./cpp/numeric/random/shuffle_order_engine/base.html:std::shuffle_order_engine::base
 ./cpp/numeric/random/shuffle_order_engine/max.html:std::shuffle_order_engine::max
@@ -805,7 +815,7 @@
 ./cpp/numeric/random/independent_bits_engine/seed.html:std::independent_bits_engine::seed
 ./cpp/numeric/random/independent_bits_engine/operator_ltltgtgt.html:operator&lt;&lt;,&gt;&gt;(std::independent_bits_engine)
 ./cpp/numeric/random/independent_bits_engine/operator_cmp.html:operator==,!=(std::independent_bits_engine)
-./cpp/numeric/random/independent_bits_engine/operator().html:std::independent_bits_engine::seed
+./cpp/numeric/random/independent_bits_engine/operator().html:std::independent_bits_engine::operator()
 ./cpp/numeric/random/independent_bits_engine/min.html:std::independent_bits_engine::min
 ./cpp/numeric/random/independent_bits_engine/base.html:std::independent_bits_engine::base
 ./cpp/numeric/random/independent_bits_engine/independent_bits_engine.html:std::independent_bits_engine::independent_bits_engine
@@ -843,7 +853,7 @@
 ./cpp/numeric/random/discard_block_engine/seed.html:std::discard_block_engine::seed
 ./cpp/numeric/random/discard_block_engine/operator_ltltgtgt.html:operator&lt;&lt;,&gt;&gt;(std::discard_block_engine)
 ./cpp/numeric/random/discard_block_engine/operator_cmp.html:operator==,!=(std::discard_block_engine)
-./cpp/numeric/random/discard_block_engine/operator().html:std::discard_block_engine::seed
+./cpp/numeric/random/discard_block_engine/operator().html:std::discard_block_engine::operator()
 ./cpp/numeric/random/discard_block_engine/min.html:std::discard_block_engine::min
 ./cpp/numeric/random/discard_block_engine/base.html:std::discard_block_engine::base
 ./cpp/numeric/random/discard_block_engine/max.html:std::discard_block_engine::max
@@ -949,6 +959,29 @@
 ./cpp/numeric/random/discrete_distribution/max.html:std::discrete_distribution::max
 ./cpp/numeric/random/discrete_distribution/reset.html:std::discrete_distribution::reset
 ./cpp/numeric/random/poisson_distribution.html:std::poisson_distribution
+./cpp/numeric/gcd.html:std::gcd
+./cpp/numeric/special_math.html:Mathematical special functions
+./cpp/numeric/special_math/ellint_3.html:std::ellint_3, std::ellint_3f, std::ellint_3l
+./cpp/numeric/special_math/cyl_bessel_j.html:std::cyl_bessel_j, std::cyl_bessel_jf, std::cyl_bessel_jl
+./cpp/numeric/special_math/riemann_zeta.html:std::riemann_zeta, std::riemann_zetaf, std::riemann_zetal
+./cpp/numeric/special_math/sph_legendre.html:std::sph_legendre, std::sph_legendref, std::sph_legendrel
+./cpp/numeric/special_math/ellint_1.html:std::ellint_1, std::ellint_1f, std::ellint_1l
+./cpp/numeric/special_math/cyl_bessel_k.html:std::cyl_bessel_k, std::cyl_bessel_kf, std::cyl_bessel_kl
+./cpp/numeric/special_math/hermite.html:std::hermite, std::hermitef, std::hermitel
+./cpp/numeric/special_math/comp_ellint_2.html:std::comp_ellint_2, std::comp_ellint_2f, std::comp_ellint_2l
+./cpp/numeric/special_math/beta.html:std::beta, std::betaf, std::betal
+./cpp/numeric/special_math/comp_ellint_3.html:std::comp_ellint_3, std::comp_ellint_3f, std::comp_ellint_3l
+./cpp/numeric/special_math/cyl_bessel_i.html:std::cyl_bessel_i, std::cyl_bessel_if, std::cyl_bessel_il
+./cpp/numeric/special_math/cyl_neumann.html:std::cyl_neumann, std::cyl_neumannf, std::cyl_neumannl
+./cpp/numeric/special_math/assoc_laguerre.html:std::assoc_laguerre, std::assoc_laguerref, std::assoc_laguerrel
+./cpp/numeric/special_math/ellint_2.html:std::ellint_2, std::ellint_2f, std::ellint_2l
+./cpp/numeric/special_math/legendre.html:std::legendre, std::legendref, std::legendrel
+./cpp/numeric/special_math/expint.html:std::expint, std::expintf, std::expintl
+./cpp/numeric/special_math/laguerre.html:std::laguerre, std::laguerref, std::laguerrel
+./cpp/numeric/special_math/comp_ellint_1.html:std::comp_ellint_1, std::comp_ellint_1f, std::comp_ellint_1l
+./cpp/numeric/special_math/assoc_legendre.html:std::assoc_legendre, std::assoc_legendref, std::assoc_legendrel
+./cpp/numeric/special_math/sph_neumann.html:std::sph_neumann, std::sph_neumannf, std::sph_neumannl
+./cpp/numeric/special_math/sph_bessel.html:std::sph_bessel, std::sph_besself, std::sph_bessell
 ./cpp/numeric/complex/asin.html:std::asin(std::complex)
 ./cpp/numeric/complex/arg.html:std::arg(std::complex)
 ./cpp/numeric/complex/real2.html:std::real(std::complex)
@@ -986,7 +1019,7 @@
 ./cpp/numeric/complex/log.html:std::log(std::complex)
 ./cpp/numeric/random.html:Pseudo-random number generation
 ./cpp/numeric/fenv/feenv.html:std::fegetenv, std::fesetenv
-./cpp/numeric/fenv/feupdateenv.html:std::feupdatedenv
+./cpp/numeric/fenv/feupdateenv.html:std::feupdateenv
 ./cpp/numeric/fenv/feholdexcept.html:std::feholdexcept
 ./cpp/numeric/fenv/FE_exceptions.html:FE_DIVBYZERO, FE_INEXACT, FE_INVALID, FE_OVERFLOW, FE_UNDERFLOW, FE_ALL_EXCEPT
 ./cpp/numeric/fenv/feround.html:std::fegetround, std::fesetround
@@ -1166,7 +1199,6 @@
 ./cpp/concept/ForwardIterator.html:C++ concepts: ForwardIterator
 ./cpp/concept/DefaultInsertable.html:C++ concepts: DefaultInsertable
 ./cpp/concept/Swappable.html:C++ concepts: Swappable
-./cpp/concept/UniformRandomNumberGenerator.html:C++ concepts: UniformRandomNumberGenerator
 ./cpp/concept/AllocatorAwareContainer.html:C++ concepts: AllocatorAwareContainer
 ./cpp/concept/MoveConstructible.html:C++ concepts: MoveConstructible (since C++11)
 ./cpp/concept/SharedTimedMutex.html:C++ concepts: SharedTimedMutex
@@ -1177,6 +1209,7 @@
 ./cpp/concept/MoveAssignable.html:C++ concepts: MoveAssignable (since C++11)
 ./cpp/concept/NumericType.html:C++ concepts: NumericType
 ./cpp/concept/UnformattedOutputFunction.html:C++ concepts: UnformattedOutputFunction
+./cpp/concept/UniformRandomBitGenerator.html:C++ concepts: UniformRandomBitGenerator
 ./cpp/concept/TimedMutex.html:C++ concepts: TimedMutex
 ./cpp/concept/RandomNumberDistribution.html:C++ concepts: RandomNumberDistribution
 ./cpp/concept/BidirectionalIterator.html:C++ concepts: BidirectionalIterator
@@ -1225,26 +1258,10 @@
 ./cpp/comments.html:Comments
 ./cpp/types.html:Type support (basic types, RTTI, type traits)
 ./cpp/container/stack.html:std::stack
-./cpp/container/dynarray/max_size.html:std::dynarray::max_size
-./cpp/container/dynarray/rbegin.html:std::dynarray::rbegin, std::dynarray::crbegin
-./cpp/container/dynarray/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::dynarray)
-./cpp/container/dynarray/back.html:std::dynarray::back
-./cpp/container/dynarray/dynarray.html:std::dynarray::dynarray
-./cpp/container/dynarray/~dynarray.html:std::dynarray::~dynarray
-./cpp/container/dynarray/size.html:std::dynarray::size
-./cpp/container/dynarray/rend.html:std::dynarray::rend, std::dynarray::crend
-./cpp/container/dynarray/front.html:std::dynarray::front
-./cpp/container/dynarray/at.html:std::dynarray::at
-./cpp/container/dynarray/uses_allocator.html:std::uses_allocator&lt;std::dynarray&gt;
-./cpp/container/dynarray/data.html:std::dynarray::data
-./cpp/container/dynarray/fill.html:std::dynarray::fill
-./cpp/container/dynarray/empty.html:std::dynarray::empty
-./cpp/container/dynarray/end.html:std::dynarray::end, std::dynarray::cend
-./cpp/container/dynarray/operator_at.html:std::dynarray::operator[]
-./cpp/container/dynarray/begin.html:std::dynarray::begin, std::dynarray::cbegin
 ./cpp/container/unordered_set.html:std::unordered_set
 ./cpp/container/multiset/max_size.html:std::multiset::max_size
 ./cpp/container/multiset/insert.html:std::multiset::insert
+./cpp/container/multiset/extract.html:std::multiset::extract
 ./cpp/container/multiset/rbegin.html:std::multiset::rbegin, std::multiset::crbegin
 ./cpp/container/multiset/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::multiset)
 ./cpp/container/multiset/~multiset.html:std::multiset::~multiset
@@ -1266,6 +1283,7 @@
 ./cpp/container/multiset/empty.html:std::multiset::empty
 ./cpp/container/multiset/swap2.html:std::swap(std::multiset)
 ./cpp/container/multiset/count.html:std::multiset::count
+./cpp/container/multiset/merge.html:std::multiset::merge
 ./cpp/container/multiset/end.html:std::multiset::end, std::multiset::cend
 ./cpp/container/multiset/begin.html:std::multiset::begin, std::multiset::cbegin
 ./cpp/container/multiset/clear.html:std::multiset::clear
@@ -1273,6 +1291,7 @@
 ./cpp/container/unordered_set/end2.html:std::unordered_set::end(int), std::unordered_set::cend(int)
 ./cpp/container/unordered_set/max_size.html:std::unordered_set::max_size
 ./cpp/container/unordered_set/insert.html:std::unordered_set::insert
+./cpp/container/unordered_set/extract.html:std::unordered_set::extract
 ./cpp/container/unordered_set/operator_cmp.html:operator==,!=(std::unordered_set)
 ./cpp/container/unordered_set/emplace_hint.html:std::unordered_set::emplace_hint
 ./cpp/container/unordered_set/load_factor.html:std::unordered_set::load_factor
@@ -1293,6 +1312,7 @@
 ./cpp/container/unordered_set/empty.html:std::unordered_set::empty
 ./cpp/container/unordered_set/swap2.html:std::swap(std::unordered_set)
 ./cpp/container/unordered_set/count.html:std::unordered_set::count
+./cpp/container/unordered_set/merge.html:std::unordered_set::merge
 ./cpp/container/unordered_set/end.html:std::unordered_set::end, std::unordered_set::cend
 ./cpp/container/unordered_set/key_eq.html:std::unordered_set::key_eq
 ./cpp/container/unordered_set/max_bucket_count.html:std::unordered_set::max_bucket_count
@@ -1379,7 +1399,6 @@
 ./cpp/container/list/emplace_back.html:std::list::emplace_back
 ./cpp/container/map.html:std::map
 ./cpp/container/set.html:std::set
-./cpp/container/dynarray.html:std::experimental::dynarray
 ./cpp/container/array/max_size.html:std::array::max_size
 ./cpp/container/array/rbegin.html:std::array::rbegin, std::array::crbegin
 ./cpp/container/array/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::array)
@@ -1402,6 +1421,7 @@
 ./cpp/container/unordered_multimap/end2.html:std::unordered_multimap::end(int), std::unordered_multimap::cend(int)
 ./cpp/container/unordered_multimap/max_size.html:std::unordered_multimap::max_size
 ./cpp/container/unordered_multimap/insert.html:std::unordered_multimap::insert
+./cpp/container/unordered_multimap/extract.html:std::unordered_multimap::extract
 ./cpp/container/unordered_multimap/operator_cmp.html:operator==,!=(std::unordered_multimap)
 ./cpp/container/unordered_multimap/emplace_hint.html:std::unordered_multimap::emplace_hint
 ./cpp/container/unordered_multimap/load_factor.html:std::unordered_multimap::load_factor
@@ -1422,6 +1442,7 @@
 ./cpp/container/unordered_multimap/swap2.html:std::swap(std::unordered_multimap)
 ./cpp/container/unordered_multimap/~unordered_multimap.html:std::unordered_multimap::~unordered_multimap
 ./cpp/container/unordered_multimap/count.html:std::unordered_multimap::count
+./cpp/container/unordered_multimap/merge.html:std::unordered_multimap::merge
 ./cpp/container/unordered_multimap/end.html:std::unordered_multimap::end, std::unordered_multimap::cend
 ./cpp/container/unordered_multimap/unordered_multimap.html:std::unordered_multimap::unordered_multimap
 ./cpp/container/unordered_multimap/key_eq.html:std::unordered_multimap::key_eq
@@ -1438,6 +1459,7 @@
 ./cpp/container/map/value_compare.html:std::map::value_compare
 ./cpp/container/map/max_size.html:std::map::max_size
 ./cpp/container/map/insert.html:std::map::insert
+./cpp/container/map/extract.html:std::map::extract
 ./cpp/container/map/rbegin.html:std::map::rbegin, std::map::crbegin
 ./cpp/container/map/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::map)
 ./cpp/container/map/map.html:std::map::map
@@ -1459,6 +1481,7 @@
 ./cpp/container/map/empty.html:std::map::empty
 ./cpp/container/map/swap2.html:std::swap(std::map)
 ./cpp/container/map/count.html:std::map::count
+./cpp/container/map/merge.html:std::map::merge
 ./cpp/container/map/end.html:std::map::end, std::map::cend
 ./cpp/container/map/insert_or_assign.html:std::map::insert_or_assign
 ./cpp/container/map/operator_at.html:std::map::operator[]
@@ -1470,6 +1493,7 @@
 ./cpp/container/unordered_multiset/end2.html:std::unordered_multiset::end(int), std::unordered_multiset::cend(int)
 ./cpp/container/unordered_multiset/max_size.html:std::unordered_multiset::max_size
 ./cpp/container/unordered_multiset/insert.html:std::unordered_multiset::insert
+./cpp/container/unordered_multiset/extract.html:std::unordered_multiset::extract
 ./cpp/container/unordered_multiset/operator_cmp.html:operator==,!=(std::unordered_multiset)
 ./cpp/container/unordered_multiset/emplace_hint.html:std::unordered_multiset::emplace_hint
 ./cpp/container/unordered_multiset/load_factor.html:std::unordered_multiset::load_factor
@@ -1490,6 +1514,7 @@
 ./cpp/container/unordered_multiset/empty.html:std::unordered_multiset::empty
 ./cpp/container/unordered_multiset/swap2.html:std::swap(std::unordered_multiset)
 ./cpp/container/unordered_multiset/count.html:std::unordered_multiset::count
+./cpp/container/unordered_multiset/merge.html:std::unordered_multiset::merge
 ./cpp/container/unordered_multiset/end.html:std::unordered_multiset::end, std::unordered_multiset::cend
 ./cpp/container/unordered_multiset/key_eq.html:std::unordered_multiset::key_eq
 ./cpp/container/unordered_multiset/max_bucket_count.html:std::unordered_multiset::max_bucket_count
@@ -1543,6 +1568,7 @@
 ./cpp/container/vector/assign.html:std::vector::assign
 ./cpp/container/vector/clear.html:std::vector::clear
 ./cpp/container/vector/emplace_back.html:std::vector::emplace_back
+./cpp/container/node_handle.html:Node handle (C++17)
 ./cpp/container/stack/stack.html:std::stack::stack
 ./cpp/container/stack/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::stack)
 ./cpp/container/stack/pop.html:std::stack::pop
@@ -1559,6 +1585,7 @@
 ./cpp/container/multimap/value_compare.html:std::multimap::value_compare
 ./cpp/container/multimap/max_size.html:std::multimap::max_size
 ./cpp/container/multimap/insert.html:std::multimap::insert
+./cpp/container/multimap/extract.html:std::multimap::extract
 ./cpp/container/multimap/rbegin.html:std::multimap::rbegin, std::multimap::crbegin
 ./cpp/container/multimap/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::multimap)
 ./cpp/container/multimap/emplace_hint.html:std::multimap::emplace_hint
@@ -1580,6 +1607,7 @@
 ./cpp/container/multimap/swap2.html:std::swap(std::multimap)
 ./cpp/container/multimap/~multimap.html:std::multimap::~multimap
 ./cpp/container/multimap/count.html:std::multimap::count
+./cpp/container/multimap/merge.html:std::multimap::merge
 ./cpp/container/multimap/end.html:std::multimap::end, std::multimap::cend
 ./cpp/container/multimap/begin.html:std::multimap::begin, std::multimap::cbegin
 ./cpp/container/multimap/clear.html:std::multimap::clear
@@ -1620,6 +1648,7 @@
 ./cpp/container/deque/emplace_back.html:std::deque::emplace_back
 ./cpp/container/set/max_size.html:std::set::max_size
 ./cpp/container/set/insert.html:std::set::insert
+./cpp/container/set/extract.html:std::set::extract
 ./cpp/container/set/rbegin.html:std::set::rbegin, std::set::crbegin
 ./cpp/container/set/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::set)
 ./cpp/container/set/set.html:std::set::set
@@ -1641,6 +1670,7 @@
 ./cpp/container/set/empty.html:std::set::empty
 ./cpp/container/set/swap2.html:std::swap(std::set)
 ./cpp/container/set/count.html:std::set::count
+./cpp/container/set/merge.html:std::set::merge
 ./cpp/container/set/end.html:std::set::end, std::set::cend
 ./cpp/container/set/begin.html:std::set::begin, std::set::cbegin
 ./cpp/container/set/clear.html:std::set::clear
@@ -1650,6 +1680,7 @@
 ./cpp/container/unordered_map/end2.html:std::unordered_map::end(int), std::unordered_map::cend(int)
 ./cpp/container/unordered_map/max_size.html:std::unordered_map::max_size
 ./cpp/container/unordered_map/insert.html:std::unordered_map::insert
+./cpp/container/unordered_map/extract.html:std::unordered_map::extract
 ./cpp/container/unordered_map/operator_cmp.html:operator==,!=(std::unordered_map)
 ./cpp/container/unordered_map/emplace_hint.html:std::unordered_map::emplace_hint
 ./cpp/container/unordered_map/load_factor.html:std::unordered_map::load_factor
@@ -1672,6 +1703,7 @@
 ./cpp/container/unordered_map/empty.html:std::unordered_map::empty
 ./cpp/container/unordered_map/swap2.html:std::swap(std::unordered_map)
 ./cpp/container/unordered_map/count.html:std::unordered_map::count
+./cpp/container/unordered_map/merge.html:std::unordered_map::merge
 ./cpp/container/unordered_map/end.html:std::unordered_map::end, std::unordered_map::cend
 ./cpp/container/unordered_map/insert_or_assign.html:std::unordered_map::insert_or_assign
 ./cpp/container/unordered_map/operator_at.html:std::unordered_map::operator[]
@@ -1691,10 +1723,8 @@
 ./cpp/language.1.html:C++ language
 ./cpp/iterator/back_insert_iterator/operator=.html:std::back_insert_iterator::operator=
 ./cpp/iterator/back_insert_iterator/back_insert_iterator.html:std::back_insert_iterator::back_insert_iterator
+./cpp/iterator/back_insert_iterator/operator_star_.html:std::back_insert_iterator::operator*
 ./cpp/iterator/back_insert_iterator/operator++.html:std::back_insert_iterator::operator++
-./cpp/iterator/back_insert_iterator/operator*.html:std::back_insert_iterator::operator*
-./cpp/iterator/back_insert_iterator/operator++.html:std::back_insert_iterator::operator++
-./cpp/iterator/back_insert_iterator/operator=.html:std::back_insert_iterator::operator=
 ./cpp/iterator/prev.html:std::prev
 ./cpp/iterator/rbegin.html:std::rbegin, std::crbegin
 ./cpp/iterator/iterator_tags.html:std::input_iterator_tag, std::output_iterator_tag, std::forward_iterator_tag, std::bidirectional_iterator_tag, std::random_access_iterator_tag
@@ -1706,22 +1736,14 @@
 ./cpp/iterator/reverse_iterator/base.html:std::reverse_iterator::base
 ./cpp/iterator/reverse_iterator/operator_arith.html:std::reverse_iterator::operator++,+,+=,--,-,-=
 ./cpp/iterator/reverse_iterator/reverse_iterator.html:std::reverse_iterator::reverse_iterator
-./cpp/iterator/reverse_iterator/operator*.html:std::reverse_iterator::operator*,-&gt;
-./cpp/iterator/reverse_iterator/operator+.html:operator+(std::reverse_iterator)
-./cpp/iterator/reverse_iterator/operator-.html:operator-(reverse_iterator)
-./cpp/iterator/reverse_iterator/operator=.html:std::reverse_iterator::operator=
-./cpp/iterator/reverse_iterator/operator_arith.html:std::reverse_iterator::operator++,+,+=,--,-,-=
-./cpp/iterator/reverse_iterator/operator_at.html:std::reverse_iterator::operator[]
-./cpp/iterator/reverse_iterator/operator_cmp.html:operator&lt;,&lt;=,&gt;,&gt;=(std::reverse_iterator)
+./cpp/iterator/reverse_iterator/operator_star_.html:std::reverse_iterator::operator*,-&gt;
 ./cpp/iterator/reverse_iterator/operator_at.html:std::reverse_iterator::operator[]
 ./cpp/iterator/reverse_iterator/operator-.html:operator-(reverse_iterator)
 ./cpp/iterator/istream_iterator.html:std::istream_iterator
 ./cpp/iterator/insert_iterator/operator=.html:std::insert_iterator::operator=
+./cpp/iterator/insert_iterator/operator_star_.html:std::insert_iterator::operator*
 ./cpp/iterator/insert_iterator/operator++.html:std::insert_iterator::operator++
 ./cpp/iterator/insert_iterator/insert_iterator.html:std::insert_iterator::insert_iterator
-./cpp/iterator/insert_iterator/operator*.html:std::insert_iterator::operator*
-./cpp/iterator/insert_iterator/operator++.html:std::insert_iterator::operator++
-./cpp/iterator/insert_iterator/operator=.html:std::insert_iterator::operator=
 ./cpp/iterator/distance.html:std::distance
 ./cpp/iterator/size.html:std::size
 ./cpp/iterator/move_iterator.html:std::move_iterator
@@ -1734,9 +1756,7 @@
 ./cpp/iterator/ostreambuf_iterator/operator=.html:std::ostreambuf_iterator::operator=
 ./cpp/iterator/ostreambuf_iterator/operator_arith.html:std::ostreambuf_iterator::operator++
 ./cpp/iterator/ostreambuf_iterator/failed.html:std::ostreambuf_iterator::failed
-./cpp/iterator/ostreambuf_iterator/operator*.html:std::ostreambuf_iterator::operator*
-./cpp/iterator/ostreambuf_iterator/operator=.html:std::ostreambuf_iterator::operator=
-./cpp/iterator/ostreambuf_iterator/operator_arith.html:std::ostreambuf_iterator::operator++
+./cpp/iterator/ostreambuf_iterator/operator_star_.html:std::ostreambuf_iterator::operator*
 ./cpp/iterator/ostreambuf_iterator/ostreambuf_iterator.html:std::ostreambuf_iterator::ostreambuf_iterator
 ./cpp/iterator/istreambuf_iterator.html:std::istreambuf_iterator
 ./cpp/iterator/front_insert_iterator.html:std::front_insert_iterator
@@ -1744,22 +1764,16 @@
 ./cpp/iterator/ostream_iterator/~ostream_iterator.html:std::ostream_iterator::~ostream_iterator
 ./cpp/iterator/ostream_iterator/operator=.html:std::ostream_iterator::operator=
 ./cpp/iterator/ostream_iterator/operator_arith.html:std::ostream_iterator::operator++
-./cpp/iterator/ostream_iterator/operator*.html:std::ostream_iterator::operator*
-./cpp/iterator/ostream_iterator/operator=.html:std::ostream_iterator::operator=
-./cpp/iterator/ostream_iterator/operator_arith.html:std::ostream_iterator::operator++
+./cpp/iterator/ostream_iterator/operator_star_.html:std::ostream_iterator::operator*
 ./cpp/iterator/istreambuf_iterator/operator_cmp.html:operator==,!=(std::istreambuf_iterator)
 ./cpp/iterator/istreambuf_iterator/istreambuf_iterator.html:std::istreambuf_iterator::istreambuf_iterator
 ./cpp/iterator/istreambuf_iterator/operator_arith.html:std::istreambuf_iterator::operator++, operator++(int)
+./cpp/iterator/istreambuf_iterator/operator_star_.html:std::istreambuf_iterator::operator*, operator-&gt;
 ./cpp/iterator/istreambuf_iterator/equal.html:std::istreambuf_iterator::equal
-./cpp/iterator/istreambuf_iterator/operator*.html:std::istreambuf_iterator::operator*, operator-&gt;
-./cpp/iterator/istreambuf_iterator/operator_arith.html:std::istreambuf_iterator::operator++, operator++(int)
-./cpp/iterator/istreambuf_iterator/operator_cmp.html:operator==,!=(std::istreambuf_iterator)
 ./cpp/iterator/front_insert_iterator/operator=.html:std::front_insert_iterator::operator=
 ./cpp/iterator/front_insert_iterator/front_insert_iterator.html:std::front_insert_iterator::front_insert_iterator
+./cpp/iterator/front_insert_iterator/operator_star_.html:std::front_insert_iterator::operator*
 ./cpp/iterator/front_insert_iterator/operator++.html:std::front_insert_iterator::operator++
-./cpp/iterator/front_insert_iterator/operator*.html:std::front_insert_iterator::operator*
-./cpp/iterator/front_insert_iterator/operator++.html:std::front_insert_iterator::operator++
-./cpp/iterator/front_insert_iterator/operator=.html:std::front_insert_iterator::operator=
 ./cpp/iterator/empty.html:std::empty
 ./cpp/iterator/back_inserter.html:std::back_inserter
 ./cpp/iterator/reverse_iterator.html:std::reverse_iterator
@@ -1768,10 +1782,9 @@
 ./cpp/iterator/next.html:std::next
 ./cpp/iterator/istream_iterator/operator_cmp.html:operator==,!=(std::istream_iterator)
 ./cpp/iterator/istream_iterator/istream_iterator.html:std::istream_iterator::istream_iterator
+./cpp/iterator/istream_iterator/~istream_iterator.html:std::istream_iterator::~istream_iterator
 ./cpp/iterator/istream_iterator/operator_arith.html:std::istream_iterator::operator++, operator++(int)
-./cpp/iterator/istream_iterator/operator*.html:std::istream_iterator::operator*, operator-&gt;
-./cpp/iterator/istream_iterator/operator_arith.html:std::istream_iterator::operator++, operator++(int)
-./cpp/iterator/istream_iterator/operator_cmp.html:operator==,!=(std::istream_iterator)
+./cpp/iterator/istream_iterator/operator_star_.html:std::istream_iterator::operator*, operator-&gt;
 ./cpp/iterator/iterator.html:std::iterator
 ./cpp/iterator/make_reverse_iterator.html:std::make_reverse_iterator
 ./cpp/iterator/ostreambuf_iterator.html:std::ostreambuf_iterator
@@ -1783,20 +1796,15 @@
 ./cpp/iterator/move_iterator/move_iterator.html:std::move_iterator::move_iterator
 ./cpp/iterator/move_iterator/base.html:std::move_iterator::base
 ./cpp/iterator/move_iterator/operator_arith.html:std::move_iterator::operator++,+,+=,--,-,-=
-./cpp/iterator/move_iterator/operator*.html:std::move_iterator::operator*,-&gt;
-./cpp/iterator/move_iterator/operator+.html:operator+(std::move_iterator)
-./cpp/iterator/move_iterator/operator-.html:operator-(move_iterator)
-./cpp/iterator/move_iterator/operator=.html:std::move_iterator::operator=
-./cpp/iterator/move_iterator/operator_arith.html:std::move_iterator::operator++,+,+=,--,-,-=
-./cpp/iterator/move_iterator/operator_at.html:std::move_iterator::operator[]
-./cpp/iterator/move_iterator/operator_cmp.html:operator&lt;,&lt;=,&gt;,&gt;=(std::move_iterator)
+./cpp/iterator/move_iterator/operator_star_.html:std::move_iterator::operator*,-&gt;
 ./cpp/iterator/move_iterator/operator_at.html:std::move_iterator::operator[]
 ./cpp/iterator/move_iterator/operator-.html:operator-(move_iterator)
 ./cpp/atomic/atomic_fetch_add.html:std::atomic_fetch_add, std::atomic_fetch_add_explicit
 ./cpp/atomic/atomic.html:std::atomic
 ./cpp/atomic/atomic_signal_fence.html:std::atomic_signal_fence
 ./cpp/atomic/atomic/atomic.html:std::atomic::atomic
-./cpp/atomic/atomic/is_lock_free.html:std::atomic::atomic
+./cpp/atomic/atomic/is_lock_free.html:std::atomic::is_lock_free
+./cpp/atomic/atomic/is_always_lock_free.html:std::atomic::is_always_lock_free
 ./cpp/atomic/atomic/load.html:std::atomic::load
 ./cpp/atomic/atomic/fetch_xor.html:std::atomic::fetch_xor
 ./cpp/atomic/atomic/operator=.html:std::atomic::operator=
@@ -1836,8 +1844,17 @@
 ./cpp/utility.html:Utility library
 ./cpp/links.html:Useful resources
 ./cpp/experimental/polymorphic_allocator.html:std::experimental::pmr::polymorphic_allocator
+./cpp/experimental/flex_barrier.html:std::experimental::flex_barrier
+./cpp/experimental/latch.html:std::experimental::latch
 ./cpp/experimental/propagate_const.html:std::experimental::propagate_const
 ./cpp/experimental/observer_ptr.html:std::experimental::observer_ptr
+./cpp/experimental/when_any.html:std::experimental::when_any
+./cpp/experimental/latch/latch.html:std::experimental::latch::latch
+./cpp/experimental/latch/count_down_and_wait.html:std::experimental::latch::count_down_and_wait
+./cpp/experimental/latch/is_ready.html:std::experimental::latch::is_ready
+./cpp/experimental/latch/count_down.html:std::experimental::latch::count_down
+./cpp/experimental/latch/~latch.html:std::experimental::latch::~latch
+./cpp/experimental/latch/wait.html:std::experimental::latch::wait
 ./cpp/experimental/multiset/erase_if.html:std::experimental::erase_if (std::multiset)
 ./cpp/experimental/source_location/file_name.html:std::experimental::source_location::file_name
 ./cpp/experimental/source_location/column.html:std::experimental::source_location::column
@@ -1848,11 +1865,20 @@
 ./cpp/experimental/execution_policy_tag_t.html:std::experimental::parallel::sequential_execution_policy, std::experimental::parallel::parallel_execution_policy, std::experimental::parallel::parallel_vector_execution_policy
 ./cpp/experimental/reduce.html:std::experimental::parallel::reduce
 ./cpp/experimental/unordered_set/erase_if.html:std::experimental::erase_if (std::unordered_set)
+./cpp/experimental/shared_future.html:std::experimental::shared_future
 ./cpp/experimental/make_array.html:std::experimental::make_array
 ./cpp/experimental/forward_list/erase.html:std::experimental::erase (std::forward_list)
 ./cpp/experimental/forward_list/erase_if.html:std::experimental::erase_if (std::forward_list)
 ./cpp/experimental/type_trait_variable_templates.html:Variable templates for type traits (library fundamentals TS)
 ./cpp/experimental/to_array.html:std::experimental::to_array
+./cpp/experimental/synchronized_pool_resource/do_allocate.html:std::experimental::pmr::synchronized_pool_resource::do_allocate
+./cpp/experimental/synchronized_pool_resource/~synchronized_pool_resource.html:std::experimental::pmr::synchronized_pool_resource::~synchronized_pool_resource
+./cpp/experimental/synchronized_pool_resource/options.html:std::experimental::pmr::synchronized_pool_resource::options
+./cpp/experimental/synchronized_pool_resource/upstream_resource.html:std::experimental::pmr::synchronized_pool_resource::upstream_resource
+./cpp/experimental/synchronized_pool_resource/do_deallocate.html:std::experimental::pmr::synchronized_pool_resource::do_deallocate
+./cpp/experimental/synchronized_pool_resource/release.html:std::experimental::pmr::synchronized_pool_resource::release
+./cpp/experimental/synchronized_pool_resource/do_is_equal.html:std::experimental::pmr::synchronized_pool_resource::do_is_equal
+./cpp/experimental/synchronized_pool_resource/synchronized_pool_resource.html:std::experimental::pmr::synchronized_pool_resource::synchronized_pool_resource
 ./cpp/experimental/list/erase.html:std::experimental::erase (std::list)
 ./cpp/experimental/list/erase_if.html:std::experimental::erase_if (std::list)
 ./cpp/experimental/search.html:std::experimental::search
@@ -1865,7 +1891,7 @@
 ./cpp/experimental/fs/path/path.html:std::experimental::filesystem::path::path
 ./cpp/experimental/fs/path/operator_ltltgtgt.html:operator&lt;&lt;,&gt;&gt;(std::experimental::filesystem::path)
 ./cpp/experimental/fs/path/operator_slash.html:std::experimental::filesystem::operator/(std::experimental::filesystem::path)
-./cpp/experimental/fs/path/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::fs::path)
+./cpp/experimental/fs/path/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::experimental::filesystem::path)
 ./cpp/experimental/fs/path/append.html:std::experimental::filesystem::path::append, std::experimental::filesystem::path::operator/=
 ./cpp/experimental/fs/path/compare.html:std::experimental::filesystem::path::compare
 ./cpp/experimental/fs/path/replace_extension.html:std::experimental::filesystem::path::replace_extension
@@ -1924,8 +1950,7 @@
 ./cpp/experimental/fs/recursive_directory_iterator/options.html:std::experimental::filesystem::recursive_directory_iterator::options
 ./cpp/experimental/fs/recursive_directory_iterator/recursion_pending.html:std::experimental::filesystem::recursive_directory_iterator::recursion_pending
 ./cpp/experimental/fs/recursive_directory_iterator/disable_recursion_pending.html:std::experimental::filesystem::recursive_directory_iterator::disable_recursion_pending
-./cpp/experimental/fs/recursive_directory_iterator/operator*.html:std::experimental::filesystem::recursive_directory_iterator::operator*, std::experimental::filesystem::recursive_directory_iterator::operator-&gt;
-./cpp/experimental/fs/recursive_directory_iterator/operator=.html:std::experimental::filesystem::recursive_directory_iterator::operator=
+./cpp/experimental/fs/recursive_directory_iterator/operator_star_.html:std::experimental::filesystem::recursive_directory_iterator::operator*, std::experimental::filesystem::recursive_directory_iterator::operator-&gt;
 ./cpp/experimental/fs/recursive_directory_iterator/increment.html:std::experimental::filesystem::recursive_directory_iterator::operator++, increment
 ./cpp/experimental/fs/recursive_directory_iterator/begin.html:std::experimental::filesystem::begin(recursive_directory_iterator), std::experimental::filesystem::end(recursive_directory_iterator)
 ./cpp/experimental/fs/recursive_directory_iterator/recursive_directory_iterator.html:std::experimental::filesystem::recursive_directory_iterator::recursive_directory_iterator
@@ -1960,21 +1985,24 @@
 ./cpp/experimental/fs/equivalent.html:std::experimental::filesystem::equivalent
 ./cpp/experimental/fs/directory_iterator/directory_iterator.html:std::experimental::filesystem::directory_iterator::directory_iterator
 ./cpp/experimental/fs/directory_iterator/operator=.html:std::experimental::filesystem::directory_iterator::operator=
-./cpp/experimental/fs/directory_iterator/operator*.html:std::experimental::filesystem::directory_iterator::operator*,operator-&gt;
-./cpp/experimental/fs/directory_iterator/operator=.html:std::experimental::filesystem::directory_iterator::operator=
+./cpp/experimental/fs/directory_iterator/operator_star_.html:std::experimental::filesystem::directory_iterator::operator*,operator-&gt;
 ./cpp/experimental/fs/directory_iterator/increment.html:std::experimental::filesystem::directory_iterator::operator=
 ./cpp/experimental/fs/directory_iterator/begin.html:std::experimental::filesystem::begin(directory_iterator), std::experimental::filesystem::end(directory_iterator)
 ./cpp/experimental/fs/is_regular_file.html:std::experimental::filesystem::is_regular_file
 ./cpp/experimental/fs/recursive_directory_iterator.html:std::experimental::filesystem::recursive_directory_iterator
 ./cpp/experimental/fs/exists.html:std::experimental::filesystem::exists
+./cpp/experimental/make_ready_future.html:std::experimental::make_ready_future
+./cpp/experimental/weak_ptr.html:std::experimental::weak_ptr
 ./cpp/experimental/nonesuch.html:std::experimental::nonesuch
 ./cpp/experimental/function.html:std::experimental::function
 ./cpp/experimental/any/any.html:std::experimental::any::any
 ./cpp/experimental/any/operator=.html:std::experimental::any::operator=
 ./cpp/experimental/any/type.html:std::experimental::any::type
 ./cpp/experimental/any/swap.html:std::experimental::any::swap
+./cpp/experimental/any/~any.html:std::experimental::any::~any
 ./cpp/experimental/any/empty.html:std::experimental::any::empty
-./cpp/experimental/any/swap2.html:std::experimental::swap
+./cpp/experimental/any/swap2.html:std::experimental::swap(std::experimental::any)
+./cpp/experimental/any/bad_any_cast.html:std::experimental::bad_any_cast
 ./cpp/experimental/any/any_cast.html:std::experimental::any_cast
 ./cpp/experimental/any/clear.html:std::experimental::any::clear
 ./cpp/experimental/unordered_multimap/erase_if.html:std::experimental::erase_if (std::unordered_multimap)
@@ -1989,14 +2017,51 @@
 ./cpp/experimental/memory_resource/memory_resource.html:std::experimental::pmr::memory_resource::memory_resource
 ./cpp/experimental/new_delete_resource.html:std::experimental::pmr::new_delete_resource
 ./cpp/experimental/map/erase_if.html:std::experimental::erase_if (std::map)
+./cpp/experimental/atomic_shared_ptr/is_lock_free.html:std::experimental::atomic_shared_ptr::is_lock_free
+./cpp/experimental/atomic_shared_ptr/load.html:std::experimental::atomic_shared_ptr::load
+./cpp/experimental/atomic_shared_ptr/operator=.html:std::experimental::atomic_shared_ptr::operator=
+./cpp/experimental/atomic_shared_ptr/operator_shared_ptr.html:std::experimental::atomic_shared_ptr::operator shared_ptr&lt;T&gt;
+./cpp/experimental/atomic_shared_ptr/compare_exchange.html:std::experimental::atomic_shared_ptr::compare_exchange_strong, std::experimental::atomic_shared_ptr::compare_exchange_weak
+./cpp/experimental/atomic_shared_ptr/store.html:std::experimental::atomic_shared_ptr::store
+./cpp/experimental/atomic_shared_ptr/exchange.html:std::experimental::atomic_shared_ptr::exchange
+./cpp/experimental/atomic_shared_ptr/atomic_shared_ptr.html:std::experimental::atomic_shared_ptr::atomic_shared_ptr
+./cpp/experimental/shared_ptr/hash.html:std::hash(std::experimental::shared_ptr)
+./cpp/experimental/shared_ptr/pointer_cast.html:std::experimental::static_pointer_cast, std::experimental::dynamic_pointer_cast, std::experimental::const_pointer_cast, std::experimental::reinterpret_pointer_cast
+./cpp/experimental/shared_ptr/shared_ptr.html:std::experimental::shared_ptr::shared_ptr
+./cpp/experimental/shared_ptr/operator_star_.html:std::experimental::shared_ptr::operator*, std::experimental::shared_ptr::operator-&gt;
+./cpp/experimental/shared_ptr/get.html:std::experimental::shared_ptr::get
+./cpp/experimental/shared_ptr/operator_at.html:std::experimental::shared_ptr::operator[]
 ./cpp/experimental/any.html:std::experimental::any
+./cpp/experimental/unsynchronized_pool_resource/do_allocate.html:std::experimental::pmr::unsynchronized_pool_resource::do_allocate
+./cpp/experimental/unsynchronized_pool_resource/options.html:std::experimental::pmr::unsynchronized_pool_resource::options
+./cpp/experimental/unsynchronized_pool_resource/~unsynchronized_pool_resource.html:std::experimental::pmr::unsynchronized_pool_resource::~unsynchronized_pool_resource
+./cpp/experimental/unsynchronized_pool_resource/upstream_resource.html:std::experimental::pmr::unsynchronized_pool_resource::upstream_resource
+./cpp/experimental/unsynchronized_pool_resource/do_deallocate.html:std::experimental::pmr::unsynchronized_pool_resource::do_deallocate
+./cpp/experimental/unsynchronized_pool_resource/release.html:std::experimental::pmr::unsynchronized_pool_resource::release
+./cpp/experimental/unsynchronized_pool_resource/unsynchronized_pool_resource.html:std::experimental::pmr::unsynchronized_pool_resource::unsynchronized_pool_resource
+./cpp/experimental/unsynchronized_pool_resource/do_is_equal.html:std::experimental::pmr::unsynchronized_pool_resource::do_is_equal
 ./cpp/experimental/transform_reduce.html:std::experimental::parallel::transform_reduce
+./cpp/experimental/flex_barrier/flex_barrier.html:std::experimental::flex_barrier::flex_barrier
+./cpp/experimental/flex_barrier/arrive_and_wait.html:std::experimental::flex_barrier::arrive_and_wait
+./cpp/experimental/flex_barrier/arrive_and_drop.html:std::experimental::flex_barrier::arrive_and_drop
+./cpp/experimental/flex_barrier/~flex_barrier.html:std::experimental::flex_barrier::~flex_barrier
 ./cpp/experimental/set_default_resource.html:std::experimental::pmr::set_default_resource
 ./cpp/experimental/fs.html:Filesystem library
 ./cpp/experimental/negation.html:std::experimental::negation
 ./cpp/experimental/gcd.html:std::experimental::gcd
 ./cpp/experimental/unordered_multiset/erase_if.html:std::experimental::erase_if (std::unordered_multiset)
+./cpp/experimental/pool_options.html:std::experimental::pmr::pool_options
 ./cpp/experimental/optional.html:std::experimental::optional
+./cpp/experimental/future.html:std::experimental::future
+./cpp/experimental/special_math.html:Mathematical special functions
+./cpp/experimental/monotonic_buffer_resource/~monotonic_buffer_resource.html:std::experimental::pmr::monotonic_buffer_resource::~monotonic_buffer_resource
+./cpp/experimental/monotonic_buffer_resource/do_allocate.html:std::experimental::pmr::monotonic_buffer_resource::do_allocate
+./cpp/experimental/monotonic_buffer_resource/upstream_resource.html:std::experimental::pmr::monotonic_buffer_resource::upstream_resource
+./cpp/experimental/monotonic_buffer_resource/do_deallocate.html:std::experimental::pmr::monotonic_buffer_resource::do_deallocate
+./cpp/experimental/monotonic_buffer_resource/release.html:std::experimental::pmr::monotonic_buffer_resource::release
+./cpp/experimental/monotonic_buffer_resource/do_is_equal.html:std::experimental::pmr::monotonic_buffer_resource::do_is_equal
+./cpp/experimental/monotonic_buffer_resource/monotonic_buffer_resource.html:std::experimental::pmr::monotonic_buffer_resource::monotonic_buffer_resource
+./cpp/experimental/atomic_weak_ptr.html:std::experimental::atomic_weak_ptr
 ./cpp/experimental/basic_string/erase.html:std::experimental::erase (std::basic_string)
 ./cpp/experimental/basic_string/erase_if.html:std::experimental::erase_if (std::basic_string)
 ./cpp/experimental/vector/erase.html:std::experimental::erase (std::vector)
@@ -2008,11 +2073,12 @@
 ./cpp/experimental/ostream_joiner/ostream_joiner.html:std::experimental::ostream_joiner::ostream_joiner
 ./cpp/experimental/ostream_joiner/operator_arith.html:std::experimental::ostream_joiner::operator++
 ./cpp/experimental/ostream_joiner/make_ostream_joiner.html:std::experimental::make_ostream_joiner
-./cpp/experimental/ostream_joiner/operator*.html:std::experimental::ostream_joiner::operator*
-./cpp/experimental/ostream_joiner/operator=.html:std::experimental::ostream_joiner::operator=
-./cpp/experimental/ostream_joiner/operator_arith.html:std::experimental::ostream_joiner::operator++
+./cpp/experimental/ostream_joiner/operator_star_.html:std::experimental::ostream_joiner::operator*
+./cpp/experimental/barrier.html:std::experimental::barrier
+./cpp/experimental/concurrency/packaged_task.html:std::experimental::packaged_task (concurrency TS)
+./cpp/experimental/concurrency/promise.html:std::experimental::promise (concurrency TS)
 ./cpp/experimental/optional/hash.html:std::hash &lt;std::experimental::optional&gt;
-./cpp/experimental/optional/operator_cmp.html:operator==, operator&lt;(std::experimental::optional)
+./cpp/experimental/optional/operator_cmp.html:operator==, !=, &lt;, &lt;=, &gt;, &gt;=(std::experimental::optional)
 ./cpp/experimental/optional/value.html:std::experimental::optional::value
 ./cpp/experimental/optional/~optional.html:std::experimental::optional::~optional
 ./cpp/experimental/optional/value_or.html:std::experimental::optional::value_or
@@ -2027,44 +2093,72 @@
 ./cpp/experimental/optional/emplace.html:std::experimental::optional::emplace
 ./cpp/experimental/optional/nullopt.html:std::experimental::nullopt
 ./cpp/experimental/optional/swap2.html:std::experimental::swap(std::experimental::optional)
+./cpp/experimental/optional/operator_star_.html:std::experimental::optional::operator-&gt;, std::experimental::optional::operator*
 ./cpp/experimental/optional/bad_optional_access.html:std::experimental::bad_optional_access
-./cpp/experimental/optional/operator*.html:std::experimental::optional::operator-&gt;, std::experimental::optional::operator*
-./cpp/experimental/optional/operator=.html:std::experimental::optional::operator=
-./cpp/experimental/optional/operator_bool.html:std::experimental::optional::operator bool
-./cpp/experimental/optional/operator_cmp.html:operator==, operator&lt;(std::experimental::optional)
 ./cpp/experimental/disjunction.html:std::experimental::disjunction
 ./cpp/experimental/invocation_type.html:std::experimental::invocation_type, std::experimental::raw_invocation_type
 ./cpp/experimental/parallelism/existing.html:Parallelized version of existing algorithms (parallelism TS)
+./cpp/experimental/atomic_weak_ptr/is_lock_free.html:std::experimental::atomic_weak_ptr::is_lock_free
+./cpp/experimental/atomic_weak_ptr/load.html:std::experimental::atomic_weak_ptr::load
+./cpp/experimental/atomic_weak_ptr/operator=.html:std::experimental::atomic_weak_ptr::operator=
+./cpp/experimental/atomic_weak_ptr/operator_weak_ptr.html:std::experimental::atomic_weak_ptr::operator weak_ptr&lt;T&gt;
+./cpp/experimental/atomic_weak_ptr/atomic_weak_ptr.html:std::experimental::atomic_weak_ptr::atomic_weak_ptr
+./cpp/experimental/atomic_weak_ptr/compare_exchange.html:std::experimental::atomic_weak_ptr::compare_exchange_strong, std::experimental::atomic_weak_ptr::compare_exchange_weak
+./cpp/experimental/atomic_weak_ptr/store.html:std::experimental::atomic_weak_ptr::store
+./cpp/experimental/atomic_weak_ptr/exchange.html:std::experimental::atomic_weak_ptr::exchange
+./cpp/experimental/future/then.html:std::experimental::future::then
+./cpp/experimental/future/operator=.html:std::experimental::future::operator=
+./cpp/experimental/future/is_ready.html:std::experimental::future::is_ready
+./cpp/experimental/future/future.html:std::experimental::future::future
 ./cpp/experimental/multimap/erase_if.html:std::experimental::erase_if (std::multimap)
 ./cpp/experimental/null_memory_resource.html:std::experimental::pmr::null_memory_resource
 ./cpp/experimental/erased_type.html:std::experimental::erased_type
+./cpp/experimental/shared_future/shared_future.html:std::experimental::shared_future::shared_future
+./cpp/experimental/shared_future/then.html:std::experimental::shared_future::then
+./cpp/experimental/shared_future/operator=.html:std::experimental::shared_future::operator=
+./cpp/experimental/shared_future/is_ready.html:std::experimental::shared_future::is_ready
+./cpp/experimental/atomic_shared_ptr.html:std::experimental::atomic_shared_ptr
 ./cpp/experimental/ostream_joiner.html:std::experimental::ostream_joiner
 ./cpp/experimental/deque/erase.html:std::experimental::erase (std::deque)
 ./cpp/experimental/deque/erase_if.html:std::experimental::erase_if (std::deque)
+./cpp/experimental/function/operator_cmp.html:operator==,!=(std::experimental::function)
+./cpp/experimental/function/function.html:std::experimental::function::function
+./cpp/experimental/function/operator=.html:std::experimental::function::operator=
 ./cpp/experimental/function/swap.html:std::experimental::function::swap
 ./cpp/experimental/function/uses_allocator.html:std::uses_allocator&lt;std::experimental::function&gt;
 ./cpp/experimental/function/get_memory_resource.html:std::experimental::function::get_memory_resource
 ./cpp/experimental/function/swap2.html:std::experimental::swap(std::experimental::function)
+./cpp/experimental/special_math/riemann_zeta.html:std::riemann_zeta, std::riemann_zetaf, std::riemann_zetal
+./cpp/experimental/special_math/hermite.html:std::hermite, std::hermitef, std::hermitel
+./cpp/experimental/special_math/beta.html:std::beta, std::betaf, std::betal
+./cpp/experimental/special_math/assoc_laguerre.html:std::assoc_laguerre, std::assoc_laguerref, std::assoc_laguerrel
+./cpp/experimental/special_math/legendre.html:std::legendre, std::legendref, std::legendrel
+./cpp/experimental/special_math/expint.html:std::expint, std::expintf, std::expintl
+./cpp/experimental/special_math/laguerre.html:std::laguerre, std::laguerref, std::laguerrel
+./cpp/experimental/special_math/comp_ellint_1.html:std::comp_ellint_1, std::comp_ellint_1f, std::comp_ellint_1l
+./cpp/experimental/special_math/assoc_legendre.html:std::assoc_legendre, std::assoc_legendref, std::assoc_legendrel
 ./cpp/experimental/shuffle.html:std::experimental::shuffle
 ./cpp/experimental/lib_extensions/packaged_task.html:std::experimental::packaged_task (library fundamentals TS)
 ./cpp/experimental/lib_extensions/pmr_container.html:Convenience aliases for containers using polymorphic allocators (library fundamentals TS)
+./cpp/experimental/lib_extensions/promise/uses_allocator.html:std::uses_allocator&lt;std::experimental::promise&gt;
+./cpp/experimental/lib_extensions/promise/promise.html:std::experimental::promise::promise (library fundamentals TS)
 ./cpp/experimental/lib_extensions/promise/get_memory_resource.html:std::experimental::promise::get_memory_resource
+./cpp/experimental/lib_extensions/promise/swap2.html:std::experimental::swap(std::experimental::promise)
 ./cpp/experimental/lib_extensions/promise.html:std::experimental::promise (library fundamentals TS)
 ./cpp/experimental/lib_extensions/packaged_task/packaged_task.html:std::experimental::packaged_task::packaged_task (library fundamentals TS)
+./cpp/experimental/lib_extensions/packaged_task/uses_allocator.html:std::uses_allocator&lt;std::experimental::packaged_task&gt;
 ./cpp/experimental/lib_extensions/packaged_task/get_memory_resource.html:std::experimental::packaged_task::get_memory_resource
+./cpp/experimental/lib_extensions/packaged_task/swap2.html:std::experimental::swap(std::experimental::packaged_task)
 ./cpp/experimental/observer_ptr/observer_ptr.html:std::experimental::observer_ptr::observer_ptr
 ./cpp/experimental/observer_ptr/hash.html:std::hash(std::experimental::observer_ptr)
 ./cpp/experimental/observer_ptr/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::experimental::observer_ptr)
 ./cpp/experimental/observer_ptr/operator_bool.html:std::experimental::observer_ptr::operator bool
-./cpp/experimental/observer_ptr/operator_pointer.html:std::experimental::observer_ptr::operator pointer
+./cpp/experimental/observer_ptr/operator_pointer.html:std::experimental::observer_ptr::operator element_type*
 ./cpp/experimental/observer_ptr/swap.html:std::experimental::observer_ptr::swap
 ./cpp/experimental/observer_ptr/release.html:std::experimental::observer_ptr::release
 ./cpp/experimental/observer_ptr/swap2.html:std::experimental::swap(std::experimental::observer_ptr)
+./cpp/experimental/observer_ptr/operator_star_.html:std::experimental::observer_ptr::operator*, std::experimental::observer_ptr::operator-&gt;
 ./cpp/experimental/observer_ptr/make_observer.html:std::experimental::make_observer
-./cpp/experimental/observer_ptr/operator*.html:std::experimental::observer_ptr::operator*, std::experimental::observer_ptr::operator-&gt;
-./cpp/experimental/observer_ptr/operator_bool.html:std::experimental::observer_ptr::operator bool
-./cpp/experimental/observer_ptr/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::experimental::observer_ptr)
-./cpp/experimental/observer_ptr/operator_pointer.html:std::experimental::observer_ptr::operator pointer
 ./cpp/experimental/observer_ptr/get.html:std::experimental::observer_ptr::get
 ./cpp/experimental/observer_ptr/reset.html:std::experimental::observer_ptr::reset
 ./cpp/experimental/is_detected.html:std::experimental::is_detected, std::experimental::detected_t, std::experimental::detected_or
@@ -2105,35 +2199,118 @@
 ./cpp/experimental/set/erase_if.html:std::experimental::erase_if (std::set)
 ./cpp/experimental/boyer_moore_searcher.html:std::experimental::boyer_moore_searcher, std::experimental::make_boyer_moore_searcher
 ./cpp/experimental/not_fn.html:std::experimental::not_fn
+./cpp/experimental/shared_ptr.html:std::experimental::shared_ptr
 ./cpp/experimental/reseed.html:std::experimental::reseed
+./cpp/experimental/barrier/~barrier.html:std::experimental::barrier::~barrier
+./cpp/experimental/barrier/arrive_and_wait.html:std::experimental::barrier::arrive_and_wait
+./cpp/experimental/barrier/arrive_and_drop.html:std::experimental::barrier::arrive_and_drop
+./cpp/experimental/barrier/barrier.html:std::experimental::barrier::barrier
 ./cpp/experimental/unordered_map/erase_if.html:std::experimental::erase_if (std::unordered_map)
+./cpp/experimental/unsynchronized_pool_resource.html:std::experimental::pmr::unsynchronized_pool_resource
+./cpp/experimental/ranges.html:Extensions for ranges
+./cpp/experimental/ranges/iterator/ForwardIterator.html:std::experimental::ranges::ForwardIterator
+./cpp/experimental/ranges/iterator/IndirectlyMovableStorable.html:std::experimental::ranges::IndirectlyMovableStorable
+./cpp/experimental/ranges/iterator/Permutable.html:std::experimental::ranges::Permutable
+./cpp/experimental/ranges/iterator/BidirectionalRange.html:std::experimental::ranges::BidirectionalRange
+./cpp/experimental/ranges/iterator/IndirectRelation.html:std::experimental::ranges::IndirectRelation
+./cpp/experimental/ranges/iterator/ForwardRange.html:std::experimental::ranges::ForwardRange
+./cpp/experimental/ranges/iterator/SizedRange.html:std::experimental::ranges::SizedRange
+./cpp/experimental/ranges/iterator/IndirectlyMovable.html:std::experimental::ranges::IndirectlyMovable
+./cpp/experimental/ranges/iterator/BidirectionalIterator.html:std::experimental::ranges::BidirectionalIterator
+./cpp/experimental/ranges/iterator/IndirectlySwappable.html:std::experimental::ranges::IndirectlySwappable
+./cpp/experimental/ranges/iterator/IndirectlyComparable.html:std::experimental::ranges::IndirectlyComparable
+./cpp/experimental/ranges/iterator/IndirectStrictWeakOrder.html:std::experimental::ranges::IndirectStrictWeakOrder
+./cpp/experimental/ranges/iterator/OutputIterator.html:std::experimental::ranges::OutputIterator
+./cpp/experimental/ranges/iterator/IndirectPredicate.html:std::experimental::ranges::IndirectPredicate
+./cpp/experimental/ranges/iterator/RandomAccessRange.html:std::experimental::ranges::RandomAccessRange
+./cpp/experimental/ranges/iterator/View.html:std::experimental::ranges::View
+./cpp/experimental/ranges/iterator/Sortable.html:std::experimental::ranges::Sortable
+./cpp/experimental/ranges/iterator/InputIterator.html:std::experimental::ranges::InputIterator
+./cpp/experimental/ranges/iterator/IndirectlyCopyable.html:std::experimental::ranges::IndirectlyCopyable
+./cpp/experimental/ranges/iterator/Sentinel.html:std::experimental::ranges::Sentinel
+./cpp/experimental/ranges/iterator/SizedSentinel.html:std::experimental::ranges::SizedSentinel
+./cpp/experimental/ranges/iterator/WeaklyIncrementable.html:std::experimental::ranges::WeaklyIncrementable
+./cpp/experimental/ranges/iterator/InputRange.html:std::experimental::ranges::InputRange
+./cpp/experimental/ranges/iterator/IndirectlyCopyableStorable.html:std::experimental::ranges::IndirectlyCopyableStorable
+./cpp/experimental/ranges/iterator/OutputRange.html:std::experimental::ranges::OutputRange
+./cpp/experimental/ranges/iterator/Incrementable.html:std::experimental::ranges::Incrementable
+./cpp/experimental/ranges/iterator/Writable.html:std::experimental::ranges::Writable
+./cpp/experimental/ranges/iterator/Readable.html:std::experimental::ranges::Readable
+./cpp/experimental/ranges/iterator/BoundedRange.html:std::experimental::ranges::BoundedRange
+./cpp/experimental/ranges/iterator/Mergeable.html:std::experimental::ranges::Mergeable
+./cpp/experimental/ranges/iterator/Iterator.html:std::experimental::ranges::Iterator
+./cpp/experimental/ranges/iterator/projected.html:std::experimental::ranges::projected
+./cpp/experimental/ranges/iterator/IndirectInvocable.html:std::experimental::ranges::IndirectInvocable, std::experimental::ranges::IndirectRegularInvocable
+./cpp/experimental/ranges/iterator/RandomAccessIterator.html:std::experimental::ranges::RandomAccessIterator
+./cpp/experimental/ranges/iterator/Range.html:std::experimental::ranges::Range
+./cpp/experimental/ranges/functional/invoke.html:std::experimental::ranges::invoke
+./cpp/experimental/ranges/functional/identity.html:std::experimental::ranges::identity
+./cpp/experimental/ranges/concepts/Swappable.html:std::experimental::ranges::Swappable
+./cpp/experimental/ranges/concepts/UniformRandomNumberGenerator.html:std::experimental::ranges::UniformRandomNumberGenerator
+./cpp/experimental/ranges/concepts/MoveConstructible.html:std::experimental::ranges::MoveConstructible
+./cpp/experimental/ranges/concepts/CommonReference.html:std::experimental::ranges::CommonReference
+./cpp/experimental/ranges/concepts/Copyable.html:std::experimental::ranges::Copyable
+./cpp/experimental/ranges/concepts/UnsignedIntegral.html:std::experimental::ranges::UnsignedIntegral
+./cpp/experimental/ranges/concepts/StrictWeakOrder.html:std::experimental::ranges::StrictWeakOrder
+./cpp/experimental/ranges/concepts/Semiregular.html:std::experimental::ranges::Semiregular
+./cpp/experimental/ranges/concepts/Integral.html:std::experimental::ranges::Integral
+./cpp/experimental/ranges/concepts/Constructible.html:std::experimental::ranges::Constructible
+./cpp/experimental/ranges/concepts/Regular.html:std::experimental::ranges::Regular
+./cpp/experimental/ranges/concepts/DerivedFrom.html:std::experimental::ranges::DerivedFrom
+./cpp/experimental/ranges/concepts/Relation.html:std::experimental::ranges::Relation
+./cpp/experimental/ranges/concepts/Movable.html:std::experimental::ranges::Movable
+./cpp/experimental/ranges/concepts/WeaklyEqualityComparable.html:std::experimental::ranges::WeaklyEqualityComparable
+./cpp/experimental/ranges/concepts/SignedIntegral.html:std::experimental::ranges::SignedIntegral
+./cpp/experimental/ranges/concepts/StrictTotallyOrdered.html:std::experimental::ranges::StrictTotallyOrdered
+./cpp/experimental/ranges/concepts/CopyConstructible.html:std::experimental::ranges::CopyConstructible
+./cpp/experimental/ranges/concepts/Common.html:std::experimental::ranges::Common
+./cpp/experimental/ranges/concepts/ConvertibleTo.html:std::experimental::ranges::ConvertibleTo
+./cpp/experimental/ranges/concepts/Same.html:std::experimental::ranges::Same
+./cpp/experimental/ranges/concepts/Invocable.html:std::experimental::ranges::Invocable, std::experimental::ranges::RegularInvocable
+./cpp/experimental/ranges/concepts/Destructible.html:std::experimental::ranges::Destructible
+./cpp/experimental/ranges/concepts/Assignable.html:std::experimental::ranges::Assignable
+./cpp/experimental/ranges/concepts/Boolean.html:std::experimental::ranges::Boolean
+./cpp/experimental/ranges/concepts/Predicate.html:std::experimental::ranges::Predicate
+./cpp/experimental/ranges/concepts/DefaultConstructible.html:std::experimental::ranges::DefaultConstructible
+./cpp/experimental/ranges/concepts/EqualityComparable.html:std::experimental::ranges::EqualityComparable
+./cpp/experimental/ranges/algorithm/sort.html:std::experimental::ranges::sort
+./cpp/experimental/ranges/algorithm/copy.html:std::experimental::ranges::copy, std::experimental::ranges::copy_if
 ./cpp/experimental/basic_string_view.html:std::experimental::basic_string_view
+./cpp/experimental/polymorphic_allocator/polymorphic_allocator.html:std::experimental::pmr::polymorphic_allocator::polymorphic_allocator
+./cpp/experimental/polymorphic_allocator/select_on_container_copy_construction.html:std::experimental::pmr::polymorphic_allocator::select_on_container_copy_construction
+./cpp/experimental/polymorphic_allocator/destroy.html:std::experimental::pmr::polymorphic_allocator::destroy
+./cpp/experimental/polymorphic_allocator/operator=.html:std::experimental::pmr::polymorphic_allocator::operator=
+./cpp/experimental/polymorphic_allocator/allocate.html:std::experimental::pmr::polymorphic_allocator::allocate
+./cpp/experimental/polymorphic_allocator/resource.html:std::experimental::pmr::polymorphic_allocator::resource
+./cpp/experimental/polymorphic_allocator/construct.html:std::experimental::pmr::polymorphic_allocator::construct
+./cpp/experimental/polymorphic_allocator/deallocate.html:std::experimental::pmr::polymorphic_allocator::deallocate
+./cpp/experimental/polymorphic_allocator/operator_eq.html:operator==,!=(std::experimental::pmr::polymorphic_allocator)
 ./cpp/experimental/boyer_moore_horspool_searcher.html:std::experimental::boyer_moore_horspool_searcher, std::experimental::make_boyer_moore_horspool_searcher
 ./cpp/experimental/propagate_const/propagate_const.html:std::experimental::propagate_const::propagate_const
-./cpp/experimental/propagate_const/operator_element_type*.html:std::experimental::propagate_const::operator element_type*, std::experimental::propagate_const::operator const element_type*
 ./cpp/experimental/propagate_const/hash.html:std::hash(std::experimental::propagate_const)
 ./cpp/experimental/propagate_const/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::experimental::propagate_const)
 ./cpp/experimental/propagate_const/get_underlying.html:std::experimental::get_underlying
 ./cpp/experimental/propagate_const/operator_bool.html:std::experimental::propagate_const::operator bool
 ./cpp/experimental/propagate_const/operator=.html:std::experimental::propagate_const::operator=
 ./cpp/experimental/propagate_const/swap.html:std::experimental::propagate_const::swap
+./cpp/experimental/propagate_const/operator_element_type_star_.html:std::experimental::propagate_const::operator element_type*, std::experimental::propagate_const::operator const element_type*
 ./cpp/experimental/propagate_const/swap2.html:std::experimental::swap(std::experimental::propagate_const)
-./cpp/experimental/propagate_const/operator*.html:std::experimental::propagate_const::operator*, std::experimental::propagate_const::operator-&gt;
-./cpp/experimental/propagate_const/operator=.html:std::experimental::propagate_const::operator=
-./cpp/experimental/propagate_const/operator_bool.html:std::experimental::propagate_const::operator bool
-./cpp/experimental/propagate_const/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::experimental::propagate_const)
-./cpp/experimental/propagate_const/operator_element_type*.html:std::experimental::propagate_const::operator element_type*, std::experimental::propagate_const::operator const element_type*
+./cpp/experimental/propagate_const/operator_star_.html:std::experimental::propagate_const::operator*, std::experimental::propagate_const::operator-&gt;
 ./cpp/experimental/propagate_const/cmp_func.html:std::equal_to, not_equal_to, less, greater, less_equal, greater_equal(std::experimental::propagate_const)
 ./cpp/experimental/propagate_const/get.html:std::experimental::propagate_const::get
+./cpp/experimental/when_all.html:std::experimental::when_all
 ./cpp/experimental/is_execution_policy.html:std::experimental::parallel::is_execution_policy
 ./cpp/experimental/conjunction.html:std::experimental::conjunction
+./cpp/experimental/make_exceptional_future.html:std::experimental::make_exceptional_future
 ./cpp/experimental/lib_extensions.html:C++ standard libraries extensions
 ./cpp/experimental/monotonic_buffer_resource.html:std::experimental::pmr::monotonic_buffer_resource
+./cpp/experimental/weak_ptr/weak_ptr.html:std::experimental::weak_ptr::weak_ptr
 ./cpp/experimental/sample.html:std::experimental::sample
 ./cpp/experimental/source_location.html:std::experimental::source_location
 ./cpp/experimental/randint.html:std::experimental::randint
 ./cpp/experimental/resource_adaptor.html:std::experimental::pmr::resource_adaptor
 ./cpp/experimental/memory_resource.html:std::experimental::pmr::memory_resource
+./cpp/experimental/synchronized_pool_resource.html:std::experimental::pmr::synchronized_pool_resource
 ./cpp/error/error_category.html:std::error_category
 ./cpp/error/length_error.html:std::length_error
 ./cpp/error/logic_error.html:std::logic_error
@@ -2144,6 +2321,7 @@
 ./cpp/error/overflow_error/overflow_error.html:std::overflow_error
 ./cpp/error/domain_error/domain_error.html:std::domain_error
 ./cpp/error/out_of_range/out_of_range.html:std::out_of_range
+./cpp/error/tx_exception.html:std::tx_exception
 ./cpp/error/underflow_error/underflow_error.html:std::underflow_error
 ./cpp/error/throw_with_nested.html:std::throw_with_nested
 ./cpp/error/system_error.html:std::system_error
@@ -2173,7 +2351,8 @@
 ./cpp/error/system_error/system_error.html:std::system_error::system_error
 ./cpp/error/system_error/what.html:std::system_error::what
 ./cpp/error/system_error/code.html:std::system_error::code
-./cpp/error/error_condition/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::error_condition)
+./cpp/error/error_condition/hash.html:std::hash&lt;std::error_condition&gt;
+./cpp/error/error_condition/operator_cmp.html:operator==,!=,&lt;(std::error_condition)
 ./cpp/error/error_condition/value.html:std::error_condition::value
 ./cpp/error/error_condition/category.html:std::error_condition::category
 ./cpp/error/error_condition/is_error_condition_enum.html:std::is_error_condition_enum
@@ -2275,7 +2454,7 @@
 ./cpp/keyword/bitor.html:C++ keywords: bitor
 ./cpp/keyword/delete.html:C++ keywords: delete
 ./cpp/keyword/virtual.html:C++ keywords: virtual
-./cpp/keyword/xor_eq.html:C++ keywords: xor
+./cpp/keyword/xor_eq.html:C++ keywords: xor_eq
 ./cpp/keyword/int.html:C++ keywords: int
 ./cpp/keyword/while.html:C++ keywords: while
 ./cpp/keyword/volatile.html:C++ keywords: volatile
@@ -2318,6 +2497,7 @@
 ./cpp/keyword/and.html:C++ keywords: and
 ./cpp/keyword/continue.html:C++ keywords: continue
 ./cpp/keyword/constexpr.html:C++ keywords: constexpr (since C++11)
+./cpp/keywords/static.html:C++ keywords: static
 ./cpp/keywords/if.html:C++ keywords: if
 ./cpp/regex/regex_error.html:std::regex_error
 ./cpp/regex/regex_traits/lookup_classname.html:std::regex_traits::lookup_classname
@@ -2344,18 +2524,12 @@
 ./cpp/regex/regex_token_iterator/operator=.html:std::regex_token_iterator::operator=
 ./cpp/regex/regex_token_iterator/regex_token_iterator.html:std::regex_token_iterator::regex_token_iterator
 ./cpp/regex/regex_token_iterator/operator_arith.html:std::regex_token_iterator::operator++, operator++(int)
-./cpp/regex/regex_token_iterator/operator*.html:std::regex_token_iterator::operator*, operator-&gt;
-./cpp/regex/regex_token_iterator/operator=.html:std::regex_token_iterator::operator=
-./cpp/regex/regex_token_iterator/operator_arith.html:std::regex_token_iterator::operator++, operator++(int)
-./cpp/regex/regex_token_iterator/operator_cmp.html:cpp/regex/regex token iterator/operator cmp
+./cpp/regex/regex_token_iterator/operator_star_.html:std::regex_token_iterator::operator*, operator-&gt;
 ./cpp/regex/regex_iterator/operator_cmp.html:std::regex_iterator::operator==,operator!=
 ./cpp/regex/regex_iterator/operator=.html:std::regex_iterator::operator=
 ./cpp/regex/regex_iterator/regex_iterator.html:std::regex_iterator::regex_iterator
 ./cpp/regex/regex_iterator/operator_arith.html:std::regex_iterator::operator++, operator++(int)
-./cpp/regex/regex_iterator/operator*.html:std::regex_iterator::operator*,operator-&gt;
-./cpp/regex/regex_iterator/operator=.html:std::regex_iterator::operator=
-./cpp/regex/regex_iterator/operator_arith.html:std::regex_iterator::operator++, operator++(int)
-./cpp/regex/regex_iterator/operator_cmp.html:std::regex_iterator::operator==,operator!=
+./cpp/regex/regex_iterator/operator_star_.html:std::regex_iterator::operator*,operator-&gt;
 ./cpp/regex/error_type.html:std::regex_constants::error_type
 ./cpp/regex/regex_replace.html:std::regex_replace
 ./cpp/regex/match_results/format.html:std::match_results::format
@@ -2448,11 +2622,12 @@
 ./cpp/thread/shared_mutex/try_lock_shared.html:std::shared_mutex::try_lock_shared
 ./cpp/thread/shared_mutex/unlock_shared.html:std::shared_mutex::unlock_shared
 ./cpp/thread/shared_mutex/try_lock.html:std::shared_mutex::try_lock
-./cpp/thread/shared_mutex/~shared_mutex.html:std::shared_timed_mutex::~shared_timed_mutex
+./cpp/thread/shared_mutex/~shared_mutex.html:std::shared_mutex::~shared_mutex
 ./cpp/thread/shared_timed_mutex/try_lock_shared_until.html:std::shared_timed_mutex::try_lock_shared_until
 ./cpp/thread/shared_timed_mutex/unlock.html:std::shared_timed_mutex::unlock
 ./cpp/thread/shared_timed_mutex/lock_shared.html:std::shared_timed_mutex::lock_shared
 ./cpp/thread/shared_timed_mutex/lock.html:std::shared_timed_mutex::lock
+./cpp/thread/shared_timed_mutex/~shared_timed_mutex.html:std::shared_timed_mutex::~shared_timed_mutex
 ./cpp/thread/shared_timed_mutex/try_lock_shared.html:std::shared_timed_mutex::try_lock_shared
 ./cpp/thread/shared_timed_mutex/try_lock_until.html:std::shared_timed_mutex::try_lock_until
 ./cpp/thread/shared_timed_mutex/unlock_shared.html:std::shared_timed_mutex::unlock_shared
@@ -2460,6 +2635,7 @@
 ./cpp/thread/shared_timed_mutex/try_lock.html:std::shared_timed_mutex::try_lock
 ./cpp/thread/shared_timed_mutex/try_lock_shared_for.html:std::shared_timed_mutex::try_lock_shared_for
 ./cpp/thread/shared_timed_mutex/shared_timed_mutex.html:std::shared_timed_mutex::shared_timed_mutex
+./cpp/thread/hardware_destructive_interference_size.html:std::hardware_destructive_interference_size, std::hardware_constructive_interference_size
 ./cpp/thread/lock.html:std::lock
 ./cpp/thread/shared_lock.html:std::shared_lock
 ./cpp/thread/condition_variable_any.html:std::condition_variable_any
@@ -2498,6 +2674,8 @@
 ./cpp/thread/thread/join.html:std::thread::join
 ./cpp/thread/lock_tag.html:std::defer_lock, std::try_to_lock, std::adopt_lock
 ./cpp/thread/yield.html:std::this_thread::yield
+./cpp/thread/scoped_lock/~scoped_lock.html:std::scoped_lock::~scoped_lock
+./cpp/thread/scoped_lock/scoped_lock.html:std::scoped_lock::scoped_lock
 ./cpp/thread/get_id.html:std::this_thread::get_id
 ./cpp/thread/future.html:std::future
 ./cpp/thread/once_flag.html:std::once_flag
@@ -2582,12 +2760,13 @@
 ./cpp/thread/mutex/mutex.html:std::mutex::mutex
 ./cpp/thread/future_errc.html:std::future_errc
 ./cpp/thread/future_errc/make_error_condition.html:std::make_error_condition(std::future_errc)
-./cpp/thread/future_errc/is_error_code_enum.html:std::is_error_condition_enum&lt;std::future_errc&gt;
+./cpp/thread/future_errc/is_error_code_enum.html:std::is_error_code_enum&lt;std::future_errc&gt;
 ./cpp/thread/future_errc/make_error_code.html:std::make_error_code(std::future_errc)
 ./cpp/thread/mutex.html:std::mutex
 ./cpp/thread/recursive_timed_mutex.html:std::recursive_timed_mutex
 ./cpp/thread/sleep_until.html:std::this_thread::sleep_until
 ./cpp/thread/future_status.html:std::future_status
+./cpp/thread/scoped_lock.html:std::scoped_lock
 ./cpp/thread/future_category.html:std::future_category
 ./cpp/thread/cv_status.html:std::cv_status
 ./cpp/thread/recursive_mutex/unlock.html:std::recursive_mutex::unlock
@@ -2605,6 +2784,28 @@
 ./cpp/utility/variadic/va_start.html:va_start
 ./cpp/utility/variadic/va_end.html:va_end
 ./cpp/utility/variadic/va_list.html:std::va_list
+./cpp/utility/chars_format.html:std::chars_format
+./cpp/utility/apply.html:std::apply
+./cpp/utility/variant/hash.html:std::hash &lt;std::variant&gt;
+./cpp/utility/variant/variant_alternative.html:std::variant_alternative, std::variant_alternative_t
+./cpp/utility/variant/operator_cmp.html:operator==, !=, &lt;, &lt;=, &gt;, &gt;=(std::variant)
+./cpp/utility/variant/bad_variant_access.html:std::bad_variant_access
+./cpp/utility/variant/variant.html:std::variant::variant
+./cpp/utility/variant/operator=.html:std::variant::operator=
+./cpp/utility/variant/valueless_by_exception.html:std::variant::valueless_by_exception
+./cpp/utility/variant/swap.html:std::variant::swap
+./cpp/utility/variant/uses_allocator.html:std::uses_allocator&lt;std::variant&gt;
+./cpp/utility/variant/visit.html:std::visit
+./cpp/utility/variant/emplace.html:std::variant::emplace
+./cpp/utility/variant/index.html:std::variant::index
+./cpp/utility/variant/variant_npos.html:std::variant_npos
+./cpp/utility/variant/~variant.html:std::variant::~variant
+./cpp/utility/variant/monostate.html:std::monostate
+./cpp/utility/variant/swap2.html:std::swap(std::variant)
+./cpp/utility/variant/get_if.html:std::get_if
+./cpp/utility/variant/get.html:std::get (std::variant)
+./cpp/utility/variant/holds_alternative.html:std::holds_alternative
+./cpp/utility/variant/variant_size.html:std::variant_size, std::variant_size_v
 ./cpp/utility/bitset/to_string.html:std::bitset::to_string
 ./cpp/utility/bitset/hash.html:std::hash (std::bitset)
 ./cpp/utility/bitset/operator_ltltgtgt.html:std::bitset::operator&lt;&lt;,&lt;&lt;=,&gt;&gt;,&gt;&gt;=
@@ -2627,6 +2828,19 @@
 ./cpp/utility/piecewise_construct.html:std::piecewise_construct
 ./cpp/utility/functional.html:Function objects
 ./cpp/utility/forward.html:std::forward
+./cpp/utility/any/has_value.html:std::any::has_value
+./cpp/utility/any/make_any.html:std::make_any
+./cpp/utility/any/any.html:std::any::any
+./cpp/utility/any/operator=.html:std::any::operator=
+./cpp/utility/any/type.html:std::any::type
+./cpp/utility/any/swap.html:std::any::swap
+./cpp/utility/any/~any.html:std::any::~any
+./cpp/utility/any/emplace.html:std::any::emplace
+./cpp/utility/any/swap2.html:std::swap(std::any)
+./cpp/utility/any/bad_any_cast.html:std::bad_any_cast
+./cpp/utility/any/any_cast.html:std::any_cast
+./cpp/utility/any/reset.html:std::any::reset
+./cpp/utility/variant.html:std::variant
 ./cpp/utility/program.html:Program support utilities
 ./cpp/utility/as_const.html:std::as_const
 ./cpp/utility/pair/pair.html:std::pair::pair
@@ -2638,6 +2852,7 @@
 ./cpp/utility/pair/swap2.html:std::swap(std::pair)
 ./cpp/utility/pair/tuple_size.html:std::tuple_size&lt;std::pair&gt;
 ./cpp/utility/pair/get.html:std::get(std::pair)
+./cpp/utility/any.html:std::any
 ./cpp/utility/functional/equal_to_void.html:std::equal_to&lt;void&gt;
 ./cpp/utility/functional/modulus.html:std::modulus
 ./cpp/utility/functional/invoke.html:std::invoke
@@ -2670,6 +2885,7 @@
 ./cpp/utility/functional/not2.html:std::not2
 ./cpp/utility/functional/bit_and_void.html:std::bit_and&lt;void&gt;
 ./cpp/utility/functional/logical_and_void.html:std::logical_and&lt;void&gt;
+./cpp/utility/functional/default_searcher.html:std::default_searcher
 ./cpp/utility/functional/mem_fun_ref_t.html:std::mem_fun_ref_t, std::mem_fun1_ref_t, std::const_mem_fun_ref_t, std::const_mem_fun1_ref_t
 ./cpp/utility/functional/pointer_to_unary_function.html:std::pointer_to_unary_function
 ./cpp/utility/functional/pointer_to_binary_function.html:std::pointer_to_binary_function
@@ -2697,10 +2913,13 @@
 ./cpp/utility/functional/logical_or_void.html:std::logical_or&lt;void&gt;
 ./cpp/utility/functional/bind12.html:std::bind1st, std::bind2nd
 ./cpp/utility/functional/logical_or.html:std::logical_or
+./cpp/utility/functional/boyer_moore_searcher.html:std::boyer_moore_searcher
+./cpp/utility/functional/not_fn.html:std::not_fn
 ./cpp/utility/functional/greater_equal.html:std::greater_equal
 ./cpp/utility/functional/not1.html:std::not1
 ./cpp/utility/functional/mem_fun_t.html:std::mem_fun_t, std::mem_fun1_t, std::const_mem_fun_t, std::const_mem_fun1_t
 ./cpp/utility/functional/placeholders.html:std::placeholders::_1, std::placeholders::_2, ..., std::placeholders::_N
+./cpp/utility/functional/boyer_moore_horspool_searcher.html:std::boyer_moore_horspool_searcher
 ./cpp/utility/functional/negate.html:std::negate
 ./cpp/utility/functional/unary_function.html:std::unary_function
 ./cpp/utility/functional/reference_wrapper/operator=.html:std::reference_wrapper::operator=
@@ -2734,9 +2953,33 @@
 ./cpp/utility/tuple/get.html:std::get(std::tuple)
 ./cpp/utility/declval.html:std::declval
 ./cpp/utility/rel_ops/operator_cmp.html:std::rel_ops::operator!=,&gt;,&lt;=,&gt;=
+./cpp/utility/launder.html:std::launder
+./cpp/utility/optional.html:std::optional
 ./cpp/utility/tuple.html:std::tuple
+./cpp/utility/in_place.html:std::in_place, std::in_place_type, std::in_place_index, std::in_place_t, std::in_place_type_t, std::in_place_index_t
+./cpp/utility/optional/hash.html:std::hash &lt;std::optional&gt;
+./cpp/utility/optional/operator_cmp.html:operator==, !=, &lt;, &lt;=, &gt;, &gt;=(std::optional)
+./cpp/utility/optional/value.html:std::optional::value
+./cpp/utility/optional/~optional.html:std::optional::~optional
+./cpp/utility/optional/value_or.html:std::optional::value_or
+./cpp/utility/optional/make_optional.html:std::make_optional
+./cpp/utility/optional/operator_bool.html:std::optional::operator bool, std::optional::has_value
+./cpp/utility/optional/operator=.html:std::optional::operator=
+./cpp/utility/optional/nullopt_t.html:std::nullopt_t
+./cpp/utility/optional/swap.html:std::optional::swap
+./cpp/utility/optional/optional.html:std::optional::optional
+./cpp/utility/optional/in_place.html:std::in_place, std::in_place_type, std::in_place_index, std::in_place_t, std::in_place_type_t, std::in_place_index_t
+./cpp/utility/optional/in_place_t.html:std::in_place_t
+./cpp/utility/optional/emplace.html:std::optional::emplace
+./cpp/utility/optional/nullopt.html:std::nullopt
+./cpp/utility/optional/swap2.html:std::swap(std::optional)
+./cpp/utility/optional/operator_star_.html:std::optional::operator-&gt;, std::optional::operator*
+./cpp/utility/optional/bad_optional_access.html:std::bad_optional_access
+./cpp/utility/optional/reset.html:std::optional::reset
+./cpp/utility/from_chars.html:std::from_chars
 ./cpp/utility/exchange.html:std::exchange
 ./cpp/utility/bitset.html:std::bitset
+./cpp/utility/make_from_tuple.html:std::make_from_tuple
 ./cpp/utility/integer_sequence.html:std::integer_sequence
 ./cpp/utility/initializer_list.html:std::initializer_list
 ./cpp/utility/program/signal.html:std::signal
@@ -2766,6 +3009,7 @@
 ./cpp/utility/initializer_list/end.html:std::initializer_list::end
 ./cpp/utility/initializer_list/initializer_list.html:std::initializer_list::initializer_list
 ./cpp/utility/initializer_list/begin.html:std::initializer_list::begin
+./cpp/utility/to_chars.html:std::to_chars
 ./cpp/utility/piecewise_construct_t.html:std::piecewise_construct_t
 ./cpp/utility/move_if_noexcept.html:std::move_if_noexcept
 ./cpp/keywords.html:C++ keywords
@@ -2792,7 +3036,6 @@
 ./cpp/header/utility.html:Standard library header &lt;utility&gt;
 ./cpp/header/cassert.html:Standard library header &lt;cassert&gt;
 ./cpp/header/functional.html:Standard library header &lt;functional&gt;
-./cpp/header/experimental/dynarray.html:Standard library header &lt;dynarray&gt;
 ./cpp/header/experimental/string_view.html:Standard library header &lt;experimental/string_view&gt;
 ./cpp/header/experimental/any.html:Standard library header &lt;experimental/any&gt;
 ./cpp/header/experimental/optional.html:Standard library header &lt;experimental/optional&gt;
@@ -2801,22 +3044,27 @@
 ./cpp/header/cfenv.html:Standard library header &lt;cfenv&gt;
 ./cpp/header/climits.html:Standard library header &lt;climits&gt;
 ./cpp/header/istream.html:Standard library header &lt;istream&gt;
+./cpp/header/string_view.html:Standard library header &lt;string_view&gt;
 ./cpp/header/string.html:Standard library header &lt;string&gt;
 ./cpp/header/queue.html:Standard library header &lt;queue&gt;
 ./cpp/header/cmath.html:Standard library header &lt;cmath&gt;
 ./cpp/header/system_error.html:Standard library header &lt;system_error&gt;
 ./cpp/header/cctype.html:Standard library header &lt;cctype&gt;
 ./cpp/header/stdexcept.html:Standard library header &lt;stdexcept&gt;
+./cpp/header/variant.html:Standard library header &lt;variant&gt;
 ./cpp/header/typeinfo.html:Standard library header &lt;typeinfo&gt;
 ./cpp/header/streambuf.html:Standard library header &lt;streambuf&gt;
 ./cpp/header/csignal.html:Standard library header &lt;csignal&gt;
+./cpp/header/any.html:Standard library header &lt;any&gt;
 ./cpp/header/cwchar.html:Standard library header &lt;cwchar&gt;
 ./cpp/header/algorithm.html:Standard library header &lt;algorithm&gt;
 ./cpp/header/codecvt.html:Standard library header &lt;codecvt&gt;
 ./cpp/header/cstdbool.html:Standard library header &lt;cstdbool&gt;
 ./cpp/header/cerrno.html:Standard library header &lt;cerrno&gt;
 ./cpp/header/unordered_map.html:Standard library header &lt;unordered_map&gt;
+./cpp/header/execution_policy.html:Standard library header &lt;execution&gt;
 ./cpp/header/iosfwd.html:Standard library header &lt;iosfwd&gt;
+./cpp/header/optional.html:Standard library header &lt;optional&gt;
 ./cpp/header/future.html:Standard library header &lt;future&gt;
 ./cpp/header/tuple.html:Standard library header &lt;tuple&gt;
 ./cpp/header/condition_variable.html:Standard library header &lt;condition_variable&gt;
@@ -2832,6 +3080,7 @@
 ./cpp/header/cstring.html:Standard library header &lt;cstring&gt;
 ./cpp/header/cstdarg.html:Standard library header &lt;cstdarg&gt;
 ./cpp/header/regex.html:Standard library header &lt;regex&gt;
+./cpp/header/filesystem.html:Standard library header &lt;filesystem&gt;
 ./cpp/header/list.html:Standard library header &lt;list&gt;
 ./cpp/header/ccomplex.html:Standard library header &lt;ccomplex&gt;
 ./cpp/header/array.html:Standard library header &lt;array&gt;
@@ -2855,6 +3104,116 @@
 ./cpp/header/cstddef.html:Standard library header &lt;cstddef&gt;
 ./cpp/header/vector.html:Standard library header &lt;vector&gt;
 ./cpp/header/type_traits.html:Standard library header &lt;type_traits&gt;
+./cpp/header/memory_resource.html:Standard library header &lt;memory_resource&gt;
+./cpp/filesystem/path/hash_value.html:std::filesystem::hash_value
+./cpp/filesystem/path/root_name.html:std::filesystem::path::root_name
+./cpp/filesystem/path/stem.html:std::filesystem::path::stem
+./cpp/filesystem/path/has_path.html:std::filesystem::path::has_root_path, std::filesystem::path::has_root_name, std::filesystem::path::has_root_directory
+./cpp/filesystem/path/path.html:std::filesystem::path::path
+./cpp/filesystem/path/lexically_normal.html:std::filesystem::path::lexically_normal, std::filesystem::path::lexically_relative, std::filesystem::path::lexically_proximate
+./cpp/filesystem/path/operator_ltltgtgt.html:operator&lt;&lt;,&gt;&gt;(std::filesystem::path)
+./cpp/filesystem/path/operator_slash.html:std::filesystem::operator/(std::filesystem::path)
+./cpp/filesystem/path/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::filesystem::path)
+./cpp/filesystem/path/append.html:std::filesystem::path::append, std::filesystem::path::operator/=
+./cpp/filesystem/path/compare.html:std::filesystem::path::compare
+./cpp/filesystem/path/replace_extension.html:std::filesystem::path::replace_extension
+./cpp/filesystem/path/replace_filename.html:std::filesystem::path::replace_filename
+./cpp/filesystem/path/make_preferred.html:std::filesystem::path::make_preferred
+./cpp/filesystem/path/root_path.html:std::filesystem::path::root_path
+./cpp/filesystem/path/generic_string.html:std::filesystem::path::generic_string, std::filesystem::path::generic_wstring, std::filesystem::path::generic_u8string
+./cpp/filesystem/path/string.html:std::filesystem::path::string, std::filesystem::path::wstring, std::filesystem::path::u8string
+./cpp/filesystem/path/parent_path.html:std::filesystem::path::parent_path
+./cpp/filesystem/path/u8path.html:std::filesystem::u8path
+./cpp/filesystem/path/operator=.html:std::filesystem::path::operator=
+./cpp/filesystem/path/remove_filename.html:std::filesystem::path::remove_filename
+./cpp/filesystem/path/swap.html:std::filesystem::path::swap
+./cpp/filesystem/path/root_directory.html:std::filesystem::path::root_directory
+./cpp/filesystem/path/concat.html:std::filesystem::path::concat, std::filesystem::path::operator+=
+./cpp/filesystem/path/filename.html:std::filesystem::path::filename
+./cpp/filesystem/path/native.html:std::filesystem::path::c_str, std::filesystem::path::native, std::filesystem::path::operator string_type()
+./cpp/filesystem/path/is_absrel.html:std::filesystem::path::is_absolute,is_relative
+./cpp/filesystem/path/empty.html:std::filesystem::path::empty
+./cpp/filesystem/path/swap2.html:std::filesystem::swap(std::filesystem::path)
+./cpp/filesystem/path/~path.html:std::filesystem::path::~path
+./cpp/filesystem/path/extension.html:std::filesystem::path::extension
+./cpp/filesystem/path/begin.html:std::filesystem::path::begin, std::filesystem::path::end
+./cpp/filesystem/path/relative_path.html:std::filesystem::path::relative_path
+./cpp/filesystem/path/assign.html:std::filesystem::path::assign
+./cpp/filesystem/path/clear.html:std::filesystem::path::clear
+./cpp/filesystem/is_socket.html:std::filesystem::is_socket
+./cpp/filesystem/is_directory.html:std::filesystem::is_directory
+./cpp/filesystem/directory_iterator.html:std::filesystem::directory_iterator
+./cpp/filesystem/path.html:std::filesystem::path
+./cpp/filesystem/copy_symlink.html:std::filesystem::copy_symlink
+./cpp/filesystem/rename.html:std::filesystem::rename
+./cpp/filesystem/space_info.html:std::filesystem::space_info
+./cpp/filesystem/space.html:std::filesystem::space
+./cpp/filesystem/current_path.html:std::filesystem::current_path
+./cpp/filesystem/status_known.html:std::filesystem::status_known
+./cpp/filesystem/file_status.html:std::filesystem::file_status
+./cpp/filesystem/create_hard_link.html:std::filesystem::create_hard_link
+./cpp/filesystem/canonical.html:std::filesystem::canonical, std::filesystem::weakly_canonical
+./cpp/filesystem/perms.html:std::filesystem::perms
+./cpp/filesystem/permissions.html:std::filesystem::permissions
+./cpp/filesystem/copy_file.html:std::filesystem::copy_file
+./cpp/filesystem/create_symlink.html:std::filesystem::create_symlink, std::filesystem::create_directory_symlink
+./cpp/filesystem/copy_options.html:std::filesystem::copy_options
+./cpp/filesystem/filesystem_error.html:std::filesystem::filesystem_error
+./cpp/filesystem/relative.html:std::filesystem::relative, std::filesystem::proximate
+./cpp/filesystem/directory_entry.html:std::filesystem::directory_entry
+./cpp/filesystem/last_write_time.html:std::filesystem::last_write_time
+./cpp/filesystem/filesystem_error/path.html:std::filesystem::filesystem_error::path1, std::filesystem::filesystem_error::path2
+./cpp/filesystem/filesystem_error/filesystem_error.html:std::filesystem::filesystem_error::filesystem_error
+./cpp/filesystem/filesystem_error/what.html:std::filesystem::filesystem_error::what
+./cpp/filesystem/is_block_file.html:std::filesystem::is_block_file
+./cpp/filesystem/hard_link_count.html:std::filesystem::hard_link_count
+./cpp/filesystem/recursive_directory_iterator/depth.html:std::filesystem::recursive_directory_iterator::depth
+./cpp/filesystem/recursive_directory_iterator/pop.html:std::filesystem::recursive_directory_iterator::pop
+./cpp/filesystem/recursive_directory_iterator/operator=.html:std::filesystem::recursive_directory_iterator::operator=
+./cpp/filesystem/recursive_directory_iterator/options.html:std::filesystem::recursive_directory_iterator::options
+./cpp/filesystem/recursive_directory_iterator/recursion_pending.html:std::filesystem::recursive_directory_iterator::recursion_pending
+./cpp/filesystem/recursive_directory_iterator/disable_recursion_pending.html:std::filesystem::recursive_directory_iterator::disable_recursion_pending
+./cpp/filesystem/recursive_directory_iterator/operator_star_.html:std::filesystem::recursive_directory_iterator::operator*, std::filesystem::recursive_directory_iterator::operator-&gt;
+./cpp/filesystem/recursive_directory_iterator/increment.html:std::filesystem::recursive_directory_iterator::operator++, std::filesystem::recursive_directory_iterator::increment
+./cpp/filesystem/recursive_directory_iterator/begin.html:std::filesystem::begin(recursive_directory_iterator), std::filesystem::end(recursive_directory_iterator)
+./cpp/filesystem/recursive_directory_iterator/recursive_directory_iterator.html:std::filesystem::recursive_directory_iterator::recursive_directory_iterator
+./cpp/filesystem/is_character_file.html:std::filesystem::is_character_file
+./cpp/filesystem/file_size.html:std::filesystem::file_size
+./cpp/filesystem/absolute.html:std::filesystem::absolute, std::filesystem::system_complete
+./cpp/filesystem/file_time_type.html:std::filesystem::file_time_type
+./cpp/filesystem/is_empty.html:std::filesystem::is_empty
+./cpp/filesystem/file_status/file_status.html:std::filesystem::file_status::file_status
+./cpp/filesystem/file_status/permissions.html:std::filesystem::file_status::permissions
+./cpp/filesystem/file_status/operator=.html:std::filesystem::file_status::operator=
+./cpp/filesystem/file_status/type.html:std::filesystem::file_status::type
+./cpp/filesystem/read_symlink.html:std::filesystem::read_symlink
+./cpp/filesystem/remove.html:std::filesystem::remove, std::filesystem::remove_all
+./cpp/filesystem/directory_entry/path.html:std::filesystem::directory_entry::path
+./cpp/filesystem/directory_entry/operator_cmp.html:std::filesystem::directory_entry::operator==,!=,&lt;,&lt;=,&gt;,&gt;=
+./cpp/filesystem/directory_entry/replace_filename.html:std::filesystem::directory_entry::replace_filename
+./cpp/filesystem/directory_entry/operator=.html:std::filesystem::directory_entry::operator=
+./cpp/filesystem/directory_entry/directory_entry.html:std::filesystem::directory_entry::directory_entry
+./cpp/filesystem/directory_entry/status.html:std::filesystem::directory_entry::status, std::filesystem::directory_entry::symlink_status
+./cpp/filesystem/directory_entry/assign.html:std::filesystem::directory_entry::assign
+./cpp/filesystem/resize_file.html:std::filesystem::resize_file
+./cpp/filesystem/is_symlink.html:std::filesystem::is_symlink
+./cpp/filesystem/copy.html:std::filesystem::copy
+./cpp/filesystem/directory_options.html:std::filesystem::directory_options
+./cpp/filesystem/status.html:std::filesystem::status, std::filesystem::symlink_status
+./cpp/filesystem/file_type.html:std::filesystem::file_type
+./cpp/filesystem/is_fifo.html:std::filesystem::is_fifo
+./cpp/filesystem/create_directory.html:std::filesystem::create_directory, std::filesystem::create_directories
+./cpp/filesystem/temp_directory_path.html:std::filesystem::temp_directory_path
+./cpp/filesystem/is_other.html:std::filesystem::is_other
+./cpp/filesystem/equivalent.html:std::filesystem::equivalent
+./cpp/filesystem/directory_iterator/directory_iterator.html:std::filesystem::directory_iterator::directory_iterator
+./cpp/filesystem/directory_iterator/operator=.html:std::filesystem::directory_iterator::operator=
+./cpp/filesystem/directory_iterator/operator_star_.html:std::filesystem::directory_iterator::operator*, std::filesystem::directory_iterator::operator-&gt;
+./cpp/filesystem/directory_iterator/increment.html:std::filesystem::directory_iterator::operator=
+./cpp/filesystem/directory_iterator/begin.html:std::filesystem::begin(directory_iterator), std::filesystem::end(directory_iterator)
+./cpp/filesystem/is_regular_file.html:std::filesystem::is_regular_file
+./cpp/filesystem/recursive_directory_iterator.html:std::filesystem::recursive_directory_iterator
+./cpp/filesystem/exists.html:std::filesystem::exists
 ./cpp/chrono/system_clock/to_time_t.html:std::chrono::system_clock::to_time_t
 ./cpp/chrono/system_clock/from_time_t.html:std::chrono::system_clock::from_time_t
 ./cpp/chrono/system_clock/now.html:std::chrono::system_clock::now
@@ -2886,12 +3245,14 @@
 ./cpp/chrono/c/clock_t.html:std::clock_t
 ./cpp/chrono/c/mktime.html:std::mktime
 ./cpp/chrono/c/asctime.html:std::asctime
+./cpp/chrono/c/timespec_get.html:std::timespec_get
 ./cpp/chrono/c/time_t.html:std::time_t
 ./cpp/chrono/c/difftime.html:std::difftime
 ./cpp/chrono/c/localtime.html:std::localtime
 ./cpp/chrono/c/wcsftime.html:std::wcsftime
 ./cpp/chrono/c/tm.html:std::tm
 ./cpp/chrono/c/gmtime.html:std::gmtime
+./cpp/chrono/c/timespec.html:std::timespec
 ./cpp/chrono/operator_q__q_h.html:std::literals::chrono_literals::operator""h
 ./cpp/chrono/operator_q__q_s.html:std::literals::chrono_literals::operator""s
 ./cpp/chrono/steady_clock/now.html:std::chrono::steady_clock::now
@@ -2920,11 +3281,19 @@
 ./cpp/chrono/duration/max.html:std::chrono::duration::max
 ./cpp/chrono/duration/floor.html:std::chrono::floor(std::chrono::duration)
 ./cpp/chrono/operator_q__q_ns.html:std::literals::chrono_literals::operator""ns
+./cpp/symbol_index/chrono.html:std::chrono Symbol Index
+./cpp/symbol_index/regex_constants.html:std::regex_constants Symbol Index
+./cpp/symbol_index/filesystem.html:std::filesystem Symbol Index
+./cpp/symbol_index/placeholders.html:std::placeholders Symbol Index
+./cpp/symbol_index/pmr.html:std::pmr Symbol Index
+./cpp/symbol_index/this_thread.html:std::this_thread Symbol Index
+./cpp/symbol_index.html:std Symbol Index
 ./cpp/index.html:Index
 ./cpp/error.html:Error handling
 ./cpp/memory.html:Dynamic memory management
-./cpp/experimental.html:Experimental C++ standard libraries
+./cpp/experimental.html:Experimental C++ Features
 ./cpp/regex.html:Regular expressions library
+./cpp/filesystem.html:Filesystem library
 ./cpp/io/manip/skipws.html:std::skipws, std::noskipws
 ./cpp/io/manip/ws.html:std::ws
 ./cpp/io/manip/ends.html:std::ends
@@ -3128,7 +3497,7 @@
 ./cpp/io/basic_streambuf/sgetn.html:std::basic_streambuf::sgetn, std::basic_streambuf::xsgetn
 ./cpp/io/strstreambuf.html:std::strstreambuf
 ./cpp/io/basic_iostream.html:std::basic_iostream
-./cpp/io/strstreambuf/setbuf.html:std::strstreambuf::underflow
+./cpp/io/strstreambuf/setbuf.html:std::strstreambuf::setbuf
 ./cpp/io/strstreambuf/seekpos.html:std::strstreambuf::seekpos
 ./cpp/io/strstreambuf/overflow.html:std::strstreambuf::overflow
 ./cpp/io/strstreambuf/pcount.html:std::strstreambuf::pcount
@@ -3280,6 +3649,7 @@
 ./cpp/string/basic_string/max_size.html:std::basic_string::max_size
 ./cpp/string/basic_string/insert.html:std::basic_string::insert
 ./cpp/string/basic_string/operator_ltltgtgt.html:operator&lt;&lt;,&gt;&gt;(std::basic_string)
+./cpp/string/basic_string/operator_basic_string_view.html:std::basic_string::operator basic_string_view
 ./cpp/string/basic_string/rbegin.html:std::basic_string::rbegin, std::basic_string::crbegin
 ./cpp/string/basic_string/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::basic_string)
 ./cpp/string/basic_string/append.html:std::basic_string::append
@@ -3367,6 +3737,37 @@
 ./cpp/string/byte/strerror.html:std::strerror
 ./cpp/string/byte/isgraph.html:std::isgraph
 ./cpp/string/basic_string.html:std::basic_string
+./cpp/string/basic_string_view/find_last_of.html:std::basic_string_view::find_last_of
+./cpp/string/basic_string_view/hash.html:std::hash (std::string_view, std::wstring_view, std::u16string_view, std::u32string_view)
+./cpp/string/basic_string_view/max_size.html:std::basic_string_view::max_size
+./cpp/string/basic_string_view/rbegin.html:std::basic_string_view::rbegin, std::basic_string_view::crbegin
+./cpp/string/basic_string_view/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::basic_string_view)
+./cpp/string/basic_string_view/compare.html:std::basic_string_view::compare
+./cpp/string/basic_string_view/back.html:std::basic_string_view::back
+./cpp/string/basic_string_view/remove_prefix.html:std::basic_string_view::remove_prefix
+./cpp/string/basic_string_view/find_first_of.html:std::basic_string_view::find_first_of
+./cpp/string/basic_string_view/substr.html:std::basic_string_view::substr
+./cpp/string/basic_string_view/size.html:std::basic_string_view::size, std::basic_string_view::length
+./cpp/string/basic_string_view/operator=.html:std::basic_string_view::operator=
+./cpp/string/basic_string_view/npos.html:std::basic_string_view::npos
+./cpp/string/basic_string_view/remove_suffix.html:std::basic_string_view::remove_suffix
+./cpp/string/basic_string_view/rend.html:std::basic_string_view::rend, std::basic_string_view::crend
+./cpp/string/basic_string_view/front.html:std::basic_string_view::front
+./cpp/string/basic_string_view/at.html:std::basic_string_view::at
+./cpp/string/basic_string_view/swap.html:std::basic_string_view::swap
+./cpp/string/basic_string_view/find_last_not_of.html:std::basic_string_view::find_last_not_of
+./cpp/string/basic_string_view/data.html:std::basic_string_view::data
+./cpp/string/basic_string_view/find.html:std::basic_string_view::find
+./cpp/string/basic_string_view/empty.html:std::basic_string_view::empty
+./cpp/string/basic_string_view/operator_ltlt.html:operator&lt;&lt;(std::basic_string_view)
+./cpp/string/basic_string_view/basic_string_view.html:std::basic_string_view::basic_string_view
+./cpp/string/basic_string_view/copy.html:std::basic_string_view::copy
+./cpp/string/basic_string_view/end.html:std::basic_string_view::end, std::basic_string_view::cend
+./cpp/string/basic_string_view/operator_at.html:std::basic_string_view::operator[]
+./cpp/string/basic_string_view/begin.html:std::basic_string_view::begin, std::basic_string_view::cbegin
+./cpp/string/basic_string_view/operator_q__q_sv.html:std::literals::string_view_literals::operator""sv
+./cpp/string/basic_string_view/find_first_not_of.html:std::basic_string_view::find_first_not_of
+./cpp/string/basic_string_view/rfind.html:std::basic_string_view::rfind
 ./cpp/string/wide/wmemmove.html:std::wmemmove
 ./cpp/string/wide/wcstol.html:std::wcstol, std::wcstoll
 ./cpp/string/wide/wcsxfrm.html:std::wcsxfrm
@@ -3411,12 +3812,25 @@
 ./cpp/string/wide/wcstof.html:std::wcstof, std::wcstod, std::wcstold
 ./cpp/string/wide/wcstok.html:std::wcstok
 ./cpp/string/wide.html:Null-terminated wide strings
+./cpp/string/basic_string_view.html:std::basic_string_view
 ./cpp/string/char_traits.html:std::char_traits
 ./cpp/string/byte.html:Null-terminated byte strings
 ./cpp/compiler_support.html:C++ compiler support
 ./cpp/numeric.html:Numerics library
+./cpp/memory/polymorphic_allocator.html:std::pmr::polymorphic_allocator
+./cpp/memory/uninitialized_default_construct_n.html:std::uninitialized_default_construct_n
 ./cpp/memory/auto_ptr.html:std::auto_ptr
+./cpp/memory/synchronized_pool_resource/do_allocate.html:std::pmr::synchronized_pool_resource::do_allocate
+./cpp/memory/synchronized_pool_resource/~synchronized_pool_resource.html:std::pmr::synchronized_pool_resource::~synchronized_pool_resource
+./cpp/memory/synchronized_pool_resource/options.html:std::pmr::synchronized_pool_resource::options
+./cpp/memory/synchronized_pool_resource/upstream_resource.html:std::pmr::synchronized_pool_resource::upstream_resource
+./cpp/memory/synchronized_pool_resource/do_deallocate.html:std::pmr::synchronized_pool_resource::do_deallocate
+./cpp/memory/synchronized_pool_resource/release.html:std::pmr::synchronized_pool_resource::release
+./cpp/memory/synchronized_pool_resource/do_is_equal.html:std::pmr::synchronized_pool_resource::do_is_equal
+./cpp/memory/synchronized_pool_resource/synchronized_pool_resource.html:std::pmr::synchronized_pool_resource::synchronized_pool_resource
 ./cpp/memory/get_temporary_buffer.html:std::get_temporary_buffer
+./cpp/memory/destroy_at.html:std::destroy_at
+./cpp/memory/new/align_val_t.html:std::align_val_t
 ./cpp/memory/new/operator_delete.html:operator delete, operator delete[]
 ./cpp/memory/new/new_handler.html:std::new_handler
 ./cpp/memory/new/operator_new.html:operator new, operator new[]
@@ -3426,37 +3840,47 @@
 ./cpp/memory/new/nothrow.html:std::nothrow
 ./cpp/memory/new/set_new_handler.html:std::set_new_handler
 ./cpp/memory/new/bad_alloc.html:std::bad_alloc
-./cpp/memory/new/bad_array_length.html:std::experimental::bad_array_length
 ./cpp/memory/new/bad_array_new_length/bad_array_new_length.html:std::bad_array_new_length::bad_array_new_length
 ./cpp/memory/bad_weak_ptr/bad_weak_ptr.html:std::bad_weak_ptr::bad_weak_ptr
 ./cpp/memory/uninitialized_copy.html:std::uninitialized_copy
+./cpp/memory/destroy.html:std::destroy
+./cpp/memory/new.html:Low level memory management
 ./cpp/memory/allocator.html:std::allocator
+./cpp/memory/get_default_resource.html:std::pmr::get_default_resource
 ./cpp/memory/align.html:std::align
 ./cpp/memory/return_temporary_buffer.html:std::return_temporary_buffer
+./cpp/memory/uninitialized_value_construct.html:std::uninitialized_value_construct
 ./cpp/memory/uninitialized_copy_n.html:std::uninitialized_copy_n
 ./cpp/memory/weak_ptr.html:std::weak_ptr
 ./cpp/memory/bad_weak_ptr.html:std::bad_weak_ptr
 ./cpp/memory/c.html:C memory management library
 ./cpp/memory/default_delete.html:std::default_delete
+./cpp/memory/memory_resource/do_allocate.html:std::pmr::memory_resource::do_allocate
+./cpp/memory/memory_resource/allocate.html:std::pmr::memory_resource::allocate
+./cpp/memory/memory_resource/is_equal.html:std::pmr::memory_resource::is_equal
+./cpp/memory/memory_resource/do_deallocate.html:std::pmr::memory_resource::do_deallocate
+./cpp/memory/memory_resource/do_is_equal.html:std::pmr::memory_resource::do_is_equal
+./cpp/memory/memory_resource/deallocate.html:std::pmr::memory_resource::deallocate
+./cpp/memory/memory_resource/operator_eq.html:std::pmr::operator==, std::pmr::operator!=
+./cpp/memory/memory_resource/memory_resource.html:std::pmr::memory_resource::memory_resource
+./cpp/memory/new_delete_resource.html:std::pmr::new_delete_resource
 ./cpp/memory/auto_ptr/auto_ptr.html:std::auto_ptr::auto_ptr
 ./cpp/memory/auto_ptr/~auto_ptr.html:std::auto_ptr::~auto_ptr
 ./cpp/memory/auto_ptr/operator_auto_ptr.html:std::auto_ptr::operator auto_ptr&lt;Y&gt;
 ./cpp/memory/auto_ptr/operator=.html:std::auto_ptr::operator=
 ./cpp/memory/auto_ptr/release.html:std::auto_ptr::release
-./cpp/memory/auto_ptr/operator*.html:std::auto_ptr::operator*, std::auto_ptr::operator-&gt;
-./cpp/memory/auto_ptr/operator=.html:std::auto_ptr::operator=
-./cpp/memory/auto_ptr/operator_auto_ptr.html:std::auto_ptr::operator auto_ptr&lt;Y&gt;
+./cpp/memory/auto_ptr/operator_star_.html:std::auto_ptr::operator*, std::auto_ptr::operator-&gt;
 ./cpp/memory/auto_ptr/get.html:std::auto_ptr::get
 ./cpp/memory/auto_ptr/reset.html:std::auto_ptr::reset
-./cpp/memory/new.1.html:Low level memory management
+./cpp/memory/c/aligned_alloc.html:std::aligned_alloc
 ./cpp/memory/c/free.html:std::free
 ./cpp/memory/c/malloc.html:std::malloc
 ./cpp/memory/c/calloc.html:std::calloc
 ./cpp/memory/c/realloc.html:std::realloc
 ./cpp/memory/scoped_allocator_adaptor.html:std::scoped_allocator_adaptor
 ./cpp/memory/shared_ptr/atomic.html:std::atomic_...&lt;std::shared_ptr&gt;
-./cpp/memory/shared_ptr/hash.html:std::hash
-./cpp/memory/shared_ptr/pointer_cast.html:std::static_pointer_cast, std::dynamic_pointer_cast, std::const_pointer_cast
+./cpp/memory/shared_ptr/hash.html:std::hash(std::shared_ptr)
+./cpp/memory/shared_ptr/pointer_cast.html:std::static_pointer_cast, std::dynamic_pointer_cast, std::const_pointer_cast, std::reinterpret_pointer_cast
 ./cpp/memory/shared_ptr/get_deleter.html:std::get_deleter
 ./cpp/memory/shared_ptr/operator_cmp.html:std::shared_ptr::operator==, !=, &lt;, &lt;=, &gt;, &gt;=
 ./cpp/memory/shared_ptr/make_shared.html:std::make_shared
@@ -3470,19 +3894,26 @@
 ./cpp/memory/shared_ptr/operator_ltlt.html:std::shared_ptr::operator&lt;&lt;
 ./cpp/memory/shared_ptr/owner_before.html:std::shared_ptr::owner_before
 ./cpp/memory/shared_ptr/swap2.html:std::swap(std::shared_ptr)
+./cpp/memory/shared_ptr/operator_star_.html:std::shared_ptr::operator*, std::shared_ptr::operator-&gt;
 ./cpp/memory/shared_ptr/unique.html:std::shared_ptr::unique
-./cpp/memory/shared_ptr/operator*.html:std::shared_ptr::operator*, std::shared_ptr::operator-&gt;
-./cpp/memory/shared_ptr/operator=.html:std::shared_ptr::operator=
-./cpp/memory/shared_ptr/operator_bool.html:std::shared_ptr::operator bool
-./cpp/memory/shared_ptr/operator_cmp.html:std::shared_ptr::operator==, !=, &lt;, &lt;=, &gt;, &gt;=
-./cpp/memory/shared_ptr/operator_ltlt.html:std::shared_ptr::operator&lt;&lt;
 ./cpp/memory/shared_ptr/get.html:std::shared_ptr::get
+./cpp/memory/shared_ptr/operator_at.html:std::shared_ptr::operator[]
 ./cpp/memory/shared_ptr/reset.html:std::shared_ptr::reset
 ./cpp/memory/enable_shared_from_this/operator=.html:std::enable_shared_from_this::operator=
+./cpp/memory/enable_shared_from_this/weak_from_this.html:std::enable_shared_from_this::weak_from_this
 ./cpp/memory/enable_shared_from_this/~enable_shared_from_this.html:std::enable_shared_from_this::~enable_shared_from_this
 ./cpp/memory/enable_shared_from_this/enable_shared_from_this.html:std::enable_shared_from_this::enable_shared_from_this
 ./cpp/memory/enable_shared_from_this/shared_from_this.html:std::enable_shared_from_this::shared_from_this
+./cpp/memory/unsynchronized_pool_resource/do_allocate.html:std::pmr::unsynchronized_pool_resource::do_allocate
+./cpp/memory/unsynchronized_pool_resource/options.html:std::pmr::unsynchronized_pool_resource::options
+./cpp/memory/unsynchronized_pool_resource/~unsynchronized_pool_resource.html:std::pmr::unsynchronized_pool_resource::~unsynchronized_pool_resource
+./cpp/memory/unsynchronized_pool_resource/upstream_resource.html:std::pmr::unsynchronized_pool_resource::upstream_resource
+./cpp/memory/unsynchronized_pool_resource/do_deallocate.html:std::pmr::unsynchronized_pool_resource::do_deallocate
+./cpp/memory/unsynchronized_pool_resource/release.html:std::pmr::unsynchronized_pool_resource::release
+./cpp/memory/unsynchronized_pool_resource/unsynchronized_pool_resource.html:std::pmr::unsynchronized_pool_resource::unsynchronized_pool_resource
+./cpp/memory/unsynchronized_pool_resource/do_is_equal.html:std::pmr::unsynchronized_pool_resource::do_is_equal
 ./cpp/memory/uninitialized_fill.html:std::uninitialized_fill
+./cpp/memory/set_default_resource.html:std::pmr::set_default_resource
 ./cpp/memory/allocator_traits.html:std::allocator_traits
 ./cpp/memory/gc/undeclare_no_pointers.html:std::undeclare_no_pointers
 ./cpp/memory/gc/declare_no_pointers.html:std::declare_no_pointers
@@ -3490,10 +3921,22 @@
 ./cpp/memory/gc/undeclare_reachable.html:std::undeclare_reachable
 ./cpp/memory/gc/get_pointer_safety.html:std::get_pointer_safety
 ./cpp/memory/gc/pointer_safety.html:std::pointer_safety
+./cpp/memory/pool_options.html:std::pmr::pool_options
 ./cpp/memory/allocator_arg_t.html:std::allocator_arg_t
+./cpp/memory/destroy_n.html:std::destroy_n
+./cpp/memory/monotonic_buffer_resource/~monotonic_buffer_resource.html:std::pmr::monotonic_buffer_resource::~monotonic_buffer_resource
+./cpp/memory/monotonic_buffer_resource/do_allocate.html:std::pmr::monotonic_buffer_resource::do_allocate
+./cpp/memory/monotonic_buffer_resource/upstream_resource.html:std::pmr::monotonic_buffer_resource::upstream_resource
+./cpp/memory/monotonic_buffer_resource/do_deallocate.html:std::pmr::monotonic_buffer_resource::do_deallocate
+./cpp/memory/monotonic_buffer_resource/release.html:std::pmr::monotonic_buffer_resource::release
+./cpp/memory/monotonic_buffer_resource/do_is_equal.html:std::pmr::monotonic_buffer_resource::do_is_equal
+./cpp/memory/monotonic_buffer_resource/monotonic_buffer_resource.html:std::pmr::monotonic_buffer_resource::monotonic_buffer_resource
 ./cpp/memory/allocator_arg.html:std::allocator_arg
 ./cpp/memory/uses_allocator.html:std::uses_allocator
+./cpp/memory/uninitialized_move_n.html:std::uninitialized_move_n
 ./cpp/memory/pointer_traits/pointer_to.html:std::pointer_traits::pointer_to
+./cpp/memory/null_memory_resource.html:std::pmr::null_memory_resource
+./cpp/memory/uninitialized_value_construct_n.html:std::uninitialized_value_construct_n
 ./cpp/memory/uninitialized_fill_n.html:std::uninitialized_fill_n
 ./cpp/memory/enable_shared_from_this.html:std::enable_shared_from_this
 ./cpp/memory/allocator/max_size.html:std::allocator::max_size
@@ -3513,7 +3956,10 @@
 ./cpp/memory/allocator_traits/deallocate.html:std::allocator_traits::deallocate
 ./cpp/memory/addressof.html:std::addressof
 ./cpp/memory/shared_ptr.html:std::shared_ptr
-./cpp/memory/unique_ptr/hash.html:std::hash
+./cpp/memory/unsynchronized_pool_resource.html:std::pmr::unsynchronized_pool_resource
+./cpp/memory/uninitialized_default_construct.html:std::uninitialized_default_construct
+./cpp/memory/uninitialized_move.html:std::uninitialized_move
+./cpp/memory/unique_ptr/hash.html:std::hash &lt;std::unique_ptr&gt;
 ./cpp/memory/unique_ptr/get_deleter.html:std::unique_ptr::get_deleter
 ./cpp/memory/unique_ptr/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::unique_ptr)
 ./cpp/memory/unique_ptr/operator_bool.html:std::unique_ptr::operator bool
@@ -3522,27 +3968,30 @@
 ./cpp/memory/unique_ptr/make_unique.html:std::make_unique
 ./cpp/memory/unique_ptr/release.html:std::unique_ptr::release
 ./cpp/memory/unique_ptr/swap2.html:std::swap(std::unique_ptr)
-./cpp/memory/unique_ptr/operator*.html:std::unique_ptr::operator*
-./cpp/memory/unique_ptr/operator=.html:std::unique_ptr::operator=
-./cpp/memory/unique_ptr/operator_at.html:std::unique_ptr::operator[]
-./cpp/memory/unique_ptr/operator_bool.html:std::unique_ptr::operator bool
-./cpp/memory/unique_ptr/operator_cmp.html:operator==,!=,&lt;,&lt;=,&gt;,&gt;=(std::unique_ptr)
+./cpp/memory/unique_ptr/operator_star_.html:std::unique_ptr::operator*
 ./cpp/memory/unique_ptr/get.html:std::unique_ptr::get
 ./cpp/memory/unique_ptr/~unique_ptr.html:std::unique_ptr::~unique_ptr
 ./cpp/memory/unique_ptr/operator_at.html:std::unique_ptr::operator[]
 ./cpp/memory/unique_ptr/unique_ptr.html:std::unique_ptr::unique_ptr
 ./cpp/memory/unique_ptr/reset.html:std::unique_ptr::reset
+./cpp/memory/polymorphic_allocator/polymorphic_allocator.html:std::pmr::polymorphic_allocator::polymorphic_allocator
+./cpp/memory/polymorphic_allocator/select_on_container_copy_construction.html:std::pmr::polymorphic_allocator::select_on_container_copy_construction
+./cpp/memory/polymorphic_allocator/destroy.html:std::pmr::polymorphic_allocator::destroy
+./cpp/memory/polymorphic_allocator/allocate.html:std::pmr::polymorphic_allocator::allocate
+./cpp/memory/polymorphic_allocator/resource.html:std::pmr::polymorphic_allocator::resource
+./cpp/memory/polymorphic_allocator/construct.html:std::pmr::polymorphic_allocator::construct
+./cpp/memory/polymorphic_allocator/deallocate.html:std::pmr::polymorphic_allocator::deallocate
+./cpp/memory/polymorphic_allocator/operator_eq.html:std::pmr::operator==, std::pmr::operator!=
 ./cpp/memory/owner_less_void.html:std::owner_less
 ./cpp/memory/raw_storage_iterator.html:std::raw_storage_iterator
 ./cpp/memory/pointer_traits.html:std::pointer_traits
 ./cpp/memory/raw_storage_iterator/operator=.html:std::raw_storage_iterator::operator=
 ./cpp/memory/raw_storage_iterator/base.html:std::raw_storage_iterator::base
 ./cpp/memory/raw_storage_iterator/operator_arith.html:std::raw_storage_iterator::operator++, operator++(int)
+./cpp/memory/raw_storage_iterator/operator_star_.html:std::raw_storage_iterator::operator*
 ./cpp/memory/raw_storage_iterator/raw_storage_iterator.html:std::raw_storage_iterator::raw_storage_iterator
-./cpp/memory/raw_storage_iterator/operator*.html:std::raw_storage_iterator::operator*
-./cpp/memory/raw_storage_iterator/operator=.html:std::raw_storage_iterator::operator=
-./cpp/memory/raw_storage_iterator/operator_arith.html:std::raw_storage_iterator::operator++, operator++(int)
 ./cpp/memory/unique_ptr.html:std::unique_ptr
+./cpp/memory/monotonic_buffer_resource.html:std::pmr::monotonic_buffer_resource
 ./cpp/memory/weak_ptr/~weak_ptr.html:std::weak_ptr::~weak_ptr
 ./cpp/memory/weak_ptr/expired.html:std::weak_ptr::expired
 ./cpp/memory/weak_ptr/lock.html:std::weak_ptr::lock
@@ -3566,6 +4015,8 @@
 ./cpp/memory/scoped_allocator_adaptor/allocate.html:std::scoped_allocator_adaptor::allocate
 ./cpp/memory/scoped_allocator_adaptor/construct.html:std::scoped_allocator_adaptor::construct
 ./cpp/memory/scoped_allocator_adaptor/deallocate.html:std::scoped_allocator_adaptor::deallocate
+./cpp/memory/memory_resource.html:std::pmr::memory_resource
+./cpp/memory/synchronized_pool_resource.html:std::pmr::synchronized_pool_resource
 ./cpp/types/is_unsigned.html:std::is_unsigned
 ./cpp/types/is_scalar.html:std::is_scalar
 ./cpp/types/rank.html:std::rank
@@ -3580,6 +4031,7 @@
 ./cpp/types/is_member_pointer.html:std::is_member_pointer
 ./cpp/types/add_cv.html:std::add_cv, std::add_const, std::add_volatile
 ./cpp/types/type_info.html:std::type_info
+./cpp/types/is_invocable.html:std::is_invocable, std::is_invocable_r, std::is_nothrow_invocable, std::is_nothrow_invocable_r
 ./cpp/types/is_trivial.html:std::is_trivial
 ./cpp/types/is_function.html:std::is_function
 ./cpp/types/type_info/operator_cmp.html:std::type_info::operator==, std::type_info::operator!=
@@ -3598,7 +4050,8 @@
 ./cpp/types/type_index/hash_code.html:std::type_index::hash_code
 ./cpp/types/type_index/type_index.html:std::type_index::type_index
 ./cpp/types/type_index/name.html:std::type_index::name
-./cpp/types/result_of.html:std::result_of
+./cpp/types/is_swappable.html:std::is_swappable_with, std::is_swappable, std::is_nothrow_swappable_with, std::is_nothrow_swappable
+./cpp/types/result_of.html:std::result_of, std::invoke_result
 ./cpp/types/is_compound.html:std::is_compound
 ./cpp/types/is_default_constructible.html:std::is_default_constructible, std::is_trivially_default_constructible, std::is_nothrow_default_constructible
 ./cpp/types/add_reference.html:std::add_lvalue_reference, std::add_rvalue_reference
@@ -3651,6 +4104,7 @@
 ./cpp/types/remove_pointer.html:std::remove_pointer
 ./cpp/types/negation.html:std::negation
 ./cpp/types/is_signed.html:std::is_signed
+./cpp/types/has_unique_object_representations.html:std::has_unique_object_representations
 ./cpp/types/is_polymorphic.html:std::is_polymorphic
 ./cpp/types/is_member_function_pointer.html:std::is_member_function_pointer
 ./cpp/types/bad_typeid.html:std::bad_typeid
@@ -3661,7 +4115,6 @@
 ./cpp/types/is_empty.html:std::is_empty
 ./cpp/types/is_lvalue_reference.html:std::is_lvalue_reference
 ./cpp/types/is_integral.html:std::is_integral
-./cpp/types/numeric_limits.1.html:std::numeric_limits
 ./cpp/types/disjunction.html:std::disjunction
 ./cpp/types/is_object.html:std::is_object
 ./cpp/types/underlying_type.html:std::underlying_type
@@ -3689,6 +4142,7 @@
 ./cpp/types/extent.html:std::extent
 ./cpp/types/conjunction.html:std::conjunction
 ./cpp/types/ptrdiff_t.html:std::ptrdiff_t
+./cpp/types/numeric_limits.html:std::numeric_limits
 ./cpp/types/is_floating_point.html:std::is_floating_point
 ./cpp/types/is_destructible.html:std::is_destructible, std::is_trivially_destructible, std::is_nothrow_destructible
 ./cpp/types/make_signed.html:std::make_signed
@@ -3697,7 +4151,9 @@
 ./cpp/types/bad_cast/bad_cast.html:std::bad_cast::bad_cast
 ./cpp/types/is_move_assignable.html:std::is_move_assignable, std::is_trivially_move_assignable, std::is_nothrow_move_assignable
 ./cpp/types/remove_extent.html:std::remove_extent
+./cpp/types/is_aggregate.html:std::is_aggregate
 ./cpp/types/bad_cast.html:std::bad_cast
+./cpp/types/byte.html:std::byte
 ./cpp/types/alignment_of.html:std::alignment_of
 ./cpp/links/libs.html:A list of open source C++ libraries
 ./cpp/language/move_constructor.html:Move constructors
@@ -3710,7 +4166,7 @@
 ./cpp/language/main_function.html:Main function
 ./cpp/language/concepts.html:Constraints and concepts
 ./cpp/language/initialization.html:Initialization
-./cpp/language/lifetime.html:Object lifetime
+./cpp/language/lifetime.html:Lifetime
 ./cpp/language/object.html:Object
 ./cpp/language/static_cast.html:static_cast conversion
 ./cpp/language/explicit_cast.html:Explicit type conversion
@@ -3725,17 +4181,18 @@
 ./cpp/language/operator_precedence.html:C++ Operator Precedence
 ./cpp/language/overload_resolution.html:Overload resolution
 ./cpp/language/this.html:this pointer
-./cpp/language/static.html:static specifier
+./cpp/language/static.html:static members
 ./cpp/language/default_constructor.html:Default constructors
 ./cpp/language/range-for.html:Range-based for loop  (since C++11)
 ./cpp/language/integer_literal.html:integer literal
-./cpp/language/typedef.html:Typedef declaration
+./cpp/language/typedef.html:typedef specifier
 ./cpp/language/default_arguments.html:Default arguments
 ./cpp/language/raii.html:RAII
+./cpp/language/class_template_deduction.html:Class template deduction(since C++17)
 ./cpp/language/inline.html:inline specifier
 ./cpp/language/new.html:new expression
 ./cpp/language/extending_std.html:Extending the namespace std
-./cpp/language/copy_elision.html:copy elision
+./cpp/language/copy_elision.html:Copy elision
 ./cpp/language/memory_model.html:Memory model
 ./cpp/language/expressions.html:Expressions
 ./cpp/language/character_literal.html:character literal
@@ -3752,6 +4209,7 @@
 ./cpp/language/classes.html:Classes
 ./cpp/language/nested_types.html:nested classes
 ./cpp/language/elaborated_type_specifier.html:Elaborated type specifier
+./cpp/language/pimpl.html:PImpl
 ./cpp/language/function.html:Declaring functions
 ./cpp/language/auto.html:auto specifier (since C++11)
 ./cpp/language/template_argument_deduction.html:Template argument deduction
@@ -3777,7 +4235,7 @@
 ./cpp/language/abstract_class.html:abstract class
 ./cpp/language/delete.html:delete expression
 ./cpp/language/eval_order.html:Order of evaluation
-./cpp/language/lambda.html:Lambda functions (since C++11)
+./cpp/language/lambda.html:Lambda expressions (since C++11)
 ./cpp/language/virtual.html:virtual function specifier
 ./cpp/language/overloaded_address.html:Address of an overloaded function
 ./cpp/language/namespace_alias.html:Namespace aliases
@@ -3857,6 +4315,7 @@
 ./cpp/language/type-id.html:Type
 ./cpp/language/cv.html:cv (const and volatile) type qualifiers
 ./cpp/language/objects.html:Object
+./cpp/language/deduction_guide.html:Class template deduction(since C++17)
 ./cpp/language/enum.html:enumeration declaration
 ./cpp/language/continue.html:continue statement
 ./cpp/language/destructor.html:Destructors
@@ -3866,17 +4325,23 @@
 ./cpp/algorithm/remove_copy.html:std::remove_copy, std::remove_copy_if
 ./cpp/algorithm/reverse_copy.html:std::reverse_copy
 ./cpp/algorithm/nth_element.html:std::nth_element
+./cpp/algorithm/for_each_n.html:std::for_each_n
 ./cpp/algorithm/random_shuffle.html:std::random_shuffle, std::shuffle
 ./cpp/algorithm/set_intersection.html:std::set_intersection
 ./cpp/algorithm/replace.html:std::replace, std::replace_if
+./cpp/algorithm/execution_policy_tag_t.html:std::execution::sequenced_policy, std::execution::parallel_policy, std::execution::parallel_unsequenced_policy
+./cpp/algorithm/reduce.html:std::reduce
 ./cpp/algorithm/make_heap.html:std::make_heap
 ./cpp/algorithm/binary_search.html:std::binary_search
 ./cpp/algorithm/accumulate.html:std::accumulate
+./cpp/algorithm/exclusive_scan.html:std::exclusive_scan
+./cpp/algorithm/count_if.html:std::count, std::count_if
 ./cpp/algorithm/is_heap.html:std::is_heap
 ./cpp/algorithm/search.html:std::search
 ./cpp/algorithm/set_symmetric_difference.html:std::set_symmetric_difference
 ./cpp/algorithm/set_union.html:std::set_union
 ./cpp/algorithm/prev_permutation.html:std::prev_permutation
+./cpp/algorithm/inclusive_scan.html:std::inclusive_scan
 ./cpp/algorithm/partial_sum.html:std::partial_sum
 ./cpp/algorithm/minmax_element.html:std::minmax_element
 ./cpp/algorithm/is_heap_until.html:std::is_heap_until
@@ -3895,9 +4360,11 @@
 ./cpp/algorithm/qsort.html:std::qsort
 ./cpp/algorithm/stable_sort.html:std::stable_sort
 ./cpp/algorithm/inplace_merge.html:std::inplace_merge
+./cpp/algorithm/find_if_not.html:std::find, std::find_if, std::find_if_not
 ./cpp/algorithm/bsearch.html:std::bsearch
 ./cpp/algorithm/find_end.html:std::find_end
 ./cpp/algorithm/move.html:std::move
+./cpp/algorithm/transform_reduce.html:std::transform_reduce
 ./cpp/algorithm/iota.html:std::iota
 ./cpp/algorithm/iter_swap.html:std::iter_swap
 ./cpp/algorithm/lower_bound.html:std::lower_bound
@@ -3908,6 +4375,7 @@
 ./cpp/algorithm/generate_n.html:std::generate_n
 ./cpp/algorithm/partition_copy.html:std::partition_copy
 ./cpp/algorithm/partial_sort_copy.html:std::partial_sort_copy
+./cpp/algorithm/execution_policy_tag.html:std::execution::seq, std::execution::par, std::execution::par_unseq
 ./cpp/algorithm/is_permutation.html:std::is_permutation
 ./cpp/algorithm/equal_range.html:std::equal_range
 ./cpp/algorithm/fill.html:std::fill
@@ -3934,14 +4402,21 @@
 ./cpp/algorithm/merge.html:std::merge
 ./cpp/algorithm/equal.html:std::equal
 ./cpp/algorithm/adjacent_difference.html:std::adjacent_difference
+./cpp/algorithm/transform_exclusive_scan.html:std::transform_exclusive_scan
 ./cpp/algorithm/max_element.html:std::max_element
+./cpp/algorithm/find_if.html:std::find, std::find_if, std::find_if_not
 ./cpp/algorithm/unique.html:std::unique
 ./cpp/algorithm/push_heap.html:std::push_heap
+./cpp/algorithm/is_execution_policy.html:std::is_execution_policy
+./cpp/algorithm/transform_inclusive_scan.html:std::transform_inclusive_scan
 ./cpp/algorithm/partial_sort.html:std::partial_sort
 ./cpp/algorithm/next_permutation.html:std::next_permutation
 ./cpp/algorithm/max.html:std::max
+./cpp/algorithm/clamp.html:std::clamp
 ./cpp/algorithm/generate.html:std::generate
+./cpp/algorithm/replace_copy_if.html:std::replace_copy, std::replace_copy_if
 ./cpp/algorithm/move_backward.html:std::move_backward
+./cpp/algorithm/sample.html:std::sample
 ./cpp/algorithm/sort_heap.html:std::sort_heap
 ./cpp/algorithm/set_difference.html:std::set_difference
 ./cpp/preprocessor.html:Preprocessor
