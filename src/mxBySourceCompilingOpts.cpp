@@ -25,7 +25,7 @@ mxBySourceCompilingOpts::mxBySourceCompilingOpts(wxWindow *parent, project_file_
 {
 	BoolFlagGuard fg(mask_list_selection_event);
 	
-	last_source = (item?item:project->files_sources[0])->name;
+	last_source = (item?item:project->files.sources[0])->name;
 	config.Resize(project->configurations_count); active_config=0;
 	for(int i=0;i<project->configurations_count;i++) {
 		if (project->configurations[i]==project->active_configuration) active_config=i;

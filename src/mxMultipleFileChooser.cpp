@@ -99,7 +99,7 @@ void mxMultipleFileChooser::OnButtonOk(wxCommandEvent &event) {
 	else if (iw==2) where=FT_OTHER;
 	for (int i=0;i<n;i++) {
 		wxString fname=DIR_PLUS_FILE(search_base,list->GetString(i));
-		if (list->IsChecked(i) && !project->HasFile(fname)) {
+		if (list->IsChecked(i) && !project->FindFromFullPath(fname)) {
 			eFileType aux_where = where==FT_NULL?mxUT::GetFileType(fname,false):where;
 			project->AddFile(aux_where,fname);
 			if (aux_where==FT_SOURCE||aux_where==FT_HEADER) parser->ParseFile(fname);

@@ -674,7 +674,7 @@ void mxMainWindow::PopulateProjectFilePopupMenu(wxMenu &menu, project_file_item 
 		menu.AppendSeparator();
 		if (project_tree.selected_parent==project_tree.sources) {
 			wxMenuItem *item=menu.AppendCheckItem(mxID_PROJECT_POPUP_COMPILE_FIRST, LANG(MAINW_PROJECT_FILE_POPUP_COMPILE_FIRST,"Compilar &Primero"));
-			item->Enable(fi!=project->files_sources[0] && !compiler->IsCompiling()); item->Check(fi==project->files_sources[0]);
+			item->Enable(fi!=project->files.sources[0] && !compiler->IsCompiling()); item->Check(fi==project->files.sources[0]);
 			
 			mxUT::AddItemToMenu(&menu,_menu_item_2(mnHIDDEN,mxID_PROJECT_POPUP_COMPILE_NOW))->Enable(!compiler->IsCompiling());
 			if (fi->where==FT_SOURCE) mxUT::AddItemToMenu(&menu,_menu_item_2(mnHIDDEN,mxID_PROJECT_POPUP_COMPILING_OPTS))->Enable(!compiler->IsCompiling());
@@ -719,7 +719,7 @@ void mxMainWindow::OnProjectTreePopup(wxTreeEvent &event) {
 		menu.Append(mxID_PROJECT_POPUP_ADD, LANG(MAINW_PROJECT_FILE_POPUP_ADD,"&Agregar Archivo..."));
 		menu.Append(mxID_PROJECT_POPUP_ADD_MULTI, LANG(MAINW_PROJECT_FILE_POPUP_ADD_MULTI,"&Agregar Múltiples Archivos..."));
 	} else {
-		PopulateProjectFilePopupMenu(menu,project->FindFromItem(project_tree.selected_item),false); // el if debería ser innecesario en este punto
+		PopulateProjectFilePopupMenu(menu,project->files.FindFromItem(project_tree.selected_item),false); // el if debería ser innecesario en este punto
 	}	
 	menu.AppendSeparator();
 	if (config->Init.fullpath_on_project_tree)
@@ -770,22 +770,22 @@ void mxMainWindow::OnProjectTreeCompileFirst(wxCommandEvent &event) {
 }
 
 void mxMainWindow::OnProjectTreeToggleReadOnly(wxCommandEvent &event) {
-	project_file_item *item=project->FindFromItem(project_tree.selected_item);
+	project_file_item *item = project->files.FindFromItem(project_tree.selected_item);
 	if (item) project->SetFileReadOnly(item,!item->read_only);
 }
 
 void mxMainWindow::OnProjectTreeToggleHideSymbols(wxCommandEvent &event) {
-	project_file_item *item=project->FindFromItem(project_tree.selected_item);
+	project_file_item *item = project->files.FindFromItem(project_tree.selected_item);
 	if (item) project->SetFileHideSymbols(item,!item->hide_symbols);
 }
 
 void mxMainWindow::OnProjectTreeCompileNow(wxCommandEvent &event) {
-	project_file_item *item = project->FindFromItem(project_tree.selected_item);
+	project_file_item *item = project->files.FindFromItem(project_tree.selected_item);
 	if (item) AuxCompileOne(item);
 }
 
 void mxMainWindow::OnProjectTreeCompilingOpts(wxCommandEvent &event) {
-	project_file_item *item = project->FindFromItem(project_tree.selected_item);
+	project_file_item *item = project->files.FindFromItem(project_tree.selected_item);
 	new mxBySourceCompilingOpts(this,item);
 }
 
@@ -1182,7 +1182,7 @@ void mxMainWindow::OnSelectError (wxTreeEvent &event) {
 		LoadInQuickHelpPanel(DIR_PLUS_FILE(config->Help.guihelp_dir,"zerror_cannotopenoutputfile.html"),false); return;
 	} else if (item_text.Contains(EN_COMPOUT_FILE_NOT_RECOGNIZED)) {
 		wxString obj_name = item_text.Mid(0,item_text.Find(EN_COMPOUT_FILE_NOT_RECOGNIZED));
-		LocalListIterator<project_file_item*> fi(&project->files_sources);
+		LocalListIterator<project_file_item*> fi(&project->files.sources);
 		while(fi.IsValid()) {
 			project_file_item *p = *fi;
 			if (obj_name == wxFileName(p->name).GetName()) {
@@ -1330,7 +1330,7 @@ void mxMainWindow::OnNotebookRightClick(wxAuiNotebookEvent& event) {
 	notebook_sources->SetSelection(notebook_sources->GetPageIndex(src));
 	wxMenu menu("");
 	if (project) {
-		project_file_item *fi=project->FindFromItem(src->treeId);
+		project_file_item *fi = project->files.FindFromItem(src->treeId);
 		if (fi) {
 			// seleccionarlo en el arbol de proyecto
 			project_tree.treeCtrl->SelectItem(src->treeId);
@@ -2628,7 +2628,7 @@ DEBUG_INFO("wxYield:out mxMainWindow::OpenFile");
 		if (not_opened) notebook_sources->AddPage(source, source->page_text, true, *bitmaps->files.source);
 		if (add_to_project) {
 			if (project) {
-				 if (!project->HasFile(filename)) {
+				 if (!project->FindFromFullPath(filename)) {
 					project_file_item *fi=project->AddFile(FT_SOURCE,filename);
 					source->treeId=fi->item;
 				 }
@@ -2642,7 +2642,7 @@ DEBUG_INFO("wxYield:out mxMainWindow::OpenFile");
 		if (not_opened) notebook_sources->AddPage(source, source->page_text, true, *bitmaps->files.header);
 		if (add_to_project) {
 			if (project) {
-				if (!project->HasFile(filename)) {
+				if (!project->FindFromFullPath(filename)) {
 					project_file_item *fi=project->AddFile(FT_HEADER,filename);
 					source->treeId = fi->item;
 				}
@@ -2656,7 +2656,7 @@ DEBUG_INFO("wxYield:out mxMainWindow::OpenFile");
 		if (not_opened) notebook_sources->AddPage(source, source->page_text, true, *bitmaps->files.other);
 		if (add_to_project) {
 			if (project) {
-				if (!project->HasFile(filename)) {
+				if (!project->FindFromFullPath(filename)) {
 					project_file_item *fi=project->AddFile(FT_OTHER,filename);
 					source->treeId=fi->item;
 				}
@@ -2774,7 +2774,7 @@ void mxMainWindow::OpenFileFromGui (wxFileName filename, int *multiple) {
 		
 	} else { // si era otro archivo
 		// abrir el archivo
-		if (project && !project->HasFile(filename)) {
+		if (project && !project->FindFromFullPath(filename)) {
 			// constantes para setear bits en *multiple
 			const int always_attach=1; // ojo, esto se usa en OnProjectTreeAdd, asi que si se cambia el valor/significado, hay que revisar tambien ahi
 			const int never_attach=2;
@@ -4227,7 +4227,7 @@ void mxMainWindow::OnEditListMarks (wxCommandEvent &event) {
 		wxString res("<HTML><HEAD><TITLE>Lineas Resaltadas</TITLE></HEAD><BODY><B>Lineas Resaltadas:</B><BR><UL>");
 		wxString restmp;
 		
-		GlobalListIterator<project_file_item*> fi(&project->files_all);
+		GlobalListIterator<project_file_item*> fi(&project->files.all);
 		while (fi.IsValid()) {
 			const SingleList<int> &markers_list=fi->extras.GetHighlightedLines();
 			restmp="";
@@ -4814,7 +4814,7 @@ void mxMainWindow::OnViewDuplicateTab(wxCommandEvent &evt) {
 void mxMainWindow::OnProjectTreeToggleFullPath(wxCommandEvent &event) {
 	bool full = config->Init.fullpath_on_project_tree = !config->Init.fullpath_on_project_tree;
 	
-	GlobalListIterator<project_file_item*> it(&project->files_all);
+	GlobalListIterator<project_file_item*> it(&project->files.all);
 	while(it.IsValid()) {
 		project_tree.treeCtrl->SetItemText(it->item,full?it->name:wxFileName(it->name).GetFullName());
 		it.Next();

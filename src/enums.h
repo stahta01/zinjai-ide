@@ -7,6 +7,7 @@ enum eFileType {
 		FT_SOURCE, 	///< source (c,cpp,cxx,c++,etc)
 		FT_HEADER, 	///< header (h,hpp,hxx,h++,etc)
 		FT_OTHER, 		///< other, neither source nor header
+		FT_BLACKLIST,   ///< for inherited files, to ignore them
 		FT_PROJECT     ///< project file (zpr), not valid for project_file_item->where
 };
 

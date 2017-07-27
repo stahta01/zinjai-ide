@@ -56,8 +56,8 @@ public:
 		}
 	};
 	wxString GetNextSection() {
+		while (m_is_ok && !NextLineIsSection()) ReadNextLine();
 		if (!m_is_ok) return "";
-		EXPECT_OR(NextLineIsSection(),return "");
 		wxString name = m_nextline.Mid(1,m_nextline.Len()-2);
 		ReadNextLine();
 		return name;

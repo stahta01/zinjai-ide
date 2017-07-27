@@ -370,12 +370,12 @@ void mxUT::FindIncludes(wxString path, wxString filename, wxArrayString &already
 	
 }
 
-wxString mxUT::UnSplit(const wxArrayString &array, const wxString &sep) {
+wxString mxUT::UnSplit(const wxArrayString &array, const wxString &sep, bool add_quotes) {
 	wxString ret;
 	if (array.GetCount()) {
-		ret<<array[0];
+		ret << (add_quotes?mxUT::Quotize(array[0]):array[0]);
 		for (unsigned int i=1;i<array.GetCount();i++) {
-			ret<<sep<<array[i];
+			ret << sep << (add_quotes?mxUT::Quotize(array[i]):array[i]);
 		}
 	}
 	return ret;
@@ -784,7 +784,7 @@ wxString mxUT::GetComplementaryFile(wxFileName the_one, eFileType force_ext) {
 	// si es proyecto, buscar si esta en otro directorio (usando las clategorias de sus archivos y no la extension)
 	if (project) {
 		wxString only_name = the_one.GetName();
-		LocalListIterator<project_file_item*> it( force_ext==FT_HEADER ? &project->files_sources : &project->files_headers );
+		LocalListIterator<project_file_item*> it( force_ext==FT_HEADER ? &project->files.sources : &project->files.headers );
 		while (it.IsValid()) {
 			if (wxFileName(it->name).GetName()==only_name) {
 				return DIR_PLUS_FILE(project->path,it->name);

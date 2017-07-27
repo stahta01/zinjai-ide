@@ -19,7 +19,6 @@ BEGIN_EVENT_TABLE(mxExeInfo, wxDialog)
 	EVT_BUTTON(wxID_OK,mxExeInfo::OnCloseButton)
 	EVT_BUTTON(mxID_EXEINFO_STRIP,mxExeInfo::OnStripButton)
 	EVT_BUTTON(mxID_HELP_BUTTON,mxExeInfo::OnHelpButton)
-	EVT_BUTTON(wxID_FIND,mxExeInfo::OnLocationButton)
 	EVT_TIMER(wxID_ANY,mxExeInfo::OnTimer)
 END_EVENT_TABLE()
 	
@@ -35,6 +34,9 @@ mxExeInfo::mxExeInfo(wxWindow *parent, ei_mode mode, wxFileName fname, mxSource 
 			return;
 		}
 	}
+	
+	m_fname.Normalize(wxPATH_NORM_DOTS|wxPATH_NORM_LONG);
+	
 	SetSize(wxSize(450,400));
 	CreateSizer sizer(this);
 	sizer.BeginNotebook()
@@ -63,7 +65,7 @@ wxPanel *mxExeInfo::CreateGeneralPanel (wxNotebook *notebook) {
 	CreatePanelAndSizer sizer(notebook);
 	
 	sizer.BeginText( LANG(EXEINFO_LOCATION,"Ubicacion") )
-		.Button(wxID_FIND).Value(m_fname.GetFullPath()).ReadOnly().EndText();
+		.Value(m_fname.GetFullPath()).ReadOnly().EndText();
 
 	double fsize = m_fname.GetSize().ToDouble();
 	wxString tsize;
@@ -95,15 +97,19 @@ wxPanel *mxExeInfo::CreateGeneralPanel (wxNotebook *notebook) {
 			.Value(m_source?LANG(EXEINFO_YES,"Si"):LANG(EXEINFO_NO,"No")).ReadOnly().Short().EndText();
 		if (project) {
 			project_file_item *fitem = project->FindFromFullPath(m_fname.GetFullPath());
+			wxString in_project = LANG(EXEINFO_NO,"No");
+			if (fitem) {
+				switch(fitem->where) {
+					case FT_SOURCE: in_project = LANG(EXEINFO_IN_SOURCE,"en Fuentes"); break;
+					case FT_HEADER: in_project = LANG(EXEINFO_IN_HEADER,"en Cabeceras"); break;
+					case FT_OTHER:  in_project = LANG(EXEINFO_IN_OTHER,"en Otros"); break;
+					default:  in_project = "<error>";
+				}
+				if (!fitem->inherited_from.IsEmpty())
+					in_project += LANG1(EXEINFO_INHERITED," (heredado desde <{1}>)",fitem->inherited_from);
+			}
 			sizer.BeginText( LANG(EXEINFO_IN_PROJECT,"En proyecto") )
-				.Value( fitem
-					      ? (fitem->where==FT_SOURCE
-						       ? LANG(EXEINFO_IN_SOURCE,"en Fuentes")
-							   : ( fitem->where==FT_HEADER
-								     ? LANG(EXEINFO_IN_HEADER,"en Cabeceras")
-								     : LANG(EXEINFO_IN_OTHER,"en Otros") ) )
-					      : LANG(EXEINFO_NO,"No") )
-				.Short().ReadOnly().Short().EndText();
+				.Value( in_project ).Short().ReadOnly().Short().EndText();
 		}
 		if (m_source && !m_source->sin_titulo) 
 			sizer.BeginText( LANG(EXEINFO_MODIFIED,"Modificado") )
@@ -184,9 +190,5 @@ void mxExeInfo::RunForSource (wxWindow * parent, mxSource * source) {
 
 void mxExeInfo::RunForSource (wxWindow * parent, wxFileName fname) {
 	new mxExeInfo(parent,mxEI_SOURCE,fname,main_window->FindSource(fname));
-}
-
-void mxExeInfo::OnLocationButton (wxCommandEvent & evt) {
-	
 }
 

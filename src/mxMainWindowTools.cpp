@@ -332,17 +332,17 @@ void mxMainWindow::OnToolsWxfbNewRes(wxCommandEvent &event) {
 		
 		wxfb_configuration *wxfb = project->GetWxfbConfiguration();
 		
-		project_file_item *item=project->HasFile(cpp_name);
+		project_file_item *item=project->FindFromFullPath(cpp_name);
 		if (!item) item=project->AddFile(FT_SOURCE,cpp_name);
 		if (wxfb->set_wxfb_sources_as_readonly) project->SetFileReadOnly(item,true);
 		if (wxfb->dont_show_base_classes_in_goto) project->SetFileHideSymbols(item,true);
 		
-		item=project->HasFile(h_name);
+		item=project->FindFromFullPath(h_name);
 		if (!item) item=project->AddFile(FT_HEADER,h_name);
 		if (wxfb->set_wxfb_sources_as_readonly) project->SetFileReadOnly(item,true);
 		if (wxfb->dont_show_base_classes_in_goto) project->SetFileHideSymbols(item,true);
 		
-		if (!project->HasFile(fname)) project->AddFile(FT_OTHER,fname);
+		if (!project->FindFromFullPath(fname)) project->AddFile(FT_OTHER,fname);
 		
 		main_window->OpenFile(fname,false);
 		return;
@@ -372,14 +372,14 @@ void mxMainWindow::OnToolsWxfbLoadRes(wxCommandEvent &event) {
 		
 		if (!project->GetWxfbActivated()) project->ActivateWxfb(true);
 		
-		if (!project->HasFile(cpp_name))
+		if (!project->FindFromFullPath(cpp_name))
 			project->AddFile(FT_SOURCE,cpp_name);
-		if (!project->HasFile(h_name))
+		if (!project->FindFromFullPath(h_name))
 			project->AddFile(FT_HEADER,h_name);
-		if (!project->HasFile(fbp_name))
+		if (!project->FindFromFullPath(fbp_name))
 			project->AddFile(FT_OTHER,fbp_name);
 //		main_window->OpenFile(fbp_name,false);
-		project->WxfbGenerate(true,project->HasFile(fbp_name));
+		project->WxfbGenerate(true,project->FindFromFullPath(fbp_name));
 		parser->Parse();
 		
 	}
@@ -1135,7 +1135,7 @@ void mxMainWindow::AuxToolsDisassemble1(GenericActionEx<wxString> *on_end) {
 	// compose required command
 	wxString out_fname = DIR_PLUS_FILE(config->temp_dir,"objdump.txt"), in_fname;	
 	if (project) {
-		project_file_item *pi = project->FindFromItem(src->treeId);
+		project_file_item *pi = project->files.FindFromItem(src->treeId);
 		if (pi && pi->where==FT_SOURCE) {
 			in_fname = src->GetBinaryFileName().GetFullPath();
 		} else {
