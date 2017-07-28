@@ -164,7 +164,7 @@ void mxValgrindOuput::OnOpen(wxCommandEvent  &evt) {
 	mxSource* source = new mxSource(main_window->notebook_sources, main_window->AvoidDuplicatePageText(name));
 	source->SetStyle(false); source->LoadFile(filename);
 	main_window->notebook_sources->AddPage(source, name ,true, *bitmaps->files.other);
-	if (!project) source->treeId = main_window->AddToProjectTreeSimple(name,FT_OTHER);
+	if (!project) source->treeId = main_window->project_tree.AddFile(name,FT_OTHER);
 	source->SetModify(false);
 	source->SetReadOnlyMode(ROM_SPECIAL);
 	source->SetFocus();
@@ -211,7 +211,7 @@ void mxValgrindOuput::OnSelect(wxTreeEvent &evt) {
 			if (project) {
 				project_file_item *fi = project->FindFromName(text);
 				if (fi) {
-					mxSource *source = main_window->OpenFile(DIR_PLUS_FILE(project->path,fi->name),false);
+					mxSource *source = main_window->OpenFile(fi->GetFullPath(project->path),false);
 					if (source && source!=EXTERNAL_SOURCE) source->MarkError(line-1);
 					return;
 				}

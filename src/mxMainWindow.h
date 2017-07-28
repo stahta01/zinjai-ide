@@ -461,8 +461,6 @@ public:
 	mxSource *OpenFile (const wxString &filename, bool add_to_project);
 	mxSource *FindSource(wxFileName filename, int *pos=nullptr);
 	void OpenFileFromGui (wxFileName filename, int *multiple=nullptr);
-	wxTreeItemId AddToProjectTreeSimple(wxFileName filename, eFileType where=FT_NULL);
-	wxTreeItemId AddToProjectTreeProject(wxString filename, eFileType where, bool sort=true);
 	mxSource *IsOpen (wxFileName filename);
 	mxSource *IsOpen (wxTreeItemId tree_item);
 	bool CloseSource(int i);
@@ -524,11 +522,19 @@ public:
 	//! Componentes del árbol de proyecto
 	struct project_tree_struct {
 		wxTreeCtrl *treeCtrl;
-//		wxMenuItem *menuItem;
 		wxTreeItemId selected_item, selected_parent;
-		wxTreeItemId root ,sources, headers, others;
+		wxTreeItemId root ,sources, headers, others, blacklist;
 		wxColor hidden_colour; ///< for "dimming" inherited files
+		wxTreeItemId MoveFile(wxTreeItemId item, eFileType where, bool and_select=false);
+		void DeleteFile(wxTreeItemId item);
+		void RenameFile(const wxTreeItemId &item, const wxString &path);
 		void SetInherited(wxTreeItemId item, bool inherited);
+		wxTreeItemId AddFile(const wxString &path, eFileType where=FT_NULL, bool sort=true);
+		void ToggleFullPath();
+	private:
+		wxTreeItemId GetParent(eFileType where, const wxString &path="") const;
+		static int GetIcon(eFileType where, const wxString &path="");
+		static wxString MakeLabel(const wxString &path);
 	} project_tree;
 	
 	//! Componentes del árbol de resultados de la compilación

@@ -1136,7 +1136,7 @@ void mxMainWindow::AuxToolsDisassemble1(GenericActionEx<wxString> *on_end) {
 	wxString out_fname = DIR_PLUS_FILE(config->temp_dir,"objdump.txt"), in_fname;	
 	if (project) {
 		project_file_item *pi = project->files.FindFromItem(src->treeId);
-		if (pi && pi->where==FT_SOURCE) {
+		if (pi && pi->GetCategory()==FT_SOURCE) {
 			in_fname = src->GetBinaryFileName().GetFullPath();
 		} else {
 			in_fname = project->GetExePath();

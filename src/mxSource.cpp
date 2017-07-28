@@ -256,11 +256,11 @@ mxSource::mxSource (wxWindow *parent, wxString ptext, project_file_item *fitem)
 	LoadSourceConfig();
 	
 	if (fitem) {
-		m_extras = &fitem->extras;
+		m_extras = &fitem->GetSourceExtras();
 //		m_extras->ToSource(this); // not here, mxSource is still empty!!!
 		m_owns_extras=false;
-		treeId=fitem->item;
-		if (fitem->read_only) SetReadOnlyMode(ROM_ADD_PROJECT);
+		treeId=fitem->GetTreeItem();
+		if (fitem->IsReadOnly()) SetReadOnlyMode(ROM_ADD_PROJECT);
 	} else {
 		m_owns_extras=true;
 		m_extras = new SourceExtras();

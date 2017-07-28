@@ -365,40 +365,66 @@ class project_library;
 * cabeceras y otros). Cada estructura guarda el nombre del archivo, sus listas breakpoints
 * y lineas resaltadas y algunas banderas.
 **/
-struct project_file_item { // para armar las listas (doblemente enlazadas) de archivos del proyecto
-	wxString name; ///< path relativo al path del proyecto
-	wxTreeItemId item;
-	SourceExtras extras; ///< breakpoints, highlighted lines, cursor position
-	bool force_recompile; ///< indica que se debe recompilar independientemente de la fecha de modificacion (por ejemplo, si lo va a modificar un paso adicional)
-	project_library *lib; ///< a que biblioteca pertenece (no siempre es correcto, se rehace con analize_config)
-	bool read_only; ///< indica que se debe abrir como solo lectura (porque es generado por una herramienta externa)
-	bool hide_symbols; ///< indica si sus métodos y funciones se deben tener en cuenta para el cuadro "Ir a funcion/clase/método"
-	wxString inherited_from; ///< si no está vacio indica que el archivo no es propio del proyecto actual, sino heredado de otro, del que dice (path relativo, podría ser además herencia indirecta)
-	eFileType where; ///< indica en qué categoria de archivos está asociado al proyecto
-	wxString compiling_options; ///< campo generado por AnaliceConfig, con las opciones finales y reales, ya procesadas
-	void Init() { // parte comun a ambos constructores
-		force_recompile=false;
-		read_only=false;
-		hide_symbols=false;
-		lib=nullptr;
-	}
-	project_file_item (const wxString &n, const wxTreeItemId &i, const eFileType w) {
+class project_file_item { // para armar las listas (doblemente enlazadas) de archivos del proyecto
+public:
+	project_file_item (const wxString &relative_path, const wxTreeItemId &tree_item, const eFileType category) {
 		Init();
-		name=n;
-		item=i;
-		where=w;
+		m_relative_path = relative_path;
+		m_tree_item=tree_item;
+		m_category=category;
 	}
 	project_file_item () {
 		Init();
-		where=FT_NULL;
+		m_category=FT_NULL;
 	}
+	const wxString &GetRelativePath() const { return m_relative_path; }
+	wxString GetFullPath(const wxString &project_path) const { return DIR_PLUS_FILE(project_path,m_relative_path); }
+	eFileType GetCategory() const { return m_category; }
 	/// true=c++, false=c
-	bool IsCppOrJustC() {
-		return name.Len()<=2 || (name[name.Len()-1]!='c'&&name[name.Len()-1]!='C') || name[name.Len()-2]!='.';
+	bool IsCppOrJustC() const {
+		return m_relative_path.Len()<=2 || (m_relative_path[m_relative_path.Len()-1]!='c'&&m_relative_path[m_relative_path.Len()-1]!='C') || m_relative_path[m_relative_path.Len()-2]!='.';
 	}
-	wxString GetBinName(const wxString &temp_dir) {
-		return DIR_PLUS_FILE(temp_dir,wxFileName(name).GetName()+".o");
+	wxString GetBinName(const wxString &temp_dir) const {
+		return DIR_PLUS_FILE(temp_dir,wxFileName(m_relative_path).GetName()+".o");
 	}
+	bool IsInherited() const { return !m_inherited_from.IsEmpty(); }
+	wxString GetFatherProject() const { return m_inherited_from; }
+	bool IsInALibrary() const { return m_lib!=nullptr; }
+	project_library *GetLibrary() const { return m_lib; }
+	void SetLibrary(project_library *lib) { m_lib = lib; }
+	void UnsetLibrary() { m_lib = nullptr; }
+	void ForceRecompilation(bool do_recompile=true) { m_force_recompile = do_recompile; }
+	bool ShouldBeRecompiled() const { return m_force_recompile; }
+	bool IsReadOnly() const { return m_read_only; }
+	void SetReadOnly(bool read_only=true) { m_read_only = read_only; }
+	bool AreSymbolsVisible() const { return !m_hide_symbols; }
+	void SetSymbolsVisible(bool visible) { m_hide_symbols = !visible; }
+	bool ShouldBeParsed() const { return (m_category==FT_SOURCE||m_category==FT_HEADER) && AreSymbolsVisible(); }
+	const wxTreeItemId &GetTreeItem() const { return m_tree_item; }
+	void SetTreeItem(const wxTreeItemId &tree_item) { m_tree_item = tree_item; }
+	SourceExtras &GetSourceExtras() { return m_extras; }
+private:
+	friend class ProjectManager;
+	wxString m_relative_path; ///< path relativo al path del proyecto
+	wxTreeItemId m_tree_item; ///< auxiliar para la gui, item en el arbol de proyecto
+	SourceExtras m_extras; ///< breakpoints, highlighted lines, cursor position
+	bool m_force_recompile; ///< indica que se debe recompilar independientemente de la fecha de modificacion (por ejemplo, si lo va a modificar un paso adicional)
+	project_library *m_lib; ///< a que biblioteca pertenece (no siempre es correcto, se rehace con analize_config)
+	bool m_read_only; ///< indica que se debe abrir como solo lectura (porque es generado por una herramienta externa)
+	bool m_hide_symbols; ///< indica si sus métodos y funciones se deben tener en cuenta para el cuadro "Ir a funcion/clase/método"
+	eFileType m_category; ///< indica en qué categoria de archivos está asociado al proyecto
+	wxString m_inherited_from; ///< si no está vacio indica que el archivo no es propio del proyecto actual, sino heredado de otro, del que dice (path relativo, podría ser además herencia indirecta)
+	wxString compiling_options; ///< campo generado por AnaliceConfig, con las opciones finales y reales, ya procesadas
+	void Init() { // parte comun a ambos constructores
+		m_force_recompile=false;
+		m_read_only=false;
+		m_hide_symbols=false;
+		m_lib=nullptr;
+	}
+	void SetFatherProject(const wxString &father_zpr) { m_inherited_from = father_zpr; }
+	void SetUnknownFatherProject() { m_inherited_from = "<unknown father>"; }
+	bool FatherProjectIsUnknown() const { return m_inherited_from == "<unknown father>"; }
+	void Rename(const wxString &new_relative_path) { m_read_only = new_relative_path; }
 };
 
 

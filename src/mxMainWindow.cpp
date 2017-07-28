@@ -81,6 +81,7 @@
 #include "CompilerErrorsManager.h"
 #include "mxAUI.h"
 #include "mxSourceParsingAux.h"
+#include "asserts.h"
 using namespace std;
 
 #define SIN_TITULO (wxString("<")<<LANG(UNTITLED,"sin_titulo_")<<(++untitled_count)<<">")
@@ -677,11 +678,12 @@ void mxMainWindow::PopulateProjectFilePopupMenu(wxMenu &menu, project_file_item 
 			item->Enable(fi!=project->files.sources[0] && !compiler->IsCompiling()); item->Check(fi==project->files.sources[0]);
 			
 			mxUT::AddItemToMenu(&menu,_menu_item_2(mnHIDDEN,mxID_PROJECT_POPUP_COMPILE_NOW))->Enable(!compiler->IsCompiling());
-			if (fi->where==FT_SOURCE) mxUT::AddItemToMenu(&menu,_menu_item_2(mnHIDDEN,mxID_PROJECT_POPUP_COMPILING_OPTS))->Enable(!compiler->IsCompiling());
+			if (fi->GetCategory()==FT_SOURCE) mxUT::AddItemToMenu(&menu,_menu_item_2(mnHIDDEN,mxID_PROJECT_POPUP_COMPILING_OPTS))->Enable(!compiler->IsCompiling());
 		}
 		
-		mxUT::AddItemToMenu(&menu,_menu_item_2(mnHIDDEN,mxID_PROJECT_POPUP_READONLY))->Check(fi->read_only);
-		if (fi->where!=FT_OTHER) mxUT::AddItemToMenu(&menu,_menu_item_2(mnHIDDEN,mxID_PROJECT_POPUP_HIDE_SYMBOLS))->Check(fi->hide_symbols);
+		mxUT::AddItemToMenu(&menu,_menu_item_2(mnHIDDEN,mxID_PROJECT_POPUP_READONLY))->Check(fi->IsReadOnly());
+		if (fi->GetCategory()==FT_SOURCE||fi->GetCategory()==FT_HEADER) 
+			mxUT::AddItemToMenu(&menu,_menu_item_2(mnHIDDEN,mxID_PROJECT_POPUP_HIDE_SYMBOLS))->Check(!fi->AreSymbolsVisible());
 	}
 	menu.AppendSeparator();
 	if (!for_tab && fi) {
@@ -759,7 +761,7 @@ void mxMainWindow::ShowSpecilaUnnamedSource(const wxString &tab_name, const wxAr
 	source->SetStyle(false);
 	for (unsigned int i=0;i<lines.GetCount();i++) source->AppendText(lines[i]+"\n");
 	notebook_sources->AddPage(source, tab_name ,true, *bitmaps->files.other);
-	if (!project) source->treeId = AddToProjectTreeSimple(tab_name,FT_OTHER);
+	if (!project) source->treeId = project_tree.AddFile(tab_name,FT_OTHER);
 	source->SetModify(false);
 	source->SetReadOnlyMode(ROM_SPECIAL);
 	source->SetFocus();
@@ -771,12 +773,12 @@ void mxMainWindow::OnProjectTreeCompileFirst(wxCommandEvent &event) {
 
 void mxMainWindow::OnProjectTreeToggleReadOnly(wxCommandEvent &event) {
 	project_file_item *item = project->files.FindFromItem(project_tree.selected_item);
-	if (item) project->SetFileReadOnly(item,!item->read_only);
+	if (item) project->SetFileReadOnly(item,!item->IsReadOnly());
 }
 
 void mxMainWindow::OnProjectTreeToggleHideSymbols(wxCommandEvent &event) {
 	project_file_item *item = project->files.FindFromItem(project_tree.selected_item);
-	if (item) project->SetFileHideSymbols(item,!item->hide_symbols);
+	if (item) project->SetFileHideSymbols(item,item->AreSymbolsVisible());
 }
 
 void mxMainWindow::OnProjectTreeCompileNow(wxCommandEvent &event) {
@@ -1185,14 +1187,14 @@ void mxMainWindow::OnSelectError (wxTreeEvent &event) {
 		LocalListIterator<project_file_item*> fi(&project->files.sources);
 		while(fi.IsValid()) {
 			project_file_item *p = *fi;
-			if (obj_name == wxFileName(p->name).GetName()) {
+			if (obj_name == wxFileName(p->GetRelativePath()).GetName()) {
 				mxMessageDialog::mdAns ans = 
 					mxMessageDialog(main_window,LANG1(MAINW_SAVE_LINK_ERROR_TRUNCATED_FILE,""
 													  "Este error puede deberse a compilaciones interrumpidas, o a la presencia\n"
 													  "de objetos compilados en otros sistemas. Si este fuera el caso, podría\n"
 													  "solucionarse simplemente recompilando el fuente asociado. ¿Desea recompilar\n"
-													  "\"<{1}>\" ahora?",p->name))
-						.Title(p->name).ButtonsYesNo().IconQuestion().Run();
+													  "\"<{1}>\" ahora?",p->GetRelativePath()))
+						.Title(p->GetRelativePath()).ButtonsYesNo().IconQuestion().Run();
 				if (ans.yes) { AuxCompileOne(p); return; }
 				break;
 			}
@@ -1590,8 +1592,30 @@ wxTreeCtrl* mxMainWindow::CreateProjectTree() {
 	return project_tree.treeCtrl;
 }
 
+wxString mxMainWindow::project_tree_struct::MakeLabel(const wxString &path) {
+	return (project&&!config->Init.fullpath_on_project_tree) ? wxFileName(path).GetFullName() : path ;
+}
+
+void mxMainWindow::project_tree_struct::RenameFile(const wxTreeItemId &item, const wxString &path) {
+	treeCtrl->SetItemText( item, MakeLabel(path) );
+	treeCtrl->SortChildren(treeCtrl->GetItemParent(item));
+}
 void mxMainWindow::project_tree_struct::SetInherited(wxTreeItemId item, bool inherited) {
 	treeCtrl->SetItemTextColour( item, inherited ? hidden_colour : treeCtrl->GetItemTextColour(sources) );
+}
+wxTreeItemId mxMainWindow::project_tree_struct::MoveFile(wxTreeItemId old_item, eFileType where, bool and_select) {
+	// gets old data and delete old item from its old category
+	bool was_inherited = treeCtrl->GetItemTextColour(old_item)==hidden_colour;
+	wxString label = treeCtrl->GetItemText(old_item);
+	treeCtrl->Delete(old_item);
+	// insert a new item in the propper category
+	wxTreeItemId parent = GetParent(where,label);
+	wxTreeItemId new_item = treeCtrl->AppendItem(parent,label,GetIcon(where,label));
+	if (was_inherited) SetInherited(new_item,true);
+	// sort, select, return
+	treeCtrl->SortChildren(parent);
+	if (and_select) treeCtrl->SelectItem(new_item);
+	return new_item;
 }
 
 wxTreeCtrl* mxMainWindow::CreateSymbolsTree() {
@@ -2544,44 +2568,42 @@ mxSource *mxMainWindow::IsOpen (wxTreeItemId tree_item) {
 }
 
 // esta funcion solo se llama cuando no es proyecto
-wxTreeItemId mxMainWindow::AddToProjectTreeProject(wxString name, eFileType where, bool sort) {
-	wxString iname=config->Init.fullpath_on_project_tree?name:wxFileName(name).GetFullName();
-	wxTreeItemId item;
-	switch (where) {
-	case FT_SOURCE:
-		item = project_tree.treeCtrl->AppendItem(project_tree.sources, iname, 1);
-		if (sort) project_tree.treeCtrl->SortChildren(main_window->project_tree.sources);
-		return item;
-	case FT_HEADER:
-		item = project_tree.treeCtrl->AppendItem(project_tree.headers, iname, 2);
-		if (sort) project_tree.treeCtrl->SortChildren(main_window->project_tree.headers);
-		break;
-	default:
-		item = project_tree.treeCtrl->AppendItem(project_tree.others, iname, wxFileName(name).GetExt().MakeUpper()=="FBP"?5:3);
-		if (sort) project_tree.treeCtrl->SortChildren(main_window->project_tree.others);
-		break;
-	};
+wxTreeItemId mxMainWindow::project_tree_struct::GetParent(eFileType where, const wxString &path) const {
+	if (where==FT_NULL) where = mxUT::GetFileType(path,false);
+	switch(where) {
+	case FT_SOURCE:    return sources;
+	case FT_HEADER:    return headers;
+	case FT_OTHER:     return others;
+	case FT_BLACKLIST: return blacklist;
+	default:EXPECT(false);
+	}
+	return others; ///< should never happen
+}
+
+void mxMainWindow::project_tree_struct::DeleteFile(wxTreeItemId item) {
+	treeCtrl->Delete(item);
+}
+
+int mxMainWindow::project_tree_struct::GetIcon(eFileType where, const wxString &path) {
+	if (where==FT_NULL) where = mxUT::GetFileType(path,false);
+	switch(where) {
+	case FT_SOURCE:    return 1;
+	case FT_HEADER:    return 2;
+	case FT_OTHER:     return (wxFileName(path).GetExt().MakeUpper()=="FBP"?5:3);
+	case FT_BLACKLIST: return 6;
+	default:EXPECT(false);
+	}
+	return 3; ///< should never happen
+}
+
+wxTreeItemId mxMainWindow::project_tree_struct::AddFile(const wxString &path, eFileType where, bool sort) {
+	wxString iname = MakeLabel(path);
+	wxTreeItemId parent = GetParent(where,path);
+	int icon_num = GetIcon(where,path);
+	wxTreeItemId item = treeCtrl->AppendItem(parent, MakeLabel(path), icon_num);
+	if (sort) treeCtrl->SortChildren(parent);
 	return item;
 }
-
-wxTreeItemId mxMainWindow::AddToProjectTreeSimple(wxFileName filename, eFileType where) {
-	if (where==FT_NULL) where=mxUT::GetFileType(filename.GetFullName(),false);
-	switch (where) {
-		case FT_SOURCE:
-			return project_tree.treeCtrl->AppendItem(project_tree.sources, filename.GetFullName(), 1);
-			break;
-		case FT_HEADER:
-			return project_tree.treeCtrl->AppendItem(project_tree.headers, filename.GetFullName(), 2);
-			break;
-		default:
-			if (filename.GetExt().MakeUpper()=="FBP")
-				return project_tree.treeCtrl->AppendItem(project_tree.others, filename.GetFullName(), 5);
-			else
-				return project_tree.treeCtrl->AppendItem(project_tree.others, filename.GetFullName(), 3);
-			break;
-	};
-}
-
 
 mxSource *mxMainWindow::FindSource(wxFileName filename, int *pos) {
 	for (int i=0,j=notebook_sources->GetPageCount();i<j;i++) {
@@ -2644,10 +2666,10 @@ DEBUG_INFO("wxYield:out mxMainWindow::OpenFile");
 			if (project) {
 				 if (!project->FindFromFullPath(filename)) {
 					project_file_item *fi=project->AddFile(FT_SOURCE,filename);
-					source->treeId=fi->item;
+					source->treeId=fi->GetTreeItem();
 				 }
 			} else {
-				source->treeId = AddToProjectTreeSimple(filename,FT_SOURCE);
+				source->treeId = project_tree.AddFile(filename,FT_SOURCE);
 			}
 			source->never_parsed=false;
 			parser->ParseFile(filename);
@@ -2658,10 +2680,10 @@ DEBUG_INFO("wxYield:out mxMainWindow::OpenFile");
 			if (project) {
 				if (!project->FindFromFullPath(filename)) {
 					project_file_item *fi=project->AddFile(FT_HEADER,filename);
-					source->treeId = fi->item;
+					source->treeId = fi->GetTreeItem();
 				}
 			} else {
-				source->treeId = AddToProjectTreeSimple(filename,FT_HEADER);
+				source->treeId = project_tree.AddFile(filename,FT_HEADER);
 			}
 			source->never_parsed=false;
 			parser->ParseFile(filename);
@@ -2672,10 +2694,10 @@ DEBUG_INFO("wxYield:out mxMainWindow::OpenFile");
 			if (project) {
 				if (!project->FindFromFullPath(filename)) {
 					project_file_item *fi=project->AddFile(FT_OTHER,filename);
-					source->treeId=fi->item;
+					source->treeId=fi->GetTreeItem();
 				}
 			} else {
-				source->treeId = AddToProjectTreeSimple(filename,FT_OTHER);
+				source->treeId = project_tree.AddFile(filename,FT_OTHER);
 			}
 		}
 	}
@@ -2963,7 +2985,7 @@ mxSource *mxMainWindow::NewFileFromText (wxString text, wxString name, int pos) 
 	source->MoveCursorTo(pos);
 	source->SetLineNumbers();
 	notebook_sources->AddPage(source, name ,true, *bitmaps->files.blank);
-	if (!project) source->treeId = AddToProjectTreeSimple(name,FT_SOURCE);
+	if (!project) source->treeId = project_tree.AddFile(name,FT_SOURCE);
 	source->SetModify(false);
 	source->SetFocus();
 	return source;
@@ -3005,7 +3027,7 @@ mxSource *mxMainWindow::NewFileFromTemplate(wxString filename, bool is_full_path
 	// define some basic source's settings
 	source->SetLineNumbers();
 	notebook_sources->AddPage(source, LAST_TITULO ,true, *bitmaps->files.blank);
-	if (!project) source->treeId = AddToProjectTreeSimple(LAST_TITULO,FT_SOURCE);
+	if (!project) source->treeId = project_tree.AddFile(LAST_TITULO,FT_SOURCE);
 	source->MoveCursorTo(0,false); // to avoid start with non-zero vertical scrolling on very short templates
 	source->SetModify(false);
 	
@@ -3038,7 +3060,7 @@ void mxMainWindow::OnFileSave (wxCommandEvent &event) {
 		else {
 			src->SaveSource();
 			project_file_item *fi;
-			if (!project || ((fi=project->FindFromName(src->source_filename.GetFullPath())) && fi->where!=FT_OTHER))
+			if ( !project || ((fi=project->FindFromName(src->source_filename.GetFullPath())) && fi->ShouldBeParsed()) )
 				parser->ParseSource(CURRENT_SOURCE,true);
 		} 
 	}
@@ -4243,10 +4265,10 @@ void mxMainWindow::OnEditListMarks (wxCommandEvent &event) {
 		
 		GlobalListIterator<project_file_item*> fi(&project->files.all);
 		while (fi.IsValid()) {
-			const SingleList<int> &markers_list=fi->extras.GetHighlightedLines();
+			const SingleList<int> &markers_list = fi->GetSourceExtras().GetHighlightedLines();
 			restmp="";
 			for(int i=0;i<markers_list.GetSize();i++)
-				restmp=wxString("<LI><A href=\"gotoline:")<<DIR_PLUS_FILE(project->path,fi->name)<<":"<<markers_list[i]+1<<"\">"<<fi->name<<": linea "<<markers_list[i]+1<<"</A></LI>"<<restmp;
+				restmp=wxString("<LI><A href=\"gotoline:") << fi->GetFullPath(project->path)<<":"<<markers_list[i]+1<<"\">"<< fi->GetRelativePath() <<": linea "<<markers_list[i]+1<<"</A></LI>"<<restmp;
 			res<<restmp;	
 			fi.Next();
 		}
@@ -4826,16 +4848,17 @@ void mxMainWindow::OnViewDuplicateTab(wxCommandEvent &evt) {
 }
 
 void mxMainWindow::OnProjectTreeToggleFullPath(wxCommandEvent &event) {
-	bool full = config->Init.fullpath_on_project_tree = !config->Init.fullpath_on_project_tree;
-	
-	GlobalListIterator<project_file_item*> it(&project->files.all);
-	while(it.IsValid()) {
-		project_tree.treeCtrl->SetItemText(it->item,full?it->name:wxFileName(it->name).GetFullName());
-		it.Next();
+	project_tree.ToggleFullPath();
+}
+
+void mxMainWindow::project_tree_struct::ToggleFullPath() {
+	config->Init.fullpath_on_project_tree = !config->Init.fullpath_on_project_tree;
+	for( GlobalListIterator<project_file_item*> it(&project->files.all); it.IsValid(); it.Next() ) {
+		treeCtrl->SetItemText(it->GetTreeItem(),MakeLabel(it->GetRelativePath()));
 	}
-	project_tree.treeCtrl->SortChildren(project_tree.sources);
-	project_tree.treeCtrl->SortChildren(project_tree.others);
-	project_tree.treeCtrl->SortChildren(project_tree.headers);
+	treeCtrl->SortChildren(sources);
+	treeCtrl->SortChildren(others);
+	treeCtrl->SortChildren(headers);
 }
 
 void mxMainWindow::OnInternalInfo ( wxCommandEvent &event ) {

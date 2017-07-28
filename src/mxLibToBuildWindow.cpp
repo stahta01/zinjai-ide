@@ -64,10 +64,10 @@ mxLibToBuildWindow::mxLibToBuildWindow(mxProjectConfigWindow *parent, project_co
 	project->AssociateLibsAndSources(m_configuration);
 
 	for(LocalListIterator<project_file_item*> item(&project->files.sources); item.IsValid(); item.Next()) {
-		if (m_lib && item->lib==m_lib)
-			m_sources_in->Append(item->name);
+		if (m_lib && item->GetLibrary()==m_lib)
+			m_sources_in->Append(item->GetRelativePath());
 		else
-			m_sources_out->Append(item->name);
+			m_sources_out->Append(item->GetRelativePath());
 		
 	}
 	
@@ -107,16 +107,16 @@ void mxLibToBuildWindow::OnOkButton(wxCommandEvent &evt) {
 	for (LocalListIterator<project_file_item*> fi(&project->files.sources);
 		 fi.IsValid() ; fi.Next()) 
 	{
-		if (m_sources_in->FindString(fi->name)!=wxNOT_FOUND) {
+		if (m_sources_in->FindString(fi->GetRelativePath())!=wxNOT_FOUND) {
 #ifndef __WIN32__
-			if (!fi->lib) fi->force_recompile=true; // por el fPIC
+			if (!fi->IsInALibrary()) fi->ForceRecompilation(); // por el fPIC
 #endif
-			fi->lib = m_lib;
-		} else if (fi->lib == m_lib) {
+			fi->SetLibrary(m_lib);
+		} else if (fi->GetLibrary() == m_lib) {
 #ifndef __WIN32__
-			if (!fi->lib) fi->force_recompile=true; // por el fPIC
-			fi->lib=nullptr;
+			if (!fi->IsInALibrary()) fi->ForceRecompilation(); // por el fPIC
 #endif
+			fi->UnsetLibrary();
 		}
 	}
 	project->SaveLibsAndSourcesAssociation(m_configuration);

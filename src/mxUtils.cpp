@@ -277,8 +277,8 @@ bool mxUT::AreIncludesUpdated(wxDateTime bin_date, wxFileName filename, wxArrayS
 	for(unsigned int i=1;i<already_processed.GetCount();i++) { // saltea el elemento ficticio
 		if (!ret) {
 			if (project) {
-				project_file_item *fi=project->FindFromFullPath(already_processed[i]);
-				if (fi && fi->force_recompile) ret=true;
+				project_file_item *fi = project->FindFromFullPath(already_processed[i]);
+				if (fi && fi->ShouldBeRecompiled()) ret=true;
 			}
 			bool was_on_cache = AreIncludesUpdated_cache.count(already_processed[i]);
 			wxDateTime &dt = AreIncludesUpdated_cache[already_processed[i]];
@@ -784,12 +784,10 @@ wxString mxUT::GetComplementaryFile(wxFileName the_one, eFileType force_ext) {
 	// si es proyecto, buscar si esta en otro directorio (usando las clategorias de sus archivos y no la extension)
 	if (project) {
 		wxString only_name = the_one.GetName();
-		LocalListIterator<project_file_item*> it( force_ext==FT_HEADER ? &project->files.sources : &project->files.headers );
-		while (it.IsValid()) {
-			if (wxFileName(it->name).GetName()==only_name) {
-				return DIR_PLUS_FILE(project->path,it->name);
+		for( LocalListIterator<project_file_item*> it( force_ext==FT_HEADER ? &project->files.sources : &project->files.headers ); it.IsValid(); it.Next() ) {
+			if (wxFileName(it->GetRelativePath()).GetName()==only_name) {
+				return it->GetFullPath(project->path);
 			}
-			it.Next();
 		}
 	}
 	return wxString();

@@ -6,7 +6,7 @@ int BreakPointInfo::last_zinjai_id=0;
 GlobalList<BreakPointInfo*> BreakPointInfo::global_list;
 
 BreakPointInfo::BreakPointInfo(project_file_item *_fitem, int _line_number) {
-	fname=DIR_PLUS_FILE(project->path,_fitem->name);
+	fname = _fitem->GetFullPath(project->path);
 #ifdef __WIN32__
 	for (unsigned int i=0;i<fname.Len();i++) // corregir las barras en windows para que no sean caracter de escape
 		if (fname[i]=='\\') fname[i]='/';
@@ -21,7 +21,7 @@ BreakPointInfo::BreakPointInfo(project_file_item *_fitem, int _line_number) {
 	gdb_status=BPS_UNKNOWN;
 	gdb_id=-1;
 	zinjai_id=++last_zinjai_id;
-	_fitem->extras.AddBreakpoint(this);
+	_fitem->GetSourceExtras().AddBreakpoint(this);
 }
 
 BreakPointInfo::BreakPointInfo(mxSource *_source, int _line_number) {

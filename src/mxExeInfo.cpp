@@ -99,14 +99,15 @@ wxPanel *mxExeInfo::CreateGeneralPanel (wxNotebook *notebook) {
 			project_file_item *fitem = project->FindFromFullPath(m_fname.GetFullPath());
 			wxString in_project = LANG(EXEINFO_NO,"No");
 			if (fitem) {
-				switch(fitem->where) {
+				switch(fitem->GetCategory()) {
 					case FT_SOURCE: in_project = LANG(EXEINFO_IN_SOURCE,"en Fuentes"); break;
 					case FT_HEADER: in_project = LANG(EXEINFO_IN_HEADER,"en Cabeceras"); break;
 					case FT_OTHER:  in_project = LANG(EXEINFO_IN_OTHER,"en Otros"); break;
+					case FT_BLACKLIST: in_project = LANG(EXEINFO_IN_OTHER,"en Lista Negra"); break;
 					default:  in_project = "<error>";
 				}
-				if (!fitem->inherited_from.IsEmpty())
-					in_project += LANG1(EXEINFO_INHERITED," (heredado desde <{1}>)",fitem->inherited_from);
+				if (fitem->IsInherited())
+					in_project += LANG1(EXEINFO_INHERITED," (heredado desde <{1}>)",fitem->GetFatherProject());
 			}
 			sizer.BeginText( LANG(EXEINFO_IN_PROJECT,"En proyecto") )
 				.Value( in_project ).Short().ReadOnly().Short().EndText();
