@@ -365,7 +365,13 @@ public:
 	void RemoveComments();
 	void AlignComments(int c);
 
+private:
 	wxTreeItemId treeId;
+public:
+	bool IsInTheProject() const { return treeId.IsOk(); }
+	const wxTreeItemId &GetTreeItem() const { return treeId; }
+	void SetNotInTheProjectAnymore();
+	void SetTreeItem(const wxTreeItemId &item);
 
 	cfgSource config_source;
 	cfgRunning config_running;

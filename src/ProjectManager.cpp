@@ -86,13 +86,14 @@ static bool ReadProjectFilesList(const wxString &zpr_full_path, ProjectManager::
 						recursive_inheritances.Add(DIR_PLUS_FILE(project_path,aux_array[i]));
 				} else if (p.Key()=="path_char") file_path_char = p.AsChar();
 			}
-		} else if (section=="source" || section=="header" || section=="other") {
+		} else if (section=="source" || section=="header" || section=="other" || section=="blacklist") {
 			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
 				if (p.Key()=="path") {
 					wxString filepath = DIR_PLUS_FILE(project_path,fix_path_char(file_path_char,p.AsString()));
 					if      (section=="source") out_list.sources.Add( new project_file_item(filepath,wxTreeItemId(),FT_SOURCE) );
 					else if (section=="header") out_list.headers.Add( new project_file_item(filepath,wxTreeItemId(),FT_HEADER) );
 					else if (section=="other")  out_list.others.Add ( new project_file_item(filepath,wxTreeItemId(),FT_OTHER ) );
+					else if (section=="blacklist")  out_list.others.Add ( new project_file_item(filepath,wxTreeItemId(),FT_BLACKLIST) );
 				}
 			}
 		}
@@ -102,6 +103,48 @@ static bool ReadProjectFilesList(const wxString &zpr_full_path, ProjectManager::
 }
 
 	
+void ProjectManager::ReloadFatherProjects() {
+	
+	// cuando se llama desde el ctor esto no cambia nada, es para cuando se llama 
+	// para un proyecto ya cargado luego de modificar la lista de zprs padres
+	for (GlobalListIterator<project_file_item*> it(&files.all); it.IsValid(); it.Next()) 
+		if (it->IsInherited()) it->SetUnknownFatherProject();
+	
+	// inicilizar la lista de proyectos padres
+	wxArrayString project_inheritances; 
+	mxUT::Split(inherits_from,project_inheritances,true,false);
+	for(unsigned int i=0;i<project_inheritances.GetCount();i++) {
+		project_inheritances[i] = DIR_PLUS_FILE(path,project_inheritances[i]);
+	}
+	// obtener las lista de archivos heredados
+	for(unsigned int i=0;i<project_inheritances.GetCount();i++) {  
+		FilesList flist; 
+		wxString zpr_full_path = project_inheritances[i];
+		wxString zpr_relative_path = mxUT::Relativize(zpr_full_path,path);
+		if (ReadProjectFilesList(zpr_full_path,flist,project_inheritances)) {
+			// warning: in *this al project_file_item paths are relative, 
+			// but ReadProjectFilesList puts full paths in project_file_item::m_relative_path
+			for (GlobalListIterator<project_file_item*> it(&flist.all); it.IsValid(); it.Next()) {
+				project_file_item *item = FindFromFullPath(it->m_relative_path);
+				if (!item) item = AddFile(it->GetCategory(),it->GetRelativePath(),false);
+				else if (!item->IsInherited()) continue; // si ya estaba en el proyecto como propio, dejarlo así
+				item->SetFatherProject(zpr_relative_path);
+				main_window->project_tree.SetInherited(item->GetTreeItem(),true);
+			}
+		}
+	}
+	// limpiar los que estaban en este zpr como heredados pero desaparecieron de los padres
+	SingleList<project_file_item*> to_del;
+	for (GlobalListIterator<project_file_item*> it(&files.all); it.IsValid(); it.Next()) 
+		if (it->FatherProjectIsUnknown()) to_del.Add(*it);
+	for(int i=0;i<to_del.GetSize();i++) 
+		DeleteFile(to_del[i],false);
+	// y ordenar los arboles en la gui
+	main_window->project_tree.treeCtrl->SortChildren(main_window->project_tree.sources);
+	main_window->project_tree.treeCtrl->SortChildren(main_window->project_tree.others);
+	main_window->project_tree.treeCtrl->SortChildren(main_window->project_tree.headers);
+}
+
 // abrir un proyecto existente
 ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_TOOLS) {
 	
@@ -273,7 +316,7 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 				}
 			}
 			
-		} else if ( section=="source" || section=="header" || section=="other" ) {
+		} else if ( section=="source" || section=="header" || section=="other" || section=="blacklist") {
 			project_file_item *last_file = nullptr;
 			BreakPointInfo *last_breakpoint = nullptr;
 			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
@@ -285,6 +328,8 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 						last_file = AddFile(FT_HEADER,filepath,false);
 					else if (section=="other")
 						last_file = AddFile(FT_OTHER,filepath,false);
+					else if (section=="blacklist")
+						last_file = AddFile(FT_BLACKLIST,filepath,false);
 				} else if (p.Key()=="cursor") {
 					if (last_file) last_file->GetSourceExtras().SetCurrentPos(p.AsString());
 				} else if (p.Key()=="readonly") {
@@ -392,34 +437,7 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 		
 	// completar los archivos heredados
 	inherits_from = fix_path_char(file_path_char,inherits_from);
-	wxArrayString project_inheritances; 
-	mxUT::Split(inherits_from,project_inheritances,true,false);
-	for(unsigned int i=0;i<project_inheritances.GetCount();i++) {
-		project_inheritances[i] = DIR_PLUS_FILE(path,project_inheritances[i]);
-	}
-	for(unsigned int i=0;i<project_inheritances.GetCount();i++) {  
-		FilesList flist; 
-		wxString zpr_full_path = project_inheritances[i];
-		wxString zpr_relative_path = mxUT::Relativize(zpr_full_path,path);
-		if (ReadProjectFilesList(zpr_full_path,flist,project_inheritances)) {
-			// warning: in *this al project_file_item paths are relative, 
-			// but ReadProjectFilesList puts full paths in project_file_item::m_relative_path
-			for (GlobalListIterator<project_file_item*> it(&flist.all); it.IsValid(); it.Next()) {
-				project_file_item *item = FindFromFullPath(it->m_relative_path);
-				if (!item) item = AddFile(it->GetCategory(),it->GetRelativePath(),false);
-				else if (!item->IsInherited()) continue; // si ya estaba en el proyecto como propio, dejarlo así
-				item->SetFatherProject(zpr_relative_path);
-				main_window->project_tree.SetInherited(item->GetTreeItem(),true);
-			}
-		}
-	}
-	// limpiar los que estaban en este zpr como heredados pero desaparecieron de los padres
-	for (GlobalListIterator<project_file_item*> it(&files.all); it.IsValid(); it.Next()) 
-		if (it->FatherProjectIsUnknown()) DeleteFile(*it,false);
-	// y ordenar los arboles en la gui
-	main_window->project_tree.treeCtrl->SortChildren(main_window->project_tree.sources);
-	main_window->project_tree.treeCtrl->SortChildren(main_window->project_tree.others);
-	main_window->project_tree.treeCtrl->SortChildren(main_window->project_tree.headers);
+	ReloadFatherProjects();
 	
 	modified=false;
 	force_relink=false;
@@ -698,6 +716,9 @@ project_file_item *ProjectManager::AddFile (eFileType where, wxFileName filename
 		case FT_HEADER:
 			files.headers.Add(fitem);
 			break;
+		case FT_BLACKLIST:
+			files.blacklist.Add(fitem);
+			break;
 		default:
 			files.others.Add(fitem);
 			if (wxfb && fitem->GetRelativePath().Right(4).Lower()==".fbp") WxfbGetFiles();
@@ -782,12 +803,12 @@ bool ProjectManager::Save (bool as_template) {
 	fil.AddLine("path_char=/");
 #endif
 	// agregar la lista de fuentes pertenecientes al proyecto
-	wxString section;
-	for(int i=0;i<3;i++) { 
-		section=i==0?"[source]":(i==1?"[header]":"[other]");
-		LocalListIterator<project_file_item*> item(i==0?&files.sources:(i==1?&files.headers:&files.others));
+	wxString file_sections[]={"[source]","[header]","[other]","[blacklist]"};
+	LocalList<project_file_item*> *file_lists[] = { &files.sources, &files.headers, &files.others, &files.blacklist };
+	for(int i=0;i<4;i++) { 
+		LocalListIterator<project_file_item*> item(file_lists[i]);
 		while (item.IsValid()) {
-			fil.AddLine(section);
+			fil.AddLine(file_sections[i]);
 			CFG_GENERIC_WRITE_DN("path",item->m_relative_path);
 			if (item->IsReadOnly()) CFG_GENERIC_WRITE_DN("readonly",1);
 			if (item->IsInherited()) CFG_GENERIC_WRITE_DN("inherited",1);
@@ -980,11 +1001,9 @@ wxString ProjectManager::GetFileName() {
 	return filename.Mid(0,filename.Len()-4);
 }
 
-project_file_item *ProjectManager::FilesList::FindFromItem(wxTreeItemId &tree_item) {
-	GlobalListIterator<project_file_item*> it(&all);
-	while (it.IsValid()) {
+project_file_item *ProjectManager::FilesList::FindFromItem(const wxTreeItemId &tree_item) {
+	for( GlobalListIterator<project_file_item*> it(&all); it.IsValid(); it.Next() ) {
 		if (it->GetTreeItem()==tree_item) return *it;
-		it.Next();
 	}
 	return nullptr;
 }
@@ -1053,27 +1072,36 @@ bool ProjectManager::RenameFile(wxTreeItemId &tree_item, wxString new_name) {
 	return false;
 }
 
+void ProjectManager::FilesList::ChangeCategory(project_file_item *item, eFileType new_category) {
+	all.FindAndRemove(item);
+	// elegir la lista adecuada y agregarlo al arbol de proyecto
+	switch (new_category) {
+	case FT_SOURCE:    sources.Add(item);   break;
+	case FT_HEADER:    headers.Add(item);   break;
+	case FT_BLACKLIST: blacklist.Add(item); break;
+	default:           others.Add(item);    break;
+	};
+	item->SetCategory(new_category);
+}
+
+void ProjectManager::SetFileAsOwn(project_file_item *fitem) {
+	EXPECT_OR(fitem!=nullptr,return);
+	fitem->m_inherited_from.Clear();
+	main_window->project_tree.SetInherited(fitem->GetTreeItem(),false);
+}
+
 void ProjectManager::MoveFile(wxTreeItemId &tree_item, eFileType where) {
-	modified=true;
-	// eliminar el item de la lista
+	// buscar el archivo
 	project_file_item *item = files.FindFromItem(tree_item);
-	if (!item) return; /// shouldn't happen
-	files.all.FindAndRemove(item);
+	EXPECT_OR(item!=nullptr,return); // 
+	if (where==FT_NULL) mxUT::GetFileType(item->GetRelativePath(),false);
+	if (item->GetCategory()==where) return; // nothing to do
+	modified=true;
+	// cambiar de lista en el FileList
+	files.ChangeCategory(item,where); 
 	// eliminar del arbol	
 	wxTreeItemId new_tree_item = main_window->project_tree.MoveFile(item->GetTreeItem(),where,true);
 	item->SetTreeItem( new_tree_item );
-	// elegir la lista adecuada y agregarlo al arbol de proyecto
-	switch (where) {
-		case FT_SOURCE:
-			files.sources.Add(item);
-			break;
-		case FT_HEADER:
-			files.headers.Add(item);
-			break;
-		default:
-			files.others.Add(item);
-			break;
-	};
 	// if it was moved to source or hedear, parse it (could came from others), else remove its data from parser
 	if (where==FT_SOURCE || where==FT_HEADER) {
 		wxString name = item->GetFullPath(path);
@@ -1093,7 +1121,10 @@ void ProjectManager::MoveFile(wxTreeItemId &tree_item, eFileType where) {
 void ProjectManager::DeleteFile(project_file_item *item, bool also_delete_from_disk) {
 	// cerrar si está abierto
 	mxSource *src = main_window->IsOpen(item->GetTreeItem());
-	if (src) main_window->CloseSource(src);
+	if (src) {
+		if (also_delete_from_disk) main_window->CloseSource(src);
+		else src->SetNotInTheProjectAnymore();
+	}
 	// eliminar el archivo del disco
 	wxString fullpath = item->GetFullPath(path);
 	if (also_delete_from_disk) wxRemoveFile(fullpath);
@@ -2271,31 +2302,27 @@ void ProjectManager::AnalizeConfig(wxString path, bool exec_comas, wxString ming
 
 
 /**
-* Agrega los archivos del proyecto al arreglo array. El arreglo no se vacia
-* antes de comenzar.
+* @brief Agrega los archivos del proyecto al arreglo array.
+*
+* El arreglo no se vacia antes de comenzar.
 **/
 int ProjectManager::GetFileList(wxArrayString &array, eFileType cuales, bool relative_paths) {
-	int i=0;
+	int count=0;
+	
 	if (cuales==FT_NULL) {
 		for( GlobalListIterator<project_file_item*> item(&files.all); item.IsValid(); item.Next()) {
 			if (item->GetCategory()==FT_BLACKLIST) continue;
-			i++;
-			if (relative_paths)
-				array.Add(item->GetRelativePath());
-			else
-				array.Add(item->GetFullPath(path));
+			array.Add( relative_paths ? item->GetRelativePath() : item->GetFullPath(path) );
+			count++;
 		}
 	} else {
 		LocalList<project_file_item*> &list = cuales==FT_SOURCE ? files.sources : (cuales==FT_HEADER ? files.headers : files.others);
 		for( LocalListIterator<project_file_item*> item(&list); item.IsValid(); item.Next() ) {
-			i++;
-			if (relative_paths)
-				array.Add(item->GetRelativePath());
-			else
-				array.Add(item->GetFullPath(path));
+			array.Add( relative_paths ? item->GetRelativePath(): item->GetFullPath(path) );
+			count++;
 		}		
 	}
-	return i;
+	return count;
 }
 
 bool ProjectManager::Debug() {

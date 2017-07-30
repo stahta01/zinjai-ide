@@ -4357,3 +4357,19 @@ int mxSource::FixErrorLine (int line) {
 	return m_cem_ref.FixLineNumber(this,line);
 }
 
+void mxSource::SetNotInTheProjectAnymore ( ) {
+	if (!m_owns_extras) {
+		m_owns_extras = true;
+		m_extras = new SourceExtras();
+	}
+	treeId.Unset();
+	SetTreeItem(treeId);
+}
+
+void mxSource::SetTreeItem (const wxTreeItemId & item) {
+	treeId = item;
+	for( mxSource *iter=next_source_with_same_file; iter!=this; iter=iter->next_source_with_same_file) {
+		iter->treeId = item;
+	}
+}
+

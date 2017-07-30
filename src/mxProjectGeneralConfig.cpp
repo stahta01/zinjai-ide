@@ -159,7 +159,7 @@ void mxProjectGeneralConfig::OnOkButton(wxCommandEvent &evt) {
 	}
 	if (project->inherits_from!=inherits_from->GetValue()) {
 		project->inherits_from=inherits_from->GetValue();
-		/*project->ReloadInheritances();*/
+		project->ReloadFatherProjects();
 	}
 	if (custom_tab->GetValue()) {
 		long l=0;

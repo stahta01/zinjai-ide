@@ -400,6 +400,8 @@ public:
 	void OnProjectTreeMoveToSources(wxCommandEvent &event);
 	void OnProjectTreeMoveToHeaders(wxCommandEvent &event);
 	void OnProjectTreeMoveToOthers(wxCommandEvent &event);
+	void OnProjectTreeMoveToBlacklist(wxCommandEvent &event);
+	void OnProjectTreeRemoveFromBlacklist(wxCommandEvent &event);
 	void OnProjectTreeAdd(wxCommandEvent &event);
 	void OnProjectTreeAddMultiple(wxCommandEvent &event);
 	void OnProjectTreeAddSelected(wxCommandEvent &event);
@@ -531,8 +533,13 @@ public:
 		void SetInherited(wxTreeItemId item, bool inherited);
 		wxTreeItemId AddFile(const wxString &path, eFileType where=FT_NULL, bool sort=true);
 		void ToggleFullPath();
+		void Create(wxWindow *parent);
+		project_tree_struct() : treeCtrl(nullptr) { }
+		void DeleteAllFiles();
+		void Select(wxTreeItemId item);
+		void ClearSelection();
 	private:
-		wxTreeItemId GetParent(eFileType where, const wxString &path="") const;
+		wxTreeItemId GetParent(eFileType where, const wxString &path="");
 		static int GetIcon(eFileType where, const wxString &path="");
 		static wxString MakeLabel(const wxString &path);
 	} project_tree;

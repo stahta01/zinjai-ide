@@ -380,6 +380,7 @@ public:
 	const wxString &GetRelativePath() const { return m_relative_path; }
 	wxString GetFullPath(const wxString &project_path) const { return DIR_PLUS_FILE(project_path,m_relative_path); }
 	eFileType GetCategory() const { return m_category; }
+	void SetCategory(eFileType new_category) { m_category = new_category; }
 	/// true=c++, false=c
 	bool IsCppOrJustC() const {
 		return m_relative_path.Len()<=2 || (m_relative_path[m_relative_path.Len()-1]!='c'&&m_relative_path[m_relative_path.Len()-1]!='C') || m_relative_path[m_relative_path.Len()-2]!='.';
@@ -560,6 +561,7 @@ public:
 	wxString WxfbGetSourceFile(wxString fbp_file); ///< funcion auxiliar que devuelve el nombre (path+nombre, sin extension) de los archivos que genera el archivo .fbp que recibe
 	
 	ProjectManager(wxFileName filename); ///< loads a project from a file (just_created=true when its called from new project wizard)
+	void ReloadFatherProjects(); 
 	~ProjectManager();
 	wxString GetFileName();
 	
@@ -569,15 +571,18 @@ public:
 		LocalList<project_file_item*> sources;
 		LocalList<project_file_item*> headers;
 		LocalList<project_file_item*> others;
+		LocalList<project_file_item*> blacklist;
 		FilesList() {
 			sources.Init(&all);
 			headers.Init(&all);
 			others.Init(&all);
+			blacklist.Init(&all);
 		}
-		project_file_item *FindFromItem(wxTreeItemId &tree_item);
+		project_file_item *FindFromItem(const wxTreeItemId &tree_item);
 		~FilesList() {
 			for (GlobalListIterator<project_file_item*> it(&all); it.IsValid(); it.Next()) delete *it;
 		}
+		void ChangeCategory(project_file_item *item, eFileType new_category);
 	};
 	wxString inherits_from; ///< lista de otros zprs de los cuales hereda archivos
 	FilesList files; ///< archivos asociados al proyecto
@@ -630,6 +635,8 @@ public:
 	/// Removes a file from the project and optionally from the disk, and optionally also the complement (include gui actions to confirm, also param is for internal use)
 	bool DeleteFile(wxTreeItemId tree_item);
 	project_file_item *AddFile (eFileType where, wxFileName name, bool sort_tree=true);
+	/// For a file already in the project as inherited... this makes it an own file, regardless inheritance
+	void SetFileAsOwn(project_file_item *fitem);
 	
 	/// Determina cuales son los proyectos wxfb asociados al proyecto zinjai y sus respectivos fuentes (busca archivos .fbp en Otros, guarda los resultados en wxfb->projects y wxfb->sources)
 	void WxfbGetFiles();

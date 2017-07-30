@@ -103,7 +103,7 @@ wxPanel *mxExeInfo::CreateGeneralPanel (wxNotebook *notebook) {
 					case FT_SOURCE: in_project = LANG(EXEINFO_IN_SOURCE,"en Fuentes"); break;
 					case FT_HEADER: in_project = LANG(EXEINFO_IN_HEADER,"en Cabeceras"); break;
 					case FT_OTHER:  in_project = LANG(EXEINFO_IN_OTHER,"en Otros"); break;
-					case FT_BLACKLIST: in_project = LANG(EXEINFO_IN_OTHER,"en Lista Negra"); break;
+					case FT_BLACKLIST: in_project = LANG(EXEINFO_IN_BLACKLIST,"en Lista Negra"); break;
 					default:  in_project = "<error>";
 				}
 				if (fitem->IsInherited())

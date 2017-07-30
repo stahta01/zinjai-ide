@@ -7,6 +7,8 @@
 #include "MenusAndToolsConfig.h"
 #include <wx/settings.h>
 #include "Cpp11.h"
+#include "ProjectManager.h"
+#include "DebugManager.h"
 
 BEGIN_EVENT_TABLE(mxCommandFinderText,wxTextCtrl)
 	EVT_TEXT(wxID_ANY,mxCommandFinderText::OnText)
@@ -86,6 +88,9 @@ void mxCommandFinderList::SetPattern (wxString str, int x, int y) {
 			}
 			wxString item_label = full_label + menu.items[j].label;
 			item_label.Replace("&","",true);
+			if (!project && menu.items[j].properties&MenusAndToolsConfig::maPROJECT) continue;
+			if (!debug->IsDebugging() && menu.items[j].properties&MenusAndToolsConfig::maDEBUG) continue;
+			if (debug->IsDebugging() && menu.items[j].properties&MenusAndToolsConfig::maNODEBUG) continue;
 			if (matches(array,item_label)) { list->Append(item_label); ids.push_back(menu.items[j].wx_id); }
 		}
 	}

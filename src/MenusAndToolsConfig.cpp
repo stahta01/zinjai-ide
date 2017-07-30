@@ -393,6 +393,8 @@ void MenusAndToolsConfig::LoadMenuData ( ) {
 		AddMenuItem(mnHIDDEN, myMenuItem("add_to_project",mxID_PROJECT_POPUP_ADD_SELECTED,LANG(MAINW_PROJECT_FILE_POPUP_ADD_TO_PROJECT,"Agregar archivo al proyecto")).EnableIf(ecPROJECT_AND_SOURCE));
 		AddMenuItem(mnHIDDEN, myMenuItem("rename_file",mxID_PROJECT_POPUP_RENAME,LANG(MAINW_PROJECT_FILE_POPUP_RENAME,"&Renombrar archivo...")).EnableIf(ecSOURCE));
 		AddMenuItem(mnHIDDEN, myMenuItem("detach_from_project",mxID_PROJECT_POPUP_DELETE,LANG(MAINW_PROJECT_FILE_POPUP_DETACH,"&Quitar archivo del proyecto")).EnableIf(ecPROJECT_AND_SOURCE));
+		AddMenuItem(mnHIDDEN, myMenuItem("blacklist_source",mxID_PROJECT_POPUP_MOVE_TO_BLACKLIST,LANG(MAINW_PROJECT_FILE_POPUP_MOVE_TO_BLACKLIST,"&Mover este archivo a la lista negra")).EnableIf(ecPROJECT_AND_SOURCE));
+		AddMenuItem(mnHIDDEN, myMenuItem("unblacklist_source",mxID_PROJECT_POPUP_REMOVE_FROM_BLACKLIST,LANG(MAINW_PROJECT_FILE_POPUP_REMOVE_FROM_BLACKLIST,"&Quitar este archivo de la lista negra")).EnableIf(ecPROJECT_AND_SOURCE));
 		
 		AddMenuItem(mnHIDDEN, myMenuItem("compile_first",mxID_PROJECT_POPUP_COMPILE_FIRST,LANG(MAINW_PROJECT_FILE_POPUP_COMPILE_FIRST,"Compilar este fuente &primero")).EnableIf(ecPROJECT_AND_SOURCE).Checkeable(false));
 		AddMenuItem(mnHIDDEN, myMenuItem("recompile_one",mxID_PROJECT_POPUP_COMPILE_NOW,LANG(MAINW_PROJECT_FILE_POPUP_RECOMPILE,"Recompilar este fuente a&hora")).EnableIf(ecPROJECT_AND_SOURCE));

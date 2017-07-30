@@ -267,7 +267,7 @@ public:
 		int pos=SingleList<LocalListNode<T> >::Add(node);
 		m_global_list->Add(LocalListNodePtr<T>(this,pos));
 	}
-	/// adds an element to the list (removes from both local and global lists)
+	/// removes an element from the list (removes from both local and global lists)
 	void Remove(int pos) {
 		m_global_list->Remove(LocalListNodePtr<T>(this,pos)); // remove from global
 		SingleList<LocalListNode<T> >::FastRemove(pos); // remove from local (this will make a swap)

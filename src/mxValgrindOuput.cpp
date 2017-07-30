@@ -164,7 +164,10 @@ void mxValgrindOuput::OnOpen(wxCommandEvent  &evt) {
 	mxSource* source = new mxSource(main_window->notebook_sources, main_window->AvoidDuplicatePageText(name));
 	source->SetStyle(false); source->LoadFile(filename);
 	main_window->notebook_sources->AddPage(source, name ,true, *bitmaps->files.other);
-	if (!project) source->treeId = main_window->project_tree.AddFile(name,FT_OTHER);
+	if (!project) {
+		wxTreeItemId tree_item = main_window->project_tree.AddFile(name,FT_OTHER);
+		source->SetTreeItem(tree_item);
+	}
 	source->SetModify(false);
 	source->SetReadOnlyMode(ROM_SPECIAL);
 	source->SetFocus();
