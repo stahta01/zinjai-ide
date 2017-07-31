@@ -1754,8 +1754,10 @@ HELPW_SEARCH_ERROR_EMPTY
 You must enter at least one keyword to search
 HELPW_SEARCH_SEARCHING
 Searching...
-HELPW_SEARCH_RESULTS
-Results:
+HELPW_SEARCH_RESULTS_TITLE
+Results matching in the title:
+HELPW_SEARCH_RESULTS_BODY
+Results matching in the content:
 HELPW_SEARCH_NO_RESULTS_FOR
 No matches found for "
 HELPW_ADDRESS
@@ -2982,6 +2984,8 @@ REALTIMEINSP_ERROR_CREATING_INSPECTION
 An error ocurred registering the inspection.
 CPPREF_CAPTION
 C/C++ Reference
+HELPW_SEARCH_RESULTS
+Results:
 CPPREF_SEARCH_NO_RESULTS_FOR
 No results found for "
 CPPREF_NOT_FOUND

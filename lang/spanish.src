@@ -1754,8 +1754,10 @@ HELPW_SEARCH_ERROR_EMPTY
 Debe introducir al menos una palabra clave para buscar
 HELPW_SEARCH_SEARCHING
 Buscando...
-HELPW_SEARCH_RESULTS
-Resultados:
+HELPW_SEARCH_RESULTS_TITLE
+Coincidencias en el título:
+HELPW_SEARCH_RESULTS_BODY
+Coincidencias detro del contenido:
 HELPW_SEARCH_NO_RESULTS_FOR
 No se encontraron coincidencias para \"
 HELPW_ADDRESS
@@ -2986,6 +2988,8 @@ REALTIMEINSP_ERROR_CREATING_INSPECTION
 Ha ocurrido un error al registrar la inspección
 CPPREF_CAPTION
 Referencia C/C++
+HELPW_SEARCH_RESULTS
+Resultados:
 CPPREF_SEARCH_NO_RESULTS_FOR
 No se encontraron coincidencias para \"
 CPPREF_NOT_FOUND

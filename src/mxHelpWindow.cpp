@@ -26,6 +26,7 @@ mxHelpWindow::mxHelpWindow(wxString file) : mxGenericHelpWindow(LANG(HELPW_CAPTI
 		wxTreeItemId node = root;
 		unsigned int tabs=0;
 		for ( wxString str = fil.GetFirstLine(); !fil.Eof(); str = fil.GetNextLine() ) {
+			if (str.IsEmpty()||str[0]=='#') continue;
 			unsigned int i=0;
 			while (i<str.Len() && str[i]=='\t') 
 				i++;
@@ -67,58 +68,69 @@ mxHelpWindow::mxHelpWindow(wxString file) : mxGenericHelpWindow(LANG(HELPW_CAPTI
 mxHelpWindow::~mxHelpWindow() { instance=nullptr; }
 
 void mxHelpWindow::OnSearch(wxString value) {
-	wxArrayString aresults, keywords;
-	mxUT::Split(value.MakeUpper(),keywords,true,false);
-	unsigned int kc=keywords.GetCount();
-	if (kc==0) {
+	wxArrayString results_body, results_title, keywords;
+	mxUT::Split(value.MakeUpper(),keywords,true,false); // palabras clave a buscar
+	if (keywords.GetCount()==0) {
 		mxMessageDialog(this,LANG(HELPW_SEARCH_ERROR_EMPTY,"Debe introducir al menos una palabra clave para buscar"))
 			.Title(LANG(GENERAL_ERROR,"Error")).IconWarning().Run();
 		return;
 	}
-	unsigned char *bfound = new unsigned char[keywords.GetCount()];
+	unsigned char *bfound = new unsigned char[keywords.GetCount()]; // para marcar las palabras encontradas al buscar en el contenido linea por linea
 	html->SetPage(wxString("<HTML><HEAD></HEAD><BODY><I><B>")<<LANG(HELPW_SEARCH_SEARCHING,"Buscando...")<<"</B></I></BODY></HTML>");
-	HashStringTreeItem::iterator it = items.begin(), ed = items.end();
-	wxString result(wxString("<HTML><HEAD></HEAD><BODY><I><B>")<<LANG(HELPW_SEARCH_RESULTS,"Resultados:")<<"</B></I><UL>");
-	int count=0;
-	wxArrayString searched;
-	while (it!=ed) {
-		wxString fname = it->first;
-		if (fname.Find('#')!=wxNOT_FOUND)
-			fname = fname.BeforeFirst('#');
-		bool already=false;
-		fname=GetHelpFile(DIR_PLUS_FILE(config->Help.guihelp_dir,fname));
-		if (!already && fname.Len()) {
-			for (unsigned int i=0;i<searched.GetCount();i++)
-				if (searched[i]==fname) {
-					already=true;
-					break;
-				}
-			memset(bfound,0,kc);
+	wxArrayString already_searched; // archivos ya examinados, porque pueden aparecer más de una vez por estar en el indice con diferentes anchors
+	for(HashStringTreeItem::iterator it = items.begin(), ed = items.end(); it!=ed; ++it) {
+		wxString title = tree->GetItemText(it->second), fname = it->first;
+		if (fname.Find('#')!=wxNOT_FOUND) fname = fname.BeforeFirst('#');
+		if (already_searched.Index(fname)!=wxNOT_FOUND) continue; 
+		else already_searched.Add(fname);
+		wxString result_line = wxString("<!--")<<title<<"--><LI><A href=\""<<it->first<<"\">"<<tree->GetItemText(it->second)<<"</A></LI>";
+		// ver si coincide en el título del ítem
+		bool title_matches = true;
+		wxString utitle = title.MakeUpper();
+		for (unsigned int ik=0;ik<keywords.GetCount();ik++) {
+			if (!utitle.Contains(keywords[ik])) {
+			    title_matches = false; break;
+			}
+		}
+		if (title_matches) {
+			results_title.Add(result_line);
+		} else {
+			// ver si coincide dentro del contenido
+			fname=GetHelpFile(DIR_PLUS_FILE(config->Help.guihelp_dir,fname));
+			memset(bfound,0,keywords.GetCount());
 			wxTextFile fil(fname);
-			fil.Open();
+			if (!fil.Open()) continue;
 			unsigned int fc=0;
 			for ( wxString str = fil.GetFirstLine(); !fil.Eof(); str = fil.GetNextLine() ) {
-				for (unsigned int ik=0;ik<kc;ik++) {
+				for (unsigned int ik=0;ik<keywords.GetCount();ik++) {
 					if (bfound[ik]==0 && str.MakeUpper().Contains(keywords[ik])) {
 						fc++; bfound[ik]=1;
 					}
 				}
-				if (fc==kc) {
-					count++;
-					aresults.Add(wxString("<!--")<<tree->GetItemText(it->second)<<"--><LI><A href=\""<<it->first<<"\">"<<tree->GetItemText(it->second)<<"</A></LI>");
+				if (fc==keywords.GetCount()) {
+					results_body.Add(result_line);
 					break;
 				}
 			}
 			fil.Close();
 		}
-		searched.Add(fname);
-		++it;
 	}
-	aresults.Sort();
-	for (unsigned int i=0;i<aresults.GetCount();i++)
-		result<<aresults[i];
-	result<<"</UL></BODY></HTML>";
-	if (count)		
+	wxString result;
+	if (results_title.GetCount()) {
+		results_title.Sort();
+		result << wxString("<HTML><HEAD></HEAD><BODY><I><B>")<<LANG(HELPW_SEARCH_RESULTS_TITLE,"Coincidencias en el título:")<<"</B></I><UL>";
+		for (unsigned int i=0;i<results_title.GetCount();i++)
+			result<<results_title[i];
+		result<<"</UL></BODY></HTML>";
+	}
+	if (results_body.GetCount()) {
+		results_body.Sort();
+		result << wxString("<HTML><HEAD></HEAD><BODY><I><B>")<<LANG(HELPW_SEARCH_RESULTS_BODY,"Coincidencias detro del contenido:")<<"</B></I><UL>";
+		for (unsigned int i=0;i<results_body.GetCount();i++)
+			result<<results_body[i];
+		result<<"</UL></BODY></HTML>";
+	}
+	if (results_body.GetCount()||results_title.GetCount()) 
 		html->SetPage(result);
 	else
 		html->SetPage(wxString("<HTML><HEAD></HEAD><BODY><B>")<<LANG(HELPW_SEARCH_NO_RESULTS_FOR,"No se encontraron coincidencias para \"")<<value<<"\".</B></BODY></HTML>");
