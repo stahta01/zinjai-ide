@@ -208,16 +208,15 @@ void mxHelpWindow::OnForum (wxCommandEvent & event) {
 }
 
 void mxHelpWindow::FixLoadPage (const wxString &href) {
+	wxString name, anchor;
 	if (href.Contains("#")) {
-		wxString fname=href.BeforeFirst('#'), anchor=href.AfterFirst('#');
-		fname=GetHelpFile(DIR_PLUS_FILE(config->Help.guihelp_dir,fname));
-		if (!fname.Len()) html->SetPage(ERROR_PAGE(fname));
-		else html->LoadPage(fname+"#"+anchor);
+		name = href.BeforeFirst('#'); anchor = wxString("#")+href.AfterFirst('#');
 	} else {
-		wxString fname=GetHelpFile(DIR_PLUS_FILE(config->Help.guihelp_dir,href));
-		if (!fname.Len()) html->SetPage(ERROR_PAGE(fname));
-		else html->LoadPage(fname);
+		name = href;
 	}
+	wxString fname = GetHelpFile(DIR_PLUS_FILE(config->Help.guihelp_dir,name));
+	if (!fname.Len()) html->SetPage(ERROR_PAGE(name));
+	else html->LoadPage(fname+anchor);
 }
 
 void mxHelpWindow::SelectTreeItem (const wxString &fname) {

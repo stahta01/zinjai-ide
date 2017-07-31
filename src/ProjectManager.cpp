@@ -165,8 +165,8 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 	doxygen=nullptr;
 	wxfb=nullptr;
 	version_required=0;
-	custom_tabs=0;
-	tab_use_spaces=false;
+	tab_width = config->Source.tabWidth;
+	tab_use_spaces = config->Source.tabUseSpaces;
 	
 	bool project_template=false; // should be true only when creating a new project from a template
 	
@@ -221,7 +221,7 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 				else if (p.Key()=="autocomp_extra") autocomp_extra = p.AsString();
 				else if (p.Key()=="version_saved") version_saved = p.AsInt();
 				else if (p.Key()=="version_required") version_required = p.AsInt();
-				else if (p.Key()=="custom_tabs") custom_tabs = p.AsInt(); 
+				else if (p.Key()=="tab_width" || p.Key()=="custom_tabs") tab_width = p.AsInt(); 
 				else if (p.Key()=="tab_use_spaces") tab_use_spaces = p.AsBool();
 				else if (p.Key()=="explorer_path") last_dir = p.AsString();
 				else if (p.Key()=="tab_use_spaces") tab_use_spaces = p.AsBool();
@@ -561,6 +561,11 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 	
 	if (autocodes_file.Len()) g_autocoder->LoadFromFile(DIR_PLUS_FILE(path,autocodes_file));
 	
+	if (tab_width<=0) {
+		tab_width = config->Source.tabWidth;
+		tab_use_spaces = config->Source.tabUseSpaces;
+	}
+	
 	if (version_saved<20140410) { // arreglar cambios de significado strip_executable (paso de bool a int)
 		for (int i=0;i<configurations_count;i++) {
 			configurations[i]->strip_executable = configurations[i]->strip_executable!=0?DBSACTION_STRIP:DBSACTION_KEEP;
@@ -781,7 +786,7 @@ bool ProjectManager::Save (bool as_template) {
 	CFG_GENERIC_WRITE_DN("active_configuration",active_configuration->name);
 	CFG_GENERIC_WRITE_DN("version_saved",VERSION);
 	CFG_GENERIC_WRITE_DN("version_required",version_required);
-	CFG_GENERIC_WRITE_DN("custom_tabs",custom_tabs);
+	CFG_GENERIC_WRITE_DN("tab_width",tab_width);
 	CFG_BOOL_WRITE_DN("tab_use_spaces",tab_use_spaces);
 	CFG_GENERIC_WRITE_DN("explorer_path",mxUT::Relativize(main_window->explorer_tree.path,path));
 	for(unsigned int i=0;i<inspection_improving_template_from.GetCount();i++)

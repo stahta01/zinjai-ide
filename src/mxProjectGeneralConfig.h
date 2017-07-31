@@ -17,7 +17,7 @@ private:
 	wxTextCtrl *project_autocomp;
 	wxTextCtrl *project_debug_macros;
 	wxTextCtrl *project_autocodes;
-	wxCheckBox *custom_tab;
+//	wxCheckBox *custom_tab;
 	wxTextCtrl *tab_width;
 	wxCheckBox *tab_use_spaces;
 	wxTextCtrl *default_fext_source;
@@ -42,12 +42,13 @@ public:
 	void OnAutocodes(wxCommandEvent &evt);
 	void OnAutoimprovingInspections(wxCommandEvent &evt);
 	void OnIndexesButton(wxCommandEvent &evt);
-	void OnCustomTabs(wxCommandEvent &evt);
+//	void OnCustomTabs(wxCommandEvent &evt);
 	void OnCustomToolsConfig(wxCommandEvent &evt);
 	void OnWxfbConfig(wxCommandEvent &evt);
 	void OnCppCheckConfig(wxCommandEvent &evt);
 	void OnBySrcCompilingOts(wxCommandEvent &evt);
 	void OnDrawGraph(wxCommandEvent &evt);
+	void OnRunLizard(wxCommandEvent &evt);
 	void OnStatistics(wxCommandEvent &evt);
 	DECLARE_EVENT_TABLE();
 };

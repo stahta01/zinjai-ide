@@ -1,11 +1,34 @@
-<HTML>
-<HEAD><TITLE>ZinjaI - Help</TITLE></HEAD><BODY>
-<B>Diálogo <I>Configuración de Proyecto</I></B><BR>
-<BR>
-&nbsp;&nbsp;&nbsp; <BR>
-<BR>
-<CENTER><IMG src="project_general_config.png"/></CENTER><BR>
-<BR>
-&nbsp;&nbsp;&nbsp; Este diálogo presenta opciones varias de configuración del proyecto. Para acceder al mismo se utiliza la opción "Configuración de proyecto" del menú <A href="menu_archivo.html">Archivo</A><BR>
-<BR>
+<HTML><HEAD><TITLE>ZinjaI -  Diálogo Configuración de Proyecto</TITLE></HEAD><BODY>
+<h3>Diálogo <em>Configuración de Proyecto</em></h3>
+
+<p>Este diálogo presenta opciones generales de configuración del proyecto, y da acceso rápido a varias configuraciones relacionadas a herramientas externas. Para acceder al mismo se utiliza la opción <a href="menu_archivo.html#configuracion_proyecto">Configuración de proyecto</a> del menú <a href="menu_archivo.html">Configuración de proyecto</a>.</p>
+
+<p><A name="general"></A></p>
+
+<h4>General</h4>
+
+<p>En esta pestaña encontrará configuraciones generales propias de este cuadro de diálogo (es decir, que solo se pueden definir desde aquí):</p>
+
+<ul>
+<li><p><strong>Nombre del proyecto</strong> Puede introducir aquí cualquier cadena de texto. Este nombre será el que se muestre en la barra de título de <em>ZinjaI</em> mientras el proyecto esté abierto.</p></li>
+<li><p><strong>Tabulado</strong> Aquí se define el tipo de tabulado que se utiliza al indentar el código fuente, y eventualmente la representación de los caracteres TAB. Los valores iniciales se heredan al crear un proyecto de los generales definidos en el <a href="preferences.html#estilo">Cuadro de Preferencias</a> de <em>ZinjaI</em>, pero  luego permanecen asociados al proyecto y se utilizan cuando elmismo está abierto reemplazando a los generales para que el proyecto reciba un tratamiento uniforma aunque se lo edite con diferentes instalaciones y configuraciones de <em>ZinjaI</em>.</p></li>
+<li><p><strong>Extensiones preferidas</strong> Aquí se definen las extensiones por defecto para archivos fuente y cabecera. Estas extensiones se utilizarán al crear archivos o clases desde la opción <a href="menu_archivo.html#nuevo">Nuevo</a> del <a href="menu_archivo.html">Menú Archivo</a>.</p></li>
+<li><p><strong>Heredar archivos de</strong> Puede ingresar aquí la ruta (preferentemente relativa) a uno o más archivos .zpr (de otros proyectos <em>ZinjaI</em>). Su proyecto actual heredará (incluirá en su propio arbol de proyecto) todos los archivos (fuentes, cabeceras y otros) definidos en dichos proyectos. La lista de archivos heredados no es fija, sino que se actualiza (se releen los .zprs) cada vez que se abre el proyecto. Más sobre la <a href="project_inheritance.html">Herencia de Proyectos</a>...</p></li>
+<li><p><strong>Índices de autocompletado adicionales</strong> Aquí se pueden definir nombres de archivos de índices de autocompletado que en caso de no estar activados en las <a href="preferences.html#asistencias">preferencias generales</a> (y de estar instalados en el sistema) se activarán automáticamente al abrir el proyecto. Utilice esta opción para activar índices de bibliotecas no estándar que utilice en su proyecto.</p></li>
+<li><p><strong>Archivo de definición de autocódigos</strong> Puede especificar aquí un archivo de <a href="autocode.html">autocódigos</a> para reemplazar al definido en las <a href="preferences.html#asistencias">preferencias generales</a> mientras se trabaja con el proyecto.</p></li>
+<li><p><strong>Archivo de macros para gdb</strong> Puede especificar aquí un archivo de comandos gdb para reemplazar al definido en las <a href="preferences.html#depuracion">preferencias generales</a> mientras se trabaja con el proyecto. Al iniciar el depurador, <em>ZinjaI</em> ejecuta en gdb este archivo antes de inciar la ejecución del programa a depurar. Notar que si bien el nombre del campo sugiere que el archivo debería utilizarse para definir macros gdb, en realidad el archivo puede contener cualquier comando gdb válido que no implique iniciar la ejecución.</p></li>
+<li><p><strong>Mejora de inspecciones según tipo</strong> Puede definir aquí plantillas adicionales a las definidas en las <a href="preferences.html#depuracion">preferencias generales</a> para la mejora en la visualización de inspecciones. Puede aprovechar este cuadro para agregar mejoras propias de estructuras de datos específicas de su proyecto, o de bibliotecas no estándar que su proyecto utilice.</p></li>
+</ul>
+
+<p><A name="mas"></A></p>
+
+<h4>Más</h4>
+
+<p>Esta pestaña ofrece accesos a otros cuadros de diálogo configuración del proyecto más específicos. Los primeros relacionados a los perfiles de compilación y sus opciones (accesibles desde el <a href="menu_ejecucion.html">menú Ejecución</a> y/o desde el menú contextual del <a href="panel_project_tree.html">Árbol de Proyecto</a>), los siguientes relacionados a herramientas externas (accesibles desde los diferentes submenúes del <a href="menu_herramientas.html">menú Herramientas</a>).</p>
+
+<p><A name="info"></A></p>
+
+<h4>Info</h4>
+
+<p>Esta pestaña no permite variar ninguna configuración, sino que da acceso a algunas herramientas (ya presentes en el <a href="menu_herramientas.html">menú Herramientas</a> que presentan información resumida/estadística del proyecto y sus archivos.</p>
 </BODY></HTML>

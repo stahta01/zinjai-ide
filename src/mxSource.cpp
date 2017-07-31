@@ -3206,9 +3206,9 @@ void mxSource::OnClick(wxMouseEvent &evt) {
 void mxSource::LoadSourceConfig() {
 	config_source=config->Source;
 	// set spaces and indention
-	if (project && project->custom_tabs) {
-		config_source.tabWidth=project->custom_tabs;
-		config_source.tabUseSpaces=project->tab_use_spaces;
+	if (project) {
+		config_source.tabWidth = project->tab_width;
+		config_source.tabUseSpaces = project->tab_use_spaces;
 	}
 	SetTabWidth (config_source.tabWidth);
 	SetUseTabs (!config_source.tabUseSpaces);

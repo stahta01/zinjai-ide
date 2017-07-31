@@ -1,0 +1,108 @@
+<HTML><HEAD><TITLE>ZinjaI -  Diálogo Opciones de Compilación y Ejecución de Proyecto</TITLE></HEAD><BODY>
+<h3>Diálogo <em>Opciones de Compilación y Ejecución de Proyecto</em></h3>
+
+<p>Este diálogo permite gestionar los perfiles de compilación y ejecución de un proyecto. Se accede al mismo a travéz del comando <a href="menu_ejecucion.html#opciones">Opciones</a> del <a href="menu_ejecucion.html">menú Ejecución</a>. Si necesita configurar otras opciones no relacionadas a la compilación y ejecución (como tabulado, nombre, indices de autocompletado, archivo de macros de depuración, etc.), utilice el diálogo de <a href="project_general_config.html">Configuración de Proyecto</a>.</p>
+
+<p>En cada proyecto se pueden definir uno o más perfiles (por ejemplo, uno para depuración/debug y otro para produccion/release, o uno por plataforma, etc.). Cada perfil define aspectos relativos a la compilación, el enlazado y la ejecución del proyecto. Es decir, cuando se compila o ejecuta el proyecto, los pasos necesarios para dicha compilación, las opciones que reciben el compilador y el enlazador, y la forma en que este resultado es ejecutado dependen del perfil activo en ese momento.</p>
+
+<p><A name="administracion"></A></p>
+
+<h4>Administración perfiles</h4>
+
+<p>Para administrar los diferentes perfiles debe utilizar los botones y la lista desplegable de la parte superior de la ventana: </p>
+
+<p><center><img src="project_config_header.png" alt=""></center></p>
+
+<ul>
+<li><p><strong>Añadir un nueva perfil</strong>: para agregar un nuevo perfil debe utilizar el botón <em>Nuevo</em>. Cuando presione dicho botón se le pedirá un nombre para el nuevo perfil, a continuación se le permitirá elegir otro perfil preexistente desde el cual copiar la configuración inicial, y finalmente se creará el mismo añadiendose a la lista desplegable.</p></li>
+<li><p><strong>Utilizar/activar un perfil</strong>: para utilizar un perfil debe seleccionarlo y hacer click sobre el botón <em>Utilizar</em>. Nótese que el echo de seleccionar un perfil de la lista desplegable no lo convierte en el perfil activo para las siguientes compilaciones/ejecuciones, sino que solamente muestra su configuración en las pestañas para permitirle modificarlo.</p></li>
+<li><p><strong>Renombrar un perfil existente</strong>: para cambiarle el nombre a una configuración seleccione la misma en la lista desplegable y presione <em>Renombrar</em>.</p></li>
+<li><p><strong>Modificar un perfil existente</strong>: para modificar el contenido de una configuración existente debe seleccionarla en la lista desplegable, modificar los que desee.</p></li>
+<li><p><strong>Eliminar un perfil</strong>: para eliminar una configuración seleccione la misma en la lista desplegable y presione <em>Eliminar</em>.</p></li>
+</ul>
+
+<p><em>Nota:</em> Existe una forma más rápida de cambiar el perfil activo sin utilizar este cuadro de diálogo, que consiste en hacer click derecho sobre el botón de la barra de herramientas de la ventana principal que corresponde a este diálogo. Esta acción despliega un menú contextual con la lista de perfiles disponibles.</p>
+
+<p>A continuación se detallan las opciones que se pueden definir dentro de cada perfil:</p>
+
+<p><A name="general"></A></p>
+
+<h4>Pestaña General</h4>
+
+<p>Define opciones generales y de ejecución del proyecto.</p>
+
+<p><center><img src="project_config_general.png" alt=""></center></p>
+
+<ul>
+<li><p><strong>Ubicacion del ejecutable</strong>: nombre o ubicación y nombre del ejecutable. Esta ruta puede ser absoluta, relativa al directorio del proyecto. Puede utilizar además la variable <code>${TEMP_DIR}</code> para referirse al directorio definido para temporales en la pestaña <em>Compilación</em>.</p></li>
+<li><p><strong>Mecanismo de ejecución</strong>: permite elegir cómo se ejecutará el proyecto, para realizar tareas de inicialización antes de lanzar el ejecutable, o lanzarlo de formas especiales:</p>
+
+<ul>
+<li><p>Regular: se lanza el ejecutable definido en el campo <em>Ubicación del ejecutable</em> utilizando los argumentos definidos en el campo <em>Argumentos para la ejecución</em>.</p></li>
+<li><p>Con Inicialización: primero se ejecuta un script (con <code>/bin/sh</code> en GNU/Linux, o el intérprete de comandos de Windows en Windows), y luego se procede como el caso Regular (se lanza el ejecutable configurado en el proyecto).</p></li>
+<li><p>Mediante wrapper: Se antepone al comando de ejecución regular (ejecutable + argumentos) el comando que se ingrese en el campo de texto <em>comando wrapper</em>. Este comando recibirá como argumentos al ejecutable del proyecto y los argumentos regulares para el mismo, y deberá encargarse de lanzar la ejecución (esto permite utilizar herramientas como <code>time</code> (de GNU/Linux) para instrumentar la ejecución).</p></li>
+<li><p>Solo Script: en este caso ZinjaI nunca ejecuta el ejecutable generado, sino que solo lanza un script, y el script debe ser quien realice la ejecución. El script puede utilizar algunas de las configuraciones definidas en el perfil, ya que las recibe como variables de entorno. En particular la variable <code>Z_PROJECT_PATH</code> contendrá la carpeta del proyecto, la variable <code>Z_PROJECT_BIN</code> contendrá la ubicación del ejecutable, la variable <code>Z_ARGS</code> contendrá los argumentos para la ejecución, y la variable <code>Z_TEMP_DIR</code> contedrá la ruta del directorio de temporales. El directorio de trabajo del script será el configurado en el campo <em>Directorio de trabajo</em>, y recibirá los argumentos definidos en <em>Argumentos para la ejecución</em>.</p></li>
+</ul></li>
+<li><p><strong>Script para ejecución/comando wrapper</strong>: indica el script (ruta completa o relativa a la carpeta del proyecto) del script que se utiliza cuando el mencanismo de ejecución seleccionado es <em>Con Inicialización</em> o <em>Solo Script</em>; o el comando que se utiliza a modo de wrapper para lanzar la ejecución cuando el mecanismo seleccionado es <em>Mediante wrapper</em>.</p></li>
+<li><p><strong>Directorio de trabajo</strong>: directorio en cual se ejecutará el programa (o script), ruta absoluta o relativa al directorio del proyecto.</p></li>
+<li><p><strong>Siempre pedir argumentos al ejecutar</strong>: si esta opción está activada <em>ZinjaI</em> solicitará los argumantos que debe pasarle al ejecutable antes de cada ejecución. El cuadro de diálogo mediante el cual se solicitan los argumentos permite además modificar el directorio de trabajo y guarda un historial de los argumentos utilizados en las diferentes ejecuciones.</p></li>
+<li><p><strong>Argumentos para la ejecución</strong>: argumentos que debe recibir el ejecutable (o script) del proyecto para su ejecución.</p></li>
+<li><p><strong>Esperar una tecla luego de la ejecución</strong>: permite definir si <em>ZinjaI</em> esperará a que se presione <em>Enter</em> luego de ejecutar su programa para evitar que la ventana del mismo se cierre inmediatamente sin poder ver los resultados. La opción <em>En caso de error</em> utiliza el valor de retorno del programa y solo espera si este es distinto de <code>0</code>. Esta configuración no aplica para los proyectos que no muestren consola (ver ítem <em>Es un proyecto de Consola</em> de la pestaña <a href="#enlazado">Enlazado</a> de este mismo cuadro de diálogo), ni para las ejecuciones en modo depuración.</p></li>
+<li><p><strong>Variables de entorno</strong>: Permite modificar variables de entorno antes de ejecutar el proyecto. Colocando <code>NOMBRE=VALOR</code> se le asigna <code>VALOR</code> a la variable <code>NOMBRE</code>. Colocando <code>NOMBRE+=VALOR</code> el <code>VALOR</code> se le agrega al contenido previo de la variable <code>NOMBRE</code>. Puede colocar una lista de asignaciones separadas por espacios o comas, y puede utilizar comillas o caracteres de escape para introducir espacios, comillas, barras, etc, en <code>VALOR</code>. Al ejecutar un proyecto, el mismo hereda el ambiente (conjunto de variables de entorno de ZinjaI). El ambiente de ZinjaI se corresponde al heredado desde el sistema operativo, con el agregado en la variable <code>PATH</code> de la carpeta que contiene los ejecutables del compilador en el caso de Windows, y las carpetas de bibliotecas dinámicas que el proyecto genere en las variables <code>PATH</code> o <code>LD_LIBRARY_PATH</code> (según el sistema operativo). Las variables aquí definidas se agregan o reemplazan en este ambiente previo.</p></li>
+</ul>
+
+<p><A name="compilacion"></A></p>
+
+<h4>Pestaña Compilacion</h4>
+
+<p>Define los parametros que se utilizan para la compilación.</p>
+
+<p><center><img src="project_config_compiling.png" alt=""></center></p>
+
+<ul>
+<li><p><strong>Parametros extra para la compilacion</strong>: aquí el usuario puede establecer libremente parámetros adicionales que <em>ZinjaI</em> utilizará para la compilación. Vea <a href="gcc_index.html">Ayuda del compilador utilizado</a>.</p></li>
+<li><p><strong>Macros a definir</strong>: permite ingresar una lista de macros de preprocesador (equivalentes a las definidas con #define en el código fuente) que serán utilizadas para la compilación de los fuentes (con el parámetro -D en gcc). El formato de ingreso es una lista separada por comas o espacios con los nombres y opcionalmente pegado el signo igual y el valor para dicha macro.</p></li>
+<li><p><strong>Directorios adicionales para buscar cabeceras</strong>: permite definir uno o más directorios en los que el compilador debe buscar los archivos de cabecera incluidos en los fuentes. Los directorios de la lista pueden estar separados por coma, punto y coma o espacios y pueden ser absolutos o relativos al directorio del proyecto. Si desea agregar una ruta que contenga espacios puede encerrarla entre comillas dobles. Equivale a la utilización del parámetro <q>-I</q>.</p></li>
+<li><p><strong>Estandar</strong>: Permite elegir la versión del lenguaje C o C++ a utilizar (para especificar a gcc/g++ con el argumento -std=...). Elegir un estándar garantiza que el compilador cumple al menos con sus reglas, pero puede incluir extensiones. La casilla <strong>estricto</strong> permite desactivar las extensiones y limitarlo solo al estándar seleccionado (generando un error al querer utilizar alguna extensión, equivale al parámetro <code>-pedantic</code>). Algunos estándares recientes podrían no estar disponibles (o tener soporte parcial) si utiliza una versión de <em>gcc</em> desactualizada (<code>c++11</code> y <code>gnu++11</code> no están presentes en versiones de <em>gcc</em> menores a <code>4.7</code>, por lo que <em>ZinjaI</em> los reemplazará por <code>c++0x</code> y <code>gnu++0x</code>; de igual forma reemplazará <code>c++14</code> y <code>gnu++14</code> por <code>c++1y</code> y <code>gnu++1y</code> en versiones de <em>gcc</em> menores a <code>4.9</code>). Si se elige la opción predeterminada, <em>ZinjaI</em> no indicará a <em>gcc</em> qué versión utilizar.</p></li>
+<li><p><strong>Nivel de advertencias</strong>: define la cantidad y el tipo de advertencias/avisos que el compilador arrojará durante la compilación. Los niveles <em>Ninguna</em>, <em>Todas</em> y <em>Extra</em> equivalen a los parámetros de compilación <code>-w</code>, <code>-Wall</code> y <code>-Wall -Wextra</code> en <em>gcc</em> respectivamente. El nivel predeterminado no necesita ningún parámetro, ya que es el nivel predeterminado del compilador. Si además activa la opción <em>como errores</em>, cada warning será tratado como un error de compilación, por lo que detendrá el proceso (equivalente al parámetro <code>-Werror</code>).</p></li>
+<li><p><strong>Información de depuracion</strong>: determnia si el compilador incluye o no información de depuración en el ejecutable. Esta información es la que le permite al depurador reconocer qué linea de código se estaba ejecutando en determinado momento, la ubicación de las variables para evaluar sus expresiones, etc. Equivale a los parámetros <code>-g0</code>, <code>-g1</code>, <code>-g2</code> y <code>-g3</code>. El nivel más comunmente utilizado para la depuración es el 2.</p></li>
+<li><p><strong>Nivel de optimizacion</strong>: determina las optimizaciones que el compilador realiza durante la compilación. Estas optimizaciones permiten que el programa corra más rápidamente u ocupe menos espacio en disco. Equivale a los parámetros <code>-O0</code>, <code>-O1</code>, <code>-O2</code>, <code>-O3</code>, <code>-Os</code>, <code>-Og</code> y <code>-Ofast</code> (si la versión de <em>gcc</em> es menor a <code>4.8</code> se utiliza <code>-O0</code> en lugar de <code>-Og</code>). Los niveles 2 y 3 son los más utilizados comunmente para producción (release). Nota: estas optimizaciones alteran a veces el flujo de control interno del programa, o eliminan determinadas instrucciones, por lo que no debería utilizarse cuando se pretende depurar el programa, ya que lo observado en el depurador puede no condecirse exactamente con lo escrito en el código fuente.</p></li>
+<li><p><strong>Directorio para archivos temporales e intermedios</strong>: ubicación donde <em>ZinjaI</em> guardará los archivos intermedios de la compilación (objetos, archivos de extensión .o, uno por cada fuente compilable del proyecto). El último directorio esta ruta puede no existir, en cuyo caso será creado durante la primer compilación. Esta ruta puede ser absoluta o relativa al directorio del proyecto.</p></li>
+</ul>
+
+<p><A name="enlazado"></A></p>
+
+<h4>Pestaña Enlazado</h4>
+
+<p>Define los parametros que se utilizan para el enlazado.</p>
+
+<p><center><img src="project_config_linking.png" alt=""></center></p>
+
+<ul>
+<li><p><strong>Parametros extra para el enlazado</strong>: aquí el usuario puede establecer libremente parámetros adicionales que <em>ZinjaI</em> utilizará para el enlazado. Vea <a href="gcc_index.html">Ayuda del compilador utilizado</a></A>.</p></li>
+<li><p><strong>Directorios adicionales para buscar librerias</strong>: permite definir uno o más directorios en los que el enlazador debe buscar los archivos de objetos de las librerías externas. Los directorios de la lista pueden estar separados por coma, punto y coma o espacios y pueden ser absolutos o relativos al directorio del proyecto. Si desea agregar una ruta que contenga espacios puede encerrarla entre comillas dobles. Equivale a la utilización del parámetro <q>-L</q>.</p></li>
+<li><p><strong>Bibliotecas a enlazar</strong>: define una lista de librerias externas a enlazar con los objetos del proyecto para crear el ejecutable. Los nombres de las librerías puede estar separados por coma, punto y coma, o espacios. Si desea incluir un nombre que contenga espacios puede encerrarlo entre comillas dobles (<q>nombre de archivo</q>). Equivale a la utilización del parámetro <q>-l</q>.</p></li>
+<li><p><strong>Información para depuración</strong>: Determina qué hacer con la información de depuración que contengan los objetos que se enlazan en el ejecutable (tanto los compilados por el proyecto, como los provenientes de biblitoecas externas). Si elige <em>Mantener en el binario</em>, la información de depuración contenida en los archivos objeto a enlazar se incluirá sin modificaciones en el ejecutable. Si elige *Eliminar el binario&quot;, la información se removerá durante el enlazado, por lo que el ejeuctable final no contendrá información de depuración alguna (se utiliza el argumento <code>-s</code> para el enlazado). Si elige <em>extraer a un archivo separado</em>, primero se enlazará el ejecutable como en el caso <em>Mantener en el binario</em>, pero luego se utilizarán las herramientas <code>objcopy</code> y <code>strip</code> para copiar la información de depuración del ejecutable a un nuevo archivo (con idéntico nombre, pero extensión <code>.dbg</code>) y luego eliminarla del ejecutable  respectivamente. El ejecutable resultante no contendrá información de depuración (similar a la opción <em>Eliminar del binario</em>) pero sí un enlace al archivo <code>.dbg</code> generado (para que el depurador <code>gdb</code> la reconozca y utilice automáticamente).</p></li>
+<li><p><strong>Es un programa de consola</strong>: esta opción sólo tiene sentido en sistemas <em>Windows</em>, y determina si el programa generado utilza o no una consola. Si está desactivado se utiliza el parámetro <code>-mwindows</code>; lo cual permite ocultar la terminal (ventana de texto negra) si el programa crea su propia ventana mediante una bilbioteca gráfica. En sistemas <em>GNU/Linux</em> esta opción determina si al ejecutar el proyecto, <em>ZinjaI</em> muestra o no la ventana de la terminal; sin embargo esto no modifica al ejecutable, ya que la distinción entre ejecutables de consolas y ejecutables de ventanas no aplica en GNU/Linux.</p></li>
+<li><p><strong>Reenlazar obligatoriamente en la proxima compilacion/ejecucion</strong>: si se selecciona esta opción el <em>ZinjaI</em> reenlazará el ejecutable antes de la próxima ejecución aunque no se detecten cambios en sus fuente u objetos. Luego de reenlazar el proyecto, esta opción de desactiva automáticamente. Puede ser útil cuando un cambio en alguno de los parámetros de enlazado lo amerite.</p></li>
+<li><p><strong>Icono del ejecutable</strong>: ruta completa o relativa a la carpeta de proyecto del archivo que se utilizará como ícono del ejecutable al compilar en <em>Microsoft Windows</em>. Este icono se compila mediante un archivo de recursos generado automáticamente en la carpeta de archivos temporales del proyecto.</p></li>
+<li><p><strong>Archivo manifest.xml</strong>: ruta completa o relativa a la carpeta de proyecto del archivo que se utilizará como manifest para en <em>Microsoft Windows</em>. Este archivo se compila mediante un archivo de recursos generado automáticamente en la carpeta de archivos temporales del proyecto.</p></li>
+</ul>
+
+<p><A name="secuencia"></A></p>
+
+<h4>Pestaña Secuencia</h4>
+
+<p><center><img src="project_config_sequence.png" alt=""></center></p>
+
+<p>Permite utilizar un <a href="toolchains.html">toolchain alternativo</a>, o alterar el proceso de construcción del proyecto insertando pasos adicionales. El proceso detallado, junto con las reglas que determinan cuando ejecutar estos pasos, se explica en la sección <a href="project_building_sequence.html">Secuencia de contrucción de proyectos</a>. Estos pasos se utilizan, por ejemplo, para insertar llamadas a parsers de bibioteca específicas, compilación de recursos adicionales, etc. Cuando agregue o modifique un paso personalizado, lo hará mediante el <a href="compile_extra_steps.html">Diálogo Agregar/Editar Paso de Compilación Personalizado</a>. Consulte este enlace para encontrar una descripción más detallada de las propiedades de cada paso.</p>
+
+<p><A name="biblioteca"></A></p>
+
+<h4>Pestaña Biblioteca</h4>
+
+<p><center><img src="project_config_libraries.png" alt=""></center></p>
+
+<p>Permite definir bibliotecas que serán generadas a partir de un subconjunto de fuentes del proyectos. Estas bibliotecas serán además enlazadas con el ejecutable final. Para generar una biblioteca, debe agregarla en esta lista y definir sus propiedades, y qué fuentes la componen, mediante el <a href="lib_to_build.html">Diálogo Generar Biblioteca</a>. Para comprender detalladamente la forma de compilación de las bibliotecas y cómo se integran en el proyecto consulte la sección <a href="project_building_sequence.html">Secuencia de contrucción de proyectos</a>.
+Por último, si el objetivo de su proyecto es sólamente construir una o varias bibliotecas, pero no un ejecutable, puede tildar la casilla <q>Generar solo bibliotecas</q>. Esto evita que <em>ZinjaI</em> intente enlazar un ejecutable final.</p>
+</BODY></HTML>

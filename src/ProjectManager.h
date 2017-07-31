@@ -546,7 +546,7 @@ public:
 	wxString c_compiling_options; ///< argumentos para las compilaciones (se llena en AnalizeConfig, lo usan PrepareForBuilding, ExportMakefile, ...)
 	wxString objects_list; ///< lista de objetos y bibliotecas (con -L) para usar en la linea de compilacion (se llena en AnalizeConfig, lo usan PrepareForBuilding, ExportMakefile, ...)
 	wxString exe_deps; ///< temporal, para pasar de AnalizeConfig a ExportMakefile las dependencias del ejecutable (la diff con objects_list esta en los -l de las bibliotecas)
-	int custom_tabs; ///< tipo de tabulado en los fuentes, si es 0, hereda de la configuracion de zinjai, si no usa ese
+	int tab_width; ///< ancho del tabulado en los fuentes, si es 0(deprecated) hereda de la configuracion de zinjai, si no usa ese
 	bool tab_use_spaces; ///< indica si los tabs en los fuentes deben reemplazarse por espacios (solo si custom_tabs no es 0)
 	bool config_analized; ///< indica si ya se actualizo la info para compilar (se usa en AnalizeConfig cuando force=false)
 	bool compile_was_ok; ///< indica si se arrastra algun error de compilacion de pasos anteriores

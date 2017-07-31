@@ -31,6 +31,7 @@ BEGIN_EVENT_TABLE(mxProjectGeneralConfig, wxDialog)
 	EVT_BUTTON(mxID_PROJECT_CONFIG_BYSRC,mxProjectGeneralConfig::OnBySrcCompilingOts)
 	EVT_BUTTON(mxID_PROJECT_CONFIG_AUTOIMPROVE_TEMPLATES,mxProjectGeneralConfig::OnAutoimprovingInspections)
 	EVT_BUTTON(mxID_TOOLS_DRAW_PROJECT,mxProjectGeneralConfig::OnDrawGraph)
+	EVT_BUTTON(mxID_TOOLS_LIZARD_RUN,mxProjectGeneralConfig::OnRunLizard)
 	EVT_BUTTON(mxID_TOOLS_PROJECT_STATISTICS,mxProjectGeneralConfig::OnStatistics)
 	EVT_MENU(mxID_DEBUG_MACROS_OPEN,mxProjectGeneralConfig::OnDebugMacrosOpen)
 	EVT_MENU(mxID_DEBUG_MACROS_EDIT,mxProjectGeneralConfig::OnDebugMacrosEdit)
@@ -38,7 +39,7 @@ BEGIN_EVENT_TABLE(mxProjectGeneralConfig, wxDialog)
 	EVT_MENU(mxID_AUTOCODES_OPEN,mxProjectGeneralConfig::OnAutocodesOpen)
 	EVT_MENU(mxID_AUTOCODES_EDIT,mxProjectGeneralConfig::OnAutocodesEdit)
 	EVT_BUTTON(mxID_HELP_BUTTON,mxProjectGeneralConfig::OnHelpButton)
-	EVT_CHECKBOX(mxID_PROJECT_CONFIG_CUSTOM_TABS,mxProjectGeneralConfig::OnCustomTabs)
+//	EVT_CHECKBOX(mxID_PROJECT_CONFIG_CUSTOM_TABS,mxProjectGeneralConfig::OnCustomTabs)
 END_EVENT_TABLE()
 
 mxProjectGeneralConfig::mxProjectGeneralConfig() 
@@ -55,31 +56,6 @@ mxProjectGeneralConfig::mxProjectGeneralConfig()
 	Show(); SetFocus();
 }
 
-//wxPanel *mxProjectGeneralConfig::CreateTabGeneral(wxNotebook *notebook) {
-//	wxPanel *panel = new wxPanel(notebook, wxID_ANY );
-//	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
-//	project_name = AddTextCtrl(sizer,panel,LANG(PROJECTGENERAL_NAME,"Nombre del proyecto"),project->project_name);
-//	custom_tab = AddCheckBox(sizer,panel,LANG(PROJECTGENERAL_CUSTOM_TABS,"Utilizar tabulado propio"),project->custom_tabs!=0,mxID_PROJECT_CONFIG_CUSTOM_TABS);
-//	tab_width = AddTextCtrl(sizer,panel,LANG(PROJECTGENERAL_TAB_WIDTH,"Ancho del tabulado"),project->custom_tabs==0?config->Source.tabWidth:project->custom_tabs,true);
-//	tab_use_spaces = AddCheckBox(sizer,panel,LANG(PROJECTGENERAL_TAB_SPACE,"Colocar espacios en lugar de tabs"),project->custom_tabs==0?config->Source.tabUseSpaces:project->tab_use_spaces,wxID_ANY,true);
-//	
-//	inherits_from = AddTextCtrl(sizer,panel,LANG(PROJECTGENERAL_INHERITS_FROM,"Heredar archivos de:"),project->inherits_from);
-//	AddStaticText(sizer,panel,LANG(PROJECTGENERAL_PREFERRED_EXTENSIONS,"Extensiones preferidas:"),false);
-//	wxBoxSizer *ext_sizer = new wxBoxSizer(wxHORIZONTAL);
-//	ext_sizer->AddSpacer(10);
-//	default_fext_source = AddShortTextCtrl(ext_sizer,panel,LANG(PROJECTGENERAL_DEFAULT_EXTENSIONS_SOURCE,"Fuentes"),project->default_fext_source);
-//	default_fext_header = AddShortTextCtrl(ext_sizer,panel,LANG(PROJECTGENERAL_DEFAULT_EXTENSIONS_HEADERS,"Cabeceras"),project->default_fext_header);
-//	sizer->Add(ext_sizer,sizers->Exp0);
-//	
-//	project_autocomp = AddDirCtrl(sizer,panel,LANG(PROJECTGENERAL_AUTOCOMP_EXTRA,"Indices de autocompletado adicionales"),project->autocomp_extra,mxID_PROJECT_CONFIG_AUTOCOMP_INDEXES);
-//	project_autocodes = AddDirCtrl(sizer,panel,LANG(PREFERENCES_WRITTING_AUTOCODES_FILE,"Archivo de definiciones de autocódigos"),project->autocodes_file,mxID_AUTOCODES_FILE);
-//	project_debug_macros = AddDirCtrl(sizer,panel,LANG(PREFERENCES_DEBUG_GDB_MACROS_FILE,"Archivo de macros para gdb"),project->macros_file,mxID_DEBUG_MACROS);
-//	tab_width->Enable(custom_tab->GetValue());
-//	tab_use_spaces->Enable(custom_tab->GetValue());
-//	sizer->Add(new wxButton(panel,mxID_PROJECT_CONFIG_AUTOIMPROVE_TEMPLATES,LANG(PROJECTGENERAL_AUTOIMPROVE_TEMPLATES," Mejora de inspecciones según tipo ")),sizers->BA5);
-//	panel->SetSizer(sizer);
-//	return panel;
-//}
 wxPanel *mxProjectGeneralConfig::CreateTabGeneral(wxNotebook *notebook) {
 	CreatePanelAndSizer sizer(notebook);
 	
@@ -87,15 +63,15 @@ wxPanel *mxProjectGeneralConfig::CreateTabGeneral(wxNotebook *notebook) {
 	sizer.BeginText(LANG(PROJECTGENERAL_NAME,"Nombre del proyecto")).Short().Value(project->project_name).EndText(project_name);
 	
 	sizer.BeginLine()
-		.BeginCheck(LANG(PROJECTGENERAL_CUSTOM_TABS,"Tabulado propio"))
-			.Value(project->custom_tabs!=0).Id(mxID_PROJECT_CONFIG_CUSTOM_TABS).EndCheck(custom_tab)
-			.Space(15)
-		.BeginText(LANG(PROJECTGENERAL_TAB_WIDTH,"Ancho"))
-			.Value(project->custom_tabs==0?config->Source.tabWidth:project->custom_tabs)
+//		.BeginCheck(LANG(PROJECTGENERAL_CUSTOM_TABS,"Tabulado propio"))
+//			.Value(project->custom_tabs!=0).Id(mxID_PROJECT_CONFIG_CUSTOM_TABS).EndCheck(custom_tab)
+//			.Space(15)
+		.BeginText(LANG(PROJECTGENERAL_TAB_WIDTH,"Ancho del tabulado"))
+			.Value(project->tab_width)
 			.Short().EndText(tab_width)
 			.Space(15)
 		.BeginCheck(LANG(PROJECTGENERAL_TAB_SPACE,"Espacios en lugar de tabs"))
-			.Value(project->custom_tabs==0?config->Source.tabUseSpaces:project->tab_use_spaces)
+			.Value(project->tab_use_spaces)
 			.EndCheck(tab_use_spaces)
 		.EndLine();
 		
@@ -118,8 +94,8 @@ wxPanel *mxProjectGeneralConfig::CreateTabGeneral(wxNotebook *notebook) {
 		.Value(project->autocodes_file).Button(mxID_AUTOCODES_FILE).EndText(project_autocodes);
 	sizer.BeginText(LANG(PREFERENCES_DEBUG_GDB_MACROS_FILE,"Archivo de macros para gdb"))
 		.Value(project->macros_file).Button(mxID_DEBUG_MACROS).EndText(project_debug_macros);
-	tab_width->Enable(custom_tab->GetValue());
-	tab_use_spaces->Enable(custom_tab->GetValue());
+//	tab_width->Enable(custom_tab->GetValue());
+//	tab_use_spaces->Enable(custom_tab->GetValue());
 	sizer.BeginButton(LANG(PROJECTGENERAL_AUTOIMPROVE_TEMPLATES," Mejora de inspecciones según tipo ")).Id(mxID_PROJECT_CONFIG_AUTOIMPROVE_TEMPLATES).EndButton();
 
 	sizer.SetAndFit();
@@ -146,6 +122,7 @@ wxPanel *mxProjectGeneralConfig::CreateTabInfo(wxNotebook *notebook) {
 	sizer.BeginText(LANG(PROJECTGENERAL_ZPR_FILE,"Archivo de proyecto:")).Value(project->filename).ReadOnly().EndText();
 	sizer.BeginButton(LANG(PROJECTGENERAL_STATISTICS," Estadísticas... ")).Id(mxID_TOOLS_PROJECT_STATISTICS).EndButton();
 	sizer.BeginButton(LANG(PROJECTGENERAL_GRAPH," Grafo de archivos... ")).Id(mxID_TOOLS_DRAW_PROJECT).EndButton();
+	sizer.BeginButton(LANG(PROJECTGENERAL_LIZARD," Análisis de complejidad... ")).Id(mxID_TOOLS_LIZARD_RUN).EndButton();
 
 	sizer.SetAndFit();
 	return sizer.GetPanel();
@@ -161,16 +138,16 @@ void mxProjectGeneralConfig::OnOkButton(wxCommandEvent &evt) {
 		project->inherits_from=inherits_from->GetValue();
 		project->ReloadFatherProjects();
 	}
-	if (custom_tab->GetValue()) {
-		long l=0;
-		tab_width->GetValue().ToLong(&l); project->custom_tabs=l;
-		project->tab_use_spaces=tab_use_spaces->GetValue();
+	
+	int old_tab_width = project->tab_width; bool old_use_spaces = project->tab_use_spaces;
+	long l;	if (tab_width->GetValue().ToLong(&l) && l>=0) project->tab_width=l;
+	project->tab_use_spaces = tab_use_spaces->GetValue();
+	if (old_tab_width!=project->tab_width || old_use_spaces!=project->tab_use_spaces) {
 		wxAuiNotebook *ns=main_window->notebook_sources;
 		for (unsigned int i=0;i<ns->GetPageCount();i++)
 			((mxSource*)(ns->GetPage(i)))->LoadSourceConfig();
-			
-	} else 
-		project->custom_tabs=0;
+	}
+	
 //	project->use_wxfb = use_wxfb->GetValue();
 	project->macros_file = project_debug_macros->GetValue();
 	if (project->autocomp_extra != project_autocomp->GetValue()) {
@@ -200,7 +177,7 @@ void mxProjectGeneralConfig::OnDoxygenConfigButton(wxCommandEvent &evt) {
 }
 
 void mxProjectGeneralConfig::OnHelpButton(wxCommandEvent &event) {
-	mxHelpWindow::ShowHelp("project1_general_config.html");
+	mxHelpWindow::ShowHelp("project_general_config.html");
 }
 
 void mxProjectGeneralConfig::OnIndexesButton(wxCommandEvent &evt) {
@@ -266,11 +243,11 @@ void mxProjectGeneralConfig::OnCustomToolsConfig (wxCommandEvent & evt) {
 	new mxCustomTools(true,-1);
 }
 
-void mxProjectGeneralConfig::OnCustomTabs (wxCommandEvent & evt) {
-	evt.Skip();
-	tab_width->Enable(custom_tab->GetValue());
-	tab_use_spaces->Enable(custom_tab->GetValue());
-}
+//void mxProjectGeneralConfig::OnCustomTabs (wxCommandEvent & evt) {
+//	evt.Skip();
+//	tab_width->Enable(custom_tab->GetValue());
+//	tab_use_spaces->Enable(custom_tab->GetValue());
+//}
 
 void mxProjectGeneralConfig::OnWxfbConfig (wxCommandEvent & evt) {
 	main_window->OnToolsWxfbConfig(evt);
@@ -286,6 +263,10 @@ void mxProjectGeneralConfig::OnBySrcCompilingOts (wxCommandEvent & evt) {
 
 void mxProjectGeneralConfig::OnDrawGraph (wxCommandEvent & evt) {
 	main_window->OnToolsDrawProject(evt);
+}
+
+void mxProjectGeneralConfig::OnRunLizard (wxCommandEvent & evt) {
+	main_window->OnToolsLizardRun(evt);
 }
 
 void mxProjectGeneralConfig::OnStatistics (wxCommandEvent & evt) {
