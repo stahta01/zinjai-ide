@@ -153,8 +153,7 @@ path=src/mxThreadGrid.cpp
 cursor=21:26
 [source]
 path=src/mxHelpWindow.cpp
-cursor=98:13
-marker=95
+cursor=130:22
 open=true
 [source]
 path=src/mxFlowWindow.cpp

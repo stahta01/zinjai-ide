@@ -97,6 +97,7 @@ void mxHelpWindow::OnSearch(wxString value) {
 		} else {
 			// ver si coincide dentro del contenido
 			fname=GetHelpFile(DIR_PLUS_FILE(config->Help.guihelp_dir,fname));
+			if (fname.IsEmpty()) continue; // some help pages might be missing
 			memset(bfound,0,keywords.GetCount());
 			wxTextFile fil(fname);
 			if (!fil.Open()) continue;
@@ -116,20 +117,23 @@ void mxHelpWindow::OnSearch(wxString value) {
 		}
 	}
 	wxString result;
+	result << "<HTML><HEAD></HEAD><BODY>";
 	if (results_title.GetCount()) {
 		results_title.Sort();
-		result << wxString("<HTML><HEAD></HEAD><BODY><I><B>")<<LANG(HELPW_SEARCH_RESULTS_TITLE,"Coincidencias en el título:")<<"</B></I><UL>";
+		result << wxString("<I><B>")<<LANG(HELPW_SEARCH_RESULTS_TITLE,"Coincidencias en el título:")<<"</B></I><UL>";
 		for (unsigned int i=0;i<results_title.GetCount();i++)
 			result<<results_title[i];
-		result<<"</UL></BODY></HTML>";
+		result<<"</UL>";
 	}
+	if (results_body.GetCount()&&results_title.GetCount()) result<<"<BR>"<<"<BR>";
 	if (results_body.GetCount()) {
 		results_body.Sort();
-		result << wxString("<HTML><HEAD></HEAD><BODY><I><B>")<<LANG(HELPW_SEARCH_RESULTS_BODY,"Coincidencias detro del contenido:")<<"</B></I><UL>";
+		result << wxString("<I><B>")<<LANG(HELPW_SEARCH_RESULTS_BODY,"Coincidencias dentro del contenido:")<<"</B></I><UL>";
 		for (unsigned int i=0;i<results_body.GetCount();i++)
 			result<<results_body[i];
-		result<<"</UL></BODY></HTML>";
+		result<<"</UL>";
 	}
+	result<<"</BODY></HTML>";
 	if (results_body.GetCount()||results_title.GetCount()) 
 		html->SetPage(result);
 	else
