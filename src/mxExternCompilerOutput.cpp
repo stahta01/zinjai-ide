@@ -22,7 +22,7 @@ void mxExternCompilerOutput::AddLine (const wxString &pre, const wxString &messa
 
 void mxExternCompilerOutput::OnDClick(wxCommandEvent & evt) {
 	wxString str=GetStringSelection().AfterFirst(' ');
-	if (str.Len()) main_window->OnSelectErrorCommon(str,true);
+	if (str.Len()) main_window->OnSelectErrorCommon(str,"",true);
 }
 
 void mxExternCompilerOutput::OnPopup (wxMouseEvent & evt) {

@@ -347,7 +347,7 @@ public:
 	void HideCalltip();
 	void ShowBaloon(wxString str, int p = -1);
 	void ShowCallTip(int brace_pos, int calltip_pos, const wxString &s);
-	void ShowAutoComp(int p, const wxString &s, bool is_filter=false);
+	void ShowAutoComp(int typed_len, const wxString &keywords_list, bool is_filter=false);
 
 	wxFileName working_folder;
 	wxFileName source_filename;

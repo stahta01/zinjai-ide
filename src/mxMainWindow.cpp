@@ -82,6 +82,7 @@
 #include "mxAUI.h"
 #include "mxSourceParsingAux.h"
 #include "asserts.h"
+#include "compiler_strings.h"
 using namespace std;
 
 #define SIN_TITULO (wxString("<")<<LANG(UNTITLED,"sin_titulo_")<<(++untitled_count)<<">")
@@ -1233,9 +1234,12 @@ DEBUG_INFO("wxYield:in  mxMainWindow::OnSelectError");
 	wxYield();
 DEBUG_INFO("wxYield:out mxMainWindow::OnSelectError");
 	mxCompilerItemData *comp_data = (mxCompilerItemData*)(compiler_tree.treeCtrl->GetItemData(event.GetItem()));
-	wxString error = comp_data ? comp_data->file_info : compiler_tree.treeCtrl->GetItemText(event.GetItem());
-	if (!error.Len()) error = compiler_tree.treeCtrl->GetItemText(event.GetItem());;
-	if (error.Len()) OnSelectErrorCommon(error);
+	wxString error_message = comp_data ? comp_data->file_info : "";
+	if (!error_message.Len()) error_message = compiler_tree.treeCtrl->GetItemText(event.GetItem());
+	wxTreeItemIdValue cookie;
+	wxTreeItemId first_child = compiler_tree.treeCtrl->GetFirstChild(event.GetItem(),cookie);
+	wxString first_child_message = first_child.IsOk() ? compiler_tree.treeCtrl->GetItemText(first_child):"";
+	if (error_message.Len()) OnSelectErrorCommon(error_message,first_child_message);
 }
 
 void mxMainWindow::OnFileOpenH(wxCommandEvent &event) {
@@ -5000,7 +5004,25 @@ void mxMainWindow::SetCompilingStatus (const wxString &message, bool also_status
 	if (also_statusbar) main_window->SetStatusText(message);
 }
 
-void mxMainWindow::OnSelectErrorCommon (const wxString & error, bool set_focus_timer) {
+/// @brief helper function for mxMainWindow::OnSelectErrorCommon
+static void SuggestFix(mxSource *source, int pos, const wxString &error, const wxString &first_child) {
+	wxString message;
+	if (error.Contains(EN_COMPOUT_DID_YOU_MEAN)) {
+		message = error.Mid(error.Index(EN_COMPOUT_DID_YOU_MEAN));
+	} else if (first_child.Contains(EN_COMPOUT_SUGGESTED_ALTERNATIVE)) {
+		message = first_child.Mid(first_child.Index(EN_COMPOUT_SUGGESTED_ALTERNATIVE));
+	}
+	if (message.IsEmpty()) return;
+	wxString fix = message.AfterFirst('\'').BeforeFirst('\'');
+	if (!fix.IsEmpty()) {
+		g_autocomp_list.Init();
+		g_autocomp_list.Add(fix,"",message);
+		int pend = source->WordEndPosition(pos,true);
+		source->ShowAutoComp(pend-pos,g_autocomp_list.GetResult());
+	}
+}
+
+void mxMainWindow::OnSelectErrorCommon (const wxString & error, const wxString &first_child, bool set_focus_timer) {
 	long line;
 	wxString preline=error[1]==':'?error.AfterFirst(':').AfterFirst(':'):error.AfterFirst(':');
 	if ( preline.BeforeFirst(':').ToLong(&line) ) {
@@ -5041,6 +5063,7 @@ void mxMainWindow::OnSelectErrorCommon (const wxString & error, bool set_focus_t
 #endif
 					SetFocusToSourceAfterEvents();
 				ShowCompilerTreePanel();
+				SuggestFix(source,n,error,first_child);
 				return;
 			}
 		}
@@ -5100,7 +5123,7 @@ void mxMainWindow::OnSelectErrorCommon (const wxString & error, bool set_focus_t
 		}
 		if (found) {
 			int p=source->FindText(pos+keyword.Len(),endpos,keyword,wxSTC_FIND_MATCHCASE|wxSTC_FIND_WHOLEWORD);
-			if (p>=0) {
+			if (p!=wxSTC_INVALID_POSITION) {
 				source->SelectError(1,pos,pos+keyword.Len());
 				source->SelectError(1,p,p+keyword.Len());
 				p=p+keyword.Len();
@@ -5109,6 +5132,7 @@ void mxMainWindow::OnSelectErrorCommon (const wxString & error, bool set_focus_t
 					p=p+keyword.Len();
 				}
 				source->GotoPos(source->GetLineIndentPosition(line-1));
+				SuggestFix(source,pos,error,first_child);
 			} else {
 				source->SelectError(0,pos,pos+keyword.Len());
 			}

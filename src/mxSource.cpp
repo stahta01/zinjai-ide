@@ -3926,20 +3926,20 @@ void mxSource::HideCalltip () {
 	calltip_mode = MXS_NULL;
 }
 
-void mxSource::ShowAutoComp (int p, const wxString & s, bool is_filter) { 
+void mxSource::ShowAutoComp (int typed_len, const wxString &keywords_list, bool is_filter) { 
 	SetCalltipMode(MXS_AUTOCOMP);
 	last_failed_autocompletion.Reset(); 
 	focus_helper.Mask();
 #ifdef _STC_HAS_ZASKARS_RESHOW
-	if (is_filter) wxStyledTextCtrl::AutoCompReShow(p,s);
+	if (is_filter) wxStyledTextCtrl::AutoCompReShow(typed_len,keywords_list);
 	else 
 #endif
-		wxStyledTextCtrl::AutoCompShow(p,s);
-	int pbase = GetCurrentPos()-p;
+		wxStyledTextCtrl::AutoCompShow(typed_len,keywords_list);
+	int pbase = GetCurrentPos()-typed_len;
 	wxPoint pt1=PointFromPosition(pbase);
 	wxPoint pt2=GetScreenPosition();
 	if (calltip_mode==MXS_AUTOCOMP && config_source.autocompTips) 
-		autocomp_helper.Start(pbase,is_filter?-1:(pbase+p), pt1.x+pt2.x, pt1.y+pt2.y);
+		autocomp_helper.Start(pbase,is_filter?-1:(pbase+typed_len), pt1.x+pt2.x, pt1.y+pt2.y);
 }
 
 

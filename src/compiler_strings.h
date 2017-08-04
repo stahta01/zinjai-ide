@@ -19,6 +19,9 @@
 #define EN_COMPOUT_IN_FILE_INCLUDED_FROM "In file included from "
 #define EN_COMPOUT_IN_EXPANSION_OF_MACRO "in expansion of macro"
 
+#define EN_COMPOUT_DID_YOU_MEAN "did you mean \'"
+#define EN_COMPOUT_SUGGESTED_ALTERNATIVE "suggested alternative: \'"
+
 //#define EN_COMPOUT_IN_PASSING_ARGUMENT ": in passing argument"
 //#define EN_COMPOUT_FORWARD_DECLARATION_OF ": forward declaration of "
 
