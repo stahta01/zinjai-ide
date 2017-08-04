@@ -3009,14 +3009,12 @@ void mxMainWindow::OnFilePrint (wxCommandEvent &event) {
 }
 
 void mxMainWindow::OnFileNewProject (wxCommandEvent &event) {
-	if (!g_wizard) g_wizard = new mxNewWizard(this);
-	g_wizard->RunWizard("new_project");
+	mxNewWizard::GetInstance()->RunWizard("new_project");
 }
 
 void mxMainWindow::OnFileNew (wxCommandEvent &event) {
 	if (project) {
-		if (!g_wizard) g_wizard = new mxNewWizard(this);
-		g_wizard->RunWizard("on_project");
+		mxNewWizard::GetInstance()->RunWizard("on_project");
 	} else 
 		switch (config->Init.new_file){
 			case 0:
@@ -3026,8 +3024,7 @@ void mxMainWindow::OnFileNew (wxCommandEvent &event) {
 				main_window->NewFileFromTemplate(config->Files.default_template);
 				break;
 			default: {
-				if (!g_wizard) g_wizard = new mxNewWizard(this);
-				g_wizard->RunWizard();
+				mxNewWizard::GetInstance()->RunWizard();
 				break;
 			}
 		}	

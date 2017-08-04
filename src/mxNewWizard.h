@@ -86,7 +86,12 @@ public:
 	void CreatePanelProject2();
 	void ShowPanelProject2();
 
+private:
 	mxNewWizard(mxMainWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxALWAYS_SHOW_SB | wxALWAYS_SHOW_SB | wxDEFAULT_FRAME_STYLE | wxSUNKEN_BORDER);
+public:
+	static mxNewWizard *GetInstance();
+	static void DeleteInstance() { delete mxNewWizard::instance; }
+	~mxNewWizard() { mxNewWizard::instance=nullptr; }
 
 	void OnButtonNext(wxCommandEvent &event);
 	void OnButtonCancel(wxCommandEvent &event);
@@ -113,12 +118,12 @@ public:
 	void OnButtonNewFilePath(wxCommandEvent &evt);
 
 private:
+	static mxNewWizard *instance;
+	
 	void SetCurrentPanel(wxPanel *new_panel);
 	
 	DECLARE_EVENT_TABLE()
 
 };
-
-extern mxNewWizard *g_wizard;
 
 #endif

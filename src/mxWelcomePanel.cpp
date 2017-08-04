@@ -81,11 +81,9 @@ void mxWelcomePanel::OnLinkClicked (wxHtmlLinkEvent &event) {
 	} else if (action==_T("open")) {
 		main_window->OpenFileFromGui(event.GetLinkInfo().GetHref().AfterFirst(':') );
 	} else if (action==_T("new_simple")) {
-		if (!g_wizard) g_wizard = new mxNewWizard(main_window);
-		g_wizard->RunWizard(_T("templates"));
+		mxNewWizard::GetInstance()->RunWizard(_T("templates"));
 	} else if (action==_T("new_project")) {
-		if (!g_wizard) g_wizard = new mxNewWizard(main_window);
-		g_wizard->RunWizard(_T("new_project"));
+		mxNewWizard::GetInstance()->RunWizard(_T("new_project"));
 	} else if (action==_T("tip")) {
 		Freeze();
 		int x,y;

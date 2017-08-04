@@ -32,6 +32,7 @@
 #include "error_recovery.h"
 //#include "linStuff.h"
 #include "mxAUI.h"
+#include "mxNewWizard.h"
 using namespace std;
 
 
@@ -64,6 +65,17 @@ bool mxApplication::OnInit() {
 	
 	if (argc==2 && wxString(argv[1])=="--version") {
 		cout<<"ZinjaI "<<VERSION<<endl;
+		return false;
+	}
+	
+	if (argc==2 && wxString(argv[1])=="--help") {
+		cout << "ZinjaI's command line special arguments:" << endl;
+		cout << "   --help:         prints this help text and exit" << endl;
+		cout << "   --version:      display installed version and exit" << endl;
+		cout << "   --new-source:   shows the wizard for creating a new simple program" << endl;
+		cout << "   --new-project:  shows the wizard for creating a new project" << endl;
+		cout << "   --last-source:  opens the first file from Recent Files' list" << endl;
+		cout << "   --last-project: opens the first file from Recent Projects' list" << endl;
 		return false;
 	}
 	
@@ -246,10 +258,15 @@ bool mxApplication::InitSingleton(const wxString &cmd_path) {
 	g_singleton->Start();
 	if (g_singleton->IsRunning() || argc==1) return false; // si no hay otra instancia o no hay argumentos
 	// intentar cargar todo en la otra instancia
-	bool done=true;
+	bool all_done=true, filter_args=true;
 	for (int i=1; i<argc;i++) {
 		wxString name = argv[i];
-		if (name!="--last-source" && name!="--for-gdb" && name!="--last-project" && name!="--no-splash" && name.AfterLast('.').Lower()!=PROJECT_EXT) {
+		if (filter_args || name.StartsWith("--")) { 
+			if (name=="--") filter_args=false; 
+			else all_done=false;
+			continue; 
+		}
+		if (name.AfterLast('.').Lower()!=PROJECT_EXT) {
 			bool opened = g_singleton->RemoteOpen(DIR_PLUS_FILE(cmd_path,name));
 			int ret=0;
 			while (!opened && ret<2) { // dos reintentos, por si estaba muy ocupado
@@ -257,15 +274,11 @@ bool mxApplication::InitSingleton(const wxString &cmd_path) {
 				opened = g_singleton->RemoteOpen(DIR_PLUS_FILE(cmd_path,name));
 				ret++;
 			}
-			if (opened)
-				argv[i][0]='\0';
-			else
-				done=false;
-		} else {
-			done=false;
+			if (opened) argv[i][0]='\0';
+			else all_done=false;
 		}
 	}
-	return done;
+	return all_done;
 }
 
 void mxApplication::ShowSplash ( ) {
@@ -297,14 +310,20 @@ void mxApplication::LoadFilesOrWelcomePanel(const wxString &cmd_path) {
 		wxYield();
 		if (g_splash) g_splash->ShouldClose();
 		for (int i=1; i<argc;i++) {
-			if (wxString(argv[i])=="--last-source" && config->Files.last_source[0].Len())
+			wxString argi(argv[i]);
+			if (argi=="--new-source" ) {
+				mxNewWizard::GetInstance()->RunWizard(_T("templates"));
+			} else if (argi==_T("--new-project")) {
+				mxNewWizard::GetInstance()->RunWizard(_T("new_project"));
+			} else if (argi=="--last-source" && config->Files.last_source[0].Len()) {
 				main_window->OpenFileFromGui(wxString(config->Files.last_source[0]));
-			else if (wxString(argv[i])=="--last-project" && config->Files.last_project[0].Len())
+			} else if (argi=="--last-project" && config->Files.last_project[0].Len()) {
 				main_window->OpenFileFromGui(wxString(config->Files.last_project[0]));
-//			else if (wxString(argv[i])==".")
+//			} else if (wxString(argv[i])==".") {
 //				main_window->ShowExplorerTreePanel();
-			else if (argv[i][0]!='\0')
+			} else if (!argi.IsEmpty()) {
 				main_window->OpenFileFromGui(wxFileName(DIR_PLUS_FILE(cmd_path,argv[i])).GetLongPath());
+			}
 		}
 		if (!project && main_window->notebook_sources->GetPageCount()==0 && config->Init.show_welcome) {
 			main_window->ShowWelcome(true);

@@ -10,6 +10,7 @@
 #include <wx/dirdlg.h>
 #include <wx/treectrl.h>
 #include <wx/dir.h>
+#include <wx/tooltip.h>
 #include "mxNewWizard.h"
 #include "ids.h"
 #include "ConfigManager.h"
@@ -27,11 +28,10 @@
 #include "mxMultipleFileChooser.h"
 #include "parserData.h"
 #include "version.h"
-#include <wx/tooltip.h>
 #include "Cpp11.h"
 #include "SimpleTemplates.h"
 
-mxNewWizard *g_wizard = nullptr;
+mxNewWizard *mxNewWizard::instance = nullptr;
 
 BEGIN_EVENT_TABLE(mxNewWizard, wxDialog)
 	EVT_BUTTON(wxID_OK,mxNewWizard::OnButtonNext)
@@ -51,6 +51,12 @@ BEGIN_EVENT_TABLE(mxNewWizard, wxDialog)
 	EVT_CHECKBOX(mxID_WIZARD_PROJECT_FILES_DIR_CHECK,mxNewWizard::OnProjectFilesDirCheck)
 	EVT_CLOSE(mxNewWizard::OnClose)
 END_EVENT_TABLE()
+	
+mxNewWizard *mxNewWizard::GetInstance() {
+	if (!mxNewWizard::instance)
+		mxNewWizard::instance = new mxNewWizard(main_window);
+	return mxNewWizard::instance;
+}
 
 mxNewWizard::mxNewWizard(mxMainWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style) : wxDialog(parent, id, LANG(CAPTION_NEW_FILE_WIZARD,"Nuevo Archivo"), pos, size, style) {
 
