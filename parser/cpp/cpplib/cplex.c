@@ -716,15 +716,15 @@ newline:
       case '>':   /* >, >>, >=, >>= */
          switch( input())
          {
-         case '>':
-            switch( input())
-            {
-            case '=':
-               d_TokenReturn( SN_RSassign )
-            default:
-               unput();
-               d_TokenReturn( SN_RS )
-            }
+/*         case '>':*/
+/*            switch( input())*/
+/*            {*/
+/*            case '=':*/
+/*               d_TokenReturn( SN_RSassign )*/
+/*            default:*/
+/*               unput();*/
+/*               d_TokenReturn( SN_RS )*/
+/*            }*/
 
          case '=':
             d_TokenReturn( SN_GE )
