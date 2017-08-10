@@ -668,8 +668,6 @@ public:
 	void ExportMakefile(wxString make_file, bool exec_comas, wxString mingw_dir, MakefileTypeEnum mktype, bool cmake_style=false);
 	/// Parsea la configuración del proyecto (active_configuration) para generar los argumentos necesarios para invocar al compilador
 	void AnalizeConfig(wxString path, bool exec_comas, wxString mingw_dir, bool force=true);
-	/// sets environment variables for running/compiling the project (LD_LIBRARY_PATH, PROJECT_BIN, PROJECT_PATH)
-	void SetEnvironment(bool set, bool for_running);
 	/// Lanza el ejecutable
 	long int Run();
 	/// not to be called directly, but trough DebugManager::Start(bool)

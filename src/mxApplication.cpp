@@ -33,6 +33,7 @@
 //#include "linStuff.h"
 #include "mxAUI.h"
 #include "mxNewWizard.h"
+#include "EnvVars.h"
 using namespace std;
 
 
@@ -46,20 +47,6 @@ wxLongLong aux_start_time;
 IMPLEMENT_APP(mxApplication)
 	
 mxApplication *g_application = nullptr;
-
-#ifdef __linux__
-static void RestoreEnvVar(const char *varname) {
-	wxString value, zvname=wxString("ZINJAI_EV_")+varname;
-	if (!wxGetEnv(zvname,&value)) return;
-	if (value=="ZINJAI_UNSET") wxUnsetEnv(varname);
-	else wxSetEnv(varname,value.c_str());
-}
-static void RestoreEnvVarsChangedByLauncher() {
-	RestoreEnvVar("UBUNTU_MENUPROXY");
-	RestoreEnvVar("LIBOVERLAY_SCROLLBAR");
-}
-#endif
-
 
 bool mxApplication::OnInit() {
 	
@@ -80,14 +67,6 @@ bool mxApplication::OnInit() {
 	}
 	
 SHOW_MILLIS("Entering OnInit...");
-	
-	// si el launcher cambio el entorno para desactivar los menues de unity,
-	// restablecer esas variables para los proyectos que ejecutemos
-#ifdef __linux__
-//	MyLocale::Init();
-	RestoreEnvVarsChangedByLauncher();
-#endif
-	
 	
 #ifdef _ZINJAI_DEBUG
 //	wxLongLong start_time = wxGetLocalTimeMillis();
@@ -133,9 +112,11 @@ SHOW_MILLIS("About to find out zinjai_dir...");
 	
 SHOW_MILLIS("About to load ConfigManager...");
 	
+	// fix some env vars changed by the launcher and make zinjai's dir public
+	EnvVars::Init(zpath);
+	
 	// inicialize mxUtils and ConfigManager
 	bool first_run = ConfigManager::Initialize(zpath);
-	wxSetEnv("ZINJAI_DIR",config->zinjai_dir);
 	
 	if (argc==2 && wxString(argv[1])=="--for-gdb") {
 		er_uninit();

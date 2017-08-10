@@ -6,6 +6,7 @@
 #include <iostream>
 #include <algorithm>
 #include <wx/textfile.h>
+#include <wx/msgdlg.h>
 #include <wx/treectrl.h>
 
 #include "ProjectManager.h"
@@ -23,7 +24,6 @@
 #include "version.h"
 #include "mxArgumentsDialog.h"
 #include "ConfigManager.h"
-#include <wx/msgdlg.h>
 #include "Language.h"
 #include "mxSingleton.h"
 #include "mxOSD.h"
@@ -39,6 +39,7 @@
 #include "asserts.h"
 #include "mxAUI.h"
 #include "IniFile.h"
+#include "EnvVars.h"
 using namespace std;
 
 #define ICON_LINE(filename) (wxString("0 ICON \"")<<filename<<"\"")
@@ -1784,7 +1785,7 @@ long int ProjectManager::Run() {
 	wxString ldlp_sep=":";
 #endif
 	
-	SetEnvironment(true,true);
+	EnvVars::SetMode(EnvVars::RUNNING);
 	
 	int pid;
 	compile_and_run->process = new wxProcess(main_window->GetEventHandler(),mxPROCESS_COMPILE);
@@ -1794,7 +1795,7 @@ long int ProjectManager::Run() {
 		pid = mxUT::Execute(working_path,command,wxEXEC_ASYNC|wxEXEC_MAKE_GROUP_LEADER,compile_and_run->process);
 	compile_and_run->pid=pid;
 		
-	SetEnvironment(false,true);
+	EnvVars::Reset();
 	
 	main_window->StartExecutionStuff(compile_and_run,LANG(GENERAL_RUNNING_DOTS,"Ejecutando..."));
 	
@@ -2302,7 +2303,7 @@ void ProjectManager::AnalizeConfig(wxString path, bool exec_comas, wxString ming
 	}
 	objects_list.RemoveLast();
 
-	SetEnvironment(true,false);
+	EnvVars::SetMode(EnvVars::COMPILING);
 }
 
 
@@ -2356,9 +2357,9 @@ bool ProjectManager::Debug() {
 	wxString working_path = (active_configuration->working_folder=="")?path:DIR_PLUS_FILE(path,active_configuration->working_folder);
 	if (working_path.Last()==path_sep) working_path.RemoveLast();
 	
-	SetEnvironment(true,true);
+	EnvVars::SetMode(EnvVars::DEBUGGING);
 	bool ret = debug->Start(working_path,command,args,active_configuration->console_program,active_configuration->wait_for_key);
-	SetEnvironment(false,true);
+	EnvVars::Reset();
 	return ret;
 }
 
@@ -3571,92 +3572,6 @@ wxString ProjectManager::GetTempFolderEx (wxString path, bool create) {
 	if (create && temp_folder.Len() && !wxFileName::DirExists(temp_folder))
 		wxFileName::Mkdir(temp_folder,0777,wxPATH_MKDIR_FULL);
 	return temp_folder;
-}
-
-/**
-* Updates some environment variables. If for_running, this update includes 
-* LD_LIBRARY_PATH/PATH, else it only sets ZinjaI's specific vars for letting a
-* script know some of the definned project settings in active_configuration. 
-* When called with set=true, it stores LD_LIBRARY_PATH/PATH value, and updates it
-* to include paths to generated dynamic libs... when called with set=false it restores
-* its old value. It should be called with true before running, and again with false 
-* after launching the process execution.
-* 
-* Should call AnalizeConfig first.
-**/
-void ProjectManager::SetEnvironment (bool set, bool for_running) {
-	
-#ifdef _ZINJAI_DEBUG
-	if (for_running) {
-		static bool last_was_for_set=false;
-		if (set==last_was_for_set) wxMessageBox("WRONG USE OF ProjectManager::SetEnvironment");
-		last_was_for_set=set;
-	}
-#endif
-	
-	// for execution scripts
-	wxSetEnv("Z_PROJECT_PATH",active_configuration->working_folder);
-	wxSetEnv("Z_PROJECT_BIN",executable_name);
-	wxSetEnv("Z_TEMP_DIR",temp_folder);
-	wxSetEnv("Z_ARGS",active_configuration->args);
-
-	static HashStringString orig;
-	if (for_running) {
-		if (set) {
-			// update PATH/LD_LIBRARY_PATH to find the project generated dynamic libs
-#ifdef __WIN32__
-			wxString ldlp_vname="PATH", ldlp_sep=";";
-#else 
-			wxString ldlp_vname="LD_LIBRARY_PATH", ldlp_sep=":";
-#endif			
-			bool has_libs=false;
-			// obtener el valor actual
-			wxString old_ld_library_path;
-			wxGetEnv(ldlp_vname,&old_ld_library_path);
-			wxString ld_library_path=old_ld_library_path;
-			// recorrer la bibliotecas y agregar lo que haga falta agregar
-			for(JavaVectorIterator<project_library> lib(active_configuration->libs_to_build); lib.IsValid(); lib.Next()) {
-				if (!lib->is_static) {
-					has_libs=true;
-					if (ld_library_path.Len())
-						ld_library_path<<(ldlp_sep);
-					ld_library_path<<mxUT::Quotize(DIR_PLUS_FILE(path,lib->path));
-				}
-			}
-			// si habia bibliotecas, guardar el viejo, y actualizarlo
-			if (has_libs) {
-				orig[ldlp_vname]=old_ld_library_path;
-				wxSetEnv(ldlp_vname,ld_library_path);
-			}
-			// add user defined environmental variables
-			if (active_configuration->env_vars.Len()) {
-				wxArrayString array;
-				mxUT::Split(active_configuration->env_vars,array,false,false);
-				for(unsigned int i=0;i<array.GetCount();i++) {  
-					if (!array[i].Contains("=")) continue;
-					wxString name = array[i].BeforeFirst('='), value = array[i].AfterFirst('='); 
-					mxUT::ParameterReplace(value,"${MINGW_DIR}",current_toolchain.mingw_dir,false);
-					mxUT::ParameterReplace(value,"${TEMP_DIR}",temp_folder,false);
-					mxUT::ParameterReplace(value,"${PROJECT_PATH}",project->path,false);
-					bool add = name.Last()=='+'; 
-					if (add) name.RemoveLast();
-					wxString old_value; if (!wxGetEnv(name,&old_value)) old_value="<{[UNDEF]}>";
-					if (orig.find(old_value)==orig.end()) orig[name]=old_value;
-					if (add) value=old_value+value; else value.Replace(wxString("${")+name+"}",old_value);
-					wxSetEnv(name,value);
-				}
-			}
-		} else {
-			// restaurar valores originales (de cuando se invoco esta misma funcion con set=false)
-			HashStringString::iterator it=orig.begin();
-			while (it!=orig.end()) {
-				if (it->second=="<{[UNDEF]}>") wxUnsetEnv(it->first);
-				else wxSetEnv(it->first,it->second);
-				++it;
-			}
-			orig.clear();
-		}
-	}
 }
 
 void ProjectManager::CleanAll ( ) {

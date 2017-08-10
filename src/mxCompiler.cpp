@@ -21,6 +21,7 @@
 #ifdef _ZINJAI_DEBUG
 #include<iostream>
 #include <cstdlib>
+#include "EnvVars.h"
 using namespace std;
 #endif
 
@@ -448,6 +449,7 @@ void mxCompiler::CompileSource (mxSource *source, GenericAction *on_end) {
 	
 	errors_manager->Reset(false);
 	
+	EnvVars::SetMode(EnvVars::COMPILING);
 	compile_and_run->m_cem_state = errors_manager->InitCompiling(command);
 	compile_and_run->pid = mxUT::Execute(source->GetPath(false),command,wxEXEC_ASYNC,compile_and_run->process);
 	compile_and_run->compiling=true;

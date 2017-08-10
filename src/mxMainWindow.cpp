@@ -83,6 +83,7 @@
 #include "mxSourceParsingAux.h"
 #include "asserts.h"
 #include "compiler_strings.h"
+#include "EnvVars.h"
 using namespace std;
 
 #define SIN_TITULO (wxString("<")<<LANG(UNTITLED,"sin_titulo_")<<(++untitled_count)<<">")
@@ -1944,6 +1945,7 @@ void mxMainWindow::RunSource (mxSource *source) {
 	if (source->exec_args.Len()) command<<' '<<source->exec_args;	
 	
 	// lanzar la ejecucion
+	EnvVars::SetMode(EnvVars::RUNNING);
 	compile_and_run_struct_single *compile_and_run=new compile_and_run_struct_single("OnRunSource");
 	compile_and_run->process=new wxProcess(this->GetEventHandler(),mxPROCESS_COMPILE);
 	compile_and_run->pid=wxExecute(command, wxEXEC_NOHIDE|wxEXEC_MAKE_GROUP_LEADER,compile_and_run->process);
@@ -3484,7 +3486,7 @@ wxString mxMainWindow::DebugTargetCommon (wxString target, bool should_continue)
 * inicia la depuracion ejecutando el programa
 * o reanuda la depuracion si ya estaba en proceso pero interrumpida
 **/
-void mxMainWindow::OnDebugRun ( wxCommandEvent &event ) {
+void mxMainWindow::OnDebugRun( wxCommandEvent &event ) {
 	IF_THERE_IS_SOURCE CURRENT_SOURCE->HideCalltip();
 	if (debug->IsDebugging()) {
 		if (debug->IsPaused())
@@ -3502,11 +3504,11 @@ DEBUG_INFO("wxYield:out mxMainWindow::OnDebugRun");
 			debug->Start(config->Debug.compile_again);
 		} else IF_THERE_IS_SOURCE {
 			mxSource *src = master_source?master_source:CURRENT_SOURCE;
+			_LAMBDA_1( lmbDebugSource, mxSource*,src, { EnvVars::SetMode(EnvVars::DEBUGGING); debug->Start(src); } );
 			if (config->Debug.compile_again) {
-				_LAMBDA_1( lmbDebugSource, mxSource*,src, { debug->Start(src); } );
 				CompileSource(false,new lmbDebugSource(src));
 			} else {
-				debug->Start(src);
+				lmbDebugSource(src).Run();
 			}
 		}
 	}
