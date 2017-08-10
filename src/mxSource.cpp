@@ -941,7 +941,7 @@ bool mxSource::SaveSource() {
 	bool ret=MySaveFile(source_filename.GetFullPath());
 	SetSourceTime(source_filename.GetModificationTime());
 	if (source_filename==config->Files.autocodes_file||(project&&source_filename==DIR_PLUS_FILE(project->path,project->autocodes_file)))
-		g_autocoder->Reset(project?project->autocodes_file:"");
+		Autocoder::GetInstance()->Reset(project?project->autocodes_file:"");
 	return ret;
 }
 
@@ -3643,7 +3643,7 @@ wxString mxSource::WhereAmI() {
 }
 
 bool mxSource::ApplyAutotext() {
-	return g_autocoder->Apply(this);
+	return Autocoder::GetInstance()->Apply(this);
 }
 
 void mxSource::SetColours(bool also_style) {

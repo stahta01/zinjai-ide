@@ -615,7 +615,7 @@ SHOW_MILLIS("Initializing parser and toolchain...");
 
 	parser = new Parser(this);
 	g_code_helper->AppendIndexes(config->Help.autocomp_indexes);
-	g_autocoder = new Autocoder;
+	Autocoder::GetInstance(); // solo para que se cree
 	
 	compiler = new mxCompiler(/*compiler_tree.treeCtrl,compiler_tree.state,compiler_tree.errors,compiler_tree.warnings,compiler_tree.all*/);
 
@@ -813,6 +813,7 @@ void mxMainWindow::AuxCompileOne(project_file_item *item) {
 	status_bar->SetStatusText(LANG(MAINW_COMPILING_DOTS,"Compilando..."));
 	errors_manager->Reset(true);
 	wxString current;
+	project->compile_startup_time = time(nullptr);
 	compile_and_run_struct_single *compile_and_run=new compile_and_run_struct_single("OnProjectTreeCompileNow");
 	compile_and_run->pid = project->CompileNext(compile_and_run, current);
 	StartExecutionStuff(compile_and_run,current);

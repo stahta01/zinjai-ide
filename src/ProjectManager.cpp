@@ -560,7 +560,7 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 	main_window->notebook_sources->Thaw();
 	main_window->notebook_sources->Fit();
 	
-	if (autocodes_file.Len()) g_autocoder->LoadFromFile(DIR_PLUS_FILE(path,autocodes_file));
+	if (autocodes_file.Len()) Autocoder::GetInstance()->LoadFromFile(DIR_PLUS_FILE(path,autocodes_file));
 	
 	if (tab_width<=0) {
 		tab_width = config->Source.tabWidth;
@@ -656,7 +656,7 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 ProjectManager::~ProjectManager() {
 
 	parser->CleanAll();
-	g_autocoder->Reset("");
+	Autocoder::GetInstance()->Reset("");
 	
 	// configurar interface para modo proyecto
 	main_window->PrepareGuiForProject(false);
@@ -1902,7 +1902,7 @@ void ProjectManager::ExportMakefile(wxString make_file, bool exec_comas, wxStrin
 	
 	if (mktype!=MKTYPE_OBJS) {
 		// agregar las secciones all, clean, y la del ejecutable
-		fil.AddLine(wxString("all: ")+temp_folder+" "+executable_name);
+		fil.AddLine(wxString("all: ")+temp_folder_short+" "+executable_name);
 		if (cmake_style) fil.AddLine(tab+"@echo [100%] Built target "+executable_name);
 		fil.AddLine("");
 		
@@ -1924,8 +1924,8 @@ void ProjectManager::ExportMakefile(wxString make_file, bool exec_comas, wxStrin
 				}
 			}
 		}
-		mxUT::ParameterReplace(extra_post,"${TEMP_DIR}",temp_folder);
-		mxUT::ParameterReplace(extra_pre,"${TEMP_DIR}",temp_folder);
+		mxUT::ParameterReplace(extra_post,"${TEMP_DIR}",temp_folder_short);
+		mxUT::ParameterReplace(extra_pre,"${TEMP_DIR}",temp_folder_short);
 		mxUT::ParameterReplace(extra_post,"${PROJECT_PATH}",project->path);
 		mxUT::ParameterReplace(extra_pre,"${PROJECT_PATH}",project->path);
 		mxUT::ParameterReplace(extra_post,"${PROJECT_BIN}",executable_name);
@@ -1948,16 +1948,16 @@ void ProjectManager::ExportMakefile(wxString make_file, bool exec_comas, wxStrin
 //			}
 //			estep=estep->next;
 //		}
-//		mxUT::ParameterReplace(extra_deps,"${TEMP_DIR}",temp_folder);
+//		mxUT::ParameterReplace(extra_deps,"${TEMP_DIR}",temp_folder_short);
 		
 		fil.AddLine(executable_name+": ${OBJS}"/*+extra_deps*/+extra_pre);
 		if (cmake_style) fil.AddLine(tab+"@echo "+get_percent(steps_objs+steps_extras,steps_total)+" Linking executable "+executable_name);
 		fil.AddLine(tab+(cmake_style?"@":"")+"${GPP} ${OBJS} ${LDFLAGS} -o $@");
 		fil.AddLine("");
 
-		if (temp_folder.Len()!=0) {
-			fil.AddLine(temp_folder+":");
-			fil.AddLine("\tmkdir "+temp_folder);
+		if (temp_folder_short.Len()!=0) {
+			fil.AddLine(temp_folder_short+":");
+			fil.AddLine("\tmkdir "+temp_folder_short);
 			fil.AddLine("");
 		}
 	
@@ -1982,7 +1982,7 @@ void ProjectManager::ExportMakefile(wxString make_file, bool exec_comas, wxStrin
 			libdep<<":";
 			for(LocalListIterator<project_file_item*> item(&files.sources); item.IsValid();item.Next()) {
 				if (item->GetLibrary()==lib)
-					objs<<" "<<mxUT::Quotize(item->GetBinName(temp_folder));
+					objs<<" "<<mxUT::Quotize(item->GetBinName(temp_folder_short));
 			}
 			fil.AddLine(libdep+objs);
 			
@@ -2001,7 +2001,7 @@ void ProjectManager::ExportMakefile(wxString make_file, bool exec_comas, wxStrin
 		
 		int steps_current=0;
 		for( LocalListIterator<project_file_item*> item(&files.sources); item.IsValid(); item.Next() ) {
-			wxString bin_full_path = mxUT::Quotize(item->GetBinName(temp_folder));
+			wxString bin_full_path = mxUT::Quotize(item->GetBinName(temp_folder_short));
 			fil.AddLine(bin_full_path+": "+mxUT::FindObjectDeps(item->GetFullPath(path),path,header_dirs_array));
 			bool cpp = item->IsCppOrJustC();
 			
@@ -2236,7 +2236,7 @@ void ProjectManager::AnalizeConfig(wxString path, bool exec_comas, wxString ming
 		||
 		( active_configuration->manifest_file.Len() && wxFileName::FileExists(DIR_PLUS_FILE(path,active_configuration->manifest_file)) ) 
 		)
-			objects_list<<mxUT::Quotize(DIR_PLUS_FILE(temp_folder,"zpr_resource.o"))<<" ";
+			objects_list<<mxUT::Quotize(DIR_PLUS_FILE(temp_folder_,"zpr_resource.o"))<<" ";
 #endif
 	
 	wxString extra_step_objs;
@@ -3567,8 +3567,8 @@ wxString ProjectManager::GetTempFolder (bool create) {
 }
 
 wxString ProjectManager::GetTempFolderEx (wxString path, bool create) {
-	temp_folder_short=active_configuration->temp_folder;
-	temp_folder=wxFileName(DIR_PLUS_FILE(path,active_configuration->temp_folder)).GetFullPath();
+	temp_folder_short = active_configuration->temp_folder;
+	temp_folder = wxFileName(DIR_PLUS_FILE(path,active_configuration->temp_folder)).GetFullPath();
 	if (create && temp_folder.Len() && !wxFileName::DirExists(temp_folder))
 		wxFileName::Mkdir(temp_folder,0777,wxPATH_MKDIR_FULL);
 	return temp_folder;

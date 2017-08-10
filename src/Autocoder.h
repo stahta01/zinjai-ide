@@ -28,25 +28,28 @@ private:
 	wxString m_description;
 	HashStringAutoCode m_list;
 	friend class CodeHelper;
-public:
 	
 	/// @brief intenta cargar las plantillas del usuario, si el archivo no existe lo crea con los defaults
 	Autocoder();
+	static Autocoder *m_instance;
 	
-	/// @brief define default autocode templates
-	void SetDefaults();
+public:
+	static Autocoder *GetInstance() {
+		if (!m_instance) m_instance = new Autocoder();
+		return m_instance;
+	}
 	
 	/// @brief erase all data about autocodes (current ones, description, ...)
 	void Clear();
 	
 	/// @brief clean all data and reload general autocodes (the ones from config, to dismiss project's specific ones)
-	void Reset(wxString pfile);
+	void Reset(wxString pfile="");
 	
 	/// @brief loads definitions from a text file, without erasing current ones (but they might be replaced)
 	bool LoadFromFile(wxString filename="");
 	
-	/// @brief saves current autocodes definitions to a text file
-	void SaveToFile(wxString filename="");
+//	/// @brief saves current autocodes definitions to a text file
+//	bool SaveToFile(wxString filename="");
 	
 	/// @brief realiza el reemplazo, el texto a reemplazar viene dado por TargetStart y TargetEnd del mxSource
 	bool Apply(mxSource *src, auto_code *ac, bool args);
@@ -54,9 +57,8 @@ public:
 	/// @brief analiza si se debe reemplazar algo o no, en caso afirmativo llama al otro Apply para hacer el reemplazo
 	bool Apply(mxSource *src);
 	
+	
 };
-
-extern Autocoder *g_autocoder;
 
 #endif
 

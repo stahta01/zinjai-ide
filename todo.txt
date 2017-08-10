@@ -1,3 +1,5 @@
+// esto esta muy desactualizado
+
 
 usar "cppcheck --errorlist --xml --xml-version=2" para los mensajes detallados de los errores?
 

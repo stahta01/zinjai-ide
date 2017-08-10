@@ -209,8 +209,8 @@ public:
 	wxString m_filename; ///< zinjai_dir+"/config.here" if exists, home_dir+"/config" by default
 	wxString config_dir; ///< path for user's settings (zinjai_dir+"/config.here" if exists, or ~/.zinjai by default)
 	wxString zinjai_dir; ///< zinjai's installation path
-	wxString zinjai_bin_dir; ///< zinjai's own binaries path (zinjai_dir+"/bin")
-	wxString zinjai_third_dir; ///< zinjai's third-part binaries path (zinjai_dir+"/third")
+//	wxString zinjai_bin_dir; ///< zinjai's own binaries path (zinjai_dir+"/bin")
+//	wxString zinjai_third_dir; ///< zinjai's third-part binaries path (zinjai_dir+"/third")
 	wxString temp_dir; ///< path for temporary files (home_dir+"/tmp")
 	cfgSource Source;
 	cfgRunning Running;
@@ -266,6 +266,17 @@ public:
 	/// @brief return default compiler arguments for simple programs (for_cpp=true: c++(g++) arguments, for_cpp=false, c(gcc) arguments)
 	wxString GetDefaultCompilerOptions(bool for_cpp) { return for_cpp?Running.cpp_compiler_options:Running.c_compiler_options; }
 	
+	// funciones para consultar directorios comunes
+	wxString GetZinjaiBinDir() const { return DIR_PLUS_FILE(zinjai_dir,"bin"); }
+	wxString GetZinjaiBinPath(const wxString &append_filename) const { return DIR_PLUS_FILE_2(zinjai_dir,"bin",append_filename); }
+	wxString GetZinjaiThirdDir() const { return DIR_PLUS_FILE(zinjai_dir,"third"); }
+	wxString GetZinjaiThirdPath(const wxString &append_filename) const { return DIR_PLUS_FILE_2(zinjai_dir,"third",append_filename); }
+	wxString GetZinjaiSamplesDir() const { return DIR_PLUS_FILE(zinjai_dir,"samples"); }
+	wxString GetZinjaiSamplesPath(const wxString &append_filename) const { return DIR_PLUS_FILE_2(zinjai_dir,"samples",append_filename); }
+	wxString GetUserTempDir() const { return temp_dir; }
+	wxString GetUserTempPath(const wxString &append_filename) const { return DIR_PLUS_FILE(temp_dir,append_filename); }
+	wxString GetUserConfigDir() const { return config_dir; }
+	wxString GetUserConfigPath(const wxString &append_filename) const { return DIR_PLUS_FILE(config_dir,append_filename); }
 	
 };
 

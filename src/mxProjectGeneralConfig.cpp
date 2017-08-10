@@ -157,7 +157,7 @@ void mxProjectGeneralConfig::OnOkButton(wxCommandEvent &evt) {
 //	main_window->menu.tools_wxfb_activate->Check(project->use_wxfb);
 	if (project->autocodes_file != project_autocodes->GetValue()) {
 		project->autocodes_file = project_autocodes->GetValue();
-		g_autocoder->Reset(DIR_PLUS_FILE(project->path,project->autocodes_file));
+		Autocoder::GetInstance()->Reset(DIR_PLUS_FILE(project->path,project->autocodes_file));
 	}
 	project->default_fext_header = default_fext_header->GetValue();
 	project->default_fext_source = default_fext_source->GetValue();

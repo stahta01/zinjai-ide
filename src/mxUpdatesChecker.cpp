@@ -71,15 +71,8 @@ void mxUpdatesChecker::CheckNow() {
 	
 	text->SetLabel(LANG(UPDATE_CONSULTING_WEB,"Consultando web..."));
 
-	wxString command  = DIR_PLUS_FILE(config->zinjai_bin_dir,
-#ifdef __WIN32__
-								   "updatem.exe "
-#else
-								   "updatem.bin "
-#endif
-								   );
-	
-	command<<"--version "<<VERSION<<" ";
+	wxString command  = config->GetZinjaiBinPath(_if_win32("updatem.exe","updatem.bin"));
+	command<<" --version "<<VERSION<<" ";
 #ifdef __WIN32__
 	command<<"--postfix windows ";
 #elif defined(__APPLE__)

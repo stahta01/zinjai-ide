@@ -5,93 +5,18 @@
 #include "ProjectManager.h"
 #include "mxSourceParsingAux.h"
 
-Autocoder *g_autocoder=nullptr;
+Autocoder *Autocoder::m_instance = nullptr;
 
 Autocoder::Autocoder() {
-	if (!LoadFromFile(config->Files.autocodes_file)) {
-		SetDefaults(); 
-		SaveToFile();
-	}
+	Reset();
 }
 
 void Autocoder::Reset(wxString pfile) {
 	Clear();
-	if (config->Files.autocodes_file.Len()) 
-		LoadFromFile(config->Files.autocodes_file);
-	if (pfile.Len()) 
-		LoadFromFile(pfile);
-}
-
-void Autocoder::SetDefaults() {
-	Clear();
-	if (config->Init.language_file=="spanish") {
-		m_description=
-			"// Este archivo contiene las definiciones de las plantillas de autocódigo. Estas\n"
-			"// plantillas se invocan en zinjai typeando su nombre y sus argumentos de la misma\n"
-			"// manera en la que se llama a una macro de preprocesador o a una función, y\n"
-			"// presinoando la tecla TAB inmediatamente despues. ZinjaI reemplazará el código\n"
-			"// de la llamada por el código/texto completo definido para el mismo.\n"
-			"// Para definir plantillas de autocódigo se utiliza la palabra clave #autocode\n"
-			"// seguida de su nombre. Opcionalmente se pueden colocar argumentos entre\n"
-			"// paréntesis y separados por comas. Luego se coloca el código que reemplazará a la\n"
-			"// llamada, de igual forma que para una macro. Para crear plantillas de más de una\n"
-			"// linea no hace falta agregar \\ al final de cada una. Una definición de autocódigo\n"
-			"// termina donde empieza la siguiente, pero las lineas en blanco entre dos plantillas\n"
-			"// son ignoradas. Se puede usar la palabra clave #here# para indicar donde colocar el\n"
-			"// cursor de texto luego del reemplazo. También se puede usar #typeof(x)# para indicar\n"
-			"// que allí debe ir el tipo de una variable (x). Se debe notar que las lineas con\n"
-			"// comentarios se consideran parte de la plantilla y por lo tanto se incluyen al\n"
-			"// realizar el reemplazo, con la única excepción de los comentarios colocados en la\n"
-			"// primer línea (#autocode...) y que comienzan con //. En este caso, se considera a\n"
-			"// ese comentario como una descripción corta del autocódigo.\n"
-			"// Si edita este archivo de definiciones con ZinjaI, al guardarlo los cambios se\n"
-			"// reacargan automáticamente.";
-	} else {
-		m_description=
-			"// This file contains autocodes definitions. Autocodes are some kind of code templates\n"
-			"// that you can invoke while coding in ZinjaI, calling them in exactly the same way you\n"
-			"// call a macro and pressing TAB key just after it. ZinjaI will inmediatly replace\n"
-			"// that call with its full code.\n"
-			"// To define an autocode template, use keywords #autocode followed by the name you want\n"
-			"// to use to invoke it, as with macros. Optionally you can define arguments in the same\n"
-			"// way you do for macros. To create a multiline autocode you dont need to add \\ at the\n"
-			"// end of each line. An autocode definition extends until next #autocode tag, but empty\n"
-			"// lines at the end are stripped. You can use char #here# to say where the text cursor\n"
-			"// should be placed after replacing the autocode. You can also use #typeof(x)# and it\n"
-			"// will be replaced by the typename of the variable x. Note that comment lines will be\n"
-			"// part of the autocode template and so won't be ignored when replacing the call,\n"
-			"// with the exception of any comment in the first #autocode line. In that case, that\n"
-			"// comment will be interpreted as that particular autocode's brief descripcion (only\n"
-			"// comments starting with // will be recognized when parsing this file).\n"
-			"// If you edit autocode definitions file with ZinjaI, changes will apply automatically\n"
-			"// when you save the file.";
+	if (!LoadFromFile(config->Files.autocodes_file)) {
+		LoadFromFile(config->GetZinjaiSamplesPath("autocodes"));
 	}
-	
-	{ auto_code a; a.code="for(int i=0;i<N;i++) { #here# }"; a.args.Add("i"); a.args.Add("N"); m_list["for2"]=a; }
-	{ auto_code a; a.code="for(int i=0;i<N;i++) { #here# }"; a.args.Add("N"); m_list["fori"]=a; }
-	{ auto_code a; a.code="for(int j=0;j<N;j++) { #here# }"; a.args.Add("N"); m_list["forj"]=a; }
-	{ auto_code a; a.code="for(int k=0;k<N;k++) { #here# }"; a.args.Add("N"); m_list["fork"]=a; }
-	{ auto_code a; a.code="for(unsigned int i=0;i<N;i++) { #here# }"; a.args.Add("i"); a.args.Add("N"); m_list["foru2"]=a; }
-	{ auto_code a; a.code="for(unsigned int i=0;i<N;i++) { #here# }"; a.args.Add("N"); m_list["forui"]=a; }
-	{ auto_code a; a.code="for(unsigned int j=0;j<N;j++) { #here# }"; a.args.Add("N"); m_list["foruj"]=a; }
-	{ auto_code a; a.code="for(unsigned int k=0;k<N;k++) { #here# }"; a.args.Add("N"); m_list["foruk"]=a; }
-	{ auto_code a; a.code="for( #typeof(v)#::iterator it=v.begin(); it!=v.end(); ++it) { #here# }"; a.args.Add("V"); m_list["forit"]=a; }
-	{ auto_code a; a.code="while(true) {\n#here#\n}"; m_list["whilet"]=a; }
-	{ auto_code a; a.code="if(cond) {\n\t#here#\n} else {\n\t\n}"; a.args.Add("cond"); m_list["ifel"]=a; }
-	{ auto_code a; a.code="std::cout << x << std::endl;"; a.args.Add("x"); m_list["cout"]=a; }
-	{ auto_code a; a.code="std::cerr << x << std::endl;"; a.args.Add("x"); m_list["cerr"]=a; }
-	{ auto_code a; a.code="switch(x) {\ncase #here# :\n\tbreak;\ndefault:;\n}"; a.args.Add("x"); m_list["switch"]=a; }
-	{ auto_code a; a.code="class x {\nprivate:\n\t#here#\npublic:\n\tx();\n\t~x();\n};"; a.args.Add("x"); m_list["class"]=a; }
-	{ auto_code a; a.code="class x : public f {\nprivate:\n\t#here#\nprotected:\n\t\npublic:\n\tx();\n\t~x();\n};"; a.args.Add("x"); a.args.Add("f"); m_list["classh"]=a; }
-	{ auto_code a; a.description="dummy text"; 
-	a.code=
-		"\"Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor \"\n"
-		"\"incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud \"\n"
-		"\"exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute \"\n"
-		"\"irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla \"\n"
-		"\"pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia \"\n"
-		"\"deserunt mollit anim id est laborum.\"#here#";
-	m_list["lorem_ipsum"]=a; }
+	if (pfile.Len()) LoadFromFile(pfile);
 }
 
 void Autocoder::Clear() {
@@ -100,7 +25,6 @@ void Autocoder::Clear() {
 }
 
 bool Autocoder::LoadFromFile(wxString filename) {
-	if (!filename.Len()) filename=DIR_PLUS_FILE(config->config_dir,"autocodes");
 	wxTextFile fil(filename);
 	if (!fil.Exists()) return false;
 	fil.Open(); auto_code ac; wxString name;
@@ -150,37 +74,39 @@ bool Autocoder::LoadFromFile(wxString filename) {
 	return true;
 }
 
-void Autocoder::SaveToFile(wxString filename) {
-	if (!filename.Len()) filename=DIR_PLUS_FILE(config->config_dir,"autocodes");
-	wxTextFile fil(filename);
-	if (fil.Exists())
-		fil.Open();
-	else
-		fil.Create();
-	fil.Clear();
-	
-	fil.AddLine(m_description);
-	fil.AddLine("");
-		
-	HashStringAutoCode::iterator it;
-	for( it = m_list.begin(); it != m_list.end(); ++it ) {
-		wxString head("#autocode ");
-		head<<it->first;
-		if (it->second.args.GetCount()) {
-			head<<"(";
-			for (unsigned int i=0;i<it->second.args.GetCount();i++) 
-				head<<it->second.args[i]<<",";
-			head.RemoveLast(); head<<")";
-		}
-		if (it->second.description.Len())
-			head<<" // "<<it->second.description;
-		fil.AddLine(head);
-		fil.AddLine(it->second.code);
-		fil.AddLine("");
-	}
-	fil.Write();
-	fil.Close();
-}
+//bool Autocoder::SaveToFile(wxString filename) {
+//	if (!filename.Len()) filename=DIR_PLUS_FILE(config->config_dir,"autocodes");
+//	wxTextFile fil(filename);
+//	if (fil.Exists()) {
+//		if (!fil.Open()) return false;
+//	} else {
+//		if (!fil.Create()) return false;
+//	}
+//	fil.Clear();
+//	
+//	fil.AddLine(m_description);
+//	fil.AddLine("");
+//		
+//	HashStringAutoCode::iterator it;
+//	for( it = m_list.begin(); it != m_list.end(); ++it ) {
+//		wxString head("#autocode ");
+//		head<<it->first;
+//		if (it->second.args.GetCount()) {
+//			head<<"(";
+//			for (unsigned int i=0;i<it->second.args.GetCount();i++) 
+//				head<<it->second.args[i]<<",";
+//			head.RemoveLast(); head<<")";
+//		}
+//		if (it->second.description.Len())
+//			head<<" // "<<it->second.description;
+//		fil.AddLine(head);
+//		fil.AddLine(it->second.code);
+//		fil.AddLine("");
+//	}
+//	fil.Write();
+//	fil.Close();
+//	return true;
+//}
 
 
 bool Autocoder::Apply(mxSource *src, auto_code *ac, bool args) {

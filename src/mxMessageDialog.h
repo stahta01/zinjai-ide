@@ -26,6 +26,7 @@ public:
 	struct mdAns {
 		bool ok, yes, no, cancel, closed, check1, check2;
 		mdAns() : ok(false), yes(false), no(false), cancel(false), closed(false), check1(false), check2(false) {}
+		operator bool() { return ok||yes; }
 	};
 	mdAns m_result;
 	mdAns Run();

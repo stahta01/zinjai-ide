@@ -86,12 +86,6 @@ class wxBitmapButton;
 #	define BINARY_EXTENSION ".bin"
 #endif
 
-#ifdef __WIN32__
-#	define OSDEP_VAL(win,lnx) win
-#else
-#	define OSDEP_VAL(win,lnx) lnx
-#endif
-		
 WX_DECLARE_STRING_HASH_MAP( wxString, HashStringString );
 WX_DECLARE_STRING_HASH_MAP( wxTreeItemId, HashStringTreeItem );
 

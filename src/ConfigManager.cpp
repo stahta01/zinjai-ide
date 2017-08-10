@@ -47,8 +47,8 @@ ConfigManager::ConfigManager(wxString a_path):custom_tools(MAX_CUSTOM_TOOLS) {
 	config=this;
 	s_delayed_config_lines = nullptr; 
 	zinjai_dir = a_path;
-	zinjai_bin_dir = DIR_PLUS_FILE(zinjai_dir,"bin");
-	zinjai_third_dir = DIR_PLUS_FILE(zinjai_dir,"third");
+//	zinjai_bin_dir = DIR_PLUS_FILE(zinjai_dir,"bin");
+//	zinjai_third_dir = DIR_PLUS_FILE(zinjai_dir,"third");
 	LoadDefaults();
 }
 
@@ -709,7 +709,7 @@ void ConfigManager::LoadDefaults(){
 #else
 	Files.toolchain="gcc";
 	Files.debugger_command="gdb";
-	Files.runner_command=DIR_PLUS_FILE(zinjai_bin_dir,"runner.bin");
+	Files.runner_command=DIR_PLUS_FILE(GetZinjaiBinDir(),"runner.bin");
 	Files.explorer_command="<<sin configurar>>";
 	Files.terminal_command="<<sin configurar>>";
 	Files.img_viewer="";
@@ -840,7 +840,7 @@ void ConfigManager::LoadDefaults(){
 	Debug.raise_main_window = true;
 	Debug.compile_again = true;
 	Debug.format = "";
-	Debug.macros_file = "debug_macros.gdb";
+	Debug.macros_file = DIR_PLUS_FILE(config_dir,"debug_macros.gdb");
 	Debug.inspections_on_right = false;
 	Debug.show_thread_panel = false;
 	Debug.show_log_panel = false;

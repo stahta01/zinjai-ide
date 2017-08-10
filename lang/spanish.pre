@@ -1759,7 +1759,7 @@ Buscando...
 HELPW_SEARCH_RESULTS_TITLE
 Coincidencias en el título:
 HELPW_SEARCH_RESULTS_BODY
-Coincidencias detro del contenido:
+Coincidencias dentro del contenido:
 HELPW_SEARCH_NO_RESULTS_FOR
 No se encontraron coincidencias para \"
 HELPW_ADDRESS
@@ -2724,6 +2724,10 @@ PREFERENCES_OPEN_FILE
 &Buscar archivo...
 PREFERENCES_EDIT_FILE
 &Editar archivo...
+PREFERENCES_FILE_NOT_FOUND_OFFER_CREATE
+El archivo \"<{1}>\" no existe.\n¿Desea crearlo?
+PREFERENCES_ERROR_CREATING_FILE
+Error creando el archivo \"<{1}>\".
 PREFERENCES_EDIT_TOOLBAR
 Barra de Herramientas <{1}>
 PREFERENCES_TOOLBARS_RESET_WARNING

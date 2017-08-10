@@ -336,7 +336,7 @@ long Parser::ParseNextFileStart(wxFileName filename, wxString HashName, bool hid
 	PD_REGISTER_FILE(process->file, HashName,filename.GetModificationTime());
 	process->file->hide_symbols=hide_symbols;
 	static wxString parser_command = "";
-	if (parser_command.IsEmpty()) parser_command = DIR_PLUS_FILE(config->zinjai_bin_dir,
+	if (parser_command.IsEmpty()) parser_command = DIR_PLUS_FILE(config->GetZinjaiBinDir(),
 #ifdef __WIN32__
 		"cbrowser.exe"
 #else

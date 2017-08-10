@@ -134,17 +134,17 @@ void mxComplementInstallerWindow::Install(wxString fname) {
 		else {
 			caller<<config->Files.terminal_command;
 			caller.Replace("${TITLE}",LANG(COMPLEMENTS_CAPTION,"Instalacion de Complementos"));
-			caller<<" "<<mxUT::Quotize(DIR_PLUS_FILE(config->zinjai_bin_dir,"complement_wrap.bin"));
+			caller<<" "<<mxUT::Quotize(config->GetZinjaiBinPath("complement_wrap.bin"));
 		}
 #endif
 	}
 	
-	wxCopyFile(DIR_PLUS_FILE(config->zinjai_bin_dir,installer),DIR_PLUS_FILE(config->temp_dir,installer),true);
+	wxCopyFile(config->GetZinjaiBinPath(installer),config->GetUserTempPath(installer),true);
 	wxString zdir=config->zinjai_dir;
 #ifdef __WIN32__
 	if (zdir.Last()=='\\') zdir.RemoveLast(); // wx parsea mal los argumentos, si uno termina en \ lo pega con el que sigue
 #endif
-	wxString command = mxUT::Quotize(DIR_PLUS_FILE(config->temp_dir,installer))+" --lang="+config->Init.language_file+" "+mxUT::Quotize(zdir)+" "+mxUT::Quotize(fname);
+	wxString command = mxUT::Quotize(config->GetUserTempPath(installer))+" --lang="+config->Init.language_file+" "+mxUT::Quotize(zdir)+" "+mxUT::Quotize(fname);
 #ifdef __WIN32__
 	if (!writable) {
 		char *cmd=new char[command.Len()+1];

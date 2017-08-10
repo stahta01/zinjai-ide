@@ -1268,9 +1268,7 @@ wxString mxUT::GetCommandForRunningInTerminal (const wxString &title, const wxSt
 
 int mxUT::LaunchImageViewer (const wxString &window_title, const wxString &image_file) {
 	wxString command = config->Files.img_viewer;
-	if (command.IsEmpty()) command = mxUT::Quotize(DIR_PLUS_FILE(
-		config->zinjai_bin_dir,
-		OSDEP_VAL("img_viewer.exe","img_viewer.bin")));
+	if (command.IsEmpty()) command = mxUT::Quotize( config->GetZinjaiBinPath(_if_win32("img_viewer.exe","img_viewer.bin")) );
 	command<<" "<<Quotize(image_file)<<" \""<<window_title<<"\"";
 	int retval = wxExecute(command);
 	_IF_DEBUGMODE(command+"\nretal="+(wxString()<<retval));
@@ -1285,13 +1283,13 @@ int mxUT::LaunchGraphViewer (const wxString &window_title, const wxString &graph
 }
 
 wxString mxUT::GetFileTypeDescription(wxString file_path) {
-	wxString command = OSDEP_VAL( DIR_PLUS_FILE(config->zinjai_third_dir,"gnuwin32\\bin\\file.exe") , "file" );
+	wxString command = _if_win32( config->GetZinjaiThirdPath("gnuwin32\\bin\\file.exe") , "file" );
 	command << " -b " << mxUT::Quotize(file_path);
 	return mxUT::GetOutput(command);
 }
 
 bool mxUT::ShellExecute (const wxString & path, const wxString &workdir) {
-	wxString command = OSDEP_VAL( DIR_PLUS_FILE(config->zinjai_bin_dir,"shellexecute.exe"), "xdg-open" );
+	wxString command = _if_win32( config->GetZinjaiBinPath("shellexecute.exe"), "xdg-open" );
 	command<<" "<<Quotize(path);
 	RaiiWorkDirChanger wkcd_guard(workdir.IsEmpty()?".":workdir);
 	return wxExecute(command);

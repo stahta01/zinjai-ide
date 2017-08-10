@@ -490,8 +490,8 @@ bool CodeHelper::AutocompleteGeneral(mxSource *source, wxString scope, wxString 
 
 bool CodeHelper::AutocompleteAutocode(mxSource *source, wxString typed/*, int max_str_dist*/) {
 	g_autocomp_list.Init(); int t=0, len=typed.Len();
-	HashStringAutoCode::iterator it = g_autocoder->m_list.begin();
-	while (it!=g_autocoder->m_list.end()) {
+	HashStringAutoCode::iterator it = Autocoder::GetInstance()->m_list.begin();
+	while (it!=Autocoder::GetInstance()->m_list.end()) {
 //		wxString &aux=it->first;
 //		int CH_COMPARE(typed,aux,i,l,max_str_dist);
 		if (ShouldAddToAutocomp(typed,len,it->first)) { ++t; g_autocomp_list.Add(it->first,"",""); }

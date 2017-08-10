@@ -16,12 +16,12 @@
 #include "mxExternCompilerOutput.h"
 #include "CompilerErrorsManager.h"
 #include "compiler_strings.h"
+#include "EnvVars.h"
 
 
 #ifdef _ZINJAI_DEBUG
 #include<iostream>
 #include <cstdlib>
-#include "EnvVars.h"
 using namespace std;
 #endif
 

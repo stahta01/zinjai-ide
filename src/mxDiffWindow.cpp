@@ -93,7 +93,7 @@ void mxDiffWindow::OnOkButton(wxCommandEvent &evt) {
 
 void mxDiffWindow::DiffSourceFile(mxSource *src, wxString fname) {
 	src->SaveTemp(DIR_PLUS_FILE(config->temp_dir,"fordiff"));
-	wxString command( OSDEP_VAL( DIR_PLUS_FILE(config->zinjai_third_dir,"gnuwin32\\bin\\diff.exe") , "diff" ) );
+	wxString command( _if_win32( config->GetZinjaiThirdPath("gnuwin32\\bin\\diff.exe") , "diff" ) );
 	command << " ";
 	if (ignore_empty_lines->GetValue()) command<<"-B ";
 	if (ignore_spaces->GetValue()) command<<"-E -b ";

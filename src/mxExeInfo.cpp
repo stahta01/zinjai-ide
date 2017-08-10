@@ -171,7 +171,7 @@ void mxExeInfo::OnTimer(wxTimerEvent &evt) {
 
 void mxExeInfo::UpdateTypeAndDeps ( ) {
 	if (ldd_ctrl) {
-		wxString ldd_cmd = OSDEP_VAL( DIR_PLUS_FILE(config->zinjai_bin_dir,"lsdeps.exe"), "ldd" );
+		wxString ldd_cmd = _if_win32( config->GetZinjaiBinPath("lsdeps.exe"), "ldd" );
 		ldd_ctrl->SetValue(mxUT::GetOutput(ldd_cmd+" "+mxUT::Quotize(m_fname.GetFullPath()),true,false));
 	}
 	text_type->SetValue(mxUT::GetFileTypeDescription(m_fname.GetFullPath()));

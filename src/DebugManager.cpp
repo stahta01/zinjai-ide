@@ -164,10 +164,13 @@ bool DebugManager::Start(wxString workdir, wxString exe, wxString args, bool sho
 #endif
 	wxString command(config->Files.debugger_command);
 	command<<_T(" -quiet -nx -interpreter=mi");
-	if (config->Debug.readnow)
-		command<<_T(" --readnow");
-	if (wxFileName(DIR_PLUS_FILE(config->zinjai_dir,config->Debug.macros_file)).FileExists())
-		command<<_T(" -x \"")<<DIR_PLUS_FILE(config->zinjai_dir,config->Debug.macros_file)<<"\"";
+	if (config->Debug.readnow) command<<_T(" --readnow");
+	// macros para gdb generales
+	if (wxFileName(config->Debug.macros_file).FileExists())
+		command<<_T(" -x \"")<<config->Debug.macros_file<<"\"";
+	else if (wxFileName(config->GetZinjaiSamplesPath("debug_macros.gdb")).FileExists())
+		command<<_T(" -x \"")<<config->GetZinjaiSamplesPath("debug_macros.gdb")<<"\"";
+	// macros para gdb del proyecto
 	if (project && project->macros_file.Len() && wxFileName(DIR_PLUS_FILE(project->path,project->macros_file)).FileExists())
 		command<<_T(" -x \"")<<DIR_PLUS_FILE(project->path,project->macros_file)<<"\"";
 #ifndef __WIN32__

@@ -1,0 +1,123 @@
+// This file contains autocodes definitions. Autocodes are some kind of code templates
+// that you can invoke while coding in ZinjaI, calling them in exactly the same way you
+// call a macro and pressing TAB key just after it. ZinjaI will inmediatly replace
+// that call with its full code.
+// To define an autocode template, use keywords #autocode followed by the name you want
+// to use to invoke it, as with macros. Optionally you can define arguments in the same
+// way you do for macros. To create a multiline autocode you dont need to add \ at the
+// end of each line. An autocode definition extends until next #autocode tag, but empty
+// lines at the end are stripped. You can use char #here# to say where the text cursor
+// should be placed after replacing the autocode. Note that comment lines will be
+// part of the autocode template and so won't be ignored when replacing the call,
+// with the exception of any comment in the first #autocode line. In that case, that
+// comment will be interpreted as that particular autocode's brief descripcion (only
+// comments starting with // will be recognized when parsing this file).
+// If you edit autocode definitions file with ZinjaI, changes will apply automatically
+// when you save the file.
+
+#autocode lorem_ipsum // dummy text
+"Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor "
+"incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
+"exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute "
+"irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
+"pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia "
+"deserunt mollit anim id est laborum."#here#
+
+
+#autocode fori(N)
+for(int i=0;i<N;i++) { #here# }
+#autocode forj(N)
+for(int j=0;j<N;j++) { #here# }
+#autocode fork(N)
+for(int k=0;k<N;k++) { #here# }
+
+#autocode forui(N)
+for(unsigned int i=0;i<N;i++) { #here# }
+#autocode foruj(N)
+for(unsigned int j=0;j<N;j++) { #here# }
+#autocode foruk(N)
+for(unsigned int k=0;k<N;k++) { #here# }
+
+#autocode forsi(V)
+for(size_t i=0;i<V.size();i++) { #here# }
+#autocode forsj(V)
+for(size_t j=0;j<V.size();j++) { #here# }
+#autocode forsk(V)
+for(size_t k=0;k<V.size();k++) { #here# }
+
+#autocode class(x)
+class x {
+private:
+	#here#
+public:
+	x();
+	~x();
+};
+
+
+#autocode for2(i,N)
+for(int i=0;i<N;i++) { #here# }
+#autocode foru2(i,N)
+for(unsigned int i=0;i<N;i++) { #here# }
+#autocode fors2(i,V)
+for(size_t i=0;i<V.size();i++) { #here# }
+
+#autocode whilet
+while(true) {
+#here#
+}
+
+#autocode switch(x)
+switch(x) {
+case #here# :
+	break;
+default:;
+}
+
+#autocode classh(x,f)
+class x : public f {
+private:
+	#here#
+protected:
+	
+public:
+	x();
+	~x();
+};
+
+#autocode cout(x)
+std::cout << x << std::endl;
+#autocode cerr(x)
+std::cout << x << std::endl;
+#autocode cin(x)
+std::cin >> x;
+
+#autocode ifel
+if (#here#) {
+	
+} else {
+	
+}
+
+#autocode fora(x,v)
+for(auto &x:v) { #here# }
+#autocode forca(x,v)
+for(const auto &x:v) { #here# }
+
+#autocode forit(v)
+for( #typeof(v)#::iterator it=v.begin(); it!=v.end(); ++it ) { #here# }
+#autocode forit1(v)
+for( #typeof(v)#::iterator it1=v.begin(); it1!=v.end(); ++it1 ) { #here# }
+#autocode forit2(v)
+for( #typeof(v)#::iterator it2=v.begin(); it2!=v.end(); ++it2 ) { #here# }
+#autocode forbe(it,v)
+for( #typeof(v)#::iterator it=v.begin(); it!=v.end(); ++it ) { #here# }
+
+#autocode it(v)
+#typeof(v)#::iterator #here#
+
+#autocode itb(v)
+#typeof(v)#::iterator #here# = v.begin();
+
+#autocode be(v)
+v.begin(),v.end()

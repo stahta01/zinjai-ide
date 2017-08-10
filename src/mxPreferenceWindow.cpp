@@ -876,7 +876,7 @@ void mxPreferenceWindow::OnOkButton(wxCommandEvent &event) {
 		for (unsigned int i=0;i<ns->GetPageCount();i++)
 			((mxSource*)(ns->GetPage(i)))->SetReadOnlyMode(config->Debug.allow_edition?ROM_DEBUG:ROM_ADD_DEBUG);
 	}
-	g_autocoder->Reset(project?project->autocodes_file:"");
+	Autocoder::GetInstance()->Reset(project?project->autocodes_file:"");
 	config->Debug.blacklist = temp_debug_blacklist;
 	debug->SetBlacklist();
 	
@@ -1082,7 +1082,8 @@ void mxPreferenceWindow::OnAutocodesButton(wxCommandEvent &event) {
 	PopupMenu(&menu);
 }
 void mxPreferenceWindow::OnAutocodesOpen(wxCommandEvent &event) {
-	wxFileDialog dlg(this,_T("Archivo de definiciones de autocodigos"),"",DIR_PLUS_FILE(config->zinjai_dir,files_autocode->GetValue()));
+	wxFileDialog dlg(this,LANG(PREFERENCES_WRITTING_AUTOCODES_FILE,"Archivo de definiciones de plantillas de auto-código"),
+					 "",DIR_PLUS_FILE(config->zinjai_dir,files_autocode->GetValue()));
 	if (wxID_OK==dlg.ShowModal()) {
 		wxFileName fn(dlg.GetPath());
 		fn.MakeRelativeTo(config->zinjai_dir);
@@ -1090,15 +1091,23 @@ void mxPreferenceWindow::OnAutocodesOpen(wxCommandEvent &event) {
 	}
 }
 
-void mxPreferenceWindow::OnAutocodesEdit(wxCommandEvent &event) {
-	int i=2;
-	wxString file=files_autocode->GetValue();
-	if (wxFileName(file).FileExists()) {
-		main_window->OpenFileFromGui(file,&i);
-	} else {
-		mxMessageDialog(main_window,"El archivo no existe")
-			.Title("Archivo de definiciones de autocódigos").IconWarning().Run();
+static void auxEditFile(const wxString &title, wxTextCtrl *text_ctrl, const wxString &default_value, wxWindow *parent) {
+	wxString file = text_ctrl->GetValue();
+	if (file.IsEmpty()) text_ctrl->SetValue(file=config->GetUserConfigPath(default_value));
+	if (!wxFileName(file).FileExists()) {
+		if (!mxMessageDialog(parent,LANG1(PREFERENCES_FILE_NOT_FOUND_OFFER_CREATE,"El archivo \"<{1}>\" no existe.\n¿Desea crearlo?",file))
+			.Title(title).IconQuestion().ButtonsYesNo().Run()) 
+				return;
+		if (!wxCopyFile(config->GetZinjaiSamplesPath(default_value),file)) {
+			mxMessageDialog(parent,LANG1(PREFERENCES_ERROR_CREATING_FILE,"Error creando el archivo \"<{1}>\".",file)).Title(title).IconError().Run();
+			return;
+		}
 	}
+	int i=2; main_window->OpenFileFromGui(file,&i);
+}
+
+void mxPreferenceWindow::OnAutocodesEdit(wxCommandEvent &event) {
+	auxEditFile( LANG(PREFERENCES_WRITTING_AUTOCODES_FILE,"Archivo de definiciones de plantillas de auto-código"), files_autocode, "autocodes", this);
 }
 
 void mxPreferenceWindow::OnDebugMacrosButton(wxCommandEvent &event) {
@@ -1118,15 +1127,7 @@ void mxPreferenceWindow::OnDebugMacrosOpen(wxCommandEvent &event) {
 }
 
 void mxPreferenceWindow::OnDebugMacrosEdit(wxCommandEvent &event) {
-	int i=2;
-	wxString file=debug_macros_file->GetValue();
-	if (wxFileName(file).FileExists()) {
-		main_window->OpenFileFromGui(file,&i);
-	} else {
-		mxMessageDialog(main_window,"El archivo no existe")
-			.Title(LANG(PREFERENCES_DEBUG_GDB_MACROS_FILE,"Archivo de macros para gdb"))
-			.IconWarning().Run();	
-	}
+	auxEditFile( LANG(PREFERENCES_DEBUG_GDB_MACROS_FILE,"Archivo de macros para gdb"), debug_macros_file, "debug_macros.gdb", this);
 }
 
 mxPreferenceWindow *mxPreferenceWindow::ShowUp() {

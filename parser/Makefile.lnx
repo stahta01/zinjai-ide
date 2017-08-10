@@ -1,6 +1,6 @@
 GCC=gcc
 OPTS= -O3 -DZASKAR -Dpanic=printf -Dckfree=free -Dckalloc=malloc -Dckrealloc=realloc -DHAVE_CONFIG_H -Ihyper -Icommon -Imisc -Icpp/cpplib -I.  
-OBJS_DIR=release.lnx
+OBJS_DIR=../temp/cbrowser/release.lnx
 LDFLAGS=-s
 
 all: ${OBJS_DIR} ../bin/cbrowser
@@ -8,7 +8,7 @@ all: ${OBJS_DIR} ../bin/cbrowser
 include Makefile.common
 
 ${OBJS_DIR}:
-	mkdir ${OBJS_DIR}
+	mkdir -p ${OBJS_DIR}
 
 ../bin:
 	mkdir ../bin
