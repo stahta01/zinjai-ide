@@ -856,10 +856,6 @@ void mxMainWindow::OnProjectTreeRename(wxCommandEvent &event) {
 				.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
 		}
 	}
-//	wxString res = mxGetTextFromUser("Nuevo nombre:", "Renombrar archivo" , project->GetNameFromItem(project_tree.selected_item,true), this);
-//	if (res!="")
-//		if (!project->RenameFile(project_tree.selected_item,res))
-//			mxMessageDialog(main_window,"No se pudo renombrar el archivo").Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
 }
 
 void mxMainWindow::OnProjectTreeDelete(wxCommandEvent &event) {

@@ -425,7 +425,7 @@ private:
 	void SetFatherProject(const wxString &father_zpr) { m_inherited_from = father_zpr; }
 	void SetUnknownFatherProject() { m_inherited_from = "<unknown father>"; }
 	bool FatherProjectIsUnknown() const { return m_inherited_from == "<unknown father>"; }
-	void Rename(const wxString &new_relative_path) { m_read_only = new_relative_path; }
+	void Rename(const wxString &new_relative_path) { m_relative_path = new_relative_path; }
 };
 
 
