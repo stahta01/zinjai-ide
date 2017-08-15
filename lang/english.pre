@@ -121,9 +121,9 @@ THREADS_NO_THREADS
 THREADS_NO_INFO
 <<Thread info not available>>
 DEBUG_BAD_BREAKPOINT_WARNING
-Some breakpoints could not been setted by the debugger. Posible causes are:\n* Some breakpoints are placed in files that do not belong to the project.\n* Some breakpoints are placed in lines that don't gerate executable code (comments, empty lines, ...)\n* Missing or outdated debugging information. Use Clean item from Run menu before\n  debugging.\n* Spaces or special characters in files' paths. If that is the case, try moving\n  the project or renaming the directories.
+Some breakpoints could not been setted by the debugger.
 DEBUG_BAD_BREAKPOINT_WARNING_LOCATION
-Posible causes are:\n* Some breakpoints are placed in files that do not belong to the project.\n* Some breakpoints are placed in lines that don't gerate executable code (comments, empty lines, ...)\n* Missing or outdated debugging information. Use Clean item from Run menu before\n  debugging.\n* Spaces or special characters in files' paths. If that is the case, try moving\n  the project or renaming the directories.
+Posible causes are:\n* Some breakpoints are placed in files that do not belong to the project.\n* Some breakpoints are placed in lines that don't generate executable code (comments, empty lines, ...)\n* Missing or outdated debugging information. Use Clean item from Run menu before\n  debugging.\n* Spaces or special characters in files' paths. If that is the case, try moving\n  the project or renaming the directories.
 DEBUG_BAD_BREAKPOINT_WARNING_CONDITION
 Breakpoint's condition is not valid.
 PARSERHELP_DEFINED_IN_POST
@@ -487,9 +487,9 @@ Code generation
 MENUITEM_TOOLS_CODE_COPY_FROM_H
 Implement Missing Functions/Methods...
 MENUITEM_TOOLS_CODE_GENERATE_FUNCTION_DEC
-Gerate function definition from current call
+Generate function definition from current call
 MENUITEM_TOOLS_CODE_GENERATE_FUNCTION_DEF
-Gerate function declaration from current call
+Generate function declaration from current call
 MENUITEM_TOOLS_CODE_EXTRACT_FUNCTION
 Extract code to a new function
 MENUITEM_TOOLS_CODE_SURROUND_IF

@@ -10,7 +10,7 @@
 	mxMessageDialog(main_window,LANG(CODE_CANNOT_GENERATE_FUNCTION,"No se pudo determinar el prototipo de la función.")) \
 		.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run(); return retval; }
 
-int LocalRefactory::GetScopeStart(mxSource * src, int pos) {
+static int GetScopeStart(mxSource * src, int pos) {
 	// get the scope, to insert the code right before
 	int scope_start = -1;
 	wxString scope_args, scope = src->FindScope(pos,&scope_args,true,&scope_start,true);
@@ -18,7 +18,7 @@ int LocalRefactory::GetScopeStart(mxSource * src, int pos) {
 	return src->GetStatementStartPos(scope_start);
 }
 
-wxString LocalRefactory::GetFunctionProto(mxSource * src, int pos) {
+static wxString GetFunctionProto(mxSource * src, int pos) {
 
 	// get the calll
 	wxArrayString args; wxString func_name, func_type;
@@ -60,29 +60,55 @@ wxString LocalRefactory::GetLiteralType (wxString literal_expression) {
 	else return "";
 }
 
-void LocalRefactory::GenerateFunctionDef (mxSource * src, int pos) {
+static int InsertText (mxSource * src, int line, wxString content, bool fix_indent=true) {
+	int p = src->PositionFromLine(line);
+	src->InsertText(p,content+"\n");
+	int lmax = src->LineFromPosition(p+content.size());
+	if (fix_indent) {
+		src->Colourise(p,p+content.size());
+		src->Indent(line,lmax);
+	}
+	return lmax-line+1;
+}
+
+#define STYLE_IS_COMMENT(s) (s==wxSTC_C_COMMENT || s==wxSTC_C_COMMENTLINE || s==wxSTC_C_COMMENTLINEDOC || s==wxSTC_C_COMMENTDOC || s==wxSTC_C_COMMENTDOCKEYWORD || s==wxSTC_C_COMMENTDOCKEYWORDERROR)
+static bool IsComment(mxSource *src, int line) {
+	int p1 = src->PositionFromLine(line), p2 = src->GetLineEndPosition(line);
+	bool have_coments = false;
+	for(int i=p1;i<p2;i++) {  
+		char c = src->GetCharAt(i); 
+		int s = src->GetStyleAt(i);
+		if (STYLE_IS_COMMENT(s)) {
+			have_coments = true;
+		} else if (c!=' '&&c!='\t') 
+			return false;
+	}
+	return have_coments;
+}
+
+static void GenerateFunctionCommon (mxSource *src, int pos, const wxString &body, int delta_pos) {
 	mxSource::UndoActionGuard undo_action(src);
 	int scope_start = GetScopeStart(src,pos);
 	if (scope_start==wxSTC_INVALID_POSITION) GenerateFunction_error();
 	wxString func_proto = GetFunctionProto(src,pos);
 	// insert code, indent, move cursor there
 	int line_start = src->LineFromPosition(scope_start);
-	InsertText(src, line_start, func_proto+" {\n\n}\n");
-	src->GotoPos(src->GetLineIndentPosition(line_start+1));
+	while (line_start>0 && IsComment(src,line_start-1)) {
+		--line_start;
+	}
+	InsertText(src, line_start, func_proto+body);
+	src->GotoPos(src->GetLineIndentPosition(line_start+delta_pos));
 }
 
-void LocalRefactory::GenerateFunctionDec (mxSource * src, int pos) {
-	mxSource::UndoActionGuard undo_action(src);
-	int scope_start = GetScopeStart(src,pos);
-	if (scope_start==wxSTC_INVALID_POSITION) GenerateFunction_error();
-	wxString func_proto = GetFunctionProto(src,pos);
-	// insert code, indent, move cursor there
-	int line_start = src->LineFromPosition(scope_start);
-	InsertText(src, line_start, func_proto+";\n");
-	src->GotoPos(src->GetLineIndentPosition(line_start));
+void LocalRefactory::GenerateFunctionDef (mxSource *src, int pos) {
+	GenerateFunctionCommon(src,pos," {\n\n}\n",1);
 }
 
-void LocalRefactory::ExtractFunctionPost (mxSource * src, int line_proto, int line_call) {
+void LocalRefactory::GenerateFunctionDec (mxSource *src, int pos) {
+	GenerateFunctionCommon(src,pos,";\n",0);
+}
+
+static void ExtractFunctionPost (mxSource * src, int line_proto, int line_call) {
 	int x = src->GetLineIndentPosition(line_call), e = src->GetLineEndPosition(line_call), p = wxSTC_INVALID_POSITION;
 	while (x<e && src->GetCharAt(x)!='(') {
 		char c = src->GetCharAt(x);
@@ -124,10 +150,37 @@ void LocalRefactory::ExtractFunction (mxSource * src, int pos) {
 				int,line_start,
 				int,lmin);
 	_LAMBDA_1(lmbRefUpdateProto, s_lmbRefUpdateProto,lmb_arg, {
-		LocalRefactory::ExtractFunctionPost(lmb_arg.src,lmb_arg.line_start,lmb_arg.lmin);
+		ExtractFunctionPost(lmb_arg.src,lmb_arg.line_start,lmb_arg.lmin);
 	});
 	src->multi_sel.BeginEdition(src,false,true).SetKeepHighligth().SetEndsOnEnter().SetOnEndAction(new lmbRefUpdateProto(lmb_arg));
 	src->HighLightWord("foo"); src->EnsureCaretVisible();
+}
+
+static void Surround (mxSource *src, int lmin, int lmax, wxString spre, wxString spos, bool fix_indent=true) {
+	mxSource::UndoActionGuard undo_action(src);
+	if (fix_indent) {
+		for(int i=lmin;i<=lmax;i++)
+			src->SetLineIndentation(i,src->GetLineIndentation(i)+src->config_source.tabWidth);
+	}
+	int pmax = src->GetLineEndPosition(lmax);
+	src->InsertText(pmax,wxString("\n")+spos);
+	int pmin = src->PositionFromLine(lmin);
+	src->InsertText(pmin,spre+"\n");
+	lmax+=2; pmax=src->GetLineEndPosition(lmax); 
+	if (fix_indent) {
+		src->Colourise(pmin,pmax);
+		src->Indent(lmin,lmin);
+		src->Indent(lmax,lmax);
+	}
+	if (spre.Contains("#here#")) {
+		int p = src->GetLineIndentPosition(lmin) + spre.Index("#here#");
+		src->SetTargetStart(p); src->SetTargetEnd(p+6); 
+		src->ReplaceTarget(""); src->SetSelection(p,p);
+	} else if (spos.Contains("#here#")) {
+		int p = src->GetLineIndentPosition(lmax) + spos.Index("#here#");
+		src->SetTargetStart(p); src->SetTargetEnd(p+6); 
+		src->ReplaceTarget(""); src->SetSelection(p,p);
+	}
 }
 
 void LocalRefactory::SurroundIf (mxSource * src, int pos) {
@@ -155,41 +208,4 @@ void LocalRefactory::SurroundIfdef (mxSource * src, int pos) {
 	Surround(src,lmin,lmax,"#ifdef #here#","#endif",false);
 }
 
-void LocalRefactory::Surround (mxSource *src, int lmin, int lmax, wxString spre, wxString spos, bool fix_indent) {
-	mxSource::UndoActionGuard undo_action(src);
-	if (fix_indent) {
-		for(int i=lmin;i<=lmax;i++)
-			src->SetLineIndentation(i,src->GetLineIndentation(i)+src->config_source.tabWidth);
-	}
-	int pmax = src->GetLineEndPosition(lmax);
-	src->InsertText(pmax,wxString("\n")+spos);
-	int pmin = src->PositionFromLine(lmin);
-	src->InsertText(pmin,spre+"\n");
-	lmax+=2; pmax=src->GetLineEndPosition(lmax); 
-	if (fix_indent) {
-		src->Colourise(pmin,pmax);
-		src->Indent(lmin,lmin);
-		src->Indent(lmax,lmax);
-	}
-	if (spre.Contains("#here#")) {
-		int p = src->GetLineIndentPosition(lmin) + spre.Index("#here#");
-		src->SetTargetStart(p); src->SetTargetEnd(p+6); 
-		src->ReplaceTarget(""); src->SetSelection(p,p);
-	} else if (spos.Contains("#here#")) {
-		int p = src->GetLineIndentPosition(lmax) + spos.Index("#here#");
-		src->SetTargetStart(p); src->SetTargetEnd(p+6); 
-		src->ReplaceTarget(""); src->SetSelection(p,p);
-	}
-}
-
-int LocalRefactory::InsertText (mxSource * src, int line, wxString content, bool fix_indent) {
-	int p = src->PositionFromLine(line);
-	src->InsertText(p,content+"\n");
-	int lmax = src->LineFromPosition(p+content.size());
-	if (fix_indent) {
-		src->Colourise(p,p+content.size());
-		src->Indent(line,lmax);
-	}
-	return lmax-line+1;
-}
 
