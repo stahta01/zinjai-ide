@@ -1329,9 +1329,10 @@ bool ProjectManager::PrepareForBuilding(project_file_item *only_one) {
 		}
 		if (flag) {
 			step = step->next = new compile_step(CNS_SOURCE,*item);
-			if (item->IsInALibrary())
-				item->ForceRecompilation();
-			else
+			if (item->IsInALibrary()) {
+//				item->ForceRecompilation();
+				item->GetLibrary()->need_relink=true;
+			} else
 				relink_exe=true;
 			steps_count++;
 		}
