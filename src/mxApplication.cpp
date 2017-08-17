@@ -242,7 +242,7 @@ bool mxApplication::InitSingleton(const wxString &cmd_path) {
 	bool all_done=true, filter_args=true;
 	for (int i=1; i<argc;i++) {
 		wxString name = argv[i];
-		if (filter_args || name.StartsWith("--")) { 
+		if (filter_args && name.StartsWith("--")) { 
 			if (name=="--") filter_args=false; 
 			else all_done=false;
 			continue; 

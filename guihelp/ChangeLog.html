@@ -12,9 +12,10 @@
 	<LI>Imp: Los archivos para autocódigos y macros de gdb se configuran para apuntar a la carpeta de configuración de zinjai en el home del usuario, pero si no existen (por defecto) se usan los de la carpeta "samples" del directorio de instalación.</LI>
 	<LI>Imp: Ahora se definen variables de entorno antes de cada ejecución para que el programa/proyecto puede detectar si está corriendo desde ZinjaI (RUNNING_FROM_ZINJAI=="1") y si es para ejecución normal o depuración (DEBUGGING_FROM_ZINJAI=="1").</LI>
 	<LI>Imp: El ejecutable de ZinjaI soporta algunos argumentos nuevos en la linea de comandos (usar --help para ver la lista).</LI>
-	<LI>Imp: El tabulado de un proyecto siempre es "propio".</LI>
+	<LI>Imp: El tabulado de un proyecto siempre es "propio", por defecto al crearse toma el general de ZinjaI definido en las preferencias.</LI>
 	<LI>Imp: Varias mejoras internas en el código fuente del IDE.</LI>
 	<LI>Imp: Algunos añadidos/actualizaciones en las páginas de ayuda.</LI>
+	<LI>Fix: Aplicado un workaround en el parser para poder interpretar &gt;&gt; como el cierre de dos listas de argumentos de templates anidadas en lugar de hacerlo como un único operador.</LI>
 	<LI>Fix: Corregido un error al renombrar un archivo de un proyecto.</LI>
 	<LI>Fix: El marcado de errores ya no interfiere con el funcionamiento de la edición múltiple del identificador seleccionado.</LI>
 	
