@@ -235,6 +235,10 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 				else if (p.Key()=="use_wxfb") GetWxfbConfiguration()->activate_integration = p.AsBool();
 				else if (p.Key()=="auto_wxfb") GetWxfbConfiguration()->autoupdate_projects = p.AsBool();
 			}
+			if (tab_width<=0) {
+				tab_width = config->Source.tabWidth;
+				tab_use_spaces = config->Source.tabUseSpaces;
+			}
 			
 		} else if (section=="lib_to_build") { // agregar una biblioteca a generar por el projecto
 			project_library *lib_to_build = new project_library;
@@ -561,11 +565,6 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 	main_window->notebook_sources->Fit();
 	
 	if (autocodes_file.Len()) Autocoder::GetInstance()->LoadFromFile(DIR_PLUS_FILE(path,autocodes_file));
-	
-	if (tab_width<=0) {
-		tab_width = config->Source.tabWidth;
-		tab_use_spaces = config->Source.tabUseSpaces;
-	}
 	
 	if (version_saved<20140410) { // arreglar cambios de significado strip_executable (paso de bool a int)
 		for (int i=0;i<configurations_count;i++) {
