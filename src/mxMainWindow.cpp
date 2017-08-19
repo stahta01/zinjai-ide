@@ -84,6 +84,7 @@
 #include "asserts.h"
 #include "compiler_strings.h"
 #include "EnvVars.h"
+#include "mxMiniMapPanel.h"
 using namespace std;
 
 #define SIN_TITULO (wxString("<")<<LANG(UNTITLED,"sin_titulo_")<<(++untitled_count)<<">")
@@ -273,6 +274,7 @@ BEGIN_EVENT_TABLE(mxMainWindow, wxFrame)
 	EVT_MENU(mxID_VIEW_PREV_ERROR, mxMainWindow::OnViewPrevError)
 	EVT_MENU(mxID_VIEW_LEFT_PANELS, mxMainWindow::OnViewLeftPanels)
 	EVT_MENU(mxID_VIEW_PROJECT_TREE, mxMainWindow::OnViewProjectTree)
+	EVT_MENU(mxID_VIEW_MINIMAP, mxMainWindow::OnViewMinimapPanel)
 	EVT_MENU(mxID_VIEW_COMPILER_TREE, mxMainWindow::OnViewCompilerTree)
 	EVT_MENU(mxID_VIEW_EXPLORER_TREE, mxMainWindow::OnViewExplorerTree)
 	EVT_MENU(mxID_VIEW_SYMBOLS_TREE, mxMainWindow::OnViewSymbolsTree)
@@ -518,7 +520,8 @@ SHOW_MILLIS("Entering mxMainWindow's constructor...");
 	focus_source=nullptr;
 	m_macro=nullptr;
 	master_source=nullptr;
-	
+	m_minimap=nullptr;
+		
 	gui_fullscreen_mode=gui_debug_mode=gui_project_mode=false;
 	untitled_count=0;
 	asm_panel=nullptr;
@@ -632,10 +635,13 @@ SHOW_MILLIS("Almost done with mxMainWindow...");
 	SetDropTarget(new mxDropTarget(nullptr));
 	
 	if (config->Init.show_beginner_panel) {
-		CreateBeginnersPanel();
 		_menu_item(mxID_VIEW_BEGINNER_PANEL)->Check(true);
-		if (!config->Init.show_welcome)
-			ShowBeginnersPanel();
+		if (!config->Init.show_welcome) ShowBeginnersPanel();
+	}
+	
+	if (config->Init.show_minimap_panel) {
+		_menu_item(mxID_VIEW_MINIMAP)->Check(true);
+		if (!config->Init.show_welcome) ShowMinimapPanel();
 	}
 	
 	status_bar->SetStatusText(LANG(GENERAL_READY,"Listo"));
@@ -651,6 +657,7 @@ SHOW_MILLIS("mxMainWindow construction finished...");
 		wxCommandEvent evt;
 		OnViewExplorerTree(evt); // aui update
 	}
+
 	m_aui->Update();
 	
 }
@@ -1337,6 +1344,7 @@ void mxMainWindow::OnHelpCode (wxCommandEvent &event) {
 
 
 void mxMainWindow::OnNotebookPageChanged(wxAuiNotebookEvent& event) {
+	
 	static wxMenuItem *menu_view_white_space=_menu_item(mxID_VIEW_WHITE_SPACE);
 	static wxMenuItem *menu_view_line_wrap=_menu_item(mxID_VIEW_LINE_WRAP);
 	static wxMenuItem *menu_view_code_style=_menu_item(mxID_VIEW_CODE_STYLE);
@@ -1351,8 +1359,11 @@ void mxMainWindow::OnNotebookPageChanged(wxAuiNotebookEvent& event) {
 	menu_view_line_wrap->Check(CURRENT_SOURCE->config_source.wrapMode);
 	menu_view_code_style->Check(CURRENT_SOURCE->config_source.syntaxEnable);
 	if (!project) parser_timer->Start(2000,true);
-	CURRENT_SOURCE->ReloadErrorsList();
+	mxSource *new_src = CURRENT_SOURCE;
+	new_src->ReloadErrorsList();
+	if (m_minimap) m_minimap->SetCurrentSource(new_src);
 	event.Veto();
+	
 }
 
 void mxMainWindow::OnNotebookRightClick(wxAuiNotebookEvent& event) {
@@ -1485,6 +1496,7 @@ void mxMainWindow::OnPaneClose(wxAuiManagerEvent& event) {
 	else if (event.pane->name == "threadlist" && !config->Init.autohide_panels) debug->threadlist_visible=false;
 //	else if (event.pane->name == "backtrace") debug->backtrace_visible=false;
 	else if (event.pane->name == "beginner_panel") _menu_item(mxID_VIEW_BEGINNER_PANEL)->Check(false);
+	else if (event.pane->name == "minimap_panel") _menu_item(mxID_VIEW_MINIMAP)->Check(false);
 	m_aui->OnPaneClose(event.pane->window);
 }
 
@@ -2268,6 +2280,15 @@ void mxMainWindow::OnViewFullScreen(wxCommandEvent &event) {
 					_menu_item(mxID_VIEW_BEGINNER_PANEL)->Check(false);
 				}
 			}
+			if ( m_minimap && fullscreen_panels_status[fspsMINIMAP]!=m_aui->GetPane(m_minimap).IsShown() ) {
+				if (fullscreen_panels_status[fspsMINIMAP]) {
+					m_aui->GetPane(m_minimap).Show();
+					_menu_item(mxID_VIEW_MINIMAP)->Check(true);
+				} else {
+					m_aui->GetPane(m_minimap).Hide();
+					_menu_item(mxID_VIEW_MINIMAP)->Check(false);
+				}
+			}
 			if ( fullscreen_panels_status[fspsTHREADS]!=m_aui->GetPane(threadlist_ctrl).IsShown() ) {
 				if (fullscreen_panels_status[fspsTHREADS]) {
 					debug->threadlist_visible=true;
@@ -2334,6 +2355,10 @@ void mxMainWindow::OnViewFullScreen(wxCommandEvent &event) {
 			if ( g_beginner_panel && (fullscreen_panels_status[fspsBEGINNER]=m_aui->GetPane(g_beginner_panel).IsShown()) ) {
 				m_aui->GetPane(g_beginner_panel).Hide();
 				_menu_item(mxID_VIEW_BEGINNER_PANEL)->Check(false);
+			}
+			if ( m_minimap && (fullscreen_panels_status[fspsMINIMAP]=m_aui->GetPane(m_minimap).IsShown()) ) {
+				m_aui->GetPane(m_minimap).Hide();
+				_menu_item(mxID_VIEW_MINIMAP)->Check(false);
 			}
 			if ( (fullscreen_panels_status[fspsTHREADS]=m_aui->GetPane(threadlist_ctrl).IsShown()) ) {
 				debug->threadlist_visible=false;
@@ -4479,6 +4504,8 @@ void mxMainWindow::ShowWelcome(bool show) {
 	} else {
 		if (config->Init.show_beginner_panel && !config->Init.autohide_panels)
 			ShowBeginnersPanel();
+		if (config->Init.show_minimap_panel && !config->Init.autohide_panels)
+			ShowMinimapPanel();
 		pwp.Hide();
 		pns.Show();
 	}
@@ -4695,7 +4722,7 @@ void mxMainWindow::ShowValgrindPanel(int what, wxString file, bool force) {
 }
 
 void mxMainWindow::OnViewBeginnerPanel (wxCommandEvent &event) {
-	if (!g_beginner_panel) CreateBeginnersPanel();
+	GetBeginnersPanel(); // ensure is created
 	wxMenuItem *mitem = _menu_item(mxID_VIEW_BEGINNER_PANEL);
 	if (config->Init.autohide_panels) {
 		if (!mitem->IsChecked()) {
@@ -4710,10 +4737,34 @@ void mxMainWindow::OnViewBeginnerPanel (wxCommandEvent &event) {
 	} else {
 		if (!mitem->IsChecked()) {
 			mitem->Check(false);
-			m_aui->GetPane(g_beginner_panel).Hide();
+			m_aui->GetPane(GetBeginnersPanel()).Hide();
 		} else {
 			mitem->Check(true);
-			m_aui->GetPane(g_beginner_panel).Show();
+			m_aui->GetPane(GetBeginnersPanel()).Show();
+		}
+	}
+	m_aui->Update();
+}
+void mxMainWindow::OnViewMinimapPanel (wxCommandEvent &event) {
+	GetMinimapPanel(); // ensure is created
+	wxMenuItem *mitem = _menu_item(mxID_VIEW_MINIMAP);
+	if (config->Init.autohide_panels) {
+		if (!mitem->IsChecked()) {
+			autohide_handlers[ATH_MINIMAP]->Hide();
+			m_aui->GetPane(autohide_handlers[ATH_MINIMAP]).Hide();
+			mitem->Check(false);
+		} else {
+			m_aui->GetPane(autohide_handlers[ATH_MINIMAP]).Show();
+			autohide_handlers[ATH_MINIMAP]->Show();
+			mitem->Check(true);
+		}
+	} else {
+		if (!mitem->IsChecked()) {
+			mitem->Check(false);
+			m_aui->GetPane(GetMinimapPanel()).Hide();
+		} else {
+			mitem->Check(true);
+			m_aui->GetPane(GetMinimapPanel()).Show();
 		}
 	}
 	m_aui->Update();
@@ -4852,24 +4903,52 @@ void mxMainWindow::ShowExplorerTreePanel(bool set_focus) {
 	if (set_focus) explorer_tree.treeCtrl->SetFocus();
 }
 
-void mxMainWindow::CreateBeginnersPanel() {
-	g_beginner_panel = new mxBeginnerPanel(this);
-	if (config->Init.autohiding_panels) {
-		autohide_handlers[ATH_BEGINNERS] = new mxHidenPanel(this,g_beginner_panel,HP_RIGHT,LANG(MAINW_BEGGINERS_PANEL,"Asistencias"));
-		m_aui->AddPane(autohide_handlers[ATH_BEGINNERS], wxAuiPaneInfo().CaptionVisible(false).Right().Position(0).Show());
+mxBeginnerPanel *mxMainWindow::GetBeginnersPanel() {
+	if (!g_beginner_panel) {
+		g_beginner_panel = new mxBeginnerPanel(this);
+		if (config->Init.autohiding_panels) {
+			autohide_handlers[ATH_BEGINNERS] = new mxHidenPanel(this,g_beginner_panel,HP_RIGHT,LANG(MAINW_BEGGINERS_PANEL,"Asistencias"));
+			m_aui->AddPane(autohide_handlers[ATH_BEGINNERS], wxAuiPaneInfo().CaptionVisible(false).Right().Position(1).Show());
+		}
+		m_aui->AddPane(g_beginner_panel, wxAuiPaneInfo().Name("beginner_panel").Caption(LANG(MAINW_BEGGINERS_PANEL,"Panel de Asistencias")).Right().Hide());
+		m_aui->Update();
 	}
-	m_aui->AddPane(g_beginner_panel, wxAuiPaneInfo().Name("beginner_panel").Caption(LANG(MAINW_BEGGINERS_PANEL,"Panel de Asistencias")).Right().Hide());
-	m_aui->Update();
+	return g_beginner_panel;
 }
 
 void mxMainWindow::ShowBeginnersPanel() {
-	if (!g_beginner_panel) CreateBeginnersPanel();
-	if (!m_aui->GetPane(g_beginner_panel).IsShown()) {
+	if (!m_aui->GetPane(GetBeginnersPanel()).IsShown()) {
 		if (config->Init.autohiding_panels) {
 			autohide_handlers[ATH_BEGINNERS]->ForceShow(false);
 		} else {
-			m_aui->GetPane(g_beginner_panel).Show();
+			m_aui->GetPane(GetBeginnersPanel()).Show();
 			_menu_item(mxID_VIEW_BEGINNER_PANEL)->Check(true);
+			m_aui->Update();
+		}
+	}
+}
+
+mxMiniMapPanel *mxMainWindow::GetMinimapPanel() {
+	if (!m_minimap) {
+		m_minimap = new mxMiniMapPanel(this);
+		if (config->Init.autohiding_panels) {
+			autohide_handlers[ATH_MINIMAP] = new mxHidenPanel(this,m_minimap,HP_RIGHT,LANG(MAINW_MINIMAP_PANEL,"Mini-mapa"));
+			m_aui->AddPane(autohide_handlers[ATH_MINIMAP], wxAuiPaneInfo().CaptionVisible(false).Right().Position(0).Show());
+		}
+		m_aui->AddPane(m_minimap, wxAuiPaneInfo().Name("minimap_panel").Caption(LANG(MAINW_MINIMAP_PANEL,"Mini-mapa")).BestSize(100,100).Right().Hide());
+		IF_THERE_IS_SOURCE m_minimap->SetCurrentSource(CURRENT_SOURCE);
+		m_aui->Update();
+	}
+	return m_minimap;
+}
+
+void mxMainWindow::ShowMinimapPanel() {
+	if (!m_aui->GetPane(GetMinimapPanel()).IsShown()) {
+		if (config->Init.autohiding_panels) {
+			autohide_handlers[ATH_MINIMAP]->ForceShow(false);
+		} else {
+			m_aui->GetPane(GetMinimapPanel()).Show();
+			_menu_item(mxID_VIEW_MINIMAP)->Check(true);
 			m_aui->Update();
 		}
 	}
@@ -5290,6 +5369,7 @@ void mxMainWindow::OnHighlightKeyword (wxCommandEvent & event) {
 
 void mxMainWindow::UnregisterSource (mxSource * src) {
 	if (src==master_source) master_source=nullptr;
+	if (m_minimap) { m_minimap->UnregisterSource(src); }
 	AfterEventsAction *current = call_after_events;
 	for(int i=0;i<2;i++) {
 		while (current) {

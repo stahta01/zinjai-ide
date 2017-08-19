@@ -15,6 +15,16 @@
 #include "enums.h"
 #include "mxSource.h"
 
+#ifdef __WIN32__
+	// maldito seas "winbase.h" (ahi se hacen defines como los que estan aca abajo, entonces cualquiera que los incluya esta cambiando los nombres)
+	#ifdef MoveFile
+		#undef MoveFile
+	#endif
+	#ifdef DeleteFile
+		#undef DeleteFile
+	#endif
+#endif
+
 class mxStatusBar;
 class mxHidenPanel;
 class mxGCovSideBar;
@@ -42,12 +52,27 @@ class mxExternCompilerOutput;
 class mxRegistersGrid;
 class mxGdbAsmPanel;
 class mxAUI;
+class mxMiniMapPanel;
+class mxBeginnerPanel;
 
 template<class T> class SingleList;
 
 extern mxSplashScreen *g_splash;
 
-enum autohide_ref {ATH_COMPILER=0,ATH_SYMBOL=1,ATH_PROJECT=2,ATH_EXPLORER=3,ATH_DEBUG_LOG=4,ATH_QUICKHELP=5,ATH_THREADS=6,ATH_INSPECTIONS=7,ATH_BACKTRACE=8,ATH_BEGINNERS=9,ATH_COUNT=10};
+enum autohide_ref {
+	ATH_COMPILER,
+	ATH_SYMBOL,
+	ATH_PROJECT,
+	ATH_EXPLORER,
+	ATH_DEBUG_LOG,
+	ATH_QUICKHELP,
+	ATH_THREADS,
+	ATH_INSPECTIONS,
+	ATH_BACKTRACE,
+	ATH_BEGINNERS,
+	ATH_MINIMAP,
+	ATH_COUNT
+};
 
 // afuera de mxMainWindow para evitar tener que incluir este header en CompilerErrorsManager
 struct CompilerTreeStruct {
@@ -62,11 +87,15 @@ struct CompilerTreeStruct {
 * clase, que la crea mxApplication, y el puntero es main_window (variable global).
 **/
 class mxMainWindow : public wxFrame {
+	
+private:
+	mxMiniMapPanel *m_minimap;
+
 public:
 	
 	bool gui_fullscreen_mode, gui_debug_mode, gui_project_mode; 
 	
-	enum {fspsCOMPILER,fspsHELP,fspsBACKTRACE,fspsINSPECTIONS,fspsLEFT,fspsPROJECT,fspsEXPLORER,fspsBEGINNER,fspsTHREADS,fspsCOUNT};
+	enum {fspsCOMPILER,fspsHELP,fspsBACKTRACE,fspsINSPECTIONS,fspsLEFT,fspsPROJECT,fspsEXPLORER,fspsBEGINNER,fspsTHREADS,fspsMINIMAP,fspsCOUNT};
 	bool fullscreen_panels_status[fspsCOUNT];
 	
 	enum {dbpsCOMPILER,dbpsHELP,dbpsBACKTRACE,dbpsINSPECTIONS,dbpsTHREADS,dbpsCOUNT};
@@ -150,6 +179,7 @@ public:
 	
 	void OnViewDuplicateTab (wxCommandEvent &event);
 	void OnViewBeginnerPanel (wxCommandEvent &event);
+	void OnViewMinimapPanel (wxCommandEvent &event);
 	void OnViewNextError (wxCommandEvent &event);
 	void OnViewPrevError (wxCommandEvent &event);
 	void OnViewWhiteSpace (wxCommandEvent &event);
@@ -583,7 +613,8 @@ public:
 	wxTreeCtrl* CreateProjectTree();
 	wxPanel* CreateCompilerTree();
 	
-	void CreateBeginnersPanel();
+	mxBeginnerPanel *GetBeginnersPanel();
+	mxMiniMapPanel *GetMinimapPanel();
 
 	mxThreadGrid *threadlist_ctrl;
 	mxBacktraceGrid *backtrace_ctrl;
@@ -608,6 +639,7 @@ public:
 	void ShowExplorerTreePanel(bool set_focus=true);
 	void HideExplorerTreePanel();
 	void ShowBeginnersPanel();
+	void ShowMinimapPanel();
 	
 	void FocusToSource();
 	

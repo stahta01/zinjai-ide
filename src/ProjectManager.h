@@ -16,6 +16,12 @@
 #include <wx/treebase.h>
 #include <wx/arrstr.h>
 #include "mxUtils.h"
+#include "Toolchain.h" // por TOOLCHAIN_MAX_ARGS
+#include "BreakPointInfo.h" // por el delete_autolist(breaklist) del destructor de project_file_item
+#include "enums.h"
+#include "SourceExtras.h"
+#include "CustomTools.h"
+#include "JavaVector.h"
 
 #define PROJECT_EXT "zpr"
 #define DOT_PROJECT_EXT "." PROJECT_EXT
@@ -30,12 +36,7 @@
 	#endif
 #endif
 
-#include "Toolchain.h" // por TOOLCHAIN_MAX_ARGS
-#include "BreakPointInfo.h" // por el delete_autolist(breaklist) del destructor de project_file_item
-#include "enums.h"
-#include "SourceExtras.h"
-#include "CustomTools.h"
-#include "JavaVector.h"
+
 class BreakPointInfo;
 class mxSource;
 class mxOSDGuard;
@@ -55,7 +56,7 @@ enum MakefileTypeEnum {
 	MKTYPE_FULL, ///< el Makefile común, que contiene todo lo necesario
 	MKTYPE_OBJS, ///< uno que contine solo las reglas de los objetos, que no depende del perfil de compilación (y se llama siempre Makefile.common), es para incluir desde otro Makefile
 	MKTYPE_CONFIG ///< el que define las variables que dependen del perfil de compilación, y incluye al otro makefile que contiene la parte comun a todos los perfiles
-	};
+};
 
 /// mecanismo de ejecución para un proyecto
 enum ExecMethodEnum { 

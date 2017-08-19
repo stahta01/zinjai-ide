@@ -1,12 +1,12 @@
-#include "mxCommandFinder.h"
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
-#include "Language.h"
-#include "mxMainWindow.h"
-#include "MenusAndToolsConfig.h"
 #include <wx/settings.h>
 #include "Cpp11.h"
+#include "Language.h"
+#include "mxCommandFinder.h"
+#include "mxMainWindow.h"
+#include "MenusAndToolsConfig.h"
 #include "ProjectManager.h"
 #include "DebugManager.h"
 
@@ -116,7 +116,7 @@ void mxCommandFinderList::KeyDown ( ) {
 void mxCommandFinderList::Select ( ) {
 	int sel = list->GetSelection();
 	if (sel>=0&&sel<int(list->GetCount())) {
-		GetParent()->Close();
+		Hide(); GetParent()->Close();
 		wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED,ids[sel]);
 		main_window->ProcessEvent(evt);
 	}

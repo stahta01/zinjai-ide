@@ -1,8 +1,9 @@
 #ifndef MXSTYLEDOUTPUT_H
 #define MXSTYLEDOUTPUT_H
 #include <wx/stc/stc.h>
+#include "mxSourceBase.h"
 
-class mxStyledOutput : public wxStyledTextCtrl {
+class mxStyledOutput : public mxSourceBase {
 	bool is_read_only;
 public:
 	const int next_available_marker;
@@ -11,7 +12,7 @@ public:
 	void AppendLine(const wxString &str);
 	void AppendLine(const wxString &str, bool start_collapsible_section);
 	void OnMarginClick(wxStyledTextEvent &e);
-	void OnMouseWheel (wxMouseEvent & event);
+//	void OnMouseWheel (wxMouseEvent & event);
 	void Clear();
 	virtual bool StartCollapsibleSection(const wxString &str) { return false; }
 	virtual void AfterMarginClick() {}

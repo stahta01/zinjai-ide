@@ -245,6 +245,7 @@ bool ConfigManager::Load() {
 			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
 				if (p.Key()=="left_panels") Init.left_panels = p.AsBool();
 				else if (p.Key()=="show_beginner_panel") Init.show_beginner_panel = p.AsBool();
+				else if (p.Key()=="show_minimap_panel") Init.show_minimap_panel = p.AsBool();
 				else if (p.Key()=="show_welcome") Init.show_welcome = p.AsBool();
 				else if (p.Key()=="show_tip_on_startup") Init.show_tip_on_startup = p.AsBool();
 				else if (p.Key()=="new_file") Init.new_file = p.AsInt();
@@ -493,6 +494,7 @@ bool ConfigManager::Save(){
 	CFG_BOOL_WRITE_DN("left_panels",Init.left_panels);
 	CFG_BOOL_WRITE_DN("show_welcome",Init.show_welcome);
 	CFG_BOOL_WRITE_DN("show_beginner_panel",Init.show_beginner_panel);
+	CFG_BOOL_WRITE_DN("show_minimap_panel",Init.show_minimap_panel);
 	CFG_BOOL_WRITE_DN("show_tip_on_startup",Init.show_tip_on_startup);
 	CFG_GENERIC_WRITE_DN("new_file",Init.new_file);
 	CFG_GENERIC_WRITE_DN("version",VERSION);
@@ -731,6 +733,7 @@ void ConfigManager::LoadDefaults(){
 	Files.last_dir=wxFileName::GetHomeDir();
 	Files.last_project_dir=wxFileName::GetHomeDir();
 
+	Init.show_minimap_panel=false;
 	Init.show_beginner_panel=false;
 	Init.show_welcome=true;
 	Init.show_tip_on_startup=true;

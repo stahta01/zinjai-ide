@@ -42,6 +42,17 @@
 #include "EnvVars.h"
 using namespace std;
 
+#ifdef __WIN32__
+	// maldito seas "winbase.h" (ahi se hacen defines como los que estan aca abajo, entonces cualquiera que los incluya esta cambiando los nombres)
+	#ifdef MoveFile
+		#undef MoveFile
+	#endif
+	#ifdef DeleteFile
+		#undef DeleteFile
+	#endif
+#endif
+
+
 #define ICON_LINE(filename) (wxString("0 ICON \"")<<filename<<"\"")
 #define MANIFEST_LINE(filename) (wxString("1 RT_MANIFEST \"")<<filename<<"\"")
 
@@ -2237,7 +2248,7 @@ void ProjectManager::AnalizeConfig(wxString path, bool exec_comas, wxString ming
 		||
 		( active_configuration->manifest_file.Len() && wxFileName::FileExists(DIR_PLUS_FILE(path,active_configuration->manifest_file)) ) 
 		)
-			objects_list<<mxUT::Quotize(DIR_PLUS_FILE(temp_folder_,"zpr_resource.o"))<<" ";
+			objects_list<<mxUT::Quotize(DIR_PLUS_FILE(temp_folder,"zpr_resource.o"))<<" ";
 #endif
 	
 	wxString extra_step_objs;

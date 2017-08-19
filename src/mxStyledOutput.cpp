@@ -4,7 +4,7 @@
 
 BEGIN_EVENT_TABLE(mxStyledOutput,wxStyledTextCtrl)
 	EVT_STC_MARGINCLICK(wxID_ANY,mxStyledOutput::OnMarginClick)
-	EVT_MOUSEWHEEL(mxStyledOutput::OnMouseWheel)
+//	EVT_MOUSEWHEEL(mxStyledOutput::OnMouseWheel)
 END_EVENT_TABLE()
 	
 void mxStyledOutput::AppendText (const wxString & str) {
@@ -42,7 +42,7 @@ void mxStyledOutput::OnMarginClick (wxStyledTextEvent & e) {
 }
 
 mxStyledOutput::mxStyledOutput (wxWindow * parent, bool read_only, bool wrap_lines) 
-	: wxStyledTextCtrl(parent,wxID_ANY), is_read_only(read_only), next_available_marker(3)
+	: mxSourceBase(parent), is_read_only(read_only), next_available_marker(3)
 {
 //	wxFont font(config->Styles.font_size, wxMODERN, wxNORMAL, wxNORMAL);
 //	StyleSetFont (wxSTC_STYLE_DEFAULT, font);
@@ -74,16 +74,16 @@ void mxStyledOutput::AppendLine (const wxString & str, bool start_collapsible_se
 	if (start_collapsible_section) { MarkerAdd(line_num,0); MarkerAdd(line_num,2); }
 }
 
-void mxStyledOutput::OnMouseWheel (wxMouseEvent & event) {
-	if (event.ControlDown()) {
-		if (event.m_wheelRotation>0) {
-			ZoomIn();
-		} else {
-			ZoomOut();
-		}
-	} else
-		event.Skip();
-}
+//void mxStyledOutput::OnMouseWheel (wxMouseEvent & event) {
+//	if (event.ControlDown()) {
+//		if (event.m_wheelRotation>0) {
+//			ZoomIn();
+//		} else {
+//			ZoomOut();
+//		}
+//	} else
+//		event.Skip();
+//}
 
 void mxStyledOutput::Clear ( ) {
 	if (is_read_only) SetReadOnly(false);

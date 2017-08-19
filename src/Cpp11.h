@@ -60,7 +60,8 @@ public:
 
 #	define _CPP11_ENABLED 1
 #include <memory>
-using std::shared_ptr;
+using std::unique_ptr;
+using std::make_unique;
 	
 #else
 
@@ -90,6 +91,7 @@ public:
 	T *operator->() { return m_ptr; }
 	operator const T*() { return m_ptr; }
 	~unique_ptr() { delete m_ptr; }
+	T *get() const { return m_ptr; }
 };
 
 template<typename T>

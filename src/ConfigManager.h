@@ -110,6 +110,7 @@ struct cfgInit {
 	bool show_tip_on_startup;
 	bool show_welcome;
 	bool show_beginner_panel;
+	bool show_minimap_panel;
 	bool hide_splash;
 	bool left_panels;
 	int new_file;

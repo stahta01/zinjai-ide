@@ -359,19 +359,21 @@ Desplegar el quinto nivel
 MENUITEM_FOLD_UNFOLD_ALL_LEVELS
 Desplegar todos los niveles
 MENUITEM_VIEW_FULLSCREEN
-Ver a Pantalla &Completa
+Ver a Pantalla Completa
 MENUITEM_VIEW_BEGINNER_PANEL
 Mostrar Panel de Mini-Plantillas
 MENUITEM_VIEW_LEFT_PANELS
-&Mostrar Panel de Arboles
+Mostrar Panel de &Arboles
 MENUITEM_VIEW_PROJECT_TREE
-&Mostrar Arbol de &Proyecto
+Mostrar Arbol de &Proyecto
 MENUITEM_VIEW_EXPLORER_TREE
 Mostrar &Explorardor de Archivos
 MENUITEM_VIEW_SYMBOLS_TREE
 Mostrar Arbol de &Simbolos
 MENUITEM_VIEW_COMPILER_TREE
-&Mostrar Resultados de la Compilación
+Mostrar Resultados de la &Compilación
+MENUITEM_VIEW_MINIMAP
+Mostrar Mini-&mapa
 MENUITEM_VIEW_TOOLBARS
 Barras de herramientas
 MENUITEM_VIEW_TOOLBAR_FILE
@@ -2138,6 +2140,8 @@ CAPTION_TOOLS_RESULTS_PANEL
 Panel de resultados
 MAINW_BEGGINERS_PANEL
 Asistencias
+MAINW_MINIMAP_PANEL
+Mini-mapa
 MAINW_CANNOT_SPLIT_VIEW
 No se puede duplicar archivos sin nombre
 MENUITEM_FILE_OPEN_ON_PROJECT

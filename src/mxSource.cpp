@@ -30,6 +30,7 @@
 #include "LocalRefactory.h"
 #include "mxSourceParsingAux.h"
 //#include "linStuff.h"
+#include "mxMiniSource.h"
 using namespace std;
 
 // dwell time for margins
@@ -225,8 +226,7 @@ BEGIN_EVENT_TABLE (mxSource, wxStyledTextCtrl)
 	EVT_STC_AUTOCOMP_SELECTION(wxID_ANY,mxSource::OnAutocompSelection)
 	
 	EVT_TIMER(wxID_ANY,mxSource::OnTimer)
-	EVT_MOUSEWHEEL(mxSource::OnMouseWheel)
-	
+//	EVT_MOUSEWHEEL(mxSource::OnMouseWheel)
 END_EVENT_TABLE()
 
 mxSource::mxSource (wxWindow *parent, wxString ptext, project_file_item *fitem) 
@@ -435,6 +435,8 @@ mxSource::~mxSource () {
 		m_extras->ChangeSource(nullptr);
 		if (m_owns_extras) delete m_extras; /// @todo: esto puede traer problemas en combinacion con el split
 	}
+	
+	
 	
 }
 
@@ -3795,6 +3797,7 @@ void mxSource::OnPainted (wxStyledTextEvent & event) {
 		MyBraceHighLight();
 	event.Skip();
 	if (main_window->gcov_sidebar) main_window->gcov_sidebar->Refresh(this);
+	if (m_minimap) m_minimap->Refresh(this);
 }
 
 /**
@@ -4084,16 +4087,16 @@ void mxSource::ShowInspection (const wxPoint &pos, const wxString &exp, const wx
 	inspection_baloon = new mxInspectionBaloon(p2,exp,val);
 }
 
-void mxSource::OnMouseWheel (wxMouseEvent & event) {
-	if (event.ControlDown()) {
-		if (event.m_wheelRotation>0) {
-			ZoomIn();
-		} else {
-			ZoomOut();
-		}
-	} else
-		event.Skip();
-}
+//void mxSource::OnMouseWheel (wxMouseEvent & event) {
+//	if (event.ControlDown()) {
+//		if (event.m_wheelRotation>0) {
+//			ZoomIn();
+//		} else {
+//			ZoomOut();
+//		}
+//	} else
+//		event.Skip();
+//}
 
 int mxSource::GetStatementStartPos(int pos, bool skip_coma, bool skip_white, bool first_stop) {
 	int s, l=pos, pos_skip=-1; // l y s son auxiliares para II_*
@@ -4371,5 +4374,11 @@ void mxSource::SetTreeItem (const wxTreeItemId & item) {
 	for( mxSource *iter=next_source_with_same_file; iter!=this; iter=iter->next_source_with_same_file) {
 		iter->treeId = item;
 	}
+}
+
+
+mxMiniSource *mxSource::GetMinimap(mxMiniMapPanel *panel) {
+	if (!m_minimap) m_minimap = make_unique<mxMiniSource>(panel,this);
+	return m_minimap.get();
 }
 

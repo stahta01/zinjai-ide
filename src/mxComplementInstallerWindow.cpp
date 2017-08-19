@@ -126,7 +126,7 @@ void mxComplementInstallerWindow::Install(wxString fname) {
 			return;
 		}
 #ifdef __WIN32__
-		caller = DIR_PLUS_FILE(config->zinjai_bin_dir,"complement_wrap.exe");
+		caller = config->GetZinjaiBinPath("complement_wrap.exe");
 #else
 		wxString gksu = mxUT::GetOutput("gksu --version",true);
 		if (gksu.Contains("--message"))

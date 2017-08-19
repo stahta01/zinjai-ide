@@ -11,6 +11,8 @@
 #include "raii.h"
 
 class er_source_register;
+class mxMiniMapPanel;
+class mxMiniSource;
 
 #define mxSOURCE_BOLD 1
 #define mxSOURCE_ITALIC 2
@@ -230,7 +232,7 @@ public:
 
 	int GetMarginForThisX(int x);
 	void OnClick(wxMouseEvent &evt);
-	void OnMouseWheel(wxMouseEvent & event);
+//	void OnMouseWheel(wxMouseEvent & event);
 	void OnPopupMenu(wxMouseEvent &evt);
 	void OnPopupMenuInside(wxMouseEvent &evt, bool fix_current_pos=true);
 	void OnPopupMenuMargin(wxMouseEvent &evt);
@@ -492,7 +494,11 @@ public:
 	/// assuming pos (only input arg) is in a the name of function in a function call, 
 	/// returns that name, the actual arguments (args), and the expected return type
 	bool GetCurrentCall (wxString &ftype, wxString &fname, wxArrayString &args, int pos);
-	
+
+private:
+	unique_ptr<mxMiniSource> m_minimap;
+public:
+	mxMiniSource *GetMinimap(mxMiniMapPanel *panel);
 };
 
 

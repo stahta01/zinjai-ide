@@ -1148,8 +1148,8 @@ void mxUT::ProcessGraph (wxString graph_file, bool use_fdp, wxString output, wxS
 	wxString format=output.AfterLast('.').Lower(); if (!format.Len()) return;
 	wxString command =(use_fdp?"fdp":"dot");
 #ifdef __WIN32__
-	command = mxUT::Quotize(DIR_PLUS_FILE(config->zinjai_third_dir,wxString()<<"graphviz\\"<<command<<".exe"));
-	RaiiWorkDirChanger cwd_guard(DIR_PLUS_FILE(config->zinjai_third_dir,"graphviz\\")); // set temp cwd
+	command = mxUT::Quotize(config->GetZinjaiThirdPath(wxString()<<"graphviz\\"<<command<<".exe"));
+	RaiiWorkDirChanger cwd_guard(config->GetZinjaiThirdPath("graphviz\\")); // set temp cwd
 #endif
 	command<<" "<<Quotize(graph_file)<<" -T"<<format<<" -o "<<Quotize(output);
 		
