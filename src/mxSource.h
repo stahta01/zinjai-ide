@@ -9,15 +9,11 @@
 #include "CompilerErrorsManager.h"
 #include "Cpp11.h"
 #include "raii.h"
+#include "mxSourceBase.h"
 
 class er_source_register;
 class mxMiniMapPanel;
 class mxMiniSource;
-
-#define mxSOURCE_BOLD 1
-#define mxSOURCE_ITALIC 2
-#define mxSOURCE_UNDERL 4
-#define mxSOURCE_HIDDEN 8
 
 #define SRC_PARSING_ERROR 999
 
@@ -88,7 +84,7 @@ extern NavigationHistory g_navigation_history;
 /**
 * @brief Componente visual de edicion de texto para fuentes
 **/
-class mxSource: public wxStyledTextCtrl {
+class mxSource: public mxSourceBase {
 	
 private:
 	CEMReference m_cem_ref;
@@ -260,9 +256,6 @@ public:
 
 	void MoveCursorTo (long pos, bool focus=false);
 
-private:
-	///* auxiliar function for the public SetStyle
-	void SetStyle(int idx, const wxChar *fontName, int fontSize, const wxColour &foreground, const wxColour &background, int fontStyle);
 public:
 	void SetStyle(bool color);
 	void SetStyle(int lexer);

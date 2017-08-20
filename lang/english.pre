@@ -2485,7 +2485,7 @@ Display files explorer on startup
 PREFERENCES_GENERAL_GROUP_TREES
 Group trees in a single panel (*)
 PREFERENCES_GENERAL_AUTOHIDE_PANELS
-Autohide panels (experimental - *)
+Autohide panels (*)
 PREFERENCES_SINGLETON
 Use only one ZinjaI's instance when opening files from command line
 PREFERENCES_GENERAL_CHECK_FOR_UPDATES
