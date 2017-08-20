@@ -265,7 +265,7 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 			}
 			
 		} else if (section=="extra_step") { // agregar un paso de compilación adicional a la configuración actual del proyecto
-			compile_extra_step *extra_step = new compile_extra_step;;
+			compile_extra_step *extra_step = new compile_extra_step;
 			active_configuration->extra_steps.Add(extra_step);
 			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
 				if (p.Key()=="name") extra_step->name = p.AsString();

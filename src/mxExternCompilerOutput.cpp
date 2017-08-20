@@ -1,6 +1,7 @@
 #include "mxExternCompilerOutput.h"
 #include "mxMainWindow.h"
 #include "ids.h"
+#include "mxAUI.h"
 #include "mxHidenPanel.h"
 
 BEGIN_EVENT_TABLE(mxExternCompilerOutput,wxListBox)
@@ -26,12 +27,11 @@ void mxExternCompilerOutput::OnDClick(wxCommandEvent & evt) {
 }
 
 void mxExternCompilerOutput::OnPopup (wxMouseEvent & evt) {
-	mxHidenPanel::ignore_autohide=true;
+	mxHidenPanelIgnoreGuard ignore_autohide;
 	wxMenu menu("");
 	menu.Append(mxID_COMPILER_POPUP_FULL, "Ver salida completa");
 	menu.AppendCheckItem(mxID_EXTERN_COMPILER_OUTPUT, "Mostrar solo errores")->Check(showing_only_errors);
 	PopupMenu(&menu);
-	mxHidenPanel::ignore_autohide=false;
 }
 
 void mxExternCompilerOutput::OnOnlyErrors (wxCommandEvent & evt) {
@@ -73,7 +73,7 @@ void mxExternCompilerOutput::OnErrorNext ( ) {
 	int p = GetSelection(); if (p==wxNOT_FOUND) p=-1; p++;
 	while (p<int(GetCount()) && !IsErrorLine(p)) p++;
 	if (p==int(GetCount())) return;
-	main_window->ShowCompilerTreePanel();
+	main_window->m_aui->Show(PaneId::Compiler);
 	Select(p); wxCommandEvent evt; OnDClick(evt);
 }
 
@@ -81,7 +81,7 @@ void mxExternCompilerOutput::OnErrorPrev ( ) {
 	int p = GetSelection(); if (p==wxNOT_FOUND) p=GetCount(); p--;
 	while (p>=0 && !IsErrorLine(p)) p--;
 	if (p<0) return;
-	main_window->ShowCompilerTreePanel();
+	main_window->m_aui->Show(PaneId::Compiler);
 	Select(p); wxCommandEvent evt; OnDClick(evt);
 }
 

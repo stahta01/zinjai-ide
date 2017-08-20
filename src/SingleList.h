@@ -190,7 +190,7 @@ private:
 	friend class LocalList<T>; ///< private methods are made to be called from LocalList
 	void Add(LocalListNodePtr<T> node) {
 		node->m_prev=m_last;
-		node->m_next.SetNull();;
+		node->m_next.SetNull();
 		if (m_last.IsNull()) {
 			m_first=node;
 		} else {

@@ -375,7 +375,7 @@ Mostrar Arbol de &Simbolos
 MENUITEM_VIEW_COMPILER_TREE
 Mostrar Resultados de la &Compilación
 MENUITEM_VIEW_MINIMAP
-Mostrar Mini-&mapa
+Mostrar Mini-&mapa (experimental)
 MENUITEM_VIEW_TOOLBARS
 Barras de herramientas
 MENUITEM_VIEW_TOOLBAR_FILE
@@ -950,12 +950,42 @@ ERRORRECOVERY_OOPS_MESSAGE
 Ha ocurrido un error grave y ZinjaI se cerrara.\nPor suerte, se han podido guardar todos sus\narchivos y proyectos para recuperarlos la\nproxima vez que inicie el entorno.
 CAPTION_COMPILER_OUTPUT
 Resultados de la Compilación
+MAINW_AUTOHIDE_COMPILER
+Compilador
 CAPTION_QUIKHELP
 Búsqueda/Ayuda Rapida
-MAINW_AUTOHIDE_BACKTRACE
-Trazado Inverso
+MAINW_AUTOHIDE_QUICKHELP
+Ayuda/Busqueda
+CAPTION_DEBUGGER_LOG
+Mensajes del Depurador
+MAINW_AUTOHIDE_DEBUG_LOG
+Log Depurador
+CAPTION_THREADLIST
+Hilos de Ejecución
+MAINW_AUTOHIDE_THREADS
+Hilos
 CAPTION_BACKTRACE
 Trazado Inverso
+CAPTION_INSPECTIONS
+Inspecciones
+CAPTION_GROUPED_TREES
+Arboles
+CAPTION_PROJECT_TREE
+Arbol de Archivos
+MAINW_AUTOHIDE_SYMBOLS
+Simbolos
+CAPTION_SYMBOLS_TREE
+Arbol de Simbolos
+MAINW_AUTOHIDE_PROJECT
+Proyecto
+CAPTION_EXPLORER_TREE
+Explorador de Archivos
+MAINW_AUTOHIDE_EXPLORER
+Explorador
+MAINW_BEGGINERS_PANEL
+Panel de Asistencias
+MAINW_MINIMAP_PANEL
+Mini-mapa
 ABOUT_CAPTION
 Acerca de...
 ABOUT_CLOSE
@@ -1956,24 +1986,6 @@ UNTITLED
 sin_titulo_
 MAINW_INITIALIZING
 Inicializando...
-CAPTION_EXPLORER_TREE
-Explorador de Archivos
-CAPTION_PROJECT_TREE
-Arbol de Archivos
-CAPTION_SYMBOLS_TREE
-Arbol de Simbolos
-CAPTION_INSPECTIONS
-Inspecciones
-MAINW_AUTOHIDE_INSPECTIONS
-Inspecciones
-CAPTION_THREADLIST
-Hilos de Ejecución
-MAINW_AUTOHIDE_THREADS
-Hilos
-CAPTION_DEBUGGER_LOG
-Mensajes del Depurador
-MAINW_AUTOHIDE_DEBUG_LOG
-Log Depurador
 MAINW_PROJECT_FILE_POPUP_ADD_TO_PROJECT_AS_OWN
 Agregar archivo al proyecto como propio
 MAINW_PROJECT_FILE_POPUP_OPEN_ALL
@@ -2018,28 +2030,18 @@ MAINW_SHARE_AFTER_CLOSE
 Continuar compartiendo (\"sin modificaciones\") despues de cerrarlo.
 MAINW_QUICKHELP_INIT
 Coloca el cursor de texto sobre una palabra y presiona Shift+F1 para ver la ayuda en este cuadro.
-MAINW_AUTOHIDE_QUICKHELP
-Ayuda/Busqueda
 CAPTION_PROJECT_SYMBOLS_TREE
 Arbol de Simbolos
 CAPTION_PROJECT_PROJECT_TREE
 Arbol de Proyecto
-MAINW_AUTOHIDE_EXPLORER
-Explorador
-MAINW_AUTOHIDE_PROJECT
-Proyecto
 MAINW_PT_SOURCES
 Fuentes
 MAINW_PT_HEADERS
 Cabeceras
 MAINW_PT_OTHERS
 Otros
-MAINW_AUTOHIDE_SYMBOLS
-Simbolos
 MAINW_CT_ALL
 Toda la salida
-MAINW_AUTOHIDE_COMPILER
-Compilador
 MAINW_STATUS_RUN_FINISHED
 Ejecución Finalizada
 MAINW_COULDNOT_LAUNCH_PROCESS
@@ -2140,10 +2142,6 @@ MAINW_GENERATE_AUTOCOMP_INDEX_ERROR
 Ha ocurrido un error al intentar generar el archivo.
 CAPTION_TOOLS_RESULTS_PANEL
 Panel de resultados
-MAINW_BEGGINERS_PANEL
-Asistencias
-MAINW_MINIMAP_PANEL
-Mini-mapa
 MAINW_CANNOT_SPLIT_VIEW
 No se puede duplicar archivos sin nombre
 MENUITEM_FILE_OPEN_ON_PROJECT

@@ -1,6 +1,7 @@
+#include <wx/treectrl.h>
 #include "CompilerErrorsManager.h"
 #include "Cpp11.h"
-#include <wx/treectrl.h>
+#include "mxAUI.h"
 #include "ConfigManager.h"
 #include "Toolchain.h"
 #include "mxMainWindow.h"
@@ -61,7 +62,7 @@ void CompilerErrorsManager::ShowCompilerTreePanel() {
 	else                                         swarnings<<config->Init.max_errors<<"+";
 	swarnings<<")"; m_tree.treeCtrl->SetItemText(m_tree.warnings,swarnings);
 	if (m_num_warnings) m_tree.treeCtrl->Expand(m_tree.warnings);
-	if (m_num_errors||m_num_warnings) main_window->ShowCompilerTreePanel();
+	if (m_num_errors||m_num_warnings) main_window->m_aui->Show(PaneId::Compiler,true);
 }
 
 bool CompilerErrorsManager::FinishStep (CEMState &cem_state) {

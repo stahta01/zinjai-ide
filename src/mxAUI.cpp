@@ -1,173 +1,97 @@
 #include "mxAUI.h"
 #include "Language.h"
 #include "mxHidenPanel.h"
+#include "asserts.h"
+#include "ConfigManager.h"
+#include "mxMainWindow.h"
+#include "MenusAndToolsConfig.h"
 
-//AuiSettings::AuiSettings() {
-//	m_panes.Resize(auiPanes::Count);
-//	{
-//		PaneConfig &pi = m_panes[auiPanes::Compiler];
-//		pi.key = "compiler";
-//		pi.shortname = LANG(CAPTION_COMPILER_OUTPUT,"Resultados de la Compilación");
-//		pi.caption = "";
-//		pi.autohide = false; 
-//		pi.margin = DockBottom;
-//		pi.level = 0;
-//		pi.order = 0;
-//	}
-//	{	
-//		PaneConfig &pi = m_panes[auiPanes::QuickHelp];
-//		pi.key = "quickhelp";
-//		pi.shortname = LANG(CAPTION_QUIKHELP,"Búsqueda/Ayuda Rapida");
-//		pi.caption = "";
-//		pi.autohide = false; 
-//		pi.margin = DockBottom;
-//		pi.level = 0;
-//		pi.order = 1;
-//	}
-//	{
-//		PaneConfig &pi = m_panes[auiPanes::DebugMsgs];
-//		pi.key = "debugmsg";
-//		pi.shortname = "";
-//		pi.caption = "";
-//		pi.autohide = false; 
-//		pi.margin = DockBottom;
-//		pi.level = 0;
-//		pi.order = 2;
-//	}
-//	{
-//		PaneConfig &pi = m_panes[auiPanes::Threads];
-//		pi.key = "threads"; 
-//		pi.shortname = "";
-//		pi.caption = "";
-//		pi.autohide = false; 
-//		pi.margin = DockBottom;
-//		pi.level = 0;
-//		pi.order = 3;
-//	}
-//	{
-//		PaneConfig &pi = m_panes[auiPanes::Backtrace];
-//		pi.key = "backtrace";
-//		pi.shortname = LANG(MAINW_AUTOHIDE_BACKTRACE,"Trazado Inverso");
-//		pi.caption = LANG(CAPTION_BACKTRACE,"Trazado Inverso");
-//		pi.autohide = false; 
-//		pi.margin = DockBottom;
-//		pi.level = 0;
-//		pi.order = 4;
-//	}
-//	{
-//		PaneConfig &pi = m_panes[auiPanes::Inspections];
-//		pi.key = "inspections";
-//		pi.shortname = "";
-//		pi.caption = "";
-//		pi.autohide = false; 
-//		pi.margin = DockBottom;
-//		pi.level = 0;
-//		pi.order = 5;
-//	}
-//	{
-//		PaneConfig &pi = m_panes[auiPanes::Project];
-//		pi.key = "project";
-//		pi.shortname = "";
-//		pi.caption = "";
-//		pi.autohide = false; 
-//		pi.margin = DockLeft;
-//		pi.level = 0;
-//		pi.order = 0;
-//	}
-//	{
-//		PaneConfig &pi = m_panes[auiPanes::Symbols];
-//		pi.key = "symbols";
-//		pi.shortname = "";
-//		pi.caption = "";
-//		pi.autohide = false; 
-//		pi.margin = DockLeft;
-//		pi.level = 0;
-//		pi.order = 1;
-//	}
-//	{
-//		PaneConfig &pi = m_panes[auiPanes::Explorer];
-//		pi.key = "explorer";
-//		pi.shortname = "";
-//		pi.caption = "";
-//		pi.autohide = false; 
-//		pi.margin = DockLeft;
-//		pi.level = 0;
-//		pi.order = 2;
-//	}
-//	{
-//		PaneConfig &pi = m_panes[auiPanes::Tools];
-//		pi.key = "tools";
-//		pi.shortname = "";
-//		pi.caption = "";
-//		pi.autohide = false; 
-//		pi.margin = DockBottom;
-//		pi.level = 1;
-//		pi.order = 0;
-//	}
-//	{
-//		PaneConfig &pi = m_panes[auiPanes::Extern];
-//		pi.key = "extern";
-//		pi.shortname = "";
-//		pi.caption = "";
-//		pi.autohide = false; 
-//		pi.margin = DockBottom;
-//		pi.level = 0;
-//		pi.order = 0;
-//	}
-//	{
-//		PaneConfig &pi = m_panes[auiPanes::Registers];
-//		pi.key = "registers";
-//		pi.shortname = "";
-//		pi.caption = "";
-//		pi.autohide = false; 
-//		pi.margin = DockRight;
-//		pi.level = 0;
-//		pi.order = 0;
-//	}
-//	{
-//		PaneConfig &pi = m_panes[auiPanes::Templates];
-//		pi.key = "templates";
-//		pi.shortname = "";
-//		pi.caption = "";
-//		pi.autohide = false; 
-//		pi.margin = DockRight;
-//		pi.level = 0;
-//		pi.order = 1;
-//	}
-//}
-//
-//void AuiSettings::ParseConfigLine (const wxString & key, const wxString & value) {
-//	
-//}
-//
-//void AuiSettings::WriteConfig (wxTextFile & file) {
-//	
-//}
+#warning TODO: VER EL ONPANECLOSE DE MAINWINDOW
 
-mxAUI::mxAUI (wxWindow *parent) : m_wxaui(*this), m_freeze_level(0) {
-	m_wxaui.SetManagedWindow(parent);
-//	LoadDefaults();
+#define MAX_LAYER 10
+
+PaneConfig PaneConfig::m_configs[PaneId::Count];
+void PaneConfig::Init ( ) {
+	for(int i=0;i<PaneId::Count;i++) m_configs[i].m_id = (PaneId::type)i;
+	
+	m_configs[PaneId::Compiler   ].Docked(Bottom).Layout(2,0).Actions(None,None,Hide).Titles(LANG(CAPTION_COMPILER_OUTPUT,"Resultados de la Compilación"),LANG(MAINW_AUTOHIDE_COMPILER,"Compilador")).MenuItem(mxID_VIEW_COMPILER_TREE);
+	m_configs[PaneId::QuickHelp  ].Docked(Bottom).Layout(2,2).Actions(None,None,Hide).Titles(LANG(CAPTION_QUIKHELP,"Búsqueda/Ayuda Rapida"),LANG(MAINW_AUTOHIDE_QUICKHELP,"Ayuda/Busqueda"));
+	m_configs[PaneId::DebugMsgs  ].Docked(Bottom).Layout(2,3).Actions(Hide,Hide,None).Titles(LANG(CAPTION_DEBUGGER_LOG,"Mensajes del Depurador"),LANG(MAINW_AUTOHIDE_DEBUG_LOG,"Log Depurador")).MenuItem(mxID_DEBUG_LOG_PANEL);
+	m_configs[PaneId::Threads    ].Docked(Bottom).Layout(2,4).Actions(Hide,Hide,None).Titles(LANG(CAPTION_THREADLIST,"Hilos de Ejecución"),LANG(MAINW_AUTOHIDE_THREADS,"Hilos")).MenuItem(mxID_DEBUG_THREADLIST);
+	m_configs[PaneId::Backtrace  ].Docked(Bottom).Layout(2,5).Actions(Hide,Hide,Show).Titles(LANG(CAPTION_BACKTRACE,"Trazado Inverso")).MenuItem(mxID_DEBUG_BACKTRACE);
+	m_configs[PaneId::Inspections].Docked(Bottom).Layout(2,6).Actions(Hide,Hide,Show).Titles(LANG(CAPTION_INSPECTIONS,"Inspecciones")).MenuItem(mxID_DEBUG_INSPECT);
+	
+//	m_configs[PaneId::Tools      ].Docked(Bottom).Layout(4,6).Actions(None,Hide,Hide).Titles(,);
+	
+	m_configs[PaneId::Trees      ].Docked(Left  ).Layout(3,0).Actions(None,None,None).Titles(LANG(CAPTION_GROUPED_TREES,"Arboles")).MenuItem(mxID_VIEW_LEFT_PANELS);
+	m_configs[PaneId::Project    ].Docked(Left  ).Layout(3,1).Actions(None,None,None).Titles(LANG(CAPTION_PROJECT_TREE,"Arbol de Archivos"),LANG(MAINW_AUTOHIDE_PROJECT,"Proyecto")).MenuItem(mxID_VIEW_PROJECT_TREE);
+	m_configs[PaneId::Symbols    ].Docked(Left  ).Layout(3,2).Actions(None,None,None).Titles(LANG(CAPTION_SYMBOLS_TREE,"Arbol de Simbolos"),LANG(MAINW_AUTOHIDE_SYMBOLS,"Simbolos")).MenuItem(mxID_VIEW_SYMBOLS_TREE);
+	m_configs[PaneId::Explorer   ].Docked(Left  ).Layout(3,3).Actions(None,None,None).Titles(LANG(CAPTION_EXPLORER_TREE,"Explorador de Archivos"),LANG(MAINW_AUTOHIDE_EXPLORER,"Explorador")).MenuItem(mxID_VIEW_EXPLORER_TREE);
+	
+	m_configs[PaneId::Beginners  ].Docked(Right ).Layout(3,0).Actions(None,None,Hide).Titles(LANG(MAINW_BEGGINERS_PANEL,"Panel de Asistencias")).MenuItem(mxID_VIEW_BEGINNER_PANEL);
+//	m_configs[PaneId::Registers  ].Docked(Bottom).Layout(4,1).Actions(Hide,Hide,None).Titles(,);
+	m_configs[PaneId::Minimap    ].Docked(Right ).Layout(5,9).Actions(None,None,Hide).Titles(LANG(MAINW_MINIMAP_PANEL,"Mini-mapa")).MenuItem(mxID_VIEW_MINIMAP).BestSize(100,100);
+	
+	if (config->Init.autohiding_panels) {
+		m_configs[PaneId::Compiler   ].Autohide(true); 
+		m_configs[PaneId::QuickHelp  ].Autohide(true); 
+		m_configs[PaneId::DebugMsgs  ].Autohide(config->Debug.show_log_panel); 
+		m_configs[PaneId::Threads    ].Autohide(config->Debug.show_thread_panel); 
+		m_configs[PaneId::Backtrace  ].Autohide(true); 
+		m_configs[PaneId::Inspections].Autohide(true); 
+		m_configs[PaneId::Templates  ].Autohide(false); 
+		m_configs[PaneId::Trees      ].Autohide(true); 
+		m_configs[PaneId::Project    ].Autohide(true); 
+		m_configs[PaneId::Symbols    ].Autohide(true); 
+		m_configs[PaneId::Explorer   ].Autohide(true); 
+		m_configs[PaneId::Registers  ].Autohide(false); 
+		m_configs[PaneId::Beginners  ].Autohide(false); 
+		m_configs[PaneId::Minimap    ].Autohide(false); 
+		m_configs[PaneId::Tools      ].Autohide(false); 
+	}
+	
+}
+mxAUI::mxAUI (mxMainWindow *main_window) 
+	: m_wxaui(*this), m_freeze_level(0), m_should_update(false),
+	  m_fullscreen(false), m_debug(false)
+{
+	m_wxaui.SetManagedWindow(main_window);
+	mxHidenPanel::main_window = main_window;
+	PaneConfig::Init();
 }
 
-//void mxAUI::Freeze ( ) {
-//	m_freeze_level++;
-//}
-//
-//void mxAUI::Thaw ( ) {
-//	if (--m_freeze_level==0)
-//		m_wxaui.Update();
-//}
+void mxAUI::Freeze ( ) {
+	m_freeze_level++;
+}
+
+void mxAUI::Thaw ( ) {
+	if (--m_freeze_level==0)
+		if (m_should_update) {
+			m_wxaui.Update();
+			m_should_update = false;
+		}
+}
 
 void mxAUI::Update ( ) {
 	if (!m_freeze_level) m_wxaui.Update();
+	else m_should_update = true;
 }
 
 void mxAUI::OnPaneClose (wxWindow * window) {
-	int iaux = m_panes.Find(window);
-	if (iaux!=m_panes.NotFound()) {
+	for(int i=0;i<PaneId::Count;i++) {
+		if (m_panes[i].window==window) {
+			if (PaneConfig::Get(i).GetMenuId()!=wxID_ANY)
+				_menu_item(PaneConfig::Get(i).GetMenuId())->Check(false);
+			if (m_panes[i].hidden_helper)
+				m_panes[i].hidden_helper->ProcessClose();
+			return;
+		}
+	}
+	int iaux = m_generic_panes.Find(window);
+	if (iaux!=m_generic_panes.NotFound()) {
 		m_wxaui.DetachPane(window);
-		if (m_panes[iaux].delete_on_close) window->Destroy();
-		m_panes.Remove(iaux);
+		if (m_generic_panes[iaux].delete_on_close) window->Destroy();
+		m_generic_panes.Remove(iaux);
 	}
 }
 
@@ -177,26 +101,169 @@ void mxAUI::AttachGenericPane(wxWindow *ctrl, wxString title, wxPoint position, 
 	if (position!=wxDefaultPosition) pane_info.FloatingPosition(position);
 	if (size!=wxDefaultSize) pane_info.BestSize(size);
 	m_wxaui.AddPane(ctrl,pane_info);
-	m_wxaui.Update();
-	if (handle_deletion) m_panes.Add(mxPaneInfo(ctrl).DeleteOnClose());
+	mxAUI::Update();
+	if (handle_deletion) m_generic_panes.Add(mxPaneInfo(ctrl).DeleteOnClose());
 }
 
+void mxAUI::Create(PaneId::type id, wxWindow * win) {
+	const PaneConfig &cfg = PaneConfig::Get(id);
+	mxPaneInfo &inf = m_panes[id];
+	EXPECT_OR(inf.window==nullptr,return);
+	
+	// add the control to the aui
+	inf.window = win;
+	wxAuiPaneInfo pinfo;
+	pinfo.Caption(cfg.GetCaption()).CloseButton(true).MaximizeButton(true).Hide().Position(cfg.GetOrder()).Layer(MAX_LAYER-cfg.GetLayer()).MaximizeButton(true);
+	if (cfg.HaveSize()) pinfo.BestSize(cfg.GetSizeX(),cfg.GetSizeY());
+	if (cfg.IsFloating()) pinfo.Float();
+	else {
+		pinfo.Dock();
+		if      (cfg.IsBottom()) pinfo.Bottom();
+		else if (cfg.IsLeft()) pinfo.Left();
+		else if (cfg.IsRight()) pinfo.Right();
+		else if (cfg.IsTop()) pinfo.Top();
+	}
+	m_wxaui.AddPane(inf.window, pinfo);
+	
+	// add the autohidding helper
+	if (cfg.IsAutohiding()) {
+		hp_pos pos = HP_BOTTOM; int layer = 0;
+		if (cfg.IsLeft()) { pos = HP_LEFT; layer = 1; }
+		if (cfg.IsRight()) { pos = HP_RIGHT; layer = 1; }
+		inf.hidden_helper = new mxHidenPanel(m_wxaui.GetManagedWindow(),inf.window,pos,cfg.GetShortCaption());
+		wxAuiPaneInfo pinfo;
+		pinfo.CaptionVisible(false).Layer(MAX_LAYER-layer).Position(cfg.GetOrder()).Dock();
+		if      (cfg.IsBottom()) pinfo.Bottom();
+		else if (cfg.IsLeft()) pinfo.Left();
+		else if (cfg.IsRight()) pinfo.Right();
+		else if (cfg.IsTop()) pinfo.Top();
+		if (cfg.ShowAutohideHandler()) pinfo.Show(); else pinfo.Hide();
+		m_wxaui.AddPane(inf.hidden_helper, pinfo);
+	}
+	
+}
 
-//void mxAUI::AttachKnownPane(int aui_id, wxWindow *ctrl) {
-//	AuiSettings::PaneConfig &psettings = m_settings.Get(aui_id);
-//	wxAuiPaneInfo wxpi;
-//	wxpi.Name(psettings.key).Caption(psettings.caption).CloseButton(true).MaximizeButton(true).Hide()
-//		.Position(psettings.order).MaximizeButton(!psettings.autohide);
-//	switch(psettings.margin) {
-//		case AuiSettings::DockBottom: wxpi.Bottom(); break;
-//		case AuiSettings::DockLeft: wxpi.Left(); break;
-//		case AuiSettings::DockRight: wxpi.Right(); break;
-//		case AuiSettings::Floating: wxpi.Float(); break;
-//	};
-//	m_wxaui.AddPane(ctrl,wxpi);
-//	if (psettings.autohide) {
-//		mxHidenPanel *helper = new mxHidenPanel(m_wxaui.GetManagedWindow(),ctrl,(hp_pos)psettings.margin,psettings.shortname);
-//		m_panes.Add(mxPaneInfo(ctrl).HiddenHelper(helper));
-//	}
-//}
-//
+void mxAUI::Hide (PaneId::type id) {
+	if (m_panes[id].window) {
+		if (m_panes[id].hidden_helper) {
+			m_panes[id].hidden_helper->Hide();
+		} else {
+			wxAuiPaneInfo &pane = m_wxaui.GetPane(m_panes[id].window);
+			EXPECT_OR(pane.IsOk(),return);
+			pane.Hide(); mxAUI::Update();
+		}
+	}
+}
+
+void mxAUI::Show (PaneId::type id, wxWindow * win, bool fixed) {
+	if (!m_panes[id].window) Create(id,win);
+	EXPECT(win==m_panes[id].window);
+	Show(id,fixed);
+}
+
+void mxAUI::Show (PaneId::type id, bool fixed) {
+	if (m_panes[id].hidden_helper) {
+		if (fixed)
+			m_panes[id].hidden_helper->ShowDock();
+		else if (!m_panes[id].hidden_helper->IsVisible())
+			m_panes[id].hidden_helper->ShowFloat(false);
+	} else {
+		wxAuiPaneInfo &pane = m_wxaui.GetPane(m_panes[id].window);
+		EXPECT_OR(pane.IsOk(),return);
+		pane.Show(); mxAUI::Update();
+	}
+}
+
+bool mxAUI::ToggleFromMenu (PaneId::type id, wxWindow * win) {
+	bool retval = false;
+	if (win && !m_panes[id].window) Create(id,win);
+	EXPECT((!win && m_panes[id].window) || win==m_panes[id].window);
+	if (m_panes[id].hidden_helper) {
+		m_wxaui.GetPane(m_panes[id].hidden_helper).Show();
+		m_panes[id].hidden_helper->ShowDock();
+		retval = true;
+	} else {
+		wxAuiPaneInfo &pane = m_wxaui.GetPane(m_panes[id].window);
+		EXPECT_OR(pane.IsOk(),return false);
+		int menu_id = PaneConfig::Get(id).GetMenuId();
+		retval = !pane.IsShown();
+		if (retval) pane.Show(); else pane.Hide(); 
+		if (menu_id!=wxID_ANY) _menu_item(menu_id)->Check(retval);
+		mxAUI::Update();
+	}
+	return retval;
+}
+
+void mxAUI::OnDebugStart ( ) {
+	m_debug = true;
+	if (!config->Debug.autohide_panels) return;
+	for(int i=0;i<PaneId::Count;i++) { 
+		if (!m_panes[i].window) return;
+		if (PaneConfig::Get(i).ShowForDebug()) Show((PaneId::type)i,true);
+		else if (PaneConfig::Get(i).HideForDebug()) Hide((PaneId::type)i);
+	}
+}
+
+void mxAUI::OnDebugEnd ( ) {
+	m_debug = false;
+	if (!config->Debug.autohide_panels) return;
+	for(int i=0;i<PaneId::Count;i++) { 
+		if (!m_panes[i].window) return;
+		if (m_fullscreen) {
+			if (PaneConfig::Get(i).ShowForFullscreen()) Show((PaneId::type)i,true);
+			else if (PaneConfig::Get(i).HideForFullscreen()) Hide((PaneId::type)i);
+		} else {
+			if (PaneConfig::Get(i).ShowForNormal()) Show((PaneId::type)i,true);
+			else if (PaneConfig::Get(i).HideForNormal()) Hide((PaneId::type)i);
+		}
+	}
+}
+
+void mxAUI::OnFullScreenStart ( ) {
+	m_fullscreen = true;
+	if (!config->Init.autohide_panels_fs) return;
+	for(int i=0;i<PaneId::Count;i++) { 
+		if (!m_panes[i].window) return;
+		if (m_debug) {
+			if (PaneConfig::Get(i).ShowForDebug()) Show((PaneId::type)i,true);
+			else if (PaneConfig::Get(i).HideForDebug()) Hide((PaneId::type)i);
+		} else {
+			if (PaneConfig::Get(i).ShowForFullscreen()) Show((PaneId::type)i,true);
+			else if (PaneConfig::Get(i).HideForFullscreen()) Hide((PaneId::type)i);
+		}
+	}
+}
+
+void mxAUI::OnFullScreenEnd ( ) {
+	m_fullscreen = false;
+	if (!config->Init.autohide_panels_fs) return;
+	for(int i=0;i<PaneId::Count;i++) { 
+		if (!m_panes[i].window) return;
+		if (m_debug) {
+			if (PaneConfig::Get(i).ShowForDebug()) Show((PaneId::type)i,true);
+			else if (PaneConfig::Get(i).HideForDebug()) Hide((PaneId::type)i);
+		} else {
+			if (PaneConfig::Get(i).ShowForNormal()) Show((PaneId::type)i,true);
+			else if (PaneConfig::Get(i).HideForNormal()) Hide((PaneId::type)i);
+		}
+	}
+}
+
+void mxAUI::OnWelcomePanelShow ( ) {
+	if (m_fullscreen) OnFullScreenStart(); else OnFullScreenEnd();
+}
+
+void mxAUI::OnWelcomePanelHide ( ) {
+	for(int i=0;i<PaneId::Count;i++) { 
+		if (m_panes[i].window) 
+			Hide((PaneId::type)i);
+	}
+}
+
+void mxAUI::OnResize ( ) {
+	for(int i=0;i<PaneId::Count;i++) { 
+		if (m_panes[i].hidden_helper)
+			m_panes[i].hidden_helper->ProcessParentResize();
+	}
+}
+

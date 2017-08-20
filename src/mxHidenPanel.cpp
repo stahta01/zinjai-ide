@@ -16,8 +16,6 @@ BEGIN_EVENT_TABLE(mxHidenPanel,wxPanel)
 	EVT_SIZE(mxHidenPanel::OnResize)
 END_EVENT_TABLE()
 
-//mxHidenPanel *mxHidenPanel::lockeds[3]={nullptr,nullptr,nullptr};
-
 int mxHidenPanel::used_bottom=0;
 int mxHidenPanel::used_bottom_left=0;
 int mxHidenPanel::used_bottom_right=0;
@@ -25,8 +23,8 @@ int mxHidenPanel::used_right=0;
 int mxHidenPanel::used_right_bottom=0;
 int mxHidenPanel::used_left=0;
 int mxHidenPanel::used_left_bottom=0;
-	
-bool mxHidenPanel::ignore_autohide=false;	
+int mxHidenPanel::ignore_autohide=0;
+mxMainWindow *mxHidenPanel::main_window = nullptr;
 	
 mxHidenPanel::mxHidenPanel(wxWindow *parent, wxWindow *acontrol, hp_pos apos, wxString alabel):wxPanel(parent,wxID_ANY,wxDefaultPosition,wxSize(15,15)) {
 	label=alabel; selected=false; control=acontrol; pos=apos; forced_show=mouse_in=false; showing=false;
@@ -197,17 +195,6 @@ void mxHidenPanel::OnTimer(wxTimerEvent &evt) {
 
 void mxHidenPanel::ProcessParentResize() {
 	if (!selected && showing) Hide();
-}
-
-bool mxHidenPanel::IsDocked() {
-	return selected;
-}
-void mxHidenPanel::Select() {
-	ShowDock();
-	// ver como hacer para que si estaba flotando aparezca otra vez en el mismo lugar
-//	wxAuiPaneInfo &pane = main_window->m_aui->GetPane(control);
-//	if (pane.IsDocked()) ShowDock();
-//	else { selected=true; pane.Show(); main_window->m_aui->Update(); }
 }
 
 void mxHidenPanel::OnResize (wxSizeEvent & evt) {

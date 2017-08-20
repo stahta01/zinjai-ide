@@ -918,7 +918,7 @@ void mxMainWindow::ToolsPreproc( int id_command ) {
 			_IF_DEBUGMODE(x);
 			osd.Hide();
 			mxMessageDialog(this,LANG(MAINW_PREPROC_ERROR,"No se pudo preprocesar correctamente el fuente."))
-				.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();;
+				.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
 			return;
 		}
 	} else {
@@ -942,7 +942,7 @@ void mxMainWindow::ToolsPreproc( int id_command ) {
 			_IF_DEBUGMODE(x);
 			osd.Hide();
 			mxMessageDialog(this,LANG(MAINW_PREPROC_ERROR,"No se pudo preprocesar correctamente el fuente."))
-				.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();;
+				.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
 			return;
 		}
 	}

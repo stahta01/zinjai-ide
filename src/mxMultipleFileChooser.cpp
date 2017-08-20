@@ -5,6 +5,7 @@
 #include "ids.h"
 #include "mxMultipleFileChooser.h"
 #include "mxMainWindow.h"
+#include "mxAUI.h"
 #include "Language.h"
 #include "mxUtils.h"
 #include "ConfigManager.h"
@@ -12,7 +13,6 @@
 #include "mxBitmapButton.h"
 #include "mxSizers.h"
 #include "mxMessageDialog.h"
-#include "mxHidenPanel.h"
 #include "Parser.h"
 #include "mxOSD.h"
 #include "mxCommonConfigControls.h"
@@ -105,8 +105,12 @@ void mxMultipleFileChooser::OnButtonOk(wxCommandEvent &event) {
 			if (aux_where==FT_SOURCE||aux_where==FT_HEADER) parser->ParseFile(fname);
 		}
 	}
-	if (config->Init.autohiding_panels)
-		main_window->autohide_handlers[ATH_PROJECT]->ForceShow(false);
+	if (main_window->left_panels) {
+		main_window->m_aui->Show(PaneId::Trees);
+		main_window->left_panels->SetSelection(0);
+	} else {
+		main_window->m_aui->Show(PaneId::Project);
+	}
 	Close();
 }
 

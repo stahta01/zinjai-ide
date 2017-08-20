@@ -67,7 +67,7 @@ struct mxIG_SideEffectUpdate {
 		if (do_update) grid->OnFullTableUpdateBegin();
 	}
 	~mxIG_SideEffectUpdate() {
-		if (do_update) debug->UpdateInspections();;
+		if (do_update) debug->UpdateInspections();
 	}
 };
 	

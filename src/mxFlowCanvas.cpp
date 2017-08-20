@@ -299,7 +299,7 @@ bool mxFlowCanvas::Analize(int ps, int pe, draw_data &draw, wxDC *dc, int &break
 				text<<mc_index;
 				GetTextSize(text,dc,tw,th);
 				ax=tw+FC_MARGIN_IN;
-				FC_DRAW_LINE(x,y,x,y+ax*2,FC_COLOUR_FLECHAS);;
+				FC_DRAW_LINE(x,y,x,y+ax*2,FC_COLOUR_FLECHAS);
 				FC_DRAW_TEXT(x-FC_MARGIN_BETWEEN-ax-tw,y+ax-th/2,text,FC_COLOUR_JUMP);
 				FC_DRAW_CIRCLE(x-FC_MARGIN_BETWEEN-ax*2,y,ax*2,ax*2,FC_COLOUR_FLECHAS);
 				FC_DRAW_LINE(x,y+ax,x-FC_MARGIN_ARROW,y+ax-FC_MARGIN_ARROW,FC_COLOUR_FLECHAS);
@@ -356,7 +356,7 @@ bool mxFlowCanvas::Analize(int ps, int pe, draw_data &draw, wxDC *dc, int &break
 				text<<mb_index;
 				GetTextSize(text,dc,tw,th);
 				ax=tw+FC_MARGIN_IN;
-				FC_DRAW_LINE(x,y,x,y+ax*2,FC_COLOUR_FLECHAS);;
+				FC_DRAW_LINE(x,y,x,y+ax*2,FC_COLOUR_FLECHAS);
 				FC_DRAW_TEXT(x-FC_MARGIN_BETWEEN-ax-tw,y+ax-th/2,text,FC_COLOUR_JUMP);
 				FC_DRAW_CIRCLE(x-FC_MARGIN_BETWEEN-ax*2,y,ax*2,ax*2,FC_COLOUR_FLECHAS);
 				FC_DRAW_LINE(x,y+ax,x-FC_MARGIN_ARROW,y+ax-FC_MARGIN_ARROW,FC_COLOUR_FLECHAS);
@@ -478,7 +478,7 @@ bool mxFlowCanvas::Analize(int ps, int pe, draw_data &draw, wxDC *dc, int &break
 				text<<mc_index;
 				GetTextSize(text,dc,tw,th);
 				ax=tw+FC_MARGIN_IN;
-				FC_DRAW_LINE(x,y,x,y+ax*2,FC_COLOUR_FLECHAS);;
+				FC_DRAW_LINE(x,y,x,y+ax*2,FC_COLOUR_FLECHAS);
 				FC_DRAW_TEXT(x+FC_MARGIN_BETWEEN+ax-tw,y+ax-th/2,text,FC_COLOUR_JUMP);
 				FC_DRAW_CIRCLE(x+FC_MARGIN_BETWEEN,y,ax*2,ax*2,FC_COLOUR_FLECHAS);
 				FC_DRAW_LINE(x,y+ax,x+FC_MARGIN_ARROW,y+ax-FC_MARGIN_ARROW,FC_COLOUR_FLECHAS);
@@ -529,7 +529,7 @@ bool mxFlowCanvas::Analize(int ps, int pe, draw_data &draw, wxDC *dc, int &break
 				text<<mb_index;
 				GetTextSize(text,dc,tw,th);
 				ax=tw+FC_MARGIN_IN;
-				FC_DRAW_LINE(x,y,x,y+ax*2,FC_COLOUR_FLECHAS);;
+				FC_DRAW_LINE(x,y,x,y+ax*2,FC_COLOUR_FLECHAS);
 				FC_DRAW_TEXT(x-FC_MARGIN_BETWEEN-ax-tw,y+ax-th/2,text,FC_COLOUR_JUMP);
 				FC_DRAW_CIRCLE(x-FC_MARGIN_BETWEEN-ax*2,y,ax*2,ax*2,FC_COLOUR_FLECHAS);
 				FC_DRAW_LINE(x,y+ax,x-FC_MARGIN_ARROW,y+ax-FC_MARGIN_ARROW,FC_COLOUR_FLECHAS);
@@ -647,7 +647,7 @@ bool mxFlowCanvas::Analize(int ps, int pe, draw_data &draw, wxDC *dc, int &break
 				text<<mb_index;
 				GetTextSize(text,dc,tw,th);
 				ax=tw+FC_MARGIN_IN;
-				FC_DRAW_LINE(x,y,x,y+ax*2,FC_COLOUR_FLECHAS);;
+				FC_DRAW_LINE(x,y,x,y+ax*2,FC_COLOUR_FLECHAS);
 				FC_DRAW_TEXT(x-FC_MARGIN_BETWEEN-ax-tw,y+ax-th/2,text,FC_COLOUR_JUMP);
 				FC_DRAW_CIRCLE(x-FC_MARGIN_BETWEEN-ax*2,y,ax*2,ax*2,FC_COLOUR_FLECHAS);
 				FC_DRAW_LINE(x,y+ax,x-FC_MARGIN_ARROW,y+ax-FC_MARGIN_ARROW,FC_COLOUR_FLECHAS);

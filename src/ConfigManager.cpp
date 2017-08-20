@@ -686,7 +686,7 @@ void ConfigManager::LoadDefaults(){
 	m_filename = DIR_PLUS_FILE(config_dir,"config");
 	
 	// establecer valores predeterminados para todas las estructuras
-	Files.temp_dir=DIR_PLUS_FILE(config_dir,"tmp");;
+	Files.temp_dir=DIR_PLUS_FILE(config_dir,"tmp");
 	Files.skin_dir="imgs";
 #ifdef __WIN32__
 	Files.toolchain="gcc5-mingw32";

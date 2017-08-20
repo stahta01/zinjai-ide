@@ -942,7 +942,7 @@ void MenusAndToolsConfig::PopulateToolbar(int tb_id) {
 		for (int i=0;i<MAX_PROJECT_CUSTOM_TOOLS;i++) {
 			if (project->custom_tools[i].on_toolbar) {
 				have_tool=true;
-				wxString str(LANG(TOOLBAR_CAPTION_TOOLS_CUSTOM_TOOL,"Herramienta Personalizada ")); str<<i<<" ("<<project->custom_tools[i].name<<")";;
+				wxString str(LANG(TOOLBAR_CAPTION_TOOLS_CUSTOM_TOOL,"Herramienta Personalizada ")); str<<i<<" ("<<project->custom_tools[i].name<<")";
 				mxUT::AddTool(wx_toolbar,mxID_CUSTOM_PROJECT_TOOL_0+i,str,ipre+wxString("projectTool")<<i<<".png",str);
 			}
 		}

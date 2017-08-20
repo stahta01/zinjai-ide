@@ -233,7 +233,7 @@ void mxNewWizard::OnProjectCreate() {
 					|| wxNOT_FOUND!=name.Find('>') || wxNOT_FOUND!=name.Find('*') 
 					|| wxNOT_FOUND!=name.Find('.') || wxNOT_FOUND!=name.Find(':') ) {
 			mxMessageDialog(this,LANG(NEWWIZARD_INVALID_CLASSNAME,"El nombre de la clase no puede incluir ni espacios ni operadores"))
-				.Title(LANG(GENERIC_ERROR,"Error")).IconError().Run();;
+				.Title(LANG(GENERIC_ERROR,"Error")).IconError().Run();
 			onproject_name->SetFocus();
 			return;
 		}
@@ -244,7 +244,7 @@ void mxNewWizard::OnProjectCreate() {
 			mxMessageDialog(this,LANG(NEWWIZARD_FILE_EXISTS,"Ya existe un archivo con ese nombre")).Title(cpp_name).IconError().Run();
 			return;
 		} else if (wxFileName::FileExists(h_name)) {
-			mxMessageDialog(this,LANG(NEWWIZARD_FILE_EXISTS,"Ya existe un archivo con ese nombre")).Title(h_name).IconError().Run();;				
+			mxMessageDialog(this,LANG(NEWWIZARD_FILE_EXISTS,"Ya existe un archivo con ese nombre")).Title(h_name).IconError().Run();				
 			return;
 		} else {
 			
@@ -420,7 +420,7 @@ void mxNewWizard::OnProjectCreate() {
 			return;
 		} else if (wxNOT_FOUND!=name.Find('<') || wxNOT_FOUND!=name.Find('?') 
 					|| wxNOT_FOUND!=name.Find('>') || wxNOT_FOUND!=name.Find('*') ) {
-			mxMessageDialog(this,LANG(NEWWIZARD_INVALID_CLASSNAME,"El nombre de la clase no puede incluir caracteres especiales (?,*,<,>)")).Title(LANG(GENERIC_ERROR,"Error")).IconError().Run();;
+			mxMessageDialog(this,LANG(NEWWIZARD_INVALID_CLASSNAME,"El nombre de la clase no puede incluir caracteres especiales (?,*,<,>)")).Title(LANG(GENERIC_ERROR,"Error")).IconError().Run();
 			onproject_name->SetFocus();
 			return;
 		}
@@ -479,19 +479,19 @@ void mxNewWizard::ProjectCreate() {
 	int cual = project_list->GetSelection();
 	if (filename=="") {
 		mxMessageDialog(this,LANG(NEWWIZARD_PROJECT_NAME_MISSING,"Debe establecer un nombre de proyecto."))
-			.Title(LANG(GENERIC_ERROR,"Error")).IconError().Run();;
+			.Title(LANG(GENERIC_ERROR,"Error")).IconError().Run();
 		project_name->SetFocus();
 		return;
 	}
 	if (filename=="") {
 		mxMessageDialog(this,LANG(NEWWIZARD_FILENAME_MISSING,"Debe establecer un nombre de archivo."))
-			.Title(LANG(GENERIC_ERROR,"Error")).IconError().Run();;
+			.Title(LANG(GENERIC_ERROR,"Error")).IconError().Run();
 		project_name->SetFocus();
 		return;
 	}
 	if (folder=="") {
 		mxMessageDialog(this,LANG(NEWWIZARD_PROJECT_LOCATION_MISSING,"Debe establecer un ubicacion para el proyecto."))
-			.Title(LANG(GENERIC_ERROR,"Error")).IconError().Run();;
+			.Title(LANG(GENERIC_ERROR,"Error")).IconError().Run();
 		project_folder_path->SetFocus();
 		return;
 	}
@@ -507,7 +507,7 @@ void mxNewWizard::ProjectCreate() {
 	wxString full=project_folder_create->GetValue()?DIR_PLUS_FILE(folder,filename):folder;
 	if (wxFileName::FileExists(full)) {
 		mxMessageDialog(this,LANG(NEWWIZARD_PROJECT_DIR_IS_FILE,"No se puede crear el proyecto porque ya existe un archivo con ese nombre en la ubicacion seleccionada. Elimine el archivo o modifique el nombre."))
-			.Title(LANG(GENERIC_ERROR,"Error")).IconError().Run();;
+			.Title(LANG(GENERIC_ERROR,"Error")).IconError().Run();
 		project_name->SetFocus();
 		return;
 	}
@@ -601,7 +601,7 @@ void mxNewWizard::ProjectCreate() {
 		} else {
 			if (!mxUT::XCopy(ofull,full,true)) {
 				mxMessageDialog(this,LANG(NEWWIZARD_ERROR_ON_FILE_COPY,"Error al copiar los archivos del proyecto. Compruebe que la ubicacion sea correcta."))
-					.Title(LANG(GENERIC_ERROR,"Error")).IconError().Run();;
+					.Title(LANG(GENERIC_ERROR,"Error")).IconError().Run();
 				return;
 			}
 			wxRenameFile(DIR_PLUS_FILE(full,project_templates[cual]+"."+_T(PROJECT_EXT)),DIR_PLUS_FILE(full,filename+"."+_T(PROJECT_EXT)),true);

@@ -2,6 +2,7 @@
 
 #include "mxBeginnerPanel.h"
 
+#include "mxAUI.h"
 #include "mxSizers.h"
 #include "ids.h"
 #include "mxMainWindow.h"
@@ -89,7 +90,7 @@ void mxBeginnerPanel::ShowOptions(int n, wxString help) {
 void mxBeginnerPanel::LoadQuickHelp(wxString file) {
 	file = wxString(_T("beg_"))<<file<<_T("_")<<config->Init.language_file<<_T(".html");
 	main_window->quick_help->LoadPage(DIR_PLUS_FILE(config->Help.guihelp_dir,file));
-	main_window->ShowQuickHelpPanel();
+	main_window->m_aui->Show(PaneId::QuickHelp);
 }
 
 // ----if------

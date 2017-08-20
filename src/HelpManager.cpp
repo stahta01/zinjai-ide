@@ -82,7 +82,7 @@ void HelpManager::HelpFor(pd_class *aclass, wxString &content, wxString &index) 
 				inheritChildren.Add(item->son);
 		}
 		if (inheritClasses.GetCount()!=0) {
-			int in_j = inheritClasses.GetCount()-1;;
+			int in_j = inheritClasses.GetCount()-1;
 			content<<LANG(PARSERHELP_THIS_ONE_INHERITS_FROM,"Hereda de:")<<" "<<inheritTexts[in_j]<<_T("<A href=\"quickhelp:")<<inheritClasses[in_j]<<_T("\">")<<inheritClasses[in_j]<<_T("</A>");
 			in_j--;
 			while (in_j>0) {

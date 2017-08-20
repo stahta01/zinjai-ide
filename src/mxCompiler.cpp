@@ -1,8 +1,9 @@
 #include <wx/txtstrm.h>
-#include "mxCompiler.h"
 #include "ids.h"
 #include "Language.h"
 #include "mxMainWindow.h"
+#include "mxCompiler.h"
+#include "mxAUI.h"
 #include "Parser.h"
 #include "mxMessageDialog.h"
 #include "ProjectManager.h"
@@ -137,7 +138,7 @@ DEBUG_INFO("wxYield:out mxCompiler::BuildOrRunProject");
 		compile_and_run->compiling=true;
 		compile_and_run->pid=project->CompileNext(compile_and_run,current); // mandar a compilar el primero
 		if (compile_and_run->pid) { // si se puso a compilar algo
-			if (current_toolchain.IsExtern()) main_window->ShowCompilerTreePanel();
+			if (current_toolchain.IsExtern()) main_window->m_aui->Show(PaneId::Compiler,true);
 			main_window->StartExecutionStuff(compile_and_run,current);
 		} else {
 			main_window->SetStatusText(LANG(MAINW_COMPILATION_INTERRUPTED,"Compilación interrumpida."));
@@ -366,7 +367,7 @@ void mxCompiler::ParseCompilerOutput(compile_and_run_struct_single *compile_and_
 					compile_and_run->compiling=false;
 					main_window->SetCompilingStatus(LANG(MAINW_COMPILATION_INTERRUPTED,"Compilación interrumpida!"),true);
 					main_window->SetStatusProgress(0);
-					main_window->ShowCompilerTreePanel();
+					main_window->m_aui->Show(PaneId::Compiler,true);
 					delete compile_and_run; compile_and_run=nullptr;
 				}
 			}
@@ -420,7 +421,7 @@ void mxCompiler::ParseCompilerOutput(compile_and_run_struct_single *compile_and_
 void mxCompiler::CompileSource (mxSource *source, GenericAction *on_end) {
 	RaiiDeletePtr<GenericAction> oe_del(on_end);
 	if (!EnsureCompilerNotRunning()) return;
-	compile_and_run_struct_single *compile_and_run=new compile_and_run_struct_single("CompileSource");;
+	compile_and_run_struct_single *compile_and_run=new compile_and_run_struct_single("CompileSource");
 	fms_move(compile_and_run->on_end,on_end);
 	compile_and_run->output_type=MXC_GCC;
 	parser->ParseSource(source,true);

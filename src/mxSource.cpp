@@ -835,7 +835,7 @@ void mxSource::OnUncomment (wxCommandEvent &event) {
 	UndoActionGuard undo_action(this);
 	bool did_something=false;
 	for (int i=min;i<=max;i++) {
-		int s, p=GetLineIndentPosition(i); char c=GetCharAt(p+1);; // s y c se reutilizan para II_*
+		int s, p=GetLineIndentPosition(i); char c=GetCharAt(p+1); // s y c se reutilizan para II_*
 		if (II_IS_COMMENT(p)) {
 			bool remove_asterisco_barra=false, add_barra_asterisco=false;
 			if (GetCharAt(p)=='/' && (c=='/' || c=='*')) {

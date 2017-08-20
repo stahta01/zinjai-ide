@@ -59,20 +59,6 @@ template<class T> class SingleList;
 
 extern mxSplashScreen *g_splash;
 
-enum autohide_ref {
-	ATH_COMPILER,
-	ATH_SYMBOL,
-	ATH_PROJECT,
-	ATH_EXPLORER,
-	ATH_DEBUG_LOG,
-	ATH_QUICKHELP,
-	ATH_THREADS,
-	ATH_INSPECTIONS,
-	ATH_BACKTRACE,
-	ATH_BEGINNERS,
-	ATH_MINIMAP,
-	ATH_COUNT
-};
 
 // afuera de mxMainWindow para evitar tener que incluir este header en CompilerErrorsManager
 struct CompilerTreeStruct {
@@ -563,7 +549,7 @@ public:
 		void SetInherited(wxTreeItemId item, bool inherited);
 		wxTreeItemId AddFile(const wxString &path, eFileType where=FT_NULL, bool sort=true);
 		void ToggleFullPath();
-		void Create(wxWindow *parent);
+		wxTreeCtrl *Create(wxWindow *parent);
 		project_tree_struct() : treeCtrl(nullptr) { }
 		void DeleteAllFiles();
 		void Select(wxTreeItemId item);
@@ -610,7 +596,6 @@ public:
 	
 	wxTreeCtrl* CreateSymbolsTree();
 	wxTreeCtrl* CreateExplorerTree();
-	wxTreeCtrl* CreateProjectTree();
 	wxPanel* CreateCompilerTree();
 	
 	mxBeginnerPanel *GetBeginnersPanel();
@@ -631,14 +616,9 @@ public:
 	void OnEscapePressed(wxCommandEvent &event);
 	
 
-	mxHidenPanel *autohide_handlers[ATH_COUNT];
 	void OnResize(wxSizeEvent &evt);
-	void ShowQuickHelpPanel(bool hide_compiler_tree=true);
-	void ShowCompilerTreePanel();
-	void HideCompilerTreePanel();
 	void ShowExplorerTreePanel(bool set_focus=true);
 	void HideExplorerTreePanel();
-	void ShowBeginnersPanel();
 	void ShowMinimapPanel();
 	
 	void FocusToSource();
