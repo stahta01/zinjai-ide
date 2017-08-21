@@ -12,6 +12,7 @@
 # el instalador final.
 # 
 
+export WINEARSH=win32
 export WINEPREFIX=$(pwd)/wine
 
 SRC=..
@@ -25,6 +26,7 @@ function zmkdir {
 }
 
 zmkdir zinjai
+    mkdir -p zinjai/bin
     cp -u $SRC/bin/lsdeps.exe zinjai/bin/
     cp -u $SRC/bin/runner.exe zinjai/bin/
     cp -u $SRC/bin/cbrowser.exe zinjai/bin/
@@ -38,7 +40,6 @@ zmkdir zinjai
     cp -u $SRC/bin/shellexecute.exe zinjai/bin/
     cp -u $SRC/bin/updatem.exe zinjai/bin/
     cp -u $SRC/readme.txt zinjai/
-    cp -u $SRC/debug_macros.gdb zinjai/
     zmkdir zinjai/imgs
     cp -u $SRC/imgs/descripcion.txt zinjai/imgs/
     cp -u $SRC/imgs/*.png zinjai/imgs/
@@ -53,6 +54,8 @@ zmkdir zinjai
       cp -u $SRC/imgs/32/* zinjai/imgs/32/
   zmkdir zinjai/skins
     cp -ru $SRC/skins/* zinjai/skins/
+  zmkdir zinjai/samples
+    cp -ru $SRC/samples/* zinjai/samples/
   zmkdir zinjai/lang
     cp -ru $SRC/lang/*.pre zinjai/lang/
     cp $SRC/lang/*.txt zinjai/lang/
@@ -77,12 +80,12 @@ zmkdir zinjai
 #  zmkdir zinjai/graphviz
 #    cp -u $SRC/graphviz/*.exe zinjai/third/graphviz/
 
-zmkdir OpenGL
-  zmkdir OpenGL/templates
-    cp -Hru $SRC/templates/OpenGL OpenGL/templates
-    cp -Hru $SRC/templates/opengl-windows.tpl OpenGL/templates
-  zmkdir OpenGL/autocomp
-    cp -Hru $SRC/autocomp/OpenGL* OpenGL/autocomp
+#zmkdir OpenGL
+#  zmkdir OpenGL/templates
+#    cp -Hru $SRC/templates/OpenGL OpenGL/templates
+#    cp -Hru $SRC/templates/opengl-windows.tpl OpenGL/templates
+#  zmkdir OpenGL/autocomp
+#    cp -Hru $SRC/autocomp/OpenGL* OpenGL/autocomp
 
 zmkdir fuentes
   cp -u $SRC/compiling.txt fuentes/

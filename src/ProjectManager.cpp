@@ -459,9 +459,9 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 	force_relink=false;
 
 	
-	last_dir=DIR_PLUS_FILE(path,last_dir);
-	wxFileName explorer_fname(last_dir);
-	if (explorer_fname.DirExists()) {
+	last_dir = DIR_PLUS_FILE(path,fix_path_char(file_path_char,last_dir));
+	if (wxFileName::DirExists(last_dir)) {
+		wxFileName explorer_fname(last_dir);
 		explorer_fname.Normalize(wxPATH_NORM_DOTS);
 		main_window->SetExplorerPath(explorer_fname.GetFullPath());
 	}
