@@ -2748,7 +2748,7 @@ void mxMainWindow::OpenFileFromGui (wxFileName filename, int *multiple) {
 		
 	} else { // si era otro archivo
 		// abrir el archivo
-		if (project && !project->FindFromFullPath(filename)) {
+		if (project && !project->FindFromFullPath(filename.GetFullPath())) {
 			// constantes para setear bits en *multiple
 			const int always_attach=1; // ojo, esto se usa en OnProjectTreeAdd, asi que si se cambia el valor/significado, hay que revisar tambien ahi
 			const int never_attach=2;
@@ -4103,7 +4103,7 @@ void mxMainWindow::OnEditListMarks (wxCommandEvent &event) {
 			const SingleList<int> &markers_list = fi->GetSourceExtras().GetHighlightedLines();
 			restmp="";
 			for(int i=0;i<markers_list.GetSize();i++)
-				restmp=wxString("<LI><A href=\"gotoline:") << fi->GetFullPath(project->path)<<":"<<markers_list[i]+1<<"\">"<< fi->GetRelativePath() <<": linea "<<markers_list[i]+1<<"</A></LI>"<<restmp;
+				restmp=wxString("<LI><A href=\"gotoline:") << fi->GetFullPath()<<":"<<markers_list[i]+1<<"\">"<< fi->GetRelativePath() <<": linea "<<markers_list[i]+1<<"</A></LI>"<<restmp;
 			res<<restmp;	
 			fi.Next();
 		}

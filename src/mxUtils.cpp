@@ -786,7 +786,7 @@ wxString mxUT::GetComplementaryFile(wxFileName the_one, eFileType force_ext) {
 		wxString only_name = the_one.GetName();
 		for( LocalListIterator<project_file_item*> it( force_ext==FT_HEADER ? &project->files.sources : &project->files.headers ); it.IsValid(); it.Next() ) {
 			if (wxFileName(it->GetRelativePath()).GetName()==only_name) {
-				return it->GetFullPath(project->path);
+				return it->GetFullPath();
 			}
 		}
 	}
@@ -1293,5 +1293,35 @@ bool mxUT::ShellExecute (const wxString & path, const wxString &workdir) {
 	command<<" "<<Quotize(path);
 	RaiiWorkDirChanger wkcd_guard(workdir.IsEmpty()?".":workdir);
 	return wxExecute(command);
+}
+
+#ifdef __WIN32__
+#	define _is_path_char(str,p) (str[p]=='\\'||str[p]=='/'||p==1&&str[p]==':')
+#else
+#	define _is_path_char(str,p) (str[p]=='/')
+#endif
+
+wxString mxUT::NormalizePath (wxString path) {
+	int len = path.Len();
+	int p = 0, p0 = 0, delta=0;
+	do {
+		char c = path[p];
+		if (p==len || _is_path_char(path,p)) {
+			if (p0==p-2 && path[p-1]=='.' && path[p-2]=='.') {
+				int pa = p0-delta-2;
+				while(pa>0 && !_is_path_char(path,pa)) --pa;
+				if (pa>0) {
+					delta=p-pa;
+				}
+			} else if (p0==p-1 && path[p-1]=='.') {
+				delta+=2;
+			}
+			p0=p+1;
+		}
+		if (delta) path[p-delta]=c;
+		++p;
+	} while(p<=len);
+	if (delta) path.erase(len-delta);
+	return path;
 }
 

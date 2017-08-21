@@ -148,6 +148,9 @@ public:
 	/** @brief Convierte un path absoluto en relativo **/
 	static wxString Relativize(wxString fname, wxString path);
 	
+	/** @brief Contrae los ".." de los paths **/
+	static wxString NormalizePath(wxString path);
+	
 	/// @brief Concatena una cadena en una linea reemplazando saltos de linea por "\\n" (y escapando las demás '\\')
 	static wxString Text2Line(const wxString &text);
 	/// @brief Divide una linea generada con Text2Line en una cadena en una cadena con varias lineas

@@ -11,7 +11,7 @@ version_saved=20170820
 version_required=20140318
 tab_width=4
 tab_use_spaces=0
-explorer_path=../motogt2
+explorer_path=.
 inherits_from=
 current_source=mxAUI.cpp
 path_char=/
@@ -474,7 +474,7 @@ path=mxCustomTools.cpp
 cursor=99:24
 [source]
 path=mxAUI.cpp
-cursor=19:156
+cursor=23:56
 open=true
 [source]
 path=IniFile.cpp

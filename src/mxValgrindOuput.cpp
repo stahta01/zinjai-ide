@@ -214,7 +214,7 @@ void mxValgrindOuput::OnSelect(wxTreeEvent &evt) {
 			if (project) {
 				project_file_item *fi = project->FindFromName(text);
 				if (fi) {
-					mxSource *source = main_window->OpenFile(fi->GetFullPath(project->path),false);
+					mxSource *source = main_window->OpenFile(fi->GetFullPath(),false);
 					if (source && source!=EXTERNAL_SOURCE) source->MarkError(line-1);
 					return;
 				}

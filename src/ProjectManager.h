@@ -368,9 +368,9 @@ class project_library;
 **/
 class project_file_item { // para armar las listas (doblemente enlazadas) de archivos del proyecto
 public:
-	project_file_item (const wxString &relative_path, const wxTreeItemId &tree_item, const eFileType category) {
+	project_file_item (const wxString &project_path, const wxString &relative_path, const wxTreeItemId &tree_item, const eFileType category) {
 		Init();
-		m_relative_path = relative_path;
+		Rename(project_path,relative_path);
 		m_tree_item=tree_item;
 		m_category=category;
 	}
@@ -379,7 +379,7 @@ public:
 		m_category=FT_NULL;
 	}
 	const wxString &GetRelativePath() const { return m_relative_path; }
-	wxString GetFullPath(const wxString &project_path) const { return DIR_PLUS_FILE(project_path,m_relative_path); }
+	wxString GetFullPath() const { return m_full_path; }
 	eFileType GetCategory() const { return m_category; }
 	void SetCategory(eFileType new_category) { m_category = new_category; }
 	/// true=c++, false=c
@@ -408,6 +408,7 @@ public:
 private:
 	friend class ProjectManager;
 	wxString m_relative_path; ///< path relativo al path del proyecto
+	wxString m_full_path; ///< path absoluto y normalizado
 	wxTreeItemId m_tree_item; ///< auxiliar para la gui, item en el arbol de proyecto
 	SourceExtras m_extras; ///< breakpoints, highlighted lines, cursor position
 	bool m_force_recompile; ///< indica que se debe recompilar independientemente de la fecha de modificacion (por ejemplo, si lo va a modificar un paso adicional)
@@ -426,7 +427,10 @@ private:
 	void SetFatherProject(const wxString &father_zpr) { m_inherited_from = father_zpr; }
 	void SetUnknownFatherProject() { m_inherited_from = "<unknown father>"; }
 	bool FatherProjectIsUnknown() const { return m_inherited_from == "<unknown father>"; }
-	void Rename(const wxString &new_relative_path) { m_relative_path = new_relative_path; }
+	void Rename(const wxString &project_path, const wxString &new_relative_path) { 
+		m_relative_path = new_relative_path;
+		m_full_path = mxUT::NormalizePath(DIR_PLUS_FILE(project_path,new_relative_path));
+	}
 };
 
 
@@ -591,7 +595,7 @@ public:
 	
 	int GetFileList(wxArrayString &array, eFileType cuales=FT_NULL, bool relative_paths=false);
 	project_file_item *FindFromName(wxString name); ///< busca a partir del nombre de archivo (solo, sin path)
-	project_file_item *FindFromFullPath(wxFileName file); ///< busca una archivo en el proyecto por su ruta completa
+	project_file_item *FindFromFullPath(wxString file); ///< busca una archivo en el proyecto por su ruta completa
 	wxString GetNameFromItem(wxTreeItemId &tree_item, bool relative=false);
 	bool Save(bool as_template=false);
 	void MoveFirst(wxTreeItemId &tree_item);

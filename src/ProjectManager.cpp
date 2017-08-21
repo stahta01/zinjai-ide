@@ -101,11 +101,11 @@ static bool ReadProjectFilesList(const wxString &zpr_full_path, ProjectManager::
 		} else if (section=="source" || section=="header" || section=="other" || section=="blacklist") {
 			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
 				if (p.Key()=="path") {
-					wxString filepath = DIR_PLUS_FILE(project_path,fix_path_char(file_path_char,p.AsString()));
-					if      (section=="source") out_list.sources.Add( new project_file_item(filepath,wxTreeItemId(),FT_SOURCE) );
-					else if (section=="header") out_list.headers.Add( new project_file_item(filepath,wxTreeItemId(),FT_HEADER) );
-					else if (section=="other")  out_list.others.Add ( new project_file_item(filepath,wxTreeItemId(),FT_OTHER ) );
-					else if (section=="blacklist")  out_list.others.Add ( new project_file_item(filepath,wxTreeItemId(),FT_BLACKLIST) );
+					wxString filepath = fix_path_char(file_path_char,p.AsString());
+					if      (section=="source")     out_list.sources.Add( new project_file_item(project_path,filepath,wxTreeItemId(),FT_SOURCE) );
+					else if (section=="header")     out_list.headers.Add( new project_file_item(project_path,filepath,wxTreeItemId(),FT_HEADER) );
+					else if (section=="other")      out_list.others.Add ( new project_file_item(project_path,filepath,wxTreeItemId(),FT_OTHER ) );
+					else if (section=="blacklist")  out_list.others.Add ( new project_file_item(project_path,filepath,wxTreeItemId(),FT_BLACKLIST) );
 				}
 			}
 		}
@@ -372,7 +372,7 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 					if (files_to_open>0)
 						main_window->SetStatusProgress((100*(++num_files_opened))/files_to_open);
 					if (last_file) {
-						/*mxSource *src = */main_window->OpenFile(last_file->GetFullPath(path),false);
+						/*mxSource *src = */main_window->OpenFile(last_file->GetFullPath(),false);
 //						if (src && src!=EXTERNAL_SOURCE) src->MoveCursorTo(last_file->extras.GetCurrentPos(),true);
 					}
 				}
@@ -717,7 +717,7 @@ project_file_item *ProjectManager::AddFile (eFileType where, wxFileName filename
 		}
 		git.Next();
 	}
-	if (!fitem) fitem = new project_file_item(relative_path,main_window->project_tree.AddFile(relative_path,where,sort_tree),where);
+	if (!fitem) fitem = new project_file_item(path,relative_path,main_window->project_tree.AddFile(relative_path,where,sort_tree),where);
 	
 	// add it to the correct file list
 	switch (where) {
@@ -829,7 +829,7 @@ bool ProjectManager::Save (bool as_template) {
 			if (item->IsReadOnly()) CFG_GENERIC_WRITE_DN("readonly",1);
 			if (item->IsInherited()) CFG_GENERIC_WRITE_DN("inherited",1);
 			if (!item->AreSymbolsVisible()) CFG_GENERIC_WRITE_DN("hide_symbols",1);
-			source=main_window->IsOpen(item->GetFullPath(path));
+			source=main_window->IsOpen(item->GetFullPath());
 			if (source) source->UpdateExtras();
 			CFG_GENERIC_WRITE_DN("cursor",item->GetSourceExtras().GetCurrentPos());
 			const LocalList<BreakPointInfo*> &breakpoints=item->GetSourceExtras().GetBreakpoints();
@@ -1026,7 +1026,7 @@ project_file_item *ProjectManager::FilesList::FindFromItem(const wxTreeItemId &t
 
 project_file_item *ProjectManager::FindFromName(wxString name) {
 	for( GlobalListIterator<project_file_item*> it(&files.all); it.IsValid(); it.Next()) {
-		if (wxFileName(it->GetRelativePath()).GetFullName()==name || it->GetFullPath(path)==name)
+		if (wxFileName(it->GetRelativePath()).GetFullName()==name || it->GetFullPath()==name)
 			return *it;
 	}
 	return nullptr;
@@ -1035,10 +1035,11 @@ project_file_item *ProjectManager::FindFromName(wxString name) {
 /**
 * @return puntero al project_file_item del archivo si lo encuenctra, nullptr si no lo encuentra
 **/
-project_file_item *ProjectManager::FindFromFullPath(wxFileName file) {
+project_file_item *ProjectManager::FindFromFullPath(wxString file) {
+	file = mxUT::NormalizePath(file);
 	GlobalListIterator<project_file_item*> it(&files.all);
 	while (it.IsValid()) {
-		if (wxFileName(it->GetFullPath(path))==file)
+		if (it->GetFullPath()==file)
 			return *it;
 		it.Next();
 	}
@@ -1048,7 +1049,7 @@ project_file_item *ProjectManager::FindFromFullPath(wxFileName file) {
 wxString ProjectManager::GetNameFromItem(wxTreeItemId &tree_item, bool relative) {
 	project_file_item *item=files.FindFromItem(tree_item);
 	if (item)
-		return relative ? item->GetRelativePath() : item->GetFullPath(path);
+		return relative ? item->GetRelativePath() : item->GetFullPath();
 	else
 		return "";
 }
@@ -1060,7 +1061,7 @@ bool ProjectManager::RenameFile(wxTreeItemId &tree_item, wxString new_name) {
 		wxFileName fname = new_name;
 		fname.MakeRelativeTo(path);
 		new_name = fname.GetFullPath();
-		wxString src = item->GetFullPath(path);
+		wxString src = item->GetFullPath();
 		wxString dst = DIR_PLUS_FILE(path,new_name);
 		if ( !FindFromFullPath(new_name) && !wxFileName::DirExists(dst) && 
 			(!wxFileName::FileExists(dst) || 
@@ -1068,8 +1069,8 @@ bool ProjectManager::RenameFile(wxTreeItemId &tree_item, wxString new_name) {
 												 "Ya existe un archivo con ese nombre. Desea Reemplazarlo?"))
 					.Title(LANG(GENERAL_WARNING,"Advertencia")).ButtonsYesNo().IconWarning().Run().yes) )
 		{ 
-			parser->RenameFile(item->GetFullPath(path),DIR_PLUS_FILE(path,new_name));
-			item->Rename(new_name);
+			parser->RenameFile(item->GetFullPath(),DIR_PLUS_FILE(path,new_name));
+			item->Rename(path,new_name);
 			modified=true;
 			wxRenameFile(src,dst,true);
 			main_window->project_tree.RenameFile(item->GetTreeItem(),item->GetRelativePath());
@@ -1120,7 +1121,7 @@ void ProjectManager::MoveFile(wxTreeItemId &tree_item, eFileType where) {
 	item->SetTreeItem( new_tree_item );
 	// if it was moved to source or hedear, parse it (could came from others), else remove its data from parser
 	if (where==FT_SOURCE || where==FT_HEADER) {
-		wxString name = item->GetFullPath(path);
+		wxString name = item->GetFullPath();
 		mxSource *source;
 		if ((source=main_window->IsOpen(name)) && source->GetModify()) {
 			parser->ParseSource(source);
@@ -1129,7 +1130,7 @@ void ProjectManager::MoveFile(wxTreeItemId &tree_item, eFileType where) {
 		}
 		if (!item->AreSymbolsVisible()) parser->SetHideSymbols(name,true);
 	} else {
-		wxString name = item->GetFullPath(path);
+		wxString name = item->GetFullPath();
 		parser->RemoveFile(name);
 	}
 }
@@ -1142,7 +1143,7 @@ void ProjectManager::DeleteFile(project_file_item *item, bool also_delete_from_d
 		else src->SetNotInTheProjectAnymore();
 	}
 	// eliminar el archivo del disco
-	wxString fullpath = item->GetFullPath(path);
+	wxString fullpath = item->GetFullPath();
 	if (also_delete_from_disk) wxRemoveFile(fullpath);
 	// eliminar sus simbolos del parser
 	parser->RemoveFile(fullpath);
@@ -1172,7 +1173,7 @@ bool ProjectManager::DeleteFile(wxTreeItemId tree_item) {
 				.Check1(LANG(PROJMNGR_DELETE_FROM_DISK,"Eliminar el archivo del disco"),false)
 				.Title(item->GetRelativePath()).ButtonsYesNo().IconQuestion().Run();
 		if (ans.cancel || ans.no) return false;
-		wxString comp = mxUT::GetComplementaryFile(item->GetFullPath(project->path));
+		wxString comp = mxUT::GetComplementaryFile(item->GetFullPath());
 		DeleteFile(item,ans.check1);
 		if (comp.Len()==0 || !FindFromFullPath(comp)) return true;
 		tree_item = FindFromFullPath(comp)->GetTreeItem(); also=true;
@@ -1180,7 +1181,7 @@ bool ProjectManager::DeleteFile(wxTreeItemId tree_item) {
 }
 
 bool ProjectManager::DependsOnMacro(project_file_item *item, wxArrayString &macros) {
-	wxTextFile fil(item->GetFullPath(path));
+	wxTextFile fil(item->GetFullPath());
 	if (fil.Exists()) {
 		fil.Open();
 		unsigned int i,l=macros.GetCount();
@@ -1306,7 +1307,7 @@ bool ProjectManager::PrepareForBuilding(project_file_item *only_one) {
 		if ( ( only_one && only_one==*item ) || item->ShouldBeRecompiled() ) {
 			flag=true;
 		} else if (!only_one && (!active_configuration->dont_generate_exe || item->IsInALibrary())) {
-			full_path = item->GetFullPath(path);
+			full_path = item->GetFullPath();
 			wxFileName bin_name ( item->GetBinName(temp_folder) );
 			wxDateTime src_date=wxFileName(full_path).GetModificationTime();
 			// nota: se usa getseconds porque comparar con < anda mal en windows (al menos en xp, funciona como <=)
@@ -1555,7 +1556,7 @@ void ProjectManager::SaveAll(bool save_project) {
 	// guardar los fuentes
 	GlobalListIterator<project_file_item*> item(&files.all);
 	while (item.IsValid()) {
-		mxSource *source=main_window->IsOpen(item->GetFullPath(path));
+		mxSource *source=main_window->IsOpen(item->GetFullPath());
 		if (source && source->GetModify()) {
 			source->SaveSource();
 			if (item->ShouldBeParsed()) parser->ParseSource(source,true);
@@ -1573,7 +1574,7 @@ long int ProjectManager::CompileFile(compile_and_run_struct_single *compile_and_
 //	item->force_recompile=false;
 	
 	// preparar la linea de comando 
-	wxString fname = item->GetFullPath(path);
+	wxString fname = item->GetFullPath();
 	wxString command = wxString(item->IsCppOrJustC()?current_toolchain.cpp_compiler:current_toolchain.c_compiler)+
 #ifndef __WIN32__
 		(item->IsInALibrary()?" -fPIC ":" ")+
@@ -1598,7 +1599,7 @@ long int ProjectManager::CompileFile(compile_and_run_struct_single *compile_and_
 	
 	GlobalListIterator<project_file_item*> item(&files.all);
 	while (item.IsValid()) {
-		if (wxFileName(item->GetFullPath(path))==filename)
+		if (wxFileName(item->GetFullPath())==filename)
 			return CompileFile(compile_and_run,*item);
 		item.Next();
 	}
@@ -2013,7 +2014,7 @@ void ProjectManager::ExportMakefile(wxString make_file, bool exec_comas, wxStrin
 		int steps_current=0;
 		for( LocalListIterator<project_file_item*> item(&files.sources); item.IsValid(); item.Next() ) {
 			wxString bin_full_path = mxUT::Quotize(item->GetBinName(temp_folder_short));
-			fil.AddLine(bin_full_path+": "+mxUT::FindObjectDeps(item->GetFullPath(path),path,header_dirs_array));
+			fil.AddLine(bin_full_path+": "+mxUT::FindObjectDeps(item->GetFullPath(),path,header_dirs_array));
 			bool cpp = item->IsCppOrJustC();
 			
 			if (cmake_style) fil.AddLine(tab+"@echo "+get_percent(steps_current++,steps_total)+" Building "+(cpp?"C++":"C")+" object "+bin_full_path);
@@ -2329,13 +2330,13 @@ int ProjectManager::GetFileList(wxArrayString &array, eFileType cuales, bool rel
 	if (cuales==FT_NULL) {
 		for( GlobalListIterator<project_file_item*> item(&files.all); item.IsValid(); item.Next()) {
 			if (item->GetCategory()==FT_BLACKLIST) continue;
-			array.Add( relative_paths ? item->GetRelativePath() : item->GetFullPath(path) );
+			array.Add( relative_paths ? item->GetRelativePath() : item->GetFullPath() );
 			count++;
 		}
 	} else {
 		LocalList<project_file_item*> &list = cuales==FT_SOURCE ? files.sources : (cuales==FT_HEADER ? files.headers : files.others);
 		for( LocalListIterator<project_file_item*> item(&list); item.IsValid(); item.Next() ) {
-			array.Add( relative_paths ? item->GetRelativePath(): item->GetFullPath(path) );
+			array.Add( relative_paths ? item->GetRelativePath(): item->GetFullPath() );
 			count++;
 		}		
 	}
@@ -2556,7 +2557,7 @@ void ProjectManager::WxfbGetFiles() {
 	LocalListIterator<project_file_item*> item(&files.others);
 	while(item.IsValid()) { // por cada archivo .fbp (deberian estar en "otros")
 		if (item->GetRelativePath().Right(4).Lower()==".fbp") {
-			wxFileName fbp_file=item->GetFullPath(path);
+			wxFileName fbp_file=item->GetFullPath();
 			fbp_file.Normalize();
 			wxfb->projects.Add(fbp_file.GetFullPath());
 			wxFileName source_file=WxfbGetSourceFile(fbp_file.GetFullPath());
@@ -2585,7 +2586,7 @@ bool ProjectManager::WxfbGenerate(bool show_osd, project_file_item *cual) {
 	
 	bool something_changed=false;
 	if (cual) {
-		wxString fbp_file=cual->GetFullPath(path);
+		wxString fbp_file=cual->GetFullPath();
 		wxString fbase = WxfbGetSourceFile(fbp_file);
 		something_changed=WxfbGenerate(fbp_file,fbase,true,show_osd?&osd:nullptr);
 	} else {
@@ -2982,7 +2983,7 @@ void ProjectManager::UpdateSymbols() {
 	for(int i=0;i<2;i++) {
 		LocalListIterator<project_file_item*> item(i==0?&files.sources:&files.headers);
 		while(item.IsValid()) {
-			wxString name = item->GetFullPath(path);
+			wxString name = item->GetFullPath();
 			mxSource *source=main_window->IsOpen(name);
 			if (source && source->GetModify()) {
 				parser->ParseSource(source);
@@ -3103,7 +3104,7 @@ void ProjectManager::DrawGraph() {
 		LocalListIterator<project_file_item*> fi(i==0?&files.headers:&files.sources);
 		while(fi.IsValid()) {
 			dgi[c].name = fi->GetRelativePath();
-			wxString fullname = fi->GetFullPath(path);
+			wxString fullname = fi->GetFullPath();
 			dgi[c].fullpath = fullname;
 			dgi[c].sz=wxFileName::GetSize(fullname).ToULong();
 			if (dgi[c].sz==wxInvalidSize) dgi[c].sz=0;
@@ -3617,7 +3618,7 @@ void ProjectManager::SetFileReadOnly (project_file_item * item, bool read_only) 
 
 void ProjectManager::SetFileHideSymbols (project_file_item * item, bool hide_symbols) {
 	item->SetSymbolsVisible(!hide_symbols);
-	parser->SetHideSymbols(item->GetFullPath(path),hide_symbols);
+	parser->SetHideSymbols(item->GetFullPath(),hide_symbols);
 }
 
 project_library *ProjectManager::GetDefaultLib(project_configuration *conf) {

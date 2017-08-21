@@ -81,8 +81,8 @@ void mxProjectStatistics::SetValues(bool all) {
 			int ch=0;
 			for( LocalListIterator<project_file_item*> fi(&project->files.headers); fi.IsValid(); fi.Next() ) {
 				ch++; ct++;
-				tsz=wxFileName::GetSize(fi->GetFullPath(project->path)).ToULong();
-				wxTextFile tf(fi->GetFullPath(project->path));
+				tsz=wxFileName::GetSize(fi->GetFullPath()).ToULong();
+				wxTextFile tf(fi->GetFullPath());
 				if (tsz!=wxInvalidSize) sz+=tsz;
 				if (tf.Open()) {
 					lc+=tf.GetLineCount();
@@ -96,9 +96,9 @@ void mxProjectStatistics::SetValues(bool all) {
 			int cs=0;
 			for( LocalListIterator<project_file_item*> fi(&project->files.sources); fi.IsValid(); fi.Next() ) { 
 				ct++; cs++; 
-				tsz=wxFileName::GetSize(fi->GetFullPath(project->path)).ToULong();
+				tsz=wxFileName::GetSize(fi->GetFullPath()).ToULong();
 				if (tsz!=wxInvalidSize) sz+=tsz;
-				wxTextFile tf(fi->GetFullPath(project->path));
+				wxTextFile tf(fi->GetFullPath());
 				if (tf.Open()) {
 					lc+=tf.GetLineCount();
 					tf.Close();
@@ -111,7 +111,7 @@ void mxProjectStatistics::SetValues(bool all) {
 			int co=0;
 			for( LocalListIterator<project_file_item*> fi(&project->files.others); fi.IsValid(); fi.Next() ) { 
 				co++; ct++;
-				tsz=wxFileName::GetSize(fi->GetFullPath(project->path)).ToULong();
+				tsz=wxFileName::GetSize(fi->GetFullPath()).ToULong();
 				if (tsz!=wxInvalidSize) sz+=tsz;
 			}
 			cant_others->SetLabel(wxString()<<co);
