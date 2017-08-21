@@ -3628,6 +3628,7 @@ void mxSource::SetColours(bool also_style) {
 	MarkerDefine(mxSTC_MARK_ERROR,wxSTC_MARK_ARROWS, "RED", "RED");
 	
 	if (also_style) SetStyle(config_source.syntaxEnable);
+	if (m_minimap) m_minimap->SetStyle(lexer);
 	
 }
 
@@ -4303,7 +4304,6 @@ void mxSource::SetTreeItem (const wxTreeItemId & item) {
 		iter->treeId = item;
 	}
 }
-
 
 mxMiniSource *mxSource::GetMinimap(mxMiniMapPanel *panel) {
 	if (!m_minimap) m_minimap = make_unique<mxMiniSource>(panel,this);

@@ -12,6 +12,9 @@ private:
 public:
 	mxMiniSource(mxMiniMapPanel *panel, mxSource *src);
 	void Refresh(mxSource *src);
+	void SetStyle(int lexer);
+	void OnClick(wxMouseEvent &evt);
+	DECLARE_EVENT_TABLE();
 };
 
 #endif

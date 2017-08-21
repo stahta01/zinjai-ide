@@ -9,12 +9,6 @@ mxSourceBase::mxSourceBase (wxWindow * parent)
 	wxStyledTextCtrl::Connect(wxEVT_MOUSEWHEEL,wxMouseEventHandler(mxSourceBase::OnMouseWheel),nullptr,this);
 	wxFont font (config->Styles.font_size, wxMODERN, wxNORMAL, wxNORMAL);
 	StyleSetFont (wxSTC_STYLE_DEFAULT, font);
-	SetSelBackground(true,g_ctheme->SELBACKGROUND);
-	StyleSetForeground (wxSTC_STYLE_DEFAULT, g_ctheme->DEFAULT_FORE);
-	StyleSetBackground (wxSTC_STYLE_DEFAULT, g_ctheme->DEFAULT_BACK);
-	StyleSetForeground (wxSTC_STYLE_LINENUMBER, g_ctheme->LINENUMBER_FORE);
-	StyleSetBackground (wxSTC_STYLE_LINENUMBER, g_ctheme->LINENUMBER_BACK);
-	StyleSetForeground(wxSTC_STYLE_INDENTGUIDE, g_ctheme->INDENTGUIDE);
 }
 
 void mxSourceBase::OnMouseWheel (wxMouseEvent & event) {
@@ -38,6 +32,12 @@ void mxSourceBase::SetStyle(int idx, const wxChar *fontName, int fontSize, const
 #define AUXSetStyle(who,name) SetStyle(wxSTC_##who##_##name,config->Styles.font_name,config->Styles.font_size,g_ctheme->name##_FORE,g_ctheme->name##_BACK,(g_ctheme->name##_BOLD?mxSOURCE_BOLD:0)|(g_ctheme->name##_ITALIC?mxSOURCE_ITALIC:0)); // default
 #define AUXSetStyle3(who,name,real) SetStyle(wxSTC_##who##_##name,config->Styles.font_name,config->Styles.font_size,g_ctheme->real##_FORE,g_ctheme->real##_BACK,(g_ctheme->real##_BOLD?mxSOURCE_BOLD:0)|(g_ctheme->real##_ITALIC?mxSOURCE_ITALIC:0)); // default
 void mxSourceBase::SetStyle(int lexer) {
+	SetSelBackground(true,g_ctheme->SELBACKGROUND);
+	StyleSetForeground (wxSTC_STYLE_DEFAULT, g_ctheme->DEFAULT_FORE);
+	StyleSetBackground (wxSTC_STYLE_DEFAULT, g_ctheme->DEFAULT_BACK);
+	StyleSetForeground (wxSTC_STYLE_LINENUMBER, g_ctheme->LINENUMBER_FORE);
+	StyleSetBackground (wxSTC_STYLE_LINENUMBER, g_ctheme->LINENUMBER_BACK);
+	StyleSetForeground(wxSTC_STYLE_INDENTGUIDE, g_ctheme->INDENTGUIDE);
 	SetLexer(lexer);
 	if (lexer!=wxSTC_LEX_NULL) {
 		AUXSetStyle(STYLE,BRACELIGHT); 
