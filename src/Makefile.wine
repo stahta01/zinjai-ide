@@ -1,10 +1,10 @@
-MINGW_DIR=../MinGW
+MINGW_DIR="C:/MinGW"
 GPP=wine "${MINGW_DIR}"/bin/mingw32-g++
 OBJCOPY=wine "${MINGW_DIR}"/bin/objcopy
 STRIP=wine "${MINGW_DIR}"/bin/strip
 CXXFLAGS=-O3 -g -I"${MINGW_DIR}"/wx/include
 LIBS=-mwindows -L"${MINGW_DIR}"/wx/lib -lwxmsw28_stc -lwxmsw28_aui -lwxmsw28_html -lwxmsw28_core -lwxbase28_net -lwxbase28 -lwxmsw28_adv -lwxtiff -lwxjpeg -lwxpng -lwxzlib -lwxregex -lwxexpat -lwinmm -lshell32 -lcomctl32 -lole32 -loleaut32 -luuid -lrpcrt4 -ladvapi32 -lwsock32 -lodbc32 -lkernel32 -luser32 -lgdi32 -lcomdlg32 -lwinspool -static-libstdc++ -static-libgcc
-OBJS_DIR=../release.w32
+OBJS_DIR=../temp/zinjai/release.wine
 
 all: ../zinjai.exe
 
@@ -24,4 +24,4 @@ ${OBJS_DIR}/icon.o: zinjai.rc manifest.xml
 	${OBJCOPY} --add-gnu-debuglink=../zinjai-w32.dbg ../zinjai.exe
 
 ${OBJS_DIR}:
-	mkdir ${OBJS_DIR}
+	mkdir -p ${OBJS_DIR}

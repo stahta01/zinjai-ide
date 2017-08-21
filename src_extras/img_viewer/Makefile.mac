@@ -1,7 +1,7 @@
 GPP=g++
 CXXFLAGS=-O2 `wx-config --unicode=no --cppflags`
 LDFLAGS=-s -lwx_gtk2_mac-2.8 `wx-config --libs` 
-OBJS_DIR=../../release.mac/img_viewer
+OBJS_DIR=../../temp/img_viewer/release.mac
 
 all: ../../bin/img_viewer.bin
 

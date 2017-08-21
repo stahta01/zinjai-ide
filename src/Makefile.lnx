@@ -3,7 +3,7 @@ STRIP=strip
 OBJCOPY=objcopy
 CXXFLAGS=-O3 -g `wx-config --cppflags --version=2.8 --unicode=no`
 LIBS=-lwx_gtk2_stc-2.8 `wx-config --version=2.8 --unicode=no --libs` -lX11
-OBJS_DIR=../release.lnx
+OBJS_DIR=../temp/zinjai/release.lnx
 ARCH=`../src_extras/get-arch.sh`
 
 all: ../bin ../bin/zinjai.bin
@@ -21,7 +21,7 @@ clean:
 	${OBJCOPY} --add-gnu-debuglink=../bin/zinjai-${ARCH}.dbg ../bin/zinjai.bin
 
 ${OBJS_DIR}:
-	mkdir ${OBJS_DIR}
+	mkdir -p ${OBJS_DIR}
 	
 ../bin:
 	mkdir ../bin

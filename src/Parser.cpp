@@ -340,7 +340,7 @@ long Parser::ParseNextFileStart(wxFileName filename, wxString HashName, bool hid
 #ifdef __WIN32__
 		"cbrowser.exe"
 #else
-		"cbrowser"
+		"cbrowser.bin"
 #endif
 		);
 	return wxExecute(wxString(parser_command)<<" \""<<filename.GetFullPath()<<"\"",wxEXEC_ASYNC,process);

@@ -1,7 +1,7 @@
-MINGW_DIR=../MinGW
+MINGW_DIR="C:/MinGW"
 GCC=wine "${MINGW_DIR}"/bin/mingw32-gcc
 OPTS=-O3 -DZASKAR -Dpanic=printf -Dckfree=free -Dckalloc=malloc -Dckrealloc=realloc -DHAVE_CONFIG_H -Ihyper -Icommon -Imisc -Icpp/cpplib -I.
-OBJS_DIR=release.w32
+OBJS_DIR=../temp/parser/release.wine
 LDFLAGS=-s
 
 all: ../bin/cbrowser.exe

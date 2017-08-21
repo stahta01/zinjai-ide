@@ -1,9 +1,9 @@
 GCC=gcc
 OPTS=-O3 -DZASKAR -Dpanic=printf -Dckfree=free -Dckalloc=malloc -Dckrealloc=realloc -DHAVE_CONFIG_H -Ihyper -Icommon -Imisc -Icpp/cpplib -I.
-OBJS_DIR=release.lnx
+OBJS_DIR=../temp/parser/release.mac
 LDFLAGS=-s
 
-all: ../bin/cbrowser
+all: ../bin/cbrowser.bin
 
 include Makefile.common
 
@@ -13,10 +13,10 @@ ${OBJS_DIR}:
 ../bin:
 	mkdir ../bin
 
-../bin/cbrowser: ../bin ${OBJS_DIR} ${OBJS}
+../bin/cbrowser.bin: ../bin ${OBJS_DIR} ${OBJS}
 	${GCC} ${OBJS} ${LDFLAGS} -o $@
 
 
 clean:
-	rm -f ../bin/cbrowser 
+	rm -f ../bin/cbrowser.bin
 	rm -f ${OBJS} 

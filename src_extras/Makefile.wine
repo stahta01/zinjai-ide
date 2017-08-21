@@ -1,4 +1,4 @@
-MINGW_DIR=../MinGW
+MINGW_DIR="C:/MinGW"
 GPP=wine "${MINGW_DIR}"/bin/mingw32-g++
 WINDRES=wine "${MINGW_DIR}"/bin/windres
 FLAGS=-O2 -s -static-libgcc -static-libstdc++
