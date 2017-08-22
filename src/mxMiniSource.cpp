@@ -9,6 +9,11 @@ BEGIN_EVENT_TABLE (mxMiniSource, wxStyledTextCtrl)
 	EVT_LEFT_DOWN(mxMiniSource::OnClick)
 	EVT_MIDDLE_DOWN(mxMiniSource::OnClick)
 	EVT_RIGHT_DOWN(mxMiniSource::OnClick)
+	EVT_ENTER_WINDOW(mxMiniSource::OnMouseIn)
+	EVT_LEAVE_WINDOW(mxMiniSource::OnMouseOut)
+	EVT_RIGHT_DCLICK(mxMiniSource::OnClick)
+	EVT_LEFT_DCLICK(mxMiniSource::OnClick)
+	EVT_MIDDLE_DCLICK(mxMiniSource::OnClick)
 END_EVENT_TABLE()
 
 mxMiniSource::mxMiniSource(mxMiniMapPanel *panel, mxSource *src) 
@@ -18,6 +23,8 @@ mxMiniSource::mxMiniSource(mxMiniMapPanel *panel, mxSource *src)
 	SetUseHorizontalScrollBar(false);
 	SetUseVerticalScrollBar(false);
 	SetUseAntiAliasing(false);
+	SetTwoPhaseDraw(false);
+//	SetLayoutCache(wxSTC_CACHE_DOCUMENT); // no parece notarse el efecto
 	wxStyledTextCtrl::SetDocPointer(src->GetDocPointer());
 	// el wxSTC_CARET_EVEN,wxSTC_VISIBLE_STRICT,0 es para que lo que pida que muestre en Refresh quede centrado
 	wxStyledTextCtrl::SetVisiblePolicy(wxSTC_VISIBLE_STRICT,0);
@@ -27,7 +34,8 @@ mxMiniSource::mxMiniSource(mxMiniMapPanel *panel, mxSource *src)
 	for(int i=0;i<4;i++) SetMarginWidth (i,0);
 	wxStyledTextCtrl::SetZoom( src->GetLineCount()>100 ? -10 : -9);
 	mxMiniSource::SetStyle(src->lexer);
-	Disable();
+	UsePopUp(false);
+//	Disable();
 }
 
 void mxMiniSource::Refresh (mxSource * src) {
@@ -54,9 +62,23 @@ void mxMiniSource::SetStyle (int lexer) {
 }
 
 void mxMiniSource::OnClick (wxMouseEvent & evt) {
-	evt.Skip();
-	main_window->GetCurrentSource()->GotoPos(PositionFromLine(GetCurrentLine()));
-	main_window->GetCurrentSource()->EnsureCaretVisible();
+	evt.StopPropagation();
+	int mouse_pos = PositionFromPoint(wxPoint(evt.GetX(),evt.GetY()));
+	int mouse_line = LineFromPosition(mouse_pos);
+	int main_win_h = main_window->GetCurrentSource()->LinesOnScreen();
+	cout << mouse_pos << "   " << mouse_line << "  " << main_win_h << endl;
+//	int goto_pos = PositionFromLine(goto_line);
+	main_window->GetCurrentSource()->EnsureVisibleEnforcePolicy(mouse_line-main_win_h/2);
+	main_window->GetCurrentSource()->EnsureVisibleEnforcePolicy(mouse_line+main_win_h/2);
+//	main_window->GetCurrentSource()->EnsureCaretVisible();
 	main_window->GetCurrentSource()->SetFocus();
+}
+
+void mxMiniSource::OnMouseIn (wxMouseEvent & evt) {
+	wxSetCursor(wxCURSOR_CROSS);
+}
+
+void mxMiniSource::OnMouseOut (wxMouseEvent & evt) {
+	wxSetCursor(wxNullCursor);
 }
 

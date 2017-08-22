@@ -14,6 +14,8 @@ public:
 	void Refresh(mxSource *src);
 	void SetStyle(int lexer);
 	void OnClick(wxMouseEvent &evt);
+	void OnMouseIn(wxMouseEvent &evt);
+	void OnMouseOut(wxMouseEvent &evt);
 	DECLARE_EVENT_TABLE();
 };
 
