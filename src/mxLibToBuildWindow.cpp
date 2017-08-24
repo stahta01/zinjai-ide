@@ -29,7 +29,7 @@ mxLibToBuildWindow::mxLibToBuildWindow(mxProjectConfigWindow *parent, project_co
 	CreateSizer sizer(this);
 	
 	sizer.BeginText(LANG(LIBTOBUILD_NAME,"Nombre")).Value(m_lib?m_lib->libname:"").EndText(m_name);
-	sizer.BeginText(LANG(LIBTOBUILD_DIR,"Directorio de salida")).Value(m_lib?m_lib->path:m_configuration->temp_folder).EndText(m_path);
+	sizer.BeginText(LANG(LIBTOBUILD_DIR,"Directorio de salida")).Value(m_lib?m_lib->m_path:m_configuration->temp_folder).EndText(m_path);
 	sizer.BeginText(LANG(LIBTOBUILD_FILE,"Archivo de salida")).ReadOnly().EndText(m_filename);
 	sizer.BeginText(LANG(LIBTOBUILD_EXTRA_LINK,"Opciones de enlazado")).Value(m_lib?m_lib->extra_link:"").EndText(m_extra_link);
 	
@@ -93,7 +93,7 @@ void mxLibToBuildWindow::OnOkButton(wxCommandEvent &evt) {
 		m_lib = project->AppendLibToBuild(m_configuration);
 	}
 	m_lib->libname = new_name;
-	m_lib->path = m_path->GetValue();
+	m_lib->m_path = m_path->GetValue();
 //	lib->filename = filename->GetValue();
 	m_lib->extra_link = m_extra_link->GetValue();
 	m_lib->is_static = m_type->GetSelection()==1;
@@ -163,6 +163,7 @@ void mxLibToBuildWindow::SetFName() {
 	if (!m_constructed) return;
 	bool is_static = m_type->GetSelection()==1;
 	wxString fname = DIR_PLUS_FILE(m_path->GetValue(),wxString("lib")<<m_name->GetValue());
+	mxUT::ParameterReplace(fname,"${TEMP_DIR}",project->active_configuration->temp_folder);
 #ifdef __WIN32__
 	fname << (is_static?".a":".dll");
 #else

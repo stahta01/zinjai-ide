@@ -227,13 +227,15 @@ struct cppcheck_configuration {
 	}
 };
 
+class ProjectManager;
 
 /**
 * @brief Guarda información sobre una libreria a generar con el proyecto
 **/
 struct project_library {
+	wxString m_path; ///< directorio de salida (destino, puede contener variables como "${TEMP_DIR}")
+	wxString GetPath(/*const */ProjectManager *project) const ;
 	wxString libname; ///< nombre amigable
-	wxString path; ///< archivo de salida (destino)
 	wxString sources; ///< fuentes que poner dentro
 	wxString extra_link; ///< opciones extra para el linker
 	bool is_static; ///< estatica o dinamica
@@ -242,7 +244,7 @@ struct project_library {
 	bool need_relink; ///< temporal, para AnalizeConfig y PrepareForBuilding
 	wxString objects_list; ///< temporal, para AnalizeConfig y PrepareForBuilding
 	wxString parsed_extra; ///< temporal, para AnalizeConfig y PrepareForBuilding
-	wxString filename; ///< archivo de salida (ruta completa del destino), para AnalizeConfig y PrepareForBuilding
+	wxString filename; ///< archivo de salida (ruta completa del destino con variables ya reemplazadas), para AnalizeConfig y PrepareForBuilding
 	project_library() {
 		do_link=true;
 		is_static=true;

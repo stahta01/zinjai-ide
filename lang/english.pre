@@ -1299,7 +1299,7 @@ There was an error when trying to reorganize compiler's output. Some errors may\
 MAINW_COMPILING_DONE_SECONDS
 Compilation finished ( elapsed time: <{1}> seconds ).
 MAINW_COMPILING_DONE_ONE_MINUTE
-Compilation finished ( elapsed time: on minute and <{1}> seconds ).
+Compilation finished ( elapsed time: one minute and <{1}> seconds ).
 MAINW_COMPILING_DONE_MINUTES_AND_SECONDS
 Compilation finished ( elapsed time: <{1}> minutes and <{2}> seconds ).
 MAINW_COMPILING_DONE

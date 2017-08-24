@@ -49,7 +49,7 @@ void EnvVars::SetMode (EnvVars::mode_t mode) {
 				if (!lib->is_static) {
 					has_libs = true;
 					if (ldlp_value.Len()) ldlp_value << ldlp_sep;
-					ldlp_value << mxUT::Quotize(DIR_PLUS_FILE(project->path,lib->path));
+					ldlp_value << mxUT::Quotize(lib->GetPath(project));
 				}
 			}
 			if (has_libs) store_and_set(ldlp_name,ldlp_value);

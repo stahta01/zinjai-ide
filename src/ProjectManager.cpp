@@ -255,7 +255,7 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 			project_library *lib_to_build = new project_library;
 			active_configuration->libs_to_build.Add(lib_to_build);
 			for( IniFileReader::Pair p = fil.GetNextPair(); p.IsOk(); p = fil.GetNextPair() ) {
-				if (p.Key()=="path") lib_to_build->path = p.AsString();
+				if (p.Key()=="path") lib_to_build->m_path = p.AsString();
 				else if (p.Key()=="libname") lib_to_build->libname = p.AsString();
 				else if (p.Key()=="sources") lib_to_build->sources = p.AsString();
 				else if (p.Key()=="extra_link") lib_to_build->extra_link = p.AsString();
@@ -895,7 +895,7 @@ bool ProjectManager::Save (bool as_template) {
 		for(JavaVectorIterator<project_library> lib(configurations[i]->libs_to_build); lib.IsValid(); lib.Next()) { 
 			fil.AddLine("[lib_to_build]");
 			CFG_GENERIC_WRITE_DN("libname",lib->libname);
-			CFG_GENERIC_WRITE_DN("path",lib->path);
+			CFG_GENERIC_WRITE_DN("path",lib->m_path);
 			CFG_GENERIC_WRITE_DN("sources",lib->sources);
 			CFG_GENERIC_WRITE_DN("extra_link",lib->extra_link);
 			CFG_BOOL_WRITE_DN("is_static",lib->is_static);
@@ -1363,8 +1363,9 @@ bool ProjectManager::PrepareForBuilding(project_file_item *only_one) {
 		
 		// agregar el enlazado de bibliotecas
 		for(JavaVectorIterator<project_library> lib(active_configuration->libs_to_build); lib.IsValid(); lib.Next()) {
-			if (lib->path.Len() && !wxFileName::DirExists(DIR_PLUS_FILE(path,lib->path)))
-				wxFileName::Mkdir(DIR_PLUS_FILE(path,lib->path),0777,wxPATH_MKDIR_FULL);
+			wxString lib_dir = lib->GetPath(this);
+			if (lib_dir.Len() && !wxFileName::DirExists(DIR_PLUS_FILE(path,lib_dir)))
+				wxFileName::Mkdir(DIR_PLUS_FILE(path,lib_dir),0777,wxPATH_MKDIR_FULL);
 			if (lib->need_relink || !wxFileName(DIR_PLUS_FILE(path,lib->filename)).FileExists()) {
 				AnalizeConfig(path,true,current_toolchain.mingw_dir,false); // esto no fuerza el "reanalizado", pero se puede llegar hasta aca sin haberlo hecho antes??
 				if (lib->objects_list.Len()) {
@@ -3049,9 +3050,7 @@ void ProjectManager::AssociateLibsAndSources(project_configuration *conf) {
 			}
 		}
 		// armar tambien el nombre del archivo
-		lib->filename = lib->path;
-		mxUT::ParameterReplace(lib->filename,"${TEMP_DIR}",temp_folder);
-		lib->filename = DIR_PLUS_FILE(lib->filename,wxString("lib")<<lib->libname);
+		lib->filename = DIR_PLUS_FILE(lib->GetPath(this),wxString("lib")<<lib->libname);
 #ifdef __WIN32__
 		if (lib->is_static)
 			lib->filename<<".a";
@@ -3650,3 +3649,8 @@ cppcheck_configuration * ProjectManager::GetCppCheckConfiguration(bool save_in_p
 	return cppcheck;
 }
 
+wxString project_library::GetPath(ProjectManager *project) const {
+	wxString retval = m_path;
+	mxUT::ParameterReplace(retval,"${TEMP_DIR}",project->active_configuration->temp_folder);
+	return retval;
+}
