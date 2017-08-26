@@ -1,5 +1,5 @@
 If this is the first time you run ZinjaI, you can press F1 key to display help system and tutorials.
-Welcome a new ZinjaI release. Among the changes you'll find an updated compiler included in the Windows version.<BR><BR><B>If you run ZinjaI on Windows you'll need to reinstall the complements</B> related to external libraries (or change the <A href="help:toolchains.html">toolchain</A> to use the old one, both versions remains available).<BR><BR>Read the <A href="help:ChangeLog.html">full changelog</A>.
+Welcome a new ZinjaI release. Among the changes you'll find an updated compiler included in the Windows version.<BR><BR><B>If you run ZinjaI on Windows you'll need to reinstall the complements</B> related to external libraries (or change the <A href="help:toolchains.html">toolchain</A> to use the old one). Other interesting changes are the <A href="project_inheritance.html">Project's Inheritance</A> feature and the new [experimental] <A href="minimap.html">Mini-Map panel</A>. <BR><BR>Read the <A href="help:ChangeLog.html">full changelog</A>.
 These tips can be very anoying for some users. You can disable them by clicking the checkbox in to bottom of this window.
 
 You can change code zoom quickly by scrolling mouse will with Ctrl key down, or pressin +/- key also with ctrl key down.

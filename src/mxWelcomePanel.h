@@ -11,7 +11,7 @@ private:
 public:
 	bool IsVisible();
 	mxWelcomePanel(wxWindow *parent);
-	void Reload();
+	void Reload(bool reread_source=false);
 	void OnLinkClicked (wxHtmlLinkEvent &event);
 	DECLARE_EVENT_TABLE();
 };

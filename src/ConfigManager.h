@@ -144,8 +144,7 @@ struct cfgInit {
 	int wrap_mode; ///< indica el ajuste de linea (0=no, 1=fuentes, 2=todos), conf global
 	bool singleton; ///< indica si al inciarse con argumentos, los programas simples deben buscar si hay otra instancia de zinjai
 	bool stop_compiling_on_error; ///< detener compilacion de un proyecto al encontrar un error
-	bool autohide_panels; ///< ocultar automaticamente los paneles dockeados en la ventana principal, y mostrar solo cuando el mouse se lleve al borde (opcion guardada)
-	bool autohiding_panels; ///< ocultar automaticamente los paneles dockeados en la ventana principal, y mostrar solo cuando el mouse se lleve al borde (opcion activa)
+	bool autohide_panels; ///< ocultar automaticamente los paneles dockeados en la ventana principal, y mostrar solo cuando el mouse se lleve al borde
 	bool fullpath_on_project_tree; ///< mostrar rutas relativas completas en el arbol de proyecto cuando es un proyecto
 	int max_jobs; ///< cantidad máxima de procesos (pasos) corriendo en paralelo al compilar un proyecto
 	wxString colour_theme; ///< archivo de donde tomar el perfil de colores (si es "" se busca en .zinjai/colours.zcs, sino en zinjai/colours)

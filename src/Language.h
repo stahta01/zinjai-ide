@@ -26,5 +26,7 @@ LANGUAGE_ERROR load_language(string lang_in, string lang_cache);
 LANGUAGE_ERROR compile_language(string lang_in, string lang_cache);
 LANGUAGE_ERROR is_language_compiled(string lang_in, string lang_cache);
 
+void try_to_load_language();
+
 #endif
 

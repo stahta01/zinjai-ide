@@ -127,7 +127,7 @@ private:
 		wxMenu *wx_menu;
 		vector<myMenuItem> items;
 		void Init(const wxString &_key, const wxString &_label) {
-			key=_key; label=_label;
+			key=_key; label=_label; wx_menu = nullptr; items.clear();
 		}
 	};
 

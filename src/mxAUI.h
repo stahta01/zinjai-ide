@@ -54,6 +54,7 @@ private:
 	PaneConfig &Docked(side_t side) { m_side = side; return *this; }
 	PaneConfig &Float() { m_side = Floating; return *this; }
 	PaneConfig &Layout(int layer, int order) { m_layer = layer; m_order = order; return *this; }
+	PaneConfig &DontAutohide() { m_autohide = NoAutohide; return *this; }
 	PaneConfig &Autohide(bool show_handler) { m_autohide = (show_handler?AutohideNormal:AutohideNoHandler); return *this; }
 	PaneConfig &BestSize(int x, int y) { m_bs_x = x; m_bs_y = y; return *this; }
 	PaneConfig &MenuItem(int id) { m_menu_id = id; return *this; }
@@ -65,6 +66,9 @@ private:
 		m_normal = normal; m_fullscreen = fullscreen; m_debug = debug; 
 		return *this; 
 	}
+	PaneConfig &ActionNormal(action_t normal) { m_normal = normal; return *this; }
+	PaneConfig &ActionFullscreen(action_t fullscreen) { m_fullscreen = fullscreen; return *this; }
+	PaneConfig &ActionDebug(action_t debug) { m_debug = debug;  return *this; }
 	
 public:
 	
@@ -90,7 +94,6 @@ public:
 	bool HideForFullscreen() const { return m_fullscreen == Hide; }
 	bool ShowForDebug() const { return m_debug == Show; }
 	bool HideForDebug() const { return m_debug == Hide; }
-	
 	
 	static void Init();
 	static PaneConfig m_configs[PaneId::Count];
@@ -137,6 +140,8 @@ public:
 	void Update();
 //	void AttachKnownPane(int aui_id, wxWindow *ctrl);
 	void AttachGenericPane(wxWindow *ctrl, wxString title, wxPoint position, wxSize size, bool handle_deletion=true);
+	void RecreatePanes();
+	bool IsVisible(PaneId::type id) const;
 private:
 	void Freeze(); ///< use mxAUIFreezeGuard instead
 	void Thaw(); ///< use mxAUIFreezeGuard instead

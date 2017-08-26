@@ -194,6 +194,12 @@ SHOW_MILLIS("Welcome panel done...");
 	// si estaba abriendo un proyecto el usuario puede haber cerrado la ventana antes de que el parser termine
 	if (!main_window) return false;
 	
+	if (!project && config->Init.show_explorer_tree) {
+		// va aca y no en la main window porque el welcomepanel lo oculta otra vez
+		main_window->m_aui->Show(PaneId::Explorer,true);
+		main_window->explorer_tree.treeCtrl->SetFocus();
+	}
+	
 	// puede haber llegado algo para el singleton mientras cargabamos
 	if (g_singleton) g_singleton->ProcessToOpenQueue();
 	

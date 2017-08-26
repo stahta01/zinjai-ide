@@ -470,8 +470,6 @@ bool ConfigManager::Load() {
 #endif
 	}
 
-	Init.autohiding_panels=Init.autohide_panels;
-	
 	return true;
 }
 	
@@ -1008,15 +1006,7 @@ void ConfigManager::RecalcStuff ( ) {
 void ConfigManager::FinishiLoading ( ) {
 	
 	// load language translations
-	if (Init.language_file!="spanish") {
-		if (LANGERR_OK!=load_language(DIR_PLUS_FILE("lang",Init.language_file).c_str(),DIR_PLUS_FILE(config_dir,"lang_cache").c_str())) {
-			if (g_splash) g_splash->Hide(); // en window, si el splash esta visible, la llamada a ShowModal revienta
-			mxMessageDialog(nullptr,"No se pudo cargar el diccionario del idioma seleccionado.\n"
-			                        "El sistema utilizará el predeterminado (español).\n\n"
-									"Could not load language file. System will use default (spanish)."
-							).IconWarning().Run();
-		}
-	}
+	if (Init.language_file!="spanish") try_to_load_language();
 	
 	// load syntax highlighting colors' scheme
 	color_theme::Initialize();

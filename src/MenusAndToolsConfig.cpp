@@ -87,7 +87,7 @@ void MenusAndToolsConfig::LoadMenuData ( ) {
 	}
 
 	
-	menues[mnVIEW].Init("view",LANG(MENUITEM_VIEW,_if_not_apple("&Ver","Ver"))); {
+	menues[mnVIEW].Init("view",_if_not_apple(LANG(MENUITEM_VIEW,"&Ver"),LANG(MENUITEM_VIEW,"Ver"))); {
 		AddMenuItem(mnVIEW, myMenuItem("split_view",mxID_VIEW_DUPLICATE_TAB, LANG(MENUITEM_VIEW_SPLIT_VIEW,"&Duplicar vista")).Icon("duplicarVista.png").EnableIf(ecSOURCE));
 		AddMenuItem(mnVIEW, myMenuItem("line_wrap",mxID_VIEW_LINE_WRAP, LANG(MENUITEM_VIEW_LINE_WRAP,"&Ajuste de linea")).ShortCut("Alt+F11").Description("Muestra las lineas largas como en varios renglones").Icon("lineWrap.png").Checkeable(false).EnableIf(ecSOURCE));	
 		AddMenuItem(mnVIEW, myMenuItem("white_space",mxID_VIEW_WHITE_SPACE, LANG(MENUITEM_VIEW_WHITE_SPACES,"Mostrar espacios y caracteres de &fin de linea")).Description("Muestra las lineas largas como en varios renglones").Icon("whiteSpace.png").Checkeable(false).EnableIf(ecSOURCE));	
@@ -1209,10 +1209,10 @@ bool MenusAndToolsConfig::SaveShortcutsSettings (const wxString & full_path) {
 	return true;
 }
 
-void MenusAndToolsConfig::RecreateAllMenues ( ) {
+void MenusAndToolsConfig::RecreateAllMenues( ) {
 	mapped_items.clear(); mapped_items.clear();
+	LoadMenuData();
 	TransferStatesFromConfig();
 	CreateMenues();
-	
 }
 

@@ -9,6 +9,10 @@
 	<LI>New: Implementado un mini-mapa del código fuente (menu "Ver"->"Mostrar mini-map", funcionalidad en fase beta, podría resultar ineficiente o insetable).</LI>
 	<LI>New: Cuando el mensaje de error de clang o gcc sugiere una corrección en el tipeo de un identificador, al seleccionar el error en ZinjaI además de marcar la ubicación se ofrece la corrección a modo de autocompletado.</LI>
 	<LI>New: Herencia de proyectos: un proyecto puede incluir una referencia a otro para heredar su lista de archivos cada vez que se abre.</LI>
+	<LI>Imp: Actualizada la versión de mingw32 en el instalador para Windows, ahora basada en gcc-6.3.0.</LI>
+	<LI>Imp: Ya no hace falta reiniciar ZinjaI al cambiar activar/desactivar el uso de paneles auto-ocultables.</LI>
+	<LI>Imp: Al cambiar el idioma desde las preferencias, la mayoría de los elementos de interfaz se actualizan sin necesidad de reiniciar ZinjaI.</LI>
+	<LI>Imp: Nuevas y simplificadas políticas para determinar qué paneles mostrar/ocultar al cambiar entre los modos normal, pantalla completa y depuración.</LI>
 	<LI>Imp: Reducido el tiempo de preparación para la compilación de un proyecto.</LI>
 	<LI>Imp: Se agregaron varios autocódigos nuevos por defecto, ver samples/autocodes.</LI>
 	<LI>Imp: Los archivos para autocódigos y macros de gdb se configuran para apuntar a la carpeta de configuración de zinjai en el home del usuario, pero si no existen (por defecto) se usan los de la carpeta "samples" del directorio de instalación.</LI>
@@ -17,6 +21,9 @@
 	<LI>Imp: El tabulado de un proyecto siempre es "propio", por defecto al crearse toma el general de ZinjaI definido en las preferencias.</LI>
 	<LI>Imp: Varias mejoras internas en el código fuente del IDE.</LI>
 	<LI>Imp: Algunos añadidos/actualizaciones en las páginas de ayuda.</LI>
+	<LI>Fix: No mostrar un error si el directorio base para el panel del explorador leido de un proyecto no es válido.</LI>
+	<LI>Fix: Corregido un error al generar el directorio de salida para una biblioteca cuando se usa ${TEMP_DIR} en su path.</LI>
+	<LI>Fix: Corregidos algunos errores en el análisis de dependencias para la compilación de una biblioteca.</LI>
 	<LI>Fix: Aplicado un workaround en el parser para poder interpretar &gt;&gt; como el cierre de dos listas de argumentos de templates anidadas en lugar de hacerlo como un único operador.</LI>
 	<LI>Fix: Corregido un error al renombrar un archivo de un proyecto.</LI>
 	<LI>Fix: El marcado de errores ya no interfiere con el funcionamiento de la edición múltiple del identificador seleccionado.</LI>

@@ -41,11 +41,15 @@ class mxToolbarEditor;
 class wxStaticBitmap;
 
 class mxPreferenceWindow : public mxDialog {
+
+	static mxPreferenceWindow *instance;
 	
 	widgetBinder m_binder;
 	
 	bool ignore_styles_changes;
 
+	wxComboBox *language_combo;
+	
 	wxCheckBox *toolbars_wich_file;
 	wxCheckBox *toolbars_wich_find;
 	wxCheckBox *toolbars_wich_project;
@@ -213,7 +217,8 @@ public:
 	void SetPathsPage(const wxString &select_one="");
 	void SetToolbarPage(const wxString &edit_one="");
 	static mxPreferenceWindow *ShowUp();
-	static void Delete(); ///< to force reloading of some things that Reset won't redo, such as the list of autocompletion indexes
+	static void Delete() { if (instance) instance->Destroy(); }
+	~mxPreferenceWindow() { mxPreferenceWindow::instance = nullptr; }
 	
 private:
 	DECLARE_EVENT_TABLE()

@@ -29,8 +29,8 @@ mxWelcomePanel::mxWelcomePanel(wxWindow *parent):wxHtmlWindow(parent,wxID_ANY,wx
 	if (wxFileName::FileExists(tips_file)) file.Open(tips_file);
 }
 
-void mxWelcomePanel::Reload() {
-	static wxString source;
+void mxWelcomePanel::Reload(bool reread_source) {
+	static wxString source; if (reread_source) source.Clear();
 	bool skin_file=wxFileName::FileExists(DIR_PLUS_FILE(config->Files.skin_dir,wxString(_T("welcome_panel_"))<<config->Init.language_file<<_T(".html")));
 	if (!source.Len()) {
 		wxTextFile fil(SKIN_FILE(wxString(_T("welcome_panel_"))<<config->Init.language_file<<_T(".html")));

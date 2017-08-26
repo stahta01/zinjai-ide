@@ -32,7 +32,9 @@ void PaneConfig::Init ( ) {
 //	m_configs[PaneId::Registers  ].Docked(Bottom).Layout(4,1).Actions(Hide,Hide,None).Titles(,);
 	m_configs[PaneId::Minimap    ].Docked(Right ).Layout(5,9).Actions(None,None,Hide).Titles(LANG(MAINW_MINIMAP_PANEL,"Mini-mapa")).MenuItem(mxID_VIEW_MINIMAP).BestSize(100,100);
 	
-	if (config->Init.autohiding_panels) {
+	// from config
+	m_configs[PaneId::Inspections].Docked(config->Debug.inspections_on_right?Right:Bottom);
+	if (config->Init.autohide_panels) {
 		m_configs[PaneId::Compiler   ].Autohide(true); 
 		m_configs[PaneId::QuickHelp  ].Autohide(true); 
 		m_configs[PaneId::DebugMsgs  ].Autohide(config->Debug.show_log_panel); 
@@ -48,9 +50,15 @@ void PaneConfig::Init ( ) {
 		m_configs[PaneId::Beginners  ].Autohide(false); 
 		m_configs[PaneId::Minimap    ].Autohide(false); 
 		m_configs[PaneId::Tools      ].Autohide(false); 
+	} else {
+		for(int i=0;i<PaneId::Count;i++) {
+			m_configs[i].DontAutohide();
+		}
 	}
-	
+	m_configs[PaneId::DebugMsgs  ].ActionDebug(config->Debug.show_log_panel?Show:None); 
+	m_configs[PaneId::Threads    ].ActionDebug(config->Debug.show_thread_panel?Show:None); 
 }
+
 mxAUI::mxAUI (mxMainWindow *main_window) 
 	: m_wxaui(*this), m_freeze_level(0), m_should_update(false),
 	  m_fullscreen(false), m_debug(false)
@@ -84,6 +92,11 @@ void mxAUI::OnPaneClose (wxWindow * window) {
 				_menu_item(PaneConfig::Get(i).GetMenuId())->Check(false);
 			if (m_panes[i].hidden_helper)
 				m_panes[i].hidden_helper->ProcessClose();
+			if (i==PaneId::Trees) {
+				_menu_item(PaneConfig::Get(PaneId::Project).GetMenuId())->Check(false);
+				_menu_item(PaneConfig::Get(PaneId::Symbols).GetMenuId())->Check(false);
+				_menu_item(PaneConfig::Get(PaneId::Explorer).GetMenuId())->Check(false);
+			}
 			return;
 		}
 	}
@@ -273,5 +286,30 @@ void mxAUI::OnResize ( ) {
 		if (m_panes[i].hidden_helper)
 			m_panes[i].hidden_helper->ProcessParentResize();
 	}
+}
+
+void mxAUI::RecreatePanes ( ) {
+	mxAUIFreezeGuard guard(*this);
+	for(int i=0;i<PaneId::Count;i++) {
+		if (m_panes[i].window) {
+			PaneId::type id = (PaneId::type)i;
+			bool was_visible = IsVisible(id);
+			wxWindow *win = m_panes[i].window;
+			if (m_panes[i].hidden_helper) {
+				m_wxaui.DetachPane(m_panes[i].hidden_helper);
+				m_panes[i].hidden_helper->Destroy();
+				m_panes[i].hidden_helper = nullptr;
+			}
+			m_wxaui.DetachPane(m_panes[i].window);
+			m_panes[i].window = nullptr;
+			Create(id,win);
+			if (was_visible) Show(id,true); 
+			else             Hide(id);
+		}
+	}
+}
+
+bool mxAUI::IsVisible (PaneId::type id) const {
+	return m_wxaui.GetPane(m_panes[id].window).IsShown();
 }
 

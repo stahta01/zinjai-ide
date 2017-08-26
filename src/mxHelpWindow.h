@@ -33,6 +33,7 @@ public:
 	/// @brief Selects an iden in the index tree skipping its selecion event callback
 	void SelectTreeItem(const wxString &fname);
 	
+	static void DeleteInstance() { if (instance) instance->Destroy(); }
 	
 	~mxHelpWindow();
 };

@@ -37,6 +37,7 @@
 #include "SimpleTemplates.h"
 #include "mxThreeDotsUtils.h"
 #include "mxAUI.h"
+#include "mxNewWizard.h"
 
 static cfgStyles s_old_config_styles; // aquí para evitar tener que hacer el include de ConfigManager en el .h
 
@@ -74,7 +75,7 @@ bool LinuxTerminalInfo::Test() {
 }
 #endif
 
-static mxPreferenceWindow *s_preference_window = nullptr;
+mxPreferenceWindow *mxPreferenceWindow::instance = nullptr;
 
 BEGIN_EVENT_TABLE(mxPreferenceWindow, wxDialog)
 	EVT_BUTTON(wxID_OK,mxPreferenceWindow::OnOkButton)
@@ -179,7 +180,7 @@ mxPreferenceWindow::mxPreferenceWindow(wxWindow* parent) :
 	ignore_styles_changes=false;
 	
 	EnableOrDisableControls();
-	SetFocus();
+	if (!config->Help.show_extra_panels) language_combo->SetFocus();
 	Show();
 }
 
@@ -193,7 +194,7 @@ wxPanel *mxPreferenceWindow::CreateGeneralPanel (mxBookCtrl *notebook) {
 	if (langs.Index("spanish")==wxNOT_FOUND) langs.Add("spanish");
 	
 	sizer.BeginCombo( LANG(PREFERENCES_GENERAL_GUI_LANGUAGE,"Idioma de la interfaz (*)") )
-		.Add(langs).Bind(m_binder,config->Init.language_file).EndCombo();
+		.Add(langs).Bind(m_binder,config->Init.language_file).EndCombo(language_combo);
 	
 	sizer.BeginCheck( LANG(PREFERENCES_GENERAL_SHOW_TOOLTIPS,"Mostrar sugerencias al inicio") )
 		.Bind(m_binder,config->Init.show_tip_on_startup).EndCheck();
@@ -213,7 +214,7 @@ wxPanel *mxPreferenceWindow::CreateGeneralPanel (mxBookCtrl *notebook) {
 	sizer.BeginCheck( LANG(PREFERENCES_GENERAL_GROUP_TREES,"Agrupar arboles en un solo panel (*)") )
 		.Bind(m_binder,config->Init.left_panels).EndCheck();
 	
-	sizer.BeginCheck( LANG(PREFERENCES_GENERAL_AUTOHIDE_PANELS,"Ocultar paneles automaticamente (*)") )
+	sizer.BeginCheck( LANG(PREFERENCES_GENERAL_AUTOHIDE_PANELS,"Ocultar paneles automaticamente") )
 		.Bind(m_binder,config->Init.autohide_panels).EndCheck();
 	
 	sizer.BeginCheck( LANG(PREFERENCES_SINGLETON,"Utilizar una sola instancia de ZinjaI al abrir archivos desde la linea de comandos") )
@@ -798,10 +799,20 @@ void mxPreferenceWindow::OnOkButton(wxCommandEvent &event) {
 		return;
 	}
 	
+	bool autohide_panels_prev = config->Init.autohide_panels;
+	bool inspections_on_rigth_prev = config->Debug.inspections_on_right;
 	wxString wxformbuilder_prev = config->Files.wxfb_command;
+	wxString lang_prev = config->Init.language_file;
 	
 	m_binder.FromWidgets();
 	
+	bool lang_changed = lang_prev!=config->Init.language_file;
+	if (lang_changed) {
+		try_to_load_language();
+		menu_data->RecreateAllMenues();
+		mxNewWizard::DeleteInstance();
+		mxHelpWindow::DeleteInstance();
+	}
 		
 	if (project && project->HasWxfbConfiguration()
 		&& project->GetWxfbConfiguration()->autoupdate_projects_temp_disabled
@@ -829,7 +840,9 @@ void mxPreferenceWindow::OnOkButton(wxCommandEvent &event) {
 		main_window->m_aui->DetachPane(g_welcome_panel);
 		g_welcome_panel->Destroy();
 		g_welcome_panel=nullptr;
-	}
+	} 
+	if (g_welcome_panel && lang_changed) g_welcome_panel->Reload(true);
+	
 	wxSetEnv("LANG",(config->Init.lang_es?"es_ES":"en_US"));
 	if (config->Init.history_len>30) config->Init.history_len=30;
 	else if (config->Init.history_len<5) config->Init.history_len=5;
@@ -906,7 +919,7 @@ void mxPreferenceWindow::OnOkButton(wxCommandEvent &event) {
 	_update_toolbar_visibility(MISC,misc);
 	_update_toolbar_visibility_0(FIND,find);
 	if (project) { _update_toolbar_visibility_0(PROJECT,project); } else _toolbar_visible(tbPROJECT)=toolbars_wich_project->GetValue();
-	if (toolbar_icon_size->GetValue().BeforeFirst('x').ToLong(&l)) {
+	if (toolbar_icon_size->GetValue().BeforeFirst('x').ToLong(&l) || lang_changed) {
 		if (l!=menu_data->icon_size) {
 			toolbar_changed=true;
 			menu_data->icon_size=l;
@@ -916,10 +929,16 @@ void mxPreferenceWindow::OnOkButton(wxCommandEvent &event) {
 		menu_data->icon_size=16;
 	if (toolbar_changed) main_window->SortToolbars(true);
 	
+
+	PaneConfig::Init();
+	if (lang_changed || autohide_panels_prev != config->Init.autohide_panels || inspections_on_rigth_prev != config->Debug.inspections_on_right) 
+		main_window->m_aui->RecreatePanes();
+	
 	Toolchain::SelectToolchain();
 	config->RecalcStuff();
 	
 	Close();
+	if (lang_changed) this->Destroy();
 }
 
 void mxPreferenceWindow::OnCancelButton(wxCommandEvent &event){
@@ -1131,15 +1150,15 @@ void mxPreferenceWindow::OnDebugMacrosEdit(wxCommandEvent &event) {
 }
 
 mxPreferenceWindow *mxPreferenceWindow::ShowUp() {
-	if (s_preference_window) {
-		s_preference_window->ResetChanges();
-		s_preference_window->EnableOrDisableControls();
-		s_preference_window->Show();
-		s_preference_window->Raise();
+	if (instance) {
+		instance->ResetChanges();
+		instance->EnableOrDisableControls();
+		instance->Show();
+		instance->Raise();
 	} else {
-		s_preference_window = new mxPreferenceWindow(main_window);
+		instance = new mxPreferenceWindow(main_window);
 	}
-	return s_preference_window;
+	return instance;
 }
 
 void mxPreferenceWindow::OnToolbarsCommon(mxToolbarEditor *wx_toolbar, int tb_id) {
@@ -1313,11 +1332,6 @@ void mxPreferenceWindow::OnToolchainButton(wxCommandEvent &evt) {
 		if (tc_prev.Index(tc_post[i])==wxNOT_FOUND)
 			files_toolchain->Append(tc_post[i]);
 	}
-}
-
-void mxPreferenceWindow::Delete ( ) {
-	if (s_preference_window) s_preference_window->Destroy();
-	s_preference_window = nullptr;
 }
 
 void mxPreferenceWindow::OnFontChange (wxCommandEvent & evt) {

@@ -754,7 +754,7 @@ void mxFindDialog::OnClose(wxCloseEvent &event) {
 
 void mxFindDialog::MyHide() {
 	Hide(); wxYield();
-	if (config->Init.autohiding_panels) main_window->Raise();
+	if (config->Init.autohide_panels) main_window->Raise();
 	main_window->FocusToSource();
 }
 

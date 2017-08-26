@@ -90,7 +90,7 @@ private:
 	mxNewWizard(mxMainWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxALWAYS_SHOW_SB | wxALWAYS_SHOW_SB | wxDEFAULT_FRAME_STYLE | wxSUNKEN_BORDER);
 public:
 	static mxNewWizard *GetInstance();
-	static void DeleteInstance() { delete mxNewWizard::instance; }
+	static void DeleteInstance() { if (mxNewWizard::instance) mxNewWizard::instance->Destroy(); }
 	~mxNewWizard() { mxNewWizard::instance=nullptr; }
 
 	void OnButtonNext(wxCommandEvent &event);

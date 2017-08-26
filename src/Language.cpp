@@ -2,6 +2,11 @@
 #include <cstring>
 #include "Language.h"
 #include "Cpp11.h"
+#include "ConfigManager.h"
+#include "mxUtils.h"
+#include "mxSplashScreen.h"
+#include "mxMainWindow.h"
+#include "mxMessageDialog.h"
 using namespace std;
 
 char *g_language_buffer = nullptr;
@@ -126,3 +131,14 @@ LANGUAGE_ERROR compile_language(string lang_in, string lang_cache) {
 	
 	return LANGERR_RECOMPILED;
 }
+
+void try_to_load_language( ) {
+	if (LANGERR_OK!=load_language(DIR_PLUS_FILE("lang",config->Init.language_file).c_str(),config->GetUserConfigPath("lang_cache").c_str())) {
+		if (g_splash) g_splash->Hide(); // en window, si el splash esta visible, la llamada a ShowModal revienta
+		mxMessageDialog(nullptr,"No se pudo cargar el diccionario del idioma seleccionado.\n"
+						"El sistema utilizará el predeterminado (español).\n\n"
+						"Could not load language file. System will use default (spanish)."
+						).IconWarning().Run();
+	}
+}
+
