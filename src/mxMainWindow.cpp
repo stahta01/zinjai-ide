@@ -272,7 +272,6 @@ BEGIN_EVENT_TABLE(mxMainWindow, wxFrame)
 	EVT_MENU(mxID_VIEW_BEGINNER_PANEL, mxMainWindow::OnViewBeginnerPanel)
 	EVT_MENU(mxID_VIEW_NEXT_ERROR, mxMainWindow::OnViewNextError)
 	EVT_MENU(mxID_VIEW_PREV_ERROR, mxMainWindow::OnViewPrevError)
-	EVT_MENU(mxID_VIEW_LEFT_PANELS, mxMainWindow::OnViewLeftPanels)
 	EVT_MENU(mxID_VIEW_PROJECT_TREE, mxMainWindow::OnViewProjectTree)
 	EVT_MENU(mxID_VIEW_MINIMAP, mxMainWindow::OnViewMinimapPanel)
 	EVT_MENU(mxID_VIEW_COMPILER_TREE, mxMainWindow::OnViewCompilerTree)
@@ -411,7 +410,6 @@ BEGIN_EVENT_TABLE(mxMainWindow, wxFrame)
 	EVT_AUINOTEBOOK_PAGE_CLOSE(mxID_NOTEBOOK_SOURCES, mxMainWindow::OnNotebookPageClose)
 	EVT_AUINOTEBOOK_TAB_RIGHT_DOWN(mxID_NOTEBOOK_SOURCES, mxMainWindow::OnNotebookRightClick)
 	EVT_AUINOTEBOOK_PAGE_CHANGED(mxID_NOTEBOOK_SOURCES, mxMainWindow::OnNotebookPageChanged)
-	EVT_AUINOTEBOOK_PAGE_CHANGED(mxID_LEFT_PANELS, mxMainWindow::OnNotebookPanelsChanged)
 	
 	EVT_END_PROCESS(wxID_ANY, mxMainWindow::OnProcessTerminate)
 	
@@ -549,21 +547,10 @@ SHOW_MILLIS("Initializing aui_manager, menues and toolbars...");
 	
 SHOW_MILLIS("Initializing aui_manager, panels...");	
 
-	if (config->Init.left_panels && !config->Init.autohide_panels) {
-		m_aui->Create(PaneId::Trees, CreateLeftPanels());
-		left_panels->AddPage(project_tree.Create(this),"P");
-		left_panels->AddPage(CreateSymbolsTree(),"S");
-		left_panels->AddPage(CreateExplorerTree(),"E");
-		left_panels->SetSelection(1);
-//		SetExplorerPath(config->Files.last_dir);
-	} else {
-		left_panels=nullptr;
-		_menu_item(mxID_VIEW_LEFT_PANELS)->Enable(false);
-		m_aui->Create(PaneId::Project, project_tree.Create(this) );
-		m_aui->Create(PaneId::Symbols, CreateSymbolsTree() );
-		m_aui->Create(PaneId::Explorer,CreateExplorerTree());
-//		SetExplorerPath(config->Files.last_dir);
-	}
+	m_aui->Create(PaneId::Project, project_tree.Create(this) );
+	m_aui->Create(PaneId::Symbols, CreateSymbolsTree() );
+	m_aui->Create(PaneId::Explorer,CreateExplorerTree());
+	
 	m_aui->Create(PaneId::Compiler,CreateCompilerTree());
 	m_aui->Create(PaneId::QuickHelp,CreateQuickHelp());
 	
@@ -1477,22 +1464,6 @@ wxHtmlWindow* mxMainWindow::CreateQuickHelp(wxWindow* parent) {
     return quick_help;
 }
 
-void mxMainWindow::OnNotebookPanelsChanged(wxAuiNotebookEvent& event) {
-	wxWindow *c = left_panels->GetPage(left_panels->GetSelection());
-	if (!c) return; 
-	else if (c==explorer_tree.treeCtrl) m_aui->GetPane(left_panels).Caption(LANG(CAPTION_EXPLORER_TREE,"Arbol de Archivos"));
-	else if (c==symbols_tree.treeCtrl) m_aui->GetPane(left_panels).Caption(LANG(CAPTION_PROJECT_SYMBOLS_TREE,"Arbol de Simbolos"));
-	else if (c==project_tree.treeCtrl) m_aui->GetPane(left_panels).Caption(LANG(CAPTION_PROJECT_PROJECT_TREE,"Arbol de Proyecto"));
-	m_aui->Update();
-}
-
-wxAuiNotebook *mxMainWindow::CreateLeftPanels() {
-	explorer_tree.treeCtrl=symbols_tree.treeCtrl=project_tree.treeCtrl=nullptr;
-//	wxSize client_size = GetClientSize();
-	left_panels = new wxAuiNotebook(this, mxID_LEFT_PANELS, wxDefaultPosition, wxSize(200,400), wxAUI_NB_BOTTOM | wxNO_BORDER);
-	return left_panels;
-}
-
 wxAuiNotebook *mxMainWindow::CreateNotebookSources() {
 //	wxSize client_size = GetClientSize();
 	notebook_sources = new wxAuiNotebook(this, mxID_NOTEBOOK_SOURCES, wxDefaultPosition, wxDefaultSize, wxAUI_NB_DEFAULT_STYLE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxNO_BORDER | wxAUI_NB_WINDOWLIST_BUTTON);
@@ -2194,28 +2165,12 @@ void mxMainWindow::OnViewWhiteSpace (wxCommandEvent &event) {
 	}
 }
 
-void mxMainWindow::OnViewLeftPanels (wxCommandEvent &event) {
-	if(!config->Init.left_panels || config->Init.autohide_panels) return;
-	m_aui->ToggleFromMenu(PaneId::Trees);
-	m_aui->Update();
-}
-
 void mxMainWindow::OnViewProjectTree (wxCommandEvent &event) {
-	if(left_panels) {
-		m_aui->Show(PaneId::Trees,true);
-		left_panels->SetSelection(0);
-	} else {
-		m_aui->ToggleFromMenu(PaneId::Project);
-	}
+	m_aui->ToggleFromMenu(PaneId::Project);
 }
 
 void mxMainWindow::OnViewSymbolsTree (wxCommandEvent &event) {
-	if(left_panels) {
-		m_aui->Show(PaneId::Trees,true);
-		left_panels->SetSelection(1);
-	} else {
-		m_aui->ToggleFromMenu(PaneId::Symbols);
-	}
+	m_aui->ToggleFromMenu(PaneId::Symbols);
 }
 
 void mxMainWindow::OnViewUpdateSymbols (wxCommandEvent &event) {
@@ -2224,22 +2179,7 @@ void mxMainWindow::OnViewUpdateSymbols (wxCommandEvent &event) {
 	if (config->Init.autohide_panels) {
 //		m_aui->Show(PaneId::Symbols);
 	} else {	
-		if(left_panels) {
-			wxMenuItem *mi_view_left_panels = _menu_item(mxID_VIEW_LEFT_PANELS);
-			if (!mi_view_left_panels ->IsChecked()) {
-				mi_view_left_panels ->Check(true);
-				m_aui->GetPane(left_panels).Show();
-				m_aui->Update();
-			}
-			left_panels->SetSelection(1);
-		} else {
-			wxMenuItem *mi_view_symbols_tree = _menu_item(mxID_VIEW_SYMBOLS_TREE);
-			if (!mi_view_symbols_tree->IsChecked()) {
-				mi_view_symbols_tree->Check(true);
-				m_aui->GetPane(symbols_tree.treeCtrl).Show();
-				m_aui->Update();
-			}
-		}
+		m_aui->Show(PaneId::Symbols);
 	}
 	UpdateSymbols();
 	IF_THERE_IS_SOURCE
@@ -2320,12 +2260,7 @@ void mxMainWindow::OnViewCompilerTree (wxCommandEvent &event) {
 }
 
 void mxMainWindow::OnViewExplorerTree (wxCommandEvent &event) {
-	if(left_panels) {
-		m_aui->Show(PaneId::Trees,true);
-		left_panels->SetSelection(2);
-	} else {
-		m_aui->ToggleFromMenu(PaneId::Explorer);
-	}
+	m_aui->ToggleFromMenu(PaneId::Explorer);
 }
 
 
@@ -4342,12 +4277,7 @@ void mxMainWindow::HideExplorerTreePanel() {
 void mxMainWindow::ShowExplorerTreePanel(bool set_focus) {
 	// esto estaba en OnViewExplorerTree... ver si debe quedar o no
 	if (!project) SetExplorerPath(config->Files.last_dir);
-	if(left_panels) {
-		left_panels->SetSelection(2);
-		m_aui->ToggleFromMenu(PaneId::Trees);
-	} else {
-		m_aui->ToggleFromMenu(PaneId::Explorer);
-	}
+	m_aui->Show(PaneId::Explorer,true);
 	if (set_focus) explorer_tree.treeCtrl->SetFocus();
 	else SetFocusToSourceAfterEvents();
 }
@@ -4473,13 +4403,9 @@ void mxMainWindow::PrepareGuiForProject (bool project_mode) {
 		SetTitle("ZinjaI");
 		SetToolchainMode(false);
 		m_aui->Hide(PaneId::Compiler);
-		if (left_panels) {
-			m_aui->Hide(PaneId::Trees);
-		} else {
-			m_aui->Hide(PaneId::Explorer);
-			m_aui->Hide(PaneId::Symbols);
-			m_aui->Hide(PaneId::Project);
-		}
+		m_aui->Hide(PaneId::Explorer);
+		m_aui->Hide(PaneId::Symbols);
+		m_aui->Hide(PaneId::Project);
 		if (valgrind_panel) m_aui->GetPane(valgrind_panel).Hide();
 	}
 	gui_project_mode=project_mode;

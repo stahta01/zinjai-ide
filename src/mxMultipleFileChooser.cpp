@@ -105,12 +105,7 @@ void mxMultipleFileChooser::OnButtonOk(wxCommandEvent &event) {
 			if (aux_where==FT_SOURCE||aux_where==FT_HEADER) parser->ParseFile(fname);
 		}
 	}
-	if (main_window->left_panels) {
-		main_window->m_aui->Show(PaneId::Trees);
-		main_window->left_panels->SetSelection(0);
-	} else {
-		main_window->m_aui->Show(PaneId::Project);
-	}
+	main_window->m_aui->Show(PaneId::Project);
 	Close();
 }
 

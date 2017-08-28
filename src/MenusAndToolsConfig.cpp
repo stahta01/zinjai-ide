@@ -112,7 +112,7 @@ void MenusAndToolsConfig::LoadMenuData ( ) {
 		AddSeparator(mnVIEW);
 		AddMenuItem(mnVIEW, myMenuItem("full_screen",mxID_VIEW_FULLSCREEN, LANG(MENUITEM_VIEW_FULLSCREEN,"Ver a Pantalla Completa")).ShortCut("F11").Description("Muestra el editor a pantalla completa, ocultando tambien los demas paneles").Icon("fullScreen.png").Checkeable(false));
 		AddMenuItem(mnVIEW, myMenuItem("beginner_panel",mxID_VIEW_BEGINNER_PANEL, LANG(MENUITEM_VIEW_BEGINNER_PANEL,"Mostrar Panel de Mini-Plantillas")).Description("Muestra un panel con plantillas y estructuras basicas de c++").Icon("beginer_panel.png").Checkeable(false));
-		AddMenuItem(mnVIEW, myMenuItem("left_panels",mxID_VIEW_LEFT_PANELS, LANG(MENUITEM_VIEW_LEFT_PANELS,"Mostrar Panel de &Arboles")).Description("Muestra el panel con los arboles de proyecto, simbolos y explorador de archivos").Checkeable(false));
+//		AddMenuItem(mnVIEW, myMenuItem("left_panels",mxID_VIEW_LEFT_PANELS, LANG(MENUITEM_VIEW_LEFT_PANELS,"Mostrar Panel de &Arboles")).Description("Muestra el panel con los arboles de proyecto, simbolos y explorador de archivos").Checkeable(false));
 		AddMenuItem(mnVIEW, myMenuItem("project_tree",mxID_VIEW_PROJECT_TREE, LANG(MENUITEM_VIEW_PROJECT_TREE,"Mostrar Arbol de &Proyecto")).Description("Muestra el panel del arbol de proyecto/archivos abiertos").Icon("projectTree.png").Checkeable(false));
 		AddMenuItem(mnVIEW, myMenuItem("explorer_tree",mxID_VIEW_EXPLORER_TREE, LANG(MENUITEM_VIEW_EXPLORER_TREE,"Mostrar &Explorardor de Archivos")).ShortCut("Ctrl+E").Description("Muestra el panel explorador de archivos").Icon("explorerTree.png").Checkeable(false));
 		AddMenuItem(mnVIEW, myMenuItem("symbols_tree",mxID_VIEW_SYMBOLS_TREE, LANG(MENUITEM_VIEW_SYMBOLS_TREE,"Mostrar Arbol de &Simbolos")).Description("Analiza el codigo fuente y construye un arbol con los simbolos declarados en el mismo.").Icon("symbolsTree.png").Checkeable(false));
@@ -1014,7 +1014,7 @@ void MenusAndToolsConfig::TransferStatesFromConfig() {
 	GetMyMenuItem(mnVIEW,mxID_VIEW_TOOLBAR_PROJECT)->Checkeable(_toolbar_visible(tbPROJECT));
 	GetMyMenuItem(mnVIEW,mxID_VIEW_TOOLBAR_DEBUG)->Checkeable(_toolbar_visible(tbDEBUG));
 	GetMyMenuItem(mnVIEW,mxID_VIEW_TOOLBAR_MISC)->Checkeable(_toolbar_visible(tbMISC));
-	if (!config->Init.left_panels) GetMyMenuItem(mnVIEW,mxID_VIEW_LEFT_PANELS)->Hide();
+//	if (!config->Init.left_panels) GetMyMenuItem(mnVIEW,mxID_VIEW_LEFT_PANELS)->Hide();
 	GetMyMenuItem(mnTOOLS,mxID_TOOLS_GPROF_DOT)->Checkeable(config->Init.graphviz_dot);
 	GetMyMenuItem(mnTOOLS,mxID_TOOLS_GPROF_FDP)->Checkeable(config->Init.graphviz_dot);
 	for (int i=0;i<MAX_CUSTOM_TOOLS;i++) {

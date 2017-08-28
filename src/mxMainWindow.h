@@ -185,7 +185,7 @@ public:
 	void OnViewToolbarsConfig (wxCommandEvent &event);
 	void OnViewExplorerTree (wxCommandEvent &event);
 	void OnViewCompilerTree (wxCommandEvent &event);
-	void OnViewLeftPanels (wxCommandEvent &event);
+//	void OnViewLeftPanels (wxCommandEvent &event);
 	void OnViewProjectTree (wxCommandEvent &event);
 	void OnViewSymbolsTree (wxCommandEvent &event);
 	void OnViewUpdateSymbols (wxCommandEvent &event);
@@ -496,9 +496,6 @@ public:
 	void ShowInQuickHelpPanel(wxString &res, bool hide_compiler_tree=true); ///< carga el fuente de una pagina desde la cadena res en el panel de ayuda rápida y la muestra
 	void LoadInQuickHelpPanel(wxString file, bool hide_compiler_tree=true); ///< carga una pagina desde un archivo en el panel de ayuda rápida y lo muestra
 	
-private:
-//	void SetMenusForDebugging(bool debug_mode);
-//	void SetMenusForProject(bool project_mode);
 public:
 	void OnMenuOpen(wxMenuEvent &evt);
 	
@@ -511,7 +508,6 @@ public:
 	void OnKeyEvent(wxWindow *who, wxKeyEvent &evt);
 	
 	wxAuiNotebook *notebook_sources;
-	wxAuiNotebook *left_panels;
 	
 	wxString AvoidDuplicatePageText(wxString ptext);
 	
@@ -533,7 +529,6 @@ public:
 		bool show_only_sources;
 		wxString path;
 		wxTreeCtrl *treeCtrl;
-//		wxMenuItem *menuItem;
 		wxTreeItemId selected_item, root;
 	} explorer_tree;
 	
@@ -570,30 +565,19 @@ public:
 	//! Componentes del árbol de simbolos
 	struct symbols_tree_struct {
 		wxTreeCtrl *treeCtrl;
-//		wxMenuItem *menuItem;
 	} symbols_tree; 
 
 	unique_ptr<mxAUI> m_aui;
 
 	wxTimer *parser_timer;
 
-//	wxToolBar *toolbar_file, *toolbar_edit, *toolbar_run, *toolbar_misc, *toolbar_debug, *toolbar_find, *toolbar_status, *toolbar_tools, *toolbar_view, *toolbar_diff, *toolbar_project;
-//	wxStaticText *toolbar_status_text;
-
 	wxAuiNotebook *CreateNotebookSources();
-	
-	wxAuiNotebook *CreateLeftPanels();
-	void OnNotebookPanelsChanged(wxAuiNotebookEvent& event);
-	
-//	wxMenuItem *view_quick_help;
 
 	wxHtmlWindow* quick_help;
 	wxHtmlWindow* CreateQuickHelp(wxWindow* parent = nullptr);
 	
 	void ShowWelcome(bool show=true); ///< alterna entre mostrar el notebook de fuentes y el panel de bienvenida
 
-//	wxTextCtrl* toolbar_find_text;
-	
 	wxTreeCtrl* CreateSymbolsTree();
 	wxTreeCtrl* CreateExplorerTree();
 	wxPanel* CreateCompilerTree();

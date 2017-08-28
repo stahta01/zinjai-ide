@@ -5,6 +5,8 @@
 #include "SingleList.h"
 #include "Cpp11.h"
 
+class mxAUIContainer;
+
 struct PaneId {
 	enum type { 
 		Compiler, 
@@ -22,8 +24,9 @@ struct PaneId {
 		Beginners, 
 		Minimap, 
 		Tools, 
-		Count, 	
-		Invalid=999
+		Count,
+		Container, // to mark containers as such
+		Invalid=999 // equivalent to null
 	};
 };
 
@@ -32,8 +35,9 @@ private:
 	enum side_t { Left, Bottom, Right, Top, Floating };
 	enum action_t { None, Show, Hide };
 	enum autohide_t { NoAutohide, AutohideNormal, AutohideNoHandler };
-	PaneId::type m_id;
-	wxString m_caption, m_short;
+//	PaneId::type m_id;
+	PaneId::type m_inside_of;
+	wxString m_full_caption, m_short_caption, m_very_short_caption;
 	autohide_t m_autohide;
 	side_t m_side; ///< if mode==Docked
 	int m_layer, m_order;
@@ -45,12 +49,14 @@ private:
 	
 	// to construct
 	PaneConfig() 
-		: m_id(PaneId::Invalid), m_autohide(NoAutohide), m_side(Floating), 
+		: /*m_id(PaneId::Invalid), */m_inside_of(PaneId::Invalid), m_autohide(NoAutohide), m_side(Floating), 
 		  m_layer(-1), m_order(-1), m_bs_x(-1), m_bs_y(-1), m_menu_id(wxID_ANY),
 		  m_normal(None), m_debug(None), m_fullscreen(None)
 	{
 		
 	}
+	PaneConfig &SetAsContainer() { m_inside_of = PaneId::Container; return *this; }
+	PaneConfig &InsideOf(PaneId::type id) { m_inside_of = id; return *this; }
 	PaneConfig &Docked(side_t side) { m_side = side; return *this; }
 	PaneConfig &Float() { m_side = Floating; return *this; }
 	PaneConfig &Layout(int layer, int order) { m_layer = layer; m_order = order; return *this; }
@@ -58,9 +64,10 @@ private:
 	PaneConfig &Autohide(bool show_handler) { m_autohide = (show_handler?AutohideNormal:AutohideNoHandler); return *this; }
 	PaneConfig &BestSize(int x, int y) { m_bs_x = x; m_bs_y = y; return *this; }
 	PaneConfig &MenuItem(int id) { m_menu_id = id; return *this; }
-	PaneConfig &Titles(const wxString &pane_caption, const wxString &autohide_caption="") {
-		m_short = autohide_caption.IsEmpty()?pane_caption:autohide_caption; 
-		m_caption = pane_caption; return *this;
+	PaneConfig &Titles(const wxString &full_caption, const wxString &short_caption="", const wxString &very_short_caption="") {
+		m_short_caption = short_caption.IsEmpty()?full_caption:short_caption; 
+		m_very_short_caption = very_short_caption.IsEmpty()?m_short_caption[0]:very_short_caption; 
+		m_full_caption = full_caption; return *this;
 	}
 	PaneConfig &Actions(action_t normal, action_t fullscreen, action_t debug) {
 		m_normal = normal; m_fullscreen = fullscreen; m_debug = debug; 
@@ -75,8 +82,12 @@ public:
 	// to query
 	bool IsAutohiding() const { return m_autohide!=NoAutohide; }
 	bool ShowAutohideHandler() const { return m_autohide==AutohideNormal; }
-	const wxString &GetCaption() const { return m_caption; }
-	const wxString &GetShortCaption() const { return m_short; }
+	const wxString &GetCaption() const { return m_full_caption; }
+	const wxString &GetShortCaption() const { return m_short_caption; }
+	const wxString &GetVeryShortCaption() const { return m_very_short_caption; }
+	bool IsContained() const { return m_inside_of!=PaneId::Invalid && m_inside_of!=PaneId::Container; }
+	bool IsContainer() const { return m_inside_of==PaneId::Container; }
+	PaneId::type GetContainerId() const { return m_inside_of; }
 	int GetLayer() const { return m_layer; }
 	int GetOrder() const { return m_order; }
 	int GetSizeX() const { return m_bs_x; }
@@ -113,9 +124,10 @@ class mxAUI : public wxAuiManager {
 	struct mxPaneInfo {
 		wxWindow *window;
 		mxHidenPanel *hidden_helper;
+		mxAUIContainer *container;
 		bool delete_on_close;
-		mxPaneInfo() : window(nullptr), hidden_helper(nullptr), delete_on_close(false) {}
-		mxPaneInfo(wxWindow *win) : window(win), hidden_helper(nullptr), delete_on_close(false) {}
+		mxPaneInfo() : window(nullptr), hidden_helper(nullptr), container(nullptr), delete_on_close(false) {}
+		mxPaneInfo(wxWindow *win) : window(win), hidden_helper(nullptr), container(nullptr), delete_on_close(false) {}
 		bool operator==(const mxPaneInfo &other) const { return window==other.window; }
 		mxPaneInfo &DeleteOnClose() { delete_on_close = true; return *this; }
 		mxPaneInfo &HiddenHelper(mxHidenPanel *helper) { hidden_helper = helper; return *this; }
@@ -124,6 +136,7 @@ class mxAUI : public wxAuiManager {
 	SingleList<mxPaneInfo> m_generic_panes;
 public:
 	mxAUI(mxMainWindow *main_window);
+	mxAUIContainer *CreateContainer(PaneId::type id);
 	void Create(PaneId::type id, wxWindow *win);
 	void Show(PaneId::type id, wxWindow *win, bool fixed=false);
 	void Show(PaneId::type id, bool fixed=false);

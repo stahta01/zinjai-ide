@@ -211,7 +211,7 @@ wxPanel *mxPreferenceWindow::CreateGeneralPanel (mxBookCtrl *notebook) {
 	sizer.BeginCheck( LANG(PREFERENCES_GENERAL_SHOW_FILES_EXPLORER_ON_STARTUP,"Mostrar el explorador de archivos al iniciar") )
 		.Bind(m_binder,config->Init.show_explorer_tree).EndCheck();
 	
-	sizer.BeginCheck( LANG(PREFERENCES_GENERAL_GROUP_TREES,"Agrupar arboles en un solo panel (*)") )
+	sizer.BeginCheck( LANG(PREFERENCES_GENERAL_GROUP_TREES,"Agrupar arboles en un solo panel") )
 		.Bind(m_binder,config->Init.left_panels).EndCheck();
 	
 	sizer.BeginCheck( LANG(PREFERENCES_GENERAL_AUTOHIDE_PANELS,"Ocultar paneles automaticamente") )
@@ -801,6 +801,7 @@ void mxPreferenceWindow::OnOkButton(wxCommandEvent &event) {
 	
 	bool autohide_panels_prev = config->Init.autohide_panels;
 	bool inspections_on_rigth_prev = config->Debug.inspections_on_right;
+	bool left_panels_prev = config->Init.left_panels;
 	wxString wxformbuilder_prev = config->Files.wxfb_command;
 	wxString lang_prev = config->Init.language_file;
 	
@@ -931,8 +932,13 @@ void mxPreferenceWindow::OnOkButton(wxCommandEvent &event) {
 	
 
 	PaneConfig::Init();
-	if (lang_changed || autohide_panels_prev != config->Init.autohide_panels || inspections_on_rigth_prev != config->Debug.inspections_on_right) 
+	if (lang_changed || 
+		autohide_panels_prev != config->Init.autohide_panels || 
+		inspections_on_rigth_prev != config->Debug.inspections_on_right ||
+		left_panels_prev != config->Init.left_panels) 
+	{
 		main_window->m_aui->RecreatePanes();
+	}
 	
 	Toolchain::SelectToolchain();
 	config->RecalcStuff();

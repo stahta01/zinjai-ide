@@ -2,6 +2,7 @@
 #include "Parser.h"
 #include "parserData.h"
 #include "mxMainWindow.h"
+#include "mxAUI.h"
 #include "mxSource.h"
 #include "mxGotoFileDialog.h"
 #include "MenusAndToolsConfig.h"
@@ -53,19 +54,10 @@ void mxGotoFunctionDialog::OnGoto(int pos, wxString key) {
 	parser->popup_line_def = r.get_line();
 	parser->OnGotoDef(main_window->notebook_sources);
 	// select the item in symbols tree and ensure definition/declaration visibility in its mxSource (at this point should be the current one)
-	if (main_window->left_panels) {
-		if (_menu_item(mxID_VIEW_LEFT_PANELS)->IsChecked()) {
-			main_window->left_panels->SetSelection(1);
-			main_window->symbols_tree.treeCtrl->EnsureVisible(tree_item);
-			main_window->symbols_tree.treeCtrl->ScrollTo(tree_item);
-			main_window->symbols_tree.treeCtrl->SelectItem(tree_item);
-		}
-	} else {
-		if (_menu_item(mxID_VIEW_SYMBOLS_TREE)->IsChecked()) {
-			main_window->symbols_tree.treeCtrl->EnsureVisible(tree_item);
-			main_window->symbols_tree.treeCtrl->ScrollTo(tree_item);
-			main_window->symbols_tree.treeCtrl->SelectItem(tree_item);
-		}
+	if (main_window->m_aui->IsVisible(PaneId::Symbols)) {
+		main_window->symbols_tree.treeCtrl->EnsureVisible(tree_item);
+		main_window->symbols_tree.treeCtrl->ScrollTo(tree_item);
+		main_window->symbols_tree.treeCtrl->SelectItem(tree_item);
 	}
 	mxSource *source=(mxSource*)(main_window->notebook_sources->GetPage(main_window->notebook_sources->GetSelection()));
 	source->EnsureVisibleEnforcePolicy(source->GetCurrentLine());
