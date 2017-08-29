@@ -38,7 +38,7 @@ mxInspectionPrint::mxInspectionPrint(wxString expression, bool is_frameless) : w
 			sz = wxSize(w*cs,h*cs+h0);
 		}
 	}
-	main_window->m_aui->AttachGenericPane(this,expression,wxGetMousePosition()-wxPoint(25,10),sz);
+	main_window->m_aui->AttachGenericPane(this,expression)->FloatingPosition(wxGetMousePosition()-wxPoint(25,10)).BestSize(sz);
 }
 
 void mxInspectionPrint::OnDICreated (DebuggerInspection * di) {

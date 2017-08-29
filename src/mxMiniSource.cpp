@@ -21,7 +21,7 @@ mxMiniSource::mxMiniSource(mxMiniMapPanel *panel, mxSource *src)
 {
 	m_prev_first_line_on_scr = -1;
 	SetUseHorizontalScrollBar(false);
-	SetUseVerticalScrollBar(false);
+//	SetUseVerticalScrollBar(false);
 	SetUseAntiAliasing(false);
 	SetTwoPhaseDraw(false);
 //	SetLayoutCache(wxSTC_CACHE_DOCUMENT); // no parece notarse el efecto

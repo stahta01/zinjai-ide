@@ -5,9 +5,11 @@
 
 BEGIN_EVENT_TABLE(mxDiffSideBar, wxWindow)
 	EVT_MOUSEWHEEL(mxDiffSideBar::OnMouseWheel)
-	EVT_PAINT  (mxDiffSideBar::OnPaint)
+	EVT_PAINT(mxDiffSideBar::OnPaint)
 	EVT_LEFT_DOWN(mxDiffSideBar::OnMouseDown)
 END_EVENT_TABLE()
+
+mxDiffSideBar *mxDiffSideBar::m_instance = nullptr;
 
 mxDiffSideBar::mxDiffSideBar():wxWindow(main_window,wxID_ANY) {
 	SetBackgroundColour(*wxWHITE);

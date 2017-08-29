@@ -14,7 +14,9 @@ BEGIN_EVENT_TABLE(mxGCovSideBar, wxWindow)
 	EVT_MENU(mxID_GCOV_REFRESH,mxGCovSideBar::OnRefresh)
 END_EVENT_TABLE()
 
-mxGCovSideBar::mxGCovSideBar(wxWindow *parent):wxWindow(parent,wxID_ANY) {
+mxGCovSideBar *mxGCovSideBar::m_instance = nullptr;
+
+mxGCovSideBar::mxGCovSideBar():wxWindow(main_window,wxID_ANY) {
 	SetBackgroundColour(*wxWHITE); hits=nullptr; SetSize(80,60); should_refresh=nullptr;
 }
 
@@ -77,7 +79,7 @@ void mxGCovSideBar::Refresh (mxSource *src) {
 		fvl=src->GetFirstVisibleLine();
 		if (ShouldLoadData(src)) {
 			class ReloadGCovAction : public mxMainWindow::AfterEventsAction {
-				public: void Run() override { main_window->gcov_sidebar->LoadData(); }
+				public: void Run() override { if (mxGCovSideBar::HaveInstance()) mxGCovSideBar::GetInstance().LoadData(); }
 			};
 			main_window->CallAfterEvents(new ReloadGCovAction);
 		} else wxWindow::Refresh();

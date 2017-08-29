@@ -3725,7 +3725,7 @@ void mxSource::OnPainted (wxStyledTextEvent & event) {
 	} else
 		MyBraceHighLight();
 	event.Skip();
-	if (main_window->gcov_sidebar) main_window->gcov_sidebar->Refresh(this);
+	if (mxGCovSideBar::HaveInstance()) mxGCovSideBar::GetInstance().Refresh(this);
 	if (m_minimap) m_minimap->Refresh(this);
 }
 

@@ -7,8 +7,6 @@
 #include "mxMainWindow.h"
 #include "MenusAndToolsConfig.h"
 
-#warning TODO: VER EL ONPANECLOSE DE MAINWINDOW
-
 #define MAX_LAYER 10
 #include <vector>
 #include <set>
@@ -66,6 +64,13 @@ void PaneConfig::Init ( ) {
 	m_configs[PaneId::Explorer].InsideOf(id_left);
 }
 
+mxAUIFreezeGuard::mxAUIFreezeGuard(mxAUI &aui) : m_aui(aui) { m_aui.Freeze(); }
+mxAUIFreezeGuard::mxAUIFreezeGuard(const mxAUIFreezeGuard &other) : m_aui(other.m_aui) { m_aui.Freeze(); }
+mxAUIFreezeGuard::~mxAUIFreezeGuard() { m_aui.Thaw(); }
+
+mxAUIPaneInfo::mxAUIPaneInfo(mxAUI &aui, wxWindow *ctrl) : mxAUIFreezeGuard(aui), m_pane_info(aui.GetPane(ctrl)) { m_aui.Update();  }
+wxAuiPaneInfo *mxAUIPaneInfo::operator->() { return &m_pane_info; }
+
 mxAUI::mxAUI (mxMainWindow *main_window) 
 	: m_wxaui(*this), m_freeze_level(0), m_should_update(false),
 	  m_fullscreen(false), m_debug(false)
@@ -92,7 +97,7 @@ void mxAUI::Update ( ) {
 	else m_should_update = true;
 }
 
-void mxAUI::OnPaneClose (wxWindow * window) {
+bool mxAUI::OnPaneClose (wxWindow * window) {
 	for(int i=0;i<PaneId::Count;i++) {
 		if (m_panes[i].window==window) {
 			if (PaneConfig::Get(i).GetMenuId()!=wxID_ANY)
@@ -104,7 +109,7 @@ void mxAUI::OnPaneClose (wxWindow * window) {
 				_menu_item(PaneConfig::Get(PaneId::Symbols).GetMenuId())->Check(false);
 				_menu_item(PaneConfig::Get(PaneId::Explorer).GetMenuId())->Check(false);
 			}
-			return;
+			return true;
 		}
 	}
 	int iaux = m_generic_panes.Find(window);
@@ -112,17 +117,19 @@ void mxAUI::OnPaneClose (wxWindow * window) {
 		m_wxaui.DetachPane(window);
 		if (m_generic_panes[iaux].delete_on_close) window->Destroy();
 		m_generic_panes.Remove(iaux);
+		return true;
 	}
+	return false;
 }
 
-void mxAUI::AttachGenericPane(wxWindow *ctrl, wxString title, wxPoint position, wxSize size, bool handle_deletion) {
+mxAUIPaneInfo mxAUI::AttachGenericPane(wxWindow *ctrl, wxString title, bool handle_deletion) {
 	wxAuiPaneInfo pane_info;
-	pane_info.Float().CloseButton(true).MaximizeButton(true).Resizable(true).Caption(title).Show();
-	if (position!=wxDefaultPosition) pane_info.FloatingPosition(position);
-	if (size!=wxDefaultSize) pane_info.BestSize(size);
+	pane_info.CloseButton(true).MaximizeButton(true).Resizable(true).Caption(title).Show();
+//	if (position!=wxDefaultPosition) pane_info.FloatingPosition(position);
+//	if (size!=wxDefaultSize) pane_info.BestSize(size);
 	m_wxaui.AddPane(ctrl,pane_info);
-	mxAUI::Update();
 	if (handle_deletion) m_generic_panes.Add(mxPaneInfo(ctrl).DeleteOnClose());
+	return mxAUIPaneInfo(*this,ctrl);
 }
 
 void mxAUI::Create(PaneId::type id, wxWindow * win) {
@@ -371,5 +378,17 @@ mxAUIContainer * mxAUI::CreateContainer (PaneId::type id) {
 	if (!m_panes[id].window)
 		Create(id,new mxAUIContainer(m_wxaui.GetManagedWindow()));
 	return (mxAUIContainer*)m_panes[id].window;
+}
+
+bool mxAUI::OnKeyEscape (wxWindow *who) {
+	for(int i=0;i<PaneId::Count;i++) { 
+		if (m_panes[i].window==who || m_panes[i].hidden_helper==who) {
+			if (!m_panes[i].hidden_helper->IsDocked()) {
+				m_panes[i].hidden_helper->Hide();
+			}
+			return true;
+		}
+	}
+	return false;
 }
 

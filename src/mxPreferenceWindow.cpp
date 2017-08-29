@@ -129,6 +129,7 @@ BEGIN_EVENT_TABLE(mxPreferenceWindow, wxDialog)
 	EVT_LISTBOX(mxID_SKIN_LIST,mxPreferenceWindow::OnSkinList)
 	EVT_COMBOBOX(mxID_PREFERENCES_FONTNAME,mxPreferenceWindow::OnFontChange)
 	EVT_TEXT(mxID_PREFERENCES_FONTSIZE,mxPreferenceWindow::OnFontChange)
+	EVT_CHECKBOX(mxID_PREFERENCES_AUTOHIDE_PANELS,mxPreferenceWindow::OnAutohidePanelsChange)
 END_EVENT_TABLE()
 
 mxPreferenceWindow::mxPreferenceWindow(wxWindow* parent) : 
@@ -212,10 +213,11 @@ wxPanel *mxPreferenceWindow::CreateGeneralPanel (mxBookCtrl *notebook) {
 		.Bind(m_binder,config->Init.show_explorer_tree).EndCheck();
 	
 	sizer.BeginCheck( LANG(PREFERENCES_GENERAL_GROUP_TREES,"Agrupar arboles en un solo panel") )
-		.Bind(m_binder,config->Init.left_panels).EndCheck();
+		.Bind(m_binder,config->Init.left_panels).EndCheck(init_left_panels);
+	init_left_panels->Enable(!config->Init.autohide_panels);
 	
 	sizer.BeginCheck( LANG(PREFERENCES_GENERAL_AUTOHIDE_PANELS,"Ocultar paneles automaticamente") )
-		.Bind(m_binder,config->Init.autohide_panels).EndCheck();
+		.Bind(m_binder,config->Init.autohide_panels).Id(mxID_PREFERENCES_AUTOHIDE_PANELS).EndCheck(autohide_panels);
 	
 	sizer.BeginCheck( LANG(PREFERENCES_SINGLETON,"Utilizar una sola instancia de ZinjaI al abrir archivos desde la linea de comandos") )
 		.Bind(m_binder,config->Init.singleton).EndCheck();
@@ -1406,3 +1408,9 @@ void mxPreferenceWindow::SetToolbarPage(const wxString &edit_one) {
 		else if (edit_one=="tools") OnToolbarsTools(evt);
 	}
 }
+
+void mxPreferenceWindow::OnAutohidePanelsChange (wxCommandEvent & evt) {
+	evt.Skip();
+	init_left_panels->Enable(!autohide_panels->GetValue());
+}
+

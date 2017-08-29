@@ -49,7 +49,7 @@ mxInspectionMatrix::mxInspectionMatrix(const wxString &expression, bool is_frame
 		}
 	}
 	
-	main_window->m_aui->AttachGenericPane(this,expression,wxGetMousePosition()-wxPoint(25,10),sz);
+	main_window->m_aui->AttachGenericPane(this,expression)->FloatingPosition(wxGetMousePosition()-wxPoint(25,10)).BestSize(sz);
 	
 	grid->SetRowLabelSize(wxGRID_AUTOSIZE);
 	adapt->SetValue(true);

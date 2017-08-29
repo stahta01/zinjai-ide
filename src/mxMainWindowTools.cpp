@@ -514,7 +514,7 @@ void mxMainWindow::OnToolsDiffClear(wxCommandEvent &event) {
 		mxSource *src = CURRENT_SOURCE;
 		src->MarkDiffs(0,src->GetLineCount()-1,mxSTC_MARK_DIFF_NONE);
 		src->Refresh();
-		if (diff_sidebar) diff_sidebar->Refresh();
+		if (mxDiffSideBar::HaveInstance()) mxDiffSideBar::GetInstance().Refresh();
 	}
 }
 
@@ -699,14 +699,14 @@ void mxMainWindow::OnToolsGprofList (wxCommandEvent &event) {
 void mxMainWindow::OnToolsDiffApply(wxCommandEvent &event) {
 	IF_THERE_IS_SOURCE {
 		CURRENT_SOURCE->ApplyDiffChange();
-		if (diff_sidebar) diff_sidebar->Refresh();
+		if (mxDiffSideBar::HaveInstance()) mxDiffSideBar::GetInstance().Refresh();
 	}
 }
 
 void mxMainWindow::OnToolsDiffDiscard(wxCommandEvent &event) {
 	IF_THERE_IS_SOURCE {
 		CURRENT_SOURCE->DiscardDiffChange();
-		if (diff_sidebar) diff_sidebar->Refresh();
+		if (mxDiffSideBar::HaveInstance()) mxDiffSideBar::GetInstance().Refresh();
 	}
 }
 

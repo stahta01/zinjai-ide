@@ -102,6 +102,8 @@ class mxPreferenceWindow : public mxDialog {
 	wxTextCtrl *source_edgeColumnPos;
 	wxCheckBox *source_edgeColumnCheck;
 	wxCheckBox *source_whiteSpace;
+	wxCheckBox *init_left_panels;
+	wxCheckBox *autohide_panels;
 	wxCheckBox *source_toolTips;
 	wxTextCtrl *styles_font_size;
 	wxComboBox *styles_font_name;
@@ -212,7 +214,7 @@ class mxPreferenceWindow : public mxDialog {
 	void OnFontChange(wxCommandEvent &evt);
 	void OnCustomizeShortcuts(wxCommandEvent &evt);
 	void EnableOrDisableControls();
-	
+	void OnAutohidePanelsChange(wxCommandEvent &evt);
 public:
 	void SetPathsPage(const wxString &select_one="");
 	void SetToolbarPage(const wxString &edit_one="");

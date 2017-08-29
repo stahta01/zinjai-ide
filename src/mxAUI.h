@@ -114,6 +114,25 @@ public:
 
 class mxHidenPanel;
 class mxMainWindow;
+class mxAUI;
+
+class mxAUIFreezeGuard {
+	mxAUIFreezeGuard &operator=(const mxAUIFreezeGuard &other);
+protected:
+	mxAUI &m_aui;
+public:
+	mxAUIFreezeGuard(mxAUI &aui);
+	mxAUIFreezeGuard(const mxAUIFreezeGuard &other);
+	~mxAUIFreezeGuard();
+};
+
+/// like wxAuiPaneInfo, but calls update on destructor (to be returned by mxAUI::AttachGenericPane so the caller can setup the pane)
+class mxAUIPaneInfo : public mxAUIFreezeGuard {
+	wxAuiPaneInfo &m_pane_info;
+public:
+	mxAUIPaneInfo(mxAUI &aui, wxWindow *ctrl);
+	wxAuiPaneInfo *operator->();
+};
 
 class mxAUI : public wxAuiManager {
 	wxAuiManager &m_wxaui;
@@ -142,7 +161,7 @@ public:
 	void Show(PaneId::type id, bool fixed=false);
 	void Hide(PaneId::type id);
 	bool ToggleFromMenu(PaneId::type id, wxWindow *win=nullptr);
-	void OnPaneClose(wxWindow *window);
+	bool OnPaneClose(wxWindow *window);
 	void OnDebugStart();
 	void OnDebugEnd();
 	void OnFullScreenStart();
@@ -150,9 +169,10 @@ public:
 	void OnWelcomePanelShow();
 	void OnWelcomePanelHide();
 	void OnResize();
+	bool OnKeyEscape(wxWindow *who);
 	void Update();
 //	void AttachKnownPane(int aui_id, wxWindow *ctrl);
-	void AttachGenericPane(wxWindow *ctrl, wxString title, wxPoint position, wxSize size, bool handle_deletion=true);
+	mxAUIPaneInfo AttachGenericPane(wxWindow *ctrl, wxString title, bool handle_deletion=true);
 	void RecreatePanes();
 	bool IsVisible(PaneId::type id) const;
 private:
@@ -161,12 +181,6 @@ private:
 	friend class mxAUIFreezeGuard;
 };
 
-class mxAUIFreezeGuard {
-	mxAUI &m_aui;
-public:
-	mxAUIFreezeGuard(mxAUI &aui) : m_aui(aui) { m_aui.Freeze(); }
-	~mxAUIFreezeGuard() { m_aui.Thaw(); }
-};
 
 #endif
 

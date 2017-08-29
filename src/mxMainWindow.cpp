@@ -528,8 +528,6 @@ SHOW_MILLIS("Entering mxMainWindow's constructor...");
 	asm_panel=nullptr;
 	registers_panel=nullptr;
 	valgrind_panel=nullptr; 
-	gcov_sidebar=nullptr;
-	diff_sidebar=nullptr;
 
 #ifndef __APPLE__
 	// esto genera el problema de "image file is not of type 9"?
@@ -1289,7 +1287,7 @@ void mxMainWindow::OnNotebookPageChanged(wxAuiNotebookEvent& event) {
 	static wxMenuItem *menu_view_line_wrap=_menu_item(mxID_VIEW_LINE_WRAP);
 	static wxMenuItem *menu_view_code_style=_menu_item(mxID_VIEW_CODE_STYLE);
 	
-	if (diff_sidebar) diff_sidebar->Refresh();
+	if (mxDiffSideBar::HaveInstance()) mxDiffSideBar::GetInstance().Refresh();
 	int old_sel = event.GetOldSelection();
 	if (old_sel!=-1) {
 		mxSource *old_source = (mxSource*)notebook_sources->GetPage(old_sel);
@@ -1404,13 +1402,7 @@ void mxMainWindow::OnNotebookPageClose(wxAuiNotebookEvent& event) {
 
 
 void mxMainWindow::OnPaneClose(wxAuiManagerEvent& event) {
-#warning TOOOODOOOOOOOO
-	m_aui->OnPaneClose(event.pane->window);
-	if (event.pane->name == "diff_sidebar") {
-		m_aui->DetachPane(diff_sidebar); diff_sidebar->Destroy(); diff_sidebar=nullptr;
-	} else if (event.pane->name == "gcov_sidebar") {
-		m_aui->DetachPane(gcov_sidebar); gcov_sidebar->Destroy(); gcov_sidebar=nullptr;
-	}
+	if (m_aui->OnPaneClose(event.pane->window)) return;
 	else if (event.pane->name == "toolbar_misc") { _menu_item(mxID_VIEW_TOOLBAR_MISC)->Check(false); if (!gui_debug_mode && !gui_fullscreen_mode) _toolbar_visible(tbMISC)=false; }
 	else if (event.pane->name == "toolbar_find") { _menu_item(mxID_VIEW_TOOLBAR_FIND)->Check(false); if (!gui_debug_mode && !gui_fullscreen_mode) _toolbar_visible(tbFIND)=false; }
 	else if (event.pane->name == "toolbar_view") { _menu_item(mxID_VIEW_TOOLBAR_VIEW)->Check(false); if (!gui_debug_mode && !gui_fullscreen_mode) _toolbar_visible(tbVIEW)=false; }
@@ -1691,7 +1683,7 @@ void mxMainWindow::OnProcessTerminate (wxProcessEvent& event) {
 		if (compile_and_run->valgrind_cmd.Len()) ShowValgrindPanel(mxVO_VALGRIND,DIR_PLUS_FILE(config->temp_dir,"valgrind.out"));
 		delete compile_and_run->process;
 		delete compile_and_run;
-		if (gcov_sidebar) gcov_sidebar->LoadData();
+		if (mxGCovSideBar::HaveInstance()) mxGCovSideBar::GetInstance().LoadData();
 	}
 }
 
@@ -2166,7 +2158,8 @@ void mxMainWindow::OnViewWhiteSpace (wxCommandEvent &event) {
 }
 
 void mxMainWindow::OnViewProjectTree (wxCommandEvent &event) {
-	m_aui->ToggleFromMenu(PaneId::Project);
+	if (m_aui->ToggleFromMenu(PaneId::Project))
+		project_tree.treeCtrl->SetFocus();
 }
 
 void mxMainWindow::OnViewSymbolsTree (wxCommandEvent &event) {
@@ -2260,7 +2253,8 @@ void mxMainWindow::OnViewCompilerTree (wxCommandEvent &event) {
 }
 
 void mxMainWindow::OnViewExplorerTree (wxCommandEvent &event) {
-	m_aui->ToggleFromMenu(PaneId::Explorer);
+	if (m_aui->ToggleFromMenu(PaneId::Explorer))
+		explorer_tree.treeCtrl->SetFocus();
 }
 
 
@@ -3944,17 +3938,9 @@ void mxMainWindow::SetOpenedFileName(wxString name) {
 }
 
 void mxMainWindow::OnKeyEvent(wxWindow *who, wxKeyEvent &evt) {
-#warning REdOOOOOOO
-//	if (autohide_handlers && evt.GetKeyCode()==WXK_ESCAPE) {
-//		for(int i=0;i<ATH_COUNT;i++) { 
-//			if (autohide_handlers[i] && (autohide_handlers[i]->control==who||autohide_handlers[i]->control==who->GetParent())) {
-//				if (!autohide_handlers[i]->IsDocked()) {
-//					autohide_handlers[i]->Hide();
-//					return;
-//				}
-//			}
-//		}
-//	}
+	if (evt.GetKeyCode()==WXK_ESCAPE) {
+		if (m_aui->OnKeyEscape(who)) return;
+	}
 	if (who==project_tree.treeCtrl && project) {
 		project_tree.selected_item = project_tree.treeCtrl->GetSelection();
 		if (evt.GetKeyCode()==WXK_MENU) {
@@ -4230,22 +4216,21 @@ void mxMainWindow::OnViewMinimapPanel (wxCommandEvent &event) {
 }
 
 void mxMainWindow::ShowDiffSideBar(bool bar, bool map) {
+	mxAUIFreezeGuard guard(*m_aui);
 	if (map) {
-		if (!diff_sidebar) {
-			diff_sidebar=new mxDiffSideBar;
-			m_aui->AddPane(diff_sidebar, wxAuiPaneInfo().Name("diff_sidebar").Caption("diff").Right().Row(2).Show().MaxSize(20,-1));
+		if (!mxDiffSideBar::HaveInstance()) {
+			m_aui->AttachGenericPane(&(mxDiffSideBar::GetInstance()),"diff",true)->Right().Row(2).Show().MaxSize(20,-1);
 		}
 	}
-	if (bar)
+	if (bar) {
 		m_aui->GetPane(_get_toolbar(tbDIFF)).Show();
-	if (bar||map) m_aui->Update();
+		m_aui->Update();
+	}
 }
 
 void mxMainWindow::ShowGCovSideBar() {
-	if (gcov_sidebar) return;
-	gcov_sidebar=new mxGCovSideBar(this);
-	m_aui->AddPane(gcov_sidebar, wxAuiPaneInfo().Name("gcov_sidebar").Caption("gcov").Left().Row(10).Show());
-	m_aui->Update();
+	if (mxGCovSideBar::HaveInstance()) return;
+	m_aui->AttachGenericPane(&(mxGCovSideBar::GetInstance()), "gcov", true)->Left().Row(10);
 }
 
 mxSource *mxMainWindow::GetCurrentSource() {
@@ -4689,7 +4674,7 @@ void mxMainWindow::OnDebugSetSignals (wxCommandEvent & event) {
 
 void mxMainWindow::OnDebugGdbCommand (wxCommandEvent & event) {
 	mxGdbCommandsPanel *gdb_cmd = new mxGdbCommandsPanel();
-	m_aui->AttachGenericPane(gdb_cmd,"gdb",wxDefaultPosition,wxSize(300,100));
+	m_aui->AttachGenericPane(gdb_cmd,"gdb")->BestSize(wxSize(300,100));
 	gdb_cmd->SetFocus();
 }
 
@@ -4812,7 +4797,7 @@ void mxMainWindow::OnDebugShowRegisters (wxCommandEvent & event) {
 }
 
 void mxMainWindow::OnDebugShowAsm (wxCommandEvent & event) {
-	m_aui->AttachGenericPane(new mxGdbAsmPanel(this),"ASM (gdb)",wxDefaultPosition,wxSize(400,300));
+	m_aui->AttachGenericPane(new mxGdbAsmPanel(this),"ASM (gdb)")->BestSize(wxSize(400,300));
 }
 
 void mxMainWindow::OnToolsCodeGenerateFunctionDef (wxCommandEvent & event) {

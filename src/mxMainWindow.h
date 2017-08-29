@@ -27,8 +27,6 @@
 
 class mxStatusBar;
 class mxHidenPanel;
-class mxGCovSideBar;
-class mxDiffSideBar;
 class mxValgrindOuput;
 class mxSource;
 class mxOpenSharedWindow;
@@ -589,10 +587,8 @@ public:
 	mxBacktraceGrid *backtrace_ctrl;
 	mxInspectionsPanel *inspection_ctrl;
 	
-	mxDiffSideBar *diff_sidebar;
 	void ShowDiffSideBar(bool bar, bool map);
 	
-	mxGCovSideBar *gcov_sidebar;
 	void ShowGCovSideBar();
 	
 	mxSource *GetCurrentSource();
