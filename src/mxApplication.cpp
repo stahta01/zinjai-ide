@@ -69,7 +69,6 @@ bool mxApplication::OnInit() {
 SHOW_MILLIS("Entering OnInit...");
 	
 #ifdef _ZINJAI_DEBUG
-//	wxLongLong start_time = wxGetLocalTimeMillis();
 	wxLog::SetActiveTarget(new wxLogStderr());
 #endif
 	
