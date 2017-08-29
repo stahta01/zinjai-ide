@@ -463,13 +463,15 @@ bool ConfigManager::Load() {
 			Debug.blacklist[i] = wxString("file ")+mxUT::Quotize(Debug.blacklist[i]);
 	}
 	
+	
 	if (Init.version<20161130) {
-		if (Files.toolchain=="gcc-mingw32") Files.toolchain="gcc5-mingw32";
+		if (Files.toolchain=="gcc-mingw32") Files.toolchain="mingw32-gcc6";
 #ifdef __WIN32__
 		if (Help.wxhelp_index=="MinGW\\wx\\docs\\wx_contents.html") Help.wxhelp_index="";
 #endif
-	}
-
+	} else if (Init.version<20170828)
+		if (Files.toolchain=="gcc5-mingw32") Files.toolchain="mingw32-gcc6";
+	
 	return true;
 }
 	
@@ -687,7 +689,7 @@ void ConfigManager::LoadDefaults(){
 	Files.temp_dir=DIR_PLUS_FILE(config_dir,"tmp");
 	Files.skin_dir="imgs";
 #ifdef __WIN32__
-	Files.toolchain="gcc5-mingw32";
+	Files.toolchain="gcc6-mingw32";
 	Files.debugger_command="gdb";
 	Files.runner_command=DIR_PLUS_FILE("bin","runner.exe");
 	Files.terminal_command="";

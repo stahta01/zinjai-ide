@@ -202,3 +202,7 @@ void mxHidenPanel::OnResize (wxSizeEvent & evt) {
 	Refresh();
 }
 
+mxHidenPanel::~mxHidenPanel ( ) {
+	timer->Stop();
+}
+

@@ -66,9 +66,9 @@ Section "Registrar Extensiones" SEC01b
   ${registerExtension} "$INSTDIR\zinjai.exe" ".hxx" "hxx - C/C++ header" "$INSTDIR\zinjai.exe,1"
 SectionEnd
 
-Section "Compilador (migw32-gcc5)" SEC02
+Section "Compilador (migw32-gcc6)" SEC02
   SetOutPath "$INSTDIR\"
-  File /R "MinGW\*"
+  File /R "mingw\*"
 SectionEnd
 
 ;Section /o "wxWidgets" SEC03
@@ -83,7 +83,7 @@ SectionEnd
 
 Section /o "Extras OpenGL (Freeglut+glew)" SEC04
   SetOutPath "$INSTDIR\"
-  File /R "OpenGL\*"
+  File /R "opengl\*"
 SectionEnd
 
 Section /o "Fuentes del IDE" SEC05
@@ -94,11 +94,9 @@ SectionEnd
 ; Section descriptions
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Entorno ZinjaI. Tamaño aproximado: 55 MB"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Herramientas de compilacion, depuracion y otros GNU. Tamaño aproximado: 162 MB"
-;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Archivos necesarios para utilizar la biblioteca wxWidgets. Tamaño aproximado: 42 MB"
-;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Completa referencia sobre C/C++ estándar (basada en el sitio cppreference.com). Tamaño aproximado: 128 MB"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Herramientas de compilacion, depuracion y otros GNU. Tamaño aproximado: 183 MB"
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Archivos necesarios para compilar aplicaciones que utilicen Freeglut y/o Glew. Tamaño Aproximado: 6MB"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Código fuente del entorno. Tamaño aproximado: 22 MB"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Código fuente del entorno. Tamaño aproximado: 20 MB"
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC01b} "Asociar fuentes (c,c++,cpp,cxx,h,h++,hpp,hxx) para abrir con ZinjaI"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 

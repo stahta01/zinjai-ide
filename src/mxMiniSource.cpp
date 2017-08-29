@@ -66,7 +66,7 @@ void mxMiniSource::OnClick (wxMouseEvent & evt) {
 	int mouse_pos = PositionFromPoint(wxPoint(evt.GetX(),evt.GetY()));
 	int mouse_line = LineFromPosition(mouse_pos);
 	int main_win_h = main_window->GetCurrentSource()->LinesOnScreen();
-	cout << mouse_pos << "   " << mouse_line << "  " << main_win_h << endl;
+//	cout << mouse_pos << "   " << mouse_line << "  " << main_win_h << endl;
 //	int goto_pos = PositionFromLine(goto_line);
 	main_window->GetCurrentSource()->EnsureVisibleEnforcePolicy(mouse_line-main_win_h/2);
 	main_window->GetCurrentSource()->EnsureVisibleEnforcePolicy(mouse_line+main_win_h/2);

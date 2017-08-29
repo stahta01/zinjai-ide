@@ -271,7 +271,7 @@ wxPanel *mxPreferenceWindow::CreateDebugPanel1 (wxNotebook *notebook) {
 	sizer.BeginCheck( LANG(PREFERENCES_DEBUG_REORGANIZE_PANELS,"Reacomodar los paneles al iniciar/finalizar la depuración") )
 		.Bind(m_binder,config->Debug.autohide_panels).EndCheck();
 	
-	sizer.BeginCheck( LANG(PREFERENCES_DEBUG_INSPECTIONS_PANEL_ON_RIGHT,"Colocar el panel de inspecciones a la derecha (*)") )
+	sizer.BeginCheck( LANG(PREFERENCES_DEBUG_INSPECTIONS_PANEL_ON_RIGHT,"Colocar el panel de inspecciones a la derecha") )
 		.Bind(m_binder,config->Debug.inspections_on_right).EndCheck();
 	
 	sizer.BeginCheck( LANG(PREFERENCES_DEBUG_SHOW_THREAD_LIST,"Mostrar lista de hilos de ejecución") )

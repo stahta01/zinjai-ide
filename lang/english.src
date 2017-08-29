@@ -2481,7 +2481,7 @@ Number of files in history
 PREFERENCES_GENERAL_SHOW_FILES_EXPLORER_ON_STARTUP
 Display files explorer on startup
 PREFERENCES_GENERAL_GROUP_TREES
-Group trees in a single panel (*)
+Group trees in a single panel
 PREFERENCES_GENERAL_AUTOHIDE_PANELS
 Autohide panels
 PREFERENCES_SINGLETON
@@ -2505,7 +2505,7 @@ Allow edition while debugging
 PREFERENCES_DEBUG_REORGANIZE_PANELS
 Reorganize panels on debug start/stop
 PREFERENCES_DEBUG_INSPECTIONS_PANEL_ON_RIGHT
-Place inspections panel on right margin (*)
+Place inspections panel on right margin
 PREFERENCES_DEBUG_SHOW_THREAD_LIST
 Show threads list
 PREFERENCES_DEBUG_SHOW_DEBUGGER_LOG

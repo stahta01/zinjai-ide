@@ -80,12 +80,12 @@ zmkdir zinjai
 #  zmkdir zinjai/graphviz
 #    cp -u $SRC/graphviz/*.exe zinjai/third/graphviz/
 
-#zmkdir OpenGL
-#  zmkdir OpenGL/templates
-#    cp -Hru $SRC/templates/OpenGL OpenGL/templates
-#    cp -Hru $SRC/templates/opengl-windows.tpl OpenGL/templates
-#  zmkdir OpenGL/autocomp
-#    cp -Hru $SRC/autocomp/OpenGL* OpenGL/autocomp
+#zmkdir opengl
+#  zmkdir opengl/templates
+#    cp -Hru $SRC/templates/opengl opengl/templates
+#    cp -Hru $SRC/templates/opengl-windows.tpl opengl/templates
+#  zmkdir opengl/autocomp
+#    cp -Hru $SRC/autocomp/opengl* opengl/autocomp
 
 zmkdir fuentes
   cp -u $SRC/compiling.txt fuentes/

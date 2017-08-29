@@ -23,6 +23,7 @@ public:
 	wxTimer *timer;
 	wxWindow *control;
 	mxHidenPanel(wxWindow *parent, wxWindow *acontrol, hp_pos apos, wxString alabel);
+	~mxHidenPanel();
 	void OnPaint(wxPaintEvent &evt);
 	void ProcessClose();
 	void Hide();
@@ -45,7 +46,7 @@ public:
 class mxHidenPanelIgnoreGuard {
 public:
 	mxHidenPanelIgnoreGuard() { ++mxHidenPanel::ignore_autohide; }
-	~mxHidenPanelIgnoreGuard() { --mxHidenPanel::ignore_autohide; }
+	~mxHidenPanelIgnoreGuard() { --mxHidenPanel::ignore_autohide;  }
 };
 
 #endif
