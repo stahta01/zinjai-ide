@@ -1469,12 +1469,12 @@ wxTreeCtrl* mxMainWindow::CreateExplorerTree() {
 	
 	wxImageList* imglist = new wxImageList(16, 16,true,5);
 	
-	imglist->Add(bitmaps->GetBitmap("ap_folder.png"));
+	imglist->Add(bitmaps->GetBitmap("trees/ap_folder.png"));
 	imglist->Add(*(bitmaps->files.source));
 	imglist->Add(*(bitmaps->files.header));
 	imglist->Add(*(bitmaps->files.other));
 	imglist->Add(*(bitmaps->files.blank));
-	imglist->Add(bitmaps->GetBitmap("ap_zpr.png"));
+	imglist->Add(bitmaps->GetBitmap("trees/ap_zpr.png"));
 	explorer_tree.treeCtrl->AssignImageList(imglist);
 	
 	explorer_tree.show_only_sources = false;
@@ -1491,13 +1491,13 @@ wxTreeCtrl *mxMainWindow::project_tree_struct::Create(wxWindow *parent) {
 					
 	wxImageList* imglist = new wxImageList(16, 16,true,5);
 	
-	imglist->Add(bitmaps->GetBitmap("ap_folder.png"));
+	imglist->Add(bitmaps->GetBitmap("trees/ap_folder.png"));
 	imglist->Add(*(bitmaps->files.source));
 	imglist->Add(*(bitmaps->files.header));
 	imglist->Add(*(bitmaps->files.other));
 	imglist->Add(*(bitmaps->files.blank));
-	imglist->Add(bitmaps->GetBitmap("ap_wxfb.png"));
-	imglist->Add(bitmaps->GetBitmap("ap_blacklist.png"));
+	imglist->Add(bitmaps->GetBitmap("trees/ap_wxfb.png"));
+	imglist->Add(bitmaps->GetBitmap("trees/ap_blacklist.png"));
 	treeCtrl->AssignImageList(imglist);
 	
 	root = treeCtrl->AddRoot("Archivos Abiertos", 0);
@@ -1561,7 +1561,7 @@ void mxMainWindow::project_tree_struct::ClearSelection() {
 wxTreeCtrl* mxMainWindow::CreateSymbolsTree() {
 	symbols_tree.treeCtrl = new mxTreeCtrl(this, mxID_TREE_SYMBOLS, wxPoint(0,0), wxSize(160,100), wxTR_DEFAULT_STYLE | wxNO_BORDER | wxTR_HIDE_ROOT);
 	wxImageList* imglist = new wxImageList(16, 16, true, 15);
-	imglist->Add(bitmaps->GetBitmap("as_folder.png"));
+	imglist->Add(bitmaps->GetBitmap("trees/as_folder.png"));
 	imglist->Add(wxArtProvider::GetBitmap(wxART_NORMAL_FILE, wxART_OTHER, wxSize(16,16)));
 	
 	imglist->Add(*(bitmaps->parser.icon02_define));
@@ -1597,14 +1597,14 @@ wxPanel* mxMainWindow::CreateCompilerTree() {
 // 	compiler_tree.treeCtrl->SetFont(tree_font);
 	
 	wxImageList* imglist = new wxImageList(16, 16, true, 2);
-	imglist->Add(bitmaps->GetBitmap("co_folder.png"));
+	imglist->Add(bitmaps->GetBitmap("trees/co_folder.png"));
 	imglist->Add(wxArtProvider::GetBitmap(wxART_NORMAL_FILE, wxART_OTHER, wxSize(16,16)));
-	imglist->Add(bitmaps->GetBitmap("co_info.png"));
-	imglist->Add(bitmaps->GetBitmap("co_warning.png"));
-	imglist->Add(bitmaps->GetBitmap("co_error.png"));
-	imglist->Add(bitmaps->GetBitmap("co_err_info.png"));
-	imglist->Add(bitmaps->GetBitmap("co_out.png"));
-	imglist->Add(bitmaps->GetBitmap("co_project_warning.png"));
+	imglist->Add(bitmaps->GetBitmap("trees/co_info.png"));
+	imglist->Add(bitmaps->GetBitmap("trees/co_warning.png"));
+	imglist->Add(bitmaps->GetBitmap("trees/co_error.png"));
+	imglist->Add(bitmaps->GetBitmap("trees/co_err_info.png"));
+	imglist->Add(bitmaps->GetBitmap("trees/co_out.png"));
+	imglist->Add(bitmaps->GetBitmap("trees/co_project_warning.png"));
 	compiler_tree.treeCtrl->AssignImageList(imglist);
 	
 	compiler_tree.root = compiler_tree.treeCtrl->AddRoot("Resultados de la Compilación:", 0);

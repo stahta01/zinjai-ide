@@ -76,7 +76,7 @@ mxNewWizard::mxNewWizard(mxMainWindow* parent, wxWindowID id, const wxPoint& pos
 	cancelButton = new mxBitmapButton (this,wxID_CANCEL,bitmaps->buttons.cancel,LANG(NEWWIZARD_CANCEL," Cancelar ")); 
 	wxBitmapButton *help_button = new wxBitmapButton (this,mxID_HELP_BUTTON,*(bitmaps->buttons.help));
 	
-	sizerU->Add(new wxStaticBitmap(this,wxID_ANY, bitmaps->GetBitmap("newWizard.png")), sizers->BA10);
+	sizerU->Add(new wxStaticBitmap(this,wxID_ANY, bitmaps->GetBitmap("dialogs/new_wizard.png")), sizers->BA10);
 	sizerU->Add(panel, sizers->BA10_Exp1);
 	
 	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
@@ -992,6 +992,11 @@ void mxNewWizard::CreatePanelProject2() {
 void mxNewWizard::RunWizard(wxString how) {
 	if (how=="new_project") {
 		only_for_project=true;
+		current_wizard_mode=WM_Project;
+		ShowPanelProject1();
+	} else if (how=="import_project") {
+		only_for_project=true;
+		current_wizard_mode=WM_Import;
 		ShowPanelProject1();
 	} else if (how=="on_project") {
 		ShowPanelOnProject();

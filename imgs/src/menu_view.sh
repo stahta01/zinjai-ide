@@ -1,0 +1,1 @@
+./export.sh menu_view.svg "split_view line_wrap white_space sintax_colour config_colours fold_current unfold_current fold_1 fold_2 fold_3 fold_4 fold_5 fold_all unfold_1 unfold_2 unfold_3 unfold_4 unfold_5 unfold_all full_screen beginner_panel project_tree explorer_tree symbols_tree compiler_tree minimap toolbar_config prev_error next_error"

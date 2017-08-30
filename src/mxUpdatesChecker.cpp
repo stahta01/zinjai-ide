@@ -55,7 +55,7 @@ mxUpdatesChecker::mxUpdatesChecker(bool show) : wxDialog(main_window, wxID_ANY, 
 	buttonSizer->Add(close_button,sizers->BA5_Right);
 	mySizer->Add(buttonSizer,sizers->Right);
 	
-	iSizer->Add(new wxStaticBitmap(this,wxID_ANY, bitmaps->GetBitmap("upgrade.png")),sizers->BA10);
+	iSizer->Add(new wxStaticBitmap(this,wxID_ANY, bitmaps->GetBitmap("dialogs/upgrade.png")),sizers->BA10);
 	iSizer->Add(mySizer,sizers->Exp1);
 	SetSizer(iSizer);
 	changes_button->Hide();

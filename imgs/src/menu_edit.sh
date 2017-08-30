@@ -1,0 +1,1 @@
+./export.sh menu_edit.svg "autocomplete undo redo cut copy paste move_up move_down duplicate delete_lines goto_class goto_file goto_line find find_prev find_next replace inser_header comment uncomment indent select_block select_all toggle_user_mark find_user_mark list_user_marks"

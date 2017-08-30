@@ -151,15 +151,15 @@ mxPreferenceWindow::mxPreferenceWindow(wxWindow* parent) :
 	wxBoxSizer *mySizer = new wxBoxSizer(wxVERTICAL);
 	notebook = new mxBookCtrl(this,wxID_ANY,wxDefaultPosition,wxDefaultSize,wxBK_LEFT);
 	wxImageList* imglist = new wxImageList(32, 32,true,8);
-	imglist->Add(bitmaps->GetBitmap("pref_general.png"));
-	imglist->Add(bitmaps->GetBitmap("pref_simple_program.png"));
-	imglist->Add(bitmaps->GetBitmap("pref_style.png"));
-	imglist->Add(bitmaps->GetBitmap("pref_writing.png"));
-	imglist->Add(bitmaps->GetBitmap("pref_skin.png"));
-	imglist->Add(bitmaps->GetBitmap("pref_toolbars.png"));
-	imglist->Add(bitmaps->GetBitmap("pref_debug.png"));
-	imglist->Add(bitmaps->GetBitmap("pref_paths.png"));
-	if (config->Help.show_extra_panels) imglist->Add(bitmaps->GetBitmap("pref_help.png"));
+	imglist->Add(bitmaps->GetBitmap("dialogs/pref_general.png"));
+	imglist->Add(bitmaps->GetBitmap("dialogs/pref_program.png"));
+	imglist->Add(bitmaps->GetBitmap("dialogs/pref_style.png"));
+	imglist->Add(bitmaps->GetBitmap("dialogs/pref_writing.png"));
+	imglist->Add(bitmaps->GetBitmap("dialogs/pref_skin.png"));
+	imglist->Add(bitmaps->GetBitmap("dialogs/pref_toolbars.png"));
+	imglist->Add(bitmaps->GetBitmap("dialogs/pref_debug.png"));
+	imglist->Add(bitmaps->GetBitmap("dialogs/pref_paths.png"));
+	if (config->Help.show_extra_panels) imglist->Add(bitmaps->GetBitmap("dialogs/pref_help.png"));
 	notebook->SetImageList(imglist);
 
 	if (config->Help.show_extra_panels) 

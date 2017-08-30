@@ -1,0 +1,1 @@
+echo $(grep \"id_ $1 | cut -d '"' -f 2 | cut -d '_' -f 2-)

@@ -1,0 +1,1 @@
+./export.sh menu_debug.svg "break_toggle debug pause stop step_in step_over step_out auto_step run_until function_return jump break_toggle break_options break_list inspections backtrace threadlist log_panel debug_attach debug_target core_dump save_core_dump enable_inverse_exec inverse_exec set_signals send_signal gdb_registers gdb_asm gdb_command gdb_patch"

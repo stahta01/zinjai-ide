@@ -56,7 +56,7 @@ public: /// there seems to be something wrong with nested friendship in my gcc f
 		wxString key, label, description, icon, shortcut;
 		wxMenuItem *wx_item;
 		myMenuItem(int _id=0, int _props=0):wx_id(_id),properties(_props),/*enabling_condition(ecALWAYS),*/wx_item(nullptr){}
-		myMenuItem(const wxString &_key, int _id, const wxString &_label):wx_id(_id),properties(maDEFAULT_SHORTCUT),key(_key),/*enabling_condition(ecALWAYS),*/label(_label),wx_item(nullptr) {}
+		myMenuItem(const wxString &_key, int _id, const wxString &_label):wx_id(_id),properties(maDEFAULT_SHORTCUT),key(_key),/*enabling_condition(ecALWAYS),*/label(_label),icon(_key+".png"),wx_item(nullptr) {}
 		myMenuItem &Label(const wxString &_label) { label=_label; return *this; }
 		myMenuItem &ShortCut(const wxString &_shortcut) { shortcut=_shortcut; return *this; }
 		myMenuItem &Description(const wxString &_description) { description=_description; return *this; }

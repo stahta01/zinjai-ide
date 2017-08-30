@@ -1,0 +1,1 @@
+./export.sh menu_file.svg "open_header open_selected new_file new_project open recent_simple recent_project save save_as save_all save_project export_html print reload close close_all close_project project_config preferences exit"

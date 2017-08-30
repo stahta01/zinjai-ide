@@ -84,6 +84,8 @@ void mxWelcomePanel::OnLinkClicked (wxHtmlLinkEvent &event) {
 		mxNewWizard::GetInstance()->RunWizard(_T("templates"));
 	} else if (action==_T("new_project")) {
 		mxNewWizard::GetInstance()->RunWizard(_T("new_project"));
+	} else if (action==_T("import_project")) {
+		mxNewWizard::GetInstance()->RunWizard(_T("import_project"));
 	} else if (action==_T("tip")) {
 		Freeze();
 		int x,y;

@@ -53,7 +53,7 @@ mxComplementInstallerWindow::mxComplementInstallerWindow(wxWindow *parent)
 	tSizer->Add(download_button,sizers->Center);
 	tSizer->AddStretchSpacer();
 	
-	iSizer->Add(new wxStaticBitmap(this,wxID_ANY, bitmaps->GetBitmap("upgrade.png")),sizers->BA10);
+	iSizer->Add(new wxStaticBitmap(this,wxID_ANY, bitmaps->GetBitmap("dialogs/upgrade.png")),sizers->BA10);
 	iSizer->Add(tSizer,sizers->Exp1);
 	mySizer->Add(iSizer,sizers->Exp1);
 	mySizer->Add(bottomSizer,sizers->BA5_Exp0);
