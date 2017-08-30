@@ -1,4 +1,8 @@
-#include <GL/glut.h>
+#ifdef __APPLE__
+#  include <GLUT/glut.h>
+#else
+#  include <GL/glut.h>
+#endif
 
 void reshape_cb (int w, int h) {
 	if (w==0||h==0) return;

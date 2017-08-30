@@ -1,3 +1,7 @@
+# script for compiling and packing zinjai in linux for distribution
+# call with "prepare" to init the directory structure, with "update <dir>" to secure-copy
+# sources and other required files from the development branch located on <dir>, and with
+# "pack" to compile and compress the result into "zinjai-lxx-yyyymmdd.tgz"
 
 if [ "$1" = "prepare" ]; then
 
@@ -22,9 +26,14 @@ if [ "$1" = "prepare" ]; then
   mkdir zinjai/lang/tools/mxLangTool
   mkdir zinjai/imgs
   mkdir zinjai/imgs/icons
+  mkdir zinjai/imgs/dialogs
+  mkdir zinjai/imgs/trees
+  mkdir zinjai/imgs/welcome
   mkdir zinjai/imgs/16
   mkdir zinjai/imgs/24
   mkdir zinjai/imgs/32
+  mkdir zinjai/imgs/48
+  mkdir zinjai/imgs/src
   mkdir zinjai/skins
   mkdir zinjai/src
   mkdir zinjai/src_extras
@@ -68,6 +77,11 @@ elif [ "$1" = "update" ]; then
   scp $2/zinjai/imgs/16/*				zinjai/imgs/16/
   scp $2/zinjai/imgs/24/*				zinjai/imgs/24/
   scp $2/zinjai/imgs/32/*				zinjai/imgs/32/
+  scp $2/zinjai/imgs/48/*				zinjai/imgs/48/
+  scp $2/zinjai/imgs/src/*				zinjai/imgs/src/
+  scp $2/zinjai/imgs/welcome/*				zinjai/imgs/welcome/
+  scp $2/zinjai/imgs/trees/*				zinjai/imgs/trees/
+  scp $2/zinjai/imgs/dialogs/*				zinjai/imgs/dialogs/
   scp -r $2/zinjai/imgs/icons/*				zinjai/imgs/icons/
   scp -r $2/zinjai/skins/*				zinjai/skins/
 
@@ -109,16 +123,13 @@ elif [ "$1" = "pack" ]; then
   make -C zinjai/src_extras -f Makefile.lnx || exit 1
   make -C zinjai/parser -f Makefile.lnx || exit 1
   
-  rm -f zinjai/release.lnx/*
-  rmdir -f zinjai/release.lnx
-  rm -f zinjai/parser/release.lnx/*
-  rmdir -f zinjai/parser/release.lnx
   rm -f zinjai/lang/tools/mxLangTool/release.lnx/*
   rmdir -f zinjai/lang/tools/mxLangTool/release.lnx
 
   VER=`cat zinjai/src/version.h | head -n 1 | cut -d ' ' -f 3`
   ARCH=`sh zinjai/src_extras/get-arch.sh`
-  if ! tar -czvf zinjai-${ARCH}-${VER}.tgz zinjai --exclude=zinjai/bin/*.dbg; then exit; fi
+  EXCLUDES="--exclude=zinjai/src --exclude=zinjai/imgs/src --exclude=zinjai/src_extras --exclude=zinjai/guihelp/src --exclude=zinjai/Makefile  --exclude=zinjai/compiling.txt"
+  if ! tar -czvf zinjai-${ARCH}-${VER}.tgz zinjai --exclude=zinjai/temp --exclude=zinjai/bin/*.dbg $EXCLUDES; then exit; fi
   echo -n "Done: "
   ls -sh zinjai-${ARCH}-${VER}.tgz
 

@@ -81,22 +81,22 @@ SectionEnd
 ;  File /R "cppreference\*"
 ;SectionEnd
 
-Section /o "Extras OpenGL (Freeglut+glew)" SEC04
+Section "Extras OpenGL (Freeglut+glew)" SEC04
   SetOutPath "$INSTDIR\"
   File /R "opengl\*"
 SectionEnd
 
-Section /o "Fuentes del IDE" SEC05
-  SetOutPath "$INSTDIR\"
-  File /R "fuentes\*"
-SectionEnd
+;Section /o "Fuentes del IDE" SEC05
+;  SetOutPath "$INSTDIR\"
+;  File /R "fuentes\*"
+;SectionEnd
 
 ; Section descriptions
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Entorno ZinjaI. Tamaño aproximado: 55 MB"
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Herramientas de compilacion, depuracion y otros GNU. Tamaño aproximado: 183 MB"
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Archivos necesarios para compilar aplicaciones que utilicen Freeglut y/o Glew. Tamaño Aproximado: 6MB"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Código fuente del entorno. Tamaño aproximado: 20 MB"
+;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Código fuente del entorno. Tamaño aproximado: 20 MB"
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC01b} "Asociar fuentes (c,c++,cpp,cxx,h,h++,hpp,hxx) para abrir con ZinjaI"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 

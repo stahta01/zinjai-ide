@@ -44,8 +44,14 @@ zmkdir zinjai
     cp -u $SRC/imgs/descripcion.txt zinjai/imgs/
     cp -u $SRC/imgs/*.png zinjai/imgs/
     cp -u $SRC/imgs/*.html zinjai/imgs/
-    zmkdir fuentes/imgs
-    cp -u $SRC/imgs/*.ico fuentes/imgs/
+#    zmkdir fuentes/imgs
+#    cp -u $SRC/imgs/*.ico fuentes/imgs/
+    zmkdir zinjai/imgs/welcome
+      cp -u $SRC/imgs/welcome/* zinjai/imgs/welcome/
+    zmkdir zinjai/imgs/dialogs
+      cp -u $SRC/imgs/dialogs/* zinjai/imgs/dialogs/
+    zmkdir zinjai/imgs/trees
+      cp -u $SRC/imgs/trees/* zinjai/imgs/trees/
     zmkdir zinjai/imgs/16
       cp -u $SRC/imgs/16/* zinjai/imgs/16/
     zmkdir zinjai/imgs/24
@@ -87,43 +93,43 @@ zmkdir zinjai
 #  zmkdir opengl/autocomp
 #    cp -Hru $SRC/autocomp/opengl* opengl/autocomp
 
-zmkdir fuentes
-  cp -u $SRC/compiling.txt fuentes/
-  cp -u $SRC/Makefile fuentes/
-  cp -u $SRC/zinjai.zpr fuentes/
-  zmkdir fuentes/src
-    cp -u $SRC/src/* fuentes/src/
-  zmkdir fuentes/src_extras
-    cp -u $SRC/src_extras/* fuentes/src_extras
-  zmkdir fuentes/src_extras/complement
-    cp -u $SRC/src_extras/complement/* fuentes/src_extras/complement
-  zmkdir fuentes/src_extras/img_viewer
-    cp -u $SRC/src_extras/complement/* fuentes/src_extras/img_viewer
-#  zmkdir fuentes/src_extras/wx_autocomp
-#    cp -u $SRC/src_extras/wx_autocomp/* fuentes/src_extras/wx_autocomp
-  zmkdir fuentes/imgs/src
-    cp -u $SRC/imgs/src/* fuentes/imgs/src/
-  zmkdir fuentes/lang
-    cp $SRC/lang/*.src fuentes/lang/
-    cp $SRC/lang/spanish.pre fuentes/lang/
-  zmkdir fuentes/lang/tools
-    cp $SRC/lang/tools/extract_enum.cpp fuentes/lang/tools/
-    cp -ru $SRC/lang/tools/mxLangTool fuentes/lang/tools/
-    cp -u $SRC/lang/tools/mxLangTool.exe fuentes/lang/tools/
-    rm -rf fuentes/lang/tools/mxLangTool/debug.lnx
-    rm -rf fuentes/lang/tools/mxLangTool/release.lnx
-    rm -rf fuentes/lang/tools/mxLangTool/release.w32
-    rm -rf fuentes/lang/tools/mxLangTool/debug.w32
-  zmkdir fuentes/parser
-    cp -ru $SRC/parser/* fuentes/parser/
-    rm -rf fuentes/parser/release.lnx
-    rm -rf fuentes/parser/debug.lnx
-    rm -rf fuentes/parser/release.w32
-    rm -rf fuentes/parser/debug.w32
-  zmkdir fuentes/src_extras
-    cp -ru fuentes/src_extras/*.nsh .
-    rm -rf $SRC/src_extras/wxWidgets
-    rm -rf $SRC/src_extras/*.bin 
+# zmkdir fuentes
+#   cp -u $SRC/compiling.txt fuentes/
+#   cp -u $SRC/Makefile fuentes/
+#   cp -u $SRC/zinjai.zpr fuentes/
+#   zmkdir fuentes/src
+#     cp -u $SRC/src/* fuentes/src/
+#   zmkdir fuentes/src_extras
+#     cp -u $SRC/src_extras/* fuentes/src_extras
+#   zmkdir fuentes/src_extras/complement
+#     cp -u $SRC/src_extras/complement/* fuentes/src_extras/complement
+#   zmkdir fuentes/src_extras/img_viewer
+#     cp -u $SRC/src_extras/complement/* fuentes/src_extras/img_viewer
+# #  zmkdir fuentes/src_extras/wx_autocomp
+# #    cp -u $SRC/src_extras/wx_autocomp/* fuentes/src_extras/wx_autocomp
+#   zmkdir fuentes/imgs/src
+#     cp -u $SRC/imgs/src/* fuentes/imgs/src/
+#   zmkdir fuentes/lang
+#     cp $SRC/lang/*.src fuentes/lang/
+#     cp $SRC/lang/spanish.pre fuentes/lang/
+#   zmkdir fuentes/lang/tools
+#     cp $SRC/lang/tools/extract_enum.cpp fuentes/lang/tools/
+#     cp -ru $SRC/lang/tools/mxLangTool fuentes/lang/tools/
+#     cp -u $SRC/lang/tools/mxLangTool.exe fuentes/lang/tools/
+#     rm -rf fuentes/lang/tools/mxLangTool/debug.lnx
+#     rm -rf fuentes/lang/tools/mxLangTool/release.lnx
+#     rm -rf fuentes/lang/tools/mxLangTool/release.w32
+#     rm -rf fuentes/lang/tools/mxLangTool/debug.w32
+#   zmkdir fuentes/parser
+#     cp -ru $SRC/parser/* fuentes/parser/
+#     rm -rf fuentes/parser/release.lnx
+#     rm -rf fuentes/parser/debug.lnx
+#     rm -rf fuentes/parser/release.w32
+#     rm -rf fuentes/parser/debug.w32
+#   zmkdir fuentes/src_extras
+#     cp -ru fuentes/src_extras/*.nsh .
+#     rm -rf $SRC/src_extras/wxWidgets
+#     rm -rf $SRC/src_extras/*.bin 
 
 wine c:/NSIS/makensis.exe /DPRODUCT_VERSION\=`cat fuentes/src/version.h | head -n 1 | cut -d ' ' -f 3` zinjai.nsh || exit 1
 
