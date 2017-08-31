@@ -256,13 +256,14 @@ bool mxApplication::InitSingleton(const wxString &cmd_path) {
 			bool opened = g_singleton->RemoteOpen(DIR_PLUS_FILE(cmd_path,name));
 			int ret=0;
 			while (!opened && ret<2) { // dos reintentos, por si estaba muy ocupado
-				wxMilliSleep(10*rand()%50); // delay aleatorio tip ethernet
+				wxMilliSleep(10*rand()%50); // delay aleatorio tipo ethernet
 				opened = g_singleton->RemoteOpen(DIR_PLUS_FILE(cmd_path,name));
 				ret++;
 			}
 			if (opened) argv[i][0]='\0';
 			else all_done=false;
 		}
+		else all_done=false;
 	}
 	return all_done;
 }
