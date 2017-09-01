@@ -23,7 +23,7 @@ BEGIN_EVENT_TABLE(mxExeInfo, wxDialog)
 END_EVENT_TABLE()
 	
 mxExeInfo::mxExeInfo(wxWindow *parent, ei_mode mode, wxFileName fname, mxSource *src) 
-	: mxDialog(parent, LANG(EXEINFO_CAPTION,"Propiedades del Ejecutable")), 
+	: mxDialog(parent, mode==mxEI_SOURCE ? LANG(EXEINFO_CAPTION_SOURCE,"Propiedades del Ejecutable") : LANG(EXEINFO_CAPTION_PROJECT,"Propiedades del Ejecutable")), 
 	  m_mode(mode), m_source(src), m_fname(fname), m_wait_for_parser(GetEventHandler(),wxID_ANY)
 {
 	if (mode==mxEI_PROJECT||mode==mxEI_SIMPLE) {
@@ -110,7 +110,17 @@ wxPanel *mxExeInfo::CreateGeneralPanel (wxNotebook *notebook) {
 					in_project += LANG1(EXEINFO_INHERITED," (heredado desde <{1}>)",fitem->GetFatherProject());
 			}
 			sizer.BeginText( LANG(EXEINFO_IN_PROJECT,"En proyecto") )
-				.Value( in_project ).Short().ReadOnly().Short().EndText();
+				.Value( in_project ).Short().ReadOnly().EndText();
+			if (fitem) {
+				if (fitem->GetCategory()==FT_SOURCE)
+					sizer.BeginText( LANG(EXEINFO_OBJ_PATH,"Archivo objeto") )
+						.Value( fitem->GetBinName(project->GetTempFolder(false)) )/*Short().*/.ReadOnly().EndText();
+				sizer.BeginCheck( LANG(EXEINFO_READONLY,"Solo lectura") )
+					.Value( !fitem->IsReadOnly() )./*ReadOnly().*/EndCheck();
+				if (fitem->GetCategory()==FT_HEADER || fitem->GetCategory()==FT_SOURCE)
+					sizer.BeginCheck( LANG(EXEINFO_IGNORE_SYMBOLS,"Ignorar símbolos en búsquedas") )
+						.Value( !fitem->ShouldBeParsed() )./*ReadOnly().*/EndCheck();
+			}
 		}
 		if (m_source && !m_source->sin_titulo) 
 			sizer.BeginText( LANG(EXEINFO_MODIFIED,"Modificado") )

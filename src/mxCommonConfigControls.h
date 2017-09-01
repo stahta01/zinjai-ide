@@ -300,9 +300,11 @@ private:
 			};
 			
 			class InnerText: public BaseText<InnerSizer> {
+				bool m_expand;
 			public:
-				InnerText(InnerSizer *sizer, wxString label) : BaseText<InnerSizer>(sizer,label) {}
+				InnerText(InnerSizer *sizer, wxString label) : BaseText<InnerSizer>(sizer,label), m_expand(false) {}
 				InnerSizer &EndText(wxTextCtrl *&text_ctrl) override;
+				InnerText &Expand() { m_expand = true; return *this; }
 			};
 			
 		public:

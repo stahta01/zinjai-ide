@@ -171,7 +171,7 @@ mxDialog::MainSizer::InnerSizer &mxDialog::MainSizer::InnerSizer::InnerText::End
 	else text_ctrl = new wxTextCtrl(parent, m_id, m_value, wxDefaultPosition, wxDefaultSize,  wxTE_RIGHT|(m_readonly?wxTE_READONLY:0), wxTextValidator(wxFILTER_NUMERIC));
 	wxStaticText *static_text = new wxStaticText(parent,wxID_ANY,m_label+":   ", wxDefaultPosition, wxDefaultSize, 0);
 	sizer->Add(static_text,sizers->Center);
-	sizer->Add(text_ctrl, sizers->Exp0);
+	sizer->Add(text_ctrl, m_expand?sizers->Exp1:sizers->Exp0);
 	if (m_button_id!=mxID_NULL) {
 		button = new wxButton(parent,m_button_id,m_button_text,wxDefaultPosition,m_button_text== _T("...")?wxSize(30,10):wxSize(-1,10));
 		sizer->Add(button, sizers->Exp0_Right);

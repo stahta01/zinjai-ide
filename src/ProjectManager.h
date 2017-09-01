@@ -390,6 +390,7 @@ public:
 		return m_relative_path.Len()<=2 || (m_relative_path[m_relative_path.Len()-1]!='c'&&m_relative_path[m_relative_path.Len()-1]!='C') || m_relative_path[m_relative_path.Len()-2]!='.';
 	}
 	wxString GetBinName(const wxString &temp_dir) const;
+	wxString GetBinNameTpl() const { return m_binary_fname_tpl; }
 	bool IsInherited() const { return !m_inherited_from.IsEmpty(); }
 	wxString GetFatherProject() const { return m_inherited_from; }
 	bool IsInALibrary() const { return m_lib!=nullptr; }
@@ -406,6 +407,7 @@ public:
 	const wxTreeItemId &GetTreeItem() const { return m_tree_item; }
 	void SetTreeItem(const wxTreeItemId &tree_item) { m_tree_item = tree_item; }
 	SourceExtras &GetSourceExtras() { return m_extras; }
+	void SetBinNameTemplate(const wxString &new_tpl) { m_binary_fname_tpl = new_tpl; }
 private:
 	friend class ProjectManager;
 	wxString m_relative_path; ///< path relativo al path del proyecto
@@ -596,8 +598,9 @@ public:
 	
 	
 	int GetFileList(wxArrayString &array, eFileType cuales=FT_NULL, bool relative_paths=false);
-	project_file_item *FindFromName(wxString name); ///< busca a partir del nombre de archivo (solo, sin path)
-	project_file_item *FindFromFullPath(wxString file); ///< busca una archivo en el proyecto por su ruta completa
+	project_file_item *FindFromRelativePath(const wxString &path); ///< busca a partir del nombre de archivo (solo, sin path)
+	project_file_item *FindFromName(const wxString &name); ///< busca a partir del nombre de archivo (solo, sin path)
+	project_file_item *FindFromFullPath(const wxString &path); ///< busca una archivo en el proyecto por su ruta completa
 	wxString GetNameFromItem(wxTreeItemId &tree_item, bool relative=false);
 	bool Save(bool as_template=false);
 	void MoveFirst(wxTreeItemId &tree_item);

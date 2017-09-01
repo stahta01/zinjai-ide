@@ -1156,6 +1156,8 @@ BYSRCOPTS_CAPTION
 Opciones de compilación por fuente
 BYSRCOPTS_FILTER
 Filtrar
+BYSRCOPTS_OBJECT_FILE
+Archivo objeto:
 BYSRCOPTS_FROM_PROFILE
 Tomar desde el perfil
 PROJECTCONFIG_COMPILING_EXTRA_ARGS
@@ -1586,7 +1588,9 @@ ERRORRECOVERY_PROJECT_MESSAGE
 ZinjaI no se cerro correctamente durante su ultima ejecucion.\nEl proyecto en el que trabajaba fue guardado automaticamente.\nDesea recuperarlo? (Atencion: al abrir el proyecto recuperado\npodria sobreescribir la version en disco del proyecto y sus\narchivos. Se guardara una copia de su archivo de proyecto actual\nantes de reescribirlo con la version restaurada)
 ERRORRECOVERY_PROJECT_PROBLEM
 Ha ocurrido un error al intentar recuperar el proyecto.
-EXEINFO_CAPTION
+EXEINFO_CAPTION_SOURCE
+Propiedades del Ejecutable
+EXEINFO_CAPTION_PROJECT
 Propiedades del Ejecutable
 EXEINFO_NOT_FOUND
 No se encontro ejecutable. Compile el programa para crearlo.
@@ -1620,6 +1624,12 @@ EXEINFO_INHERITED
  (heredado desde <{1}>)
 EXEINFO_IN_PROJECT
 En proyecto
+EXEINFO_OBJ_PATH
+Archivo objeto
+EXEINFO_READONLY
+Solo lectura
+EXEINFO_IGNORE_SYMBOLS
+Ignorar símbolos en búsquedas
 EXEINFO_MODIFIED
 Modificado
 EXEINFO_UPDATED

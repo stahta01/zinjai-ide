@@ -12,7 +12,11 @@ class wxTextCtrl;
 class wxTimer;
 
 class mxExeInfo : public mxDialog {
-	enum ei_mode { mxEI_PROJECT, mxEI_SIMPLE, mxEI_SOURCE } m_mode;
+	enum ei_mode { 
+		mxEI_PROJECT, ///< ejecutable del proyecto
+		mxEI_SIMPLE, ///< ejecutable de un programa simple
+		mxEI_SOURCE ///< fuente, puede ser de un proyecto o no
+	} m_mode;
 private:
 	mxSource *m_source;
 	wxFileName m_fname;

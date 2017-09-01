@@ -1054,7 +1054,8 @@ project_file_item *ProjectManager::FilesList::FindFromItem(const wxTreeItemId &t
 	return nullptr;
 }
 
-project_file_item *ProjectManager::FindFromName(wxString name) {
+// name? name+ext? relative_path? full_path? wtf? todo: ver donde se usa
+project_file_item *ProjectManager::FindFromName(const wxString &name) {
 	for( GlobalListIterator<project_file_item*> it(&files.all); it.IsValid(); it.Next()) {
 		if (wxFileName(it->GetRelativePath()).GetFullName()==name || it->GetFullPath()==name)
 			return *it;
@@ -1062,14 +1063,21 @@ project_file_item *ProjectManager::FindFromName(wxString name) {
 	return nullptr;
 }
 
+project_file_item *ProjectManager::FindFromRelativePath(const wxString &path) {
+	for( GlobalListIterator<project_file_item*> it(&files.all); it.IsValid(); it.Next()) {
+		if (path==it->GetRelativePath()) return *it;
+	}
+	return nullptr;
+}
+
 /**
 * @return puntero al project_file_item del archivo si lo encuenctra, nullptr si no lo encuentra
 **/
-project_file_item *ProjectManager::FindFromFullPath(wxString file) {
-	file = mxFilename::Normalize(file);
+project_file_item *ProjectManager::FindFromFullPath(const wxString &path) {
+	wxString fullpath = mxFilename::Normalize(path);
 	GlobalListIterator<project_file_item*> it(&files.all);
 	while (it.IsValid()) {
-		if (it->GetFullPath()==file)
+		if (it->GetFullPath()==fullpath)
 			return *it;
 		it.Next();
 	}
@@ -3689,8 +3697,8 @@ wxString project_file_item::GetBinName (const wxString & temp_dir) const {
 	if (m_binary_fname_tpl.IsEmpty()) 
 		return DIR_PLUS_FILE(temp_dir,mxFilename::GetFileName(m_relative_path,false)+".o");
 	wxString ret = m_binary_fname_tpl;
-	ret.Replace("${TEMP_DIR}",temp_dir);
-	ret.Replace("${SRC_DIR}",mxFilename::GetPath(m_relative_path));
+	ret.Replace("${TEMP_DIR}",mxFilename::RemoveTrailingSlash(temp_dir));
+	ret.Replace("${SRC_DIR}",mxFilename::GetPath(m_relative_path,true));
 	ret.Replace("${SRC_FNAME}",mxFilename::GetFileName(m_relative_path,false));
 	return ret;
 }

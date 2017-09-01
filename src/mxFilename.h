@@ -17,9 +17,11 @@ public:
 	/** @brief Contrae los ".." de los paths **/
 	static wxString Normalize(wxString path);
 	/** @brief Extrae solo el nombre del archivo, sin la ruta **/
-	static wxString GetFileName(const wxString &fullpath, bool with_extension);
+	static wxString GetFileName(const wxString &fullpath, bool with_extension=true);
 	/** @brief Extrae solo la ruta, sin el nombre del archivo **/
-	static wxString GetPath(const wxString &fullpath);
+	static wxString GetPath(const wxString &fullpath, bool or_dot=false);
+	/** @brief Si el path termina en '/' o '\', pero no es el raiz, lo remueve**/
+	static wxString RemoveTrailingSlash(const wxString &fullpath);
 };
 
 #endif

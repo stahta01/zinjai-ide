@@ -882,6 +882,8 @@ PROJECT_MINGW_CC_PROBLEM_DESC
 This project was saved with an older ZinjaI release, that was shipped with an older\ncompiler version (mingw). Object files generated with the old compiler cannot be linked\nwith the ones that will generate the new and currently available compiler (if you are\nstill compiling with ZinjaI's default toolchain). In most cases you can easily solve\nthis problem by cleaning the project (removing temporal objects to make ZinjaI regenerate\nthem before next running). Do you want to do it now?\nNote: if your project links to external libraries not shipped with ZinjaI, you may need\nto update them too. If you don't, your program could stop annormaly.
 PROJECT_MINGW_CC_PROBLEM_MORE
 Show more details (web)...
+PROJECT_ERROR_DUPLICATE_OBJ
+Source files \"<{1}>\" and \"<{2}>\" genete the same object file.
 PROJMNGR_CONFIRM_REPLACE
 File exists. Do you want to replace it?
 PROJMNGR_CONFIRM_DETACH_ALSO
@@ -970,12 +972,12 @@ CAPTION_GROUPED_TREES
 Trees
 CAPTION_PROJECT_TREE
 Project Tree
-MAINW_AUTOHIDE_SYMBOLS
-Symbols
-CAPTION_SYMBOLS_TREE
-Symbols Tree
 MAINW_AUTOHIDE_PROJECT
 Project
+CAPTION_SYMBOLS_TREE
+Symbols Tree
+MAINW_AUTOHIDE_SYMBOLS
+Symbols
 CAPTION_EXPLORER_TREE
 Explorer Tree
 MAINW_AUTOHIDE_EXPLORER
@@ -1154,6 +1156,8 @@ BYSRCOPTS_CAPTION
 Compiler arguments (by source)
 BYSRCOPTS_FILTER
 Filter
+BYSRCOPTS_OBJECT_FILE
+Object file
 BYSRCOPTS_FROM_PROFILE
 Use profile's settings
 PROJECTCONFIG_COMPILING_EXTRA_ARGS
@@ -1584,7 +1588,9 @@ ERRORRECOVERY_PROJECT_MESSAGE
 ZinjaI wasn't correctly closed in last execution. The project\nyou where working on was automatically saved in a temporal file.\nDo you want to recover it? (Atention: opening the project could\noverwrite the current saved version, but a backup copy will be\nmade in the same place before restoring).
 ERRORRECOVERY_PROJECT_PROBLEM
 There was a problem recovering the project.
-EXEINFO_CAPTION
+EXEINFO_CAPTION_SOURCE
+Source file's Properties
+EXEINFO_CAPTION_PROJECT
 Executable's Properties
 EXEINFO_NOT_FOUND
 Executable file not found. Compile the programe to build it.
@@ -1618,6 +1624,8 @@ EXEINFO_INHERITED
  (inherited from <{1}>)
 EXEINFO_IN_PROJECT
 In project
+EXEINFO_OBJ_PATH
+Object file path
 EXEINFO_MODIFIED
 Modified
 EXEINFO_UPDATED
@@ -2028,10 +2036,6 @@ MAINW_SHARE_AFTER_CLOSE
 Keep sharing (\"whithout modifications\") after closing.
 MAINW_QUICKHELP_INIT
 Place text cursor over a word and press Shift+F1 to see help here
-CAPTION_PROJECT_SYMBOLS_TREE
-Symbols Tree
-CAPTION_PROJECT_PROJECT_TREE
-Project Tree
 MAINW_PT_SOURCES
 Sources
 MAINW_PT_HEADERS

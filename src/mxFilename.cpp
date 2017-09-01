@@ -1,5 +1,6 @@
 #include "mxFilename.h"
 #include <wx/filename.h>
+#include "mxUtils.h"
 
 static char path_sep = wxFileName::GetPathSeparator();
 
@@ -71,6 +72,7 @@ wxString mxFilename::Normalize (wxString path) {
 }
 
 wxString mxFilename::GetFileName (const wxString &fullpath, bool with_extension) {
+	if (fullpath.IsEmpty()) return "";
 	int i = fullpath.Len()-1, pdot=-1;
 	while (i>=0 && !_is_path_char(fullpath,i)) {
 		if (!with_extension && pdot==-1 && fullpath[i]=='.') pdot=i;
@@ -79,10 +81,18 @@ wxString mxFilename::GetFileName (const wxString &fullpath, bool with_extension)
 	return fullpath.Mid(i+1,pdot==-1?wxSTRING_MAXLEN:(pdot-i-1));
 }
 
-wxString mxFilename::GetPath (const wxString &fullpath) {
+wxString mxFilename::GetPath (const wxString &fullpath, bool or_dot) {
+	if (fullpath.IsEmpty()) return or_dot?".":"";
 	int i = fullpath.Len()-1;
 	while (i>=0 && !_is_path_char(fullpath,i)) --i;
-	return fullpath.Mid(0,i+1);
-	
+	if (or_dot && i<0) return ".";
+	return fullpath.Mid(0,(i<0||(i==1&&fullpath[i]==':'))?i+1:i);
+}
+
+wxString mxFilename::RemoveTrailingSlash (const wxString & fullpath) {
+	if (fullpath.IsEmpty()) return fullpath;
+	if (fullpath.Last()!='/' _if_win32(&& fullpath.Last()!='\\',)) return fullpath;
+	if (fullpath.Len()==1 _if_win32(|| (fullpath.Len()==3&&fullpath[1]==':'),)) return fullpath;
+	return fullpath.Mid(0,fullpath.Len()-1);
 }
 

@@ -15,7 +15,6 @@ class project_file_item;
 
 class mxBySourceCompilingOpts : public mxDialog {
 private:
-	wxArrayString sources_list;
 	wxListBox *list;
 	wxCheckBox *fp_extra;
 	wxCheckBox *fp_macros;
@@ -28,7 +27,10 @@ private:
 	wxComboBox *profiles;
 	wxTextCtrl *additional_args;
 	wxTextCtrl *filter_sources;
-	SingleList<HashStringString> config;
+	wxTextCtrl *obj_file;
+	wxArrayString sources_list;
+	SingleList<HashStringString> config; ///< opciones por perfil
+	wxArrayString objects; ///< ruta por archivo (indices idem source_list)
 	int active_config;
 	wxString last_source;
 	BoolFlag mask_list_selection_event;
@@ -37,7 +39,8 @@ public:
 protected:
 	DECLARE_EVENT_TABLE();
 	void OnList(wxCommandEvent &evt);
-	void OnButtonApply(wxCommandEvent &evt);
+	void OnButtonApplyArgs(wxCommandEvent &evt);
+	void OnButtonApplyObj(wxCommandEvent &evt);
 	void OnButtonOk(wxCommandEvent &evt);
 	void OnButtonCancel(wxCommandEvent &evt);
 	void OnButtonHelp(wxCommandEvent &evt);

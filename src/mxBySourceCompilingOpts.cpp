@@ -1,17 +1,20 @@
-#include "mxBySourceCompilingOpts.h"
 #include <wx/listctrl.h>
-#include "mxUtils.h"
 #include <wx/sizer.h>
-#include "mxSizers.h"
 #include <wx/listbox.h>
 #include <wx/button.h>
 #include <wx/checkbox.h>
-#include "ProjectManager.h"
 #include <wx/combobox.h>
+#include "mxBySourceCompilingOpts.h"
+#include "mxUtils.h"
+#include "mxSizers.h"
+#include "ProjectManager.h"
 #include "mxHelpWindow.h"
 
+#define _default_obj_tpl "${TEMP_DIR}/${SRC_FNAME}.o"
+
 BEGIN_EVENT_TABLE(mxBySourceCompilingOpts,wxDialog)
-	EVT_BUTTON(wxID_APPLY,mxBySourceCompilingOpts::OnButtonApply)
+	EVT_BUTTON(mxID_BYSRCOPTS_APPLY_ARGS,mxBySourceCompilingOpts::OnButtonApplyArgs)
+	EVT_BUTTON(mxID_BYSRCOPTS_APPLY_OBJ,mxBySourceCompilingOpts::OnButtonApplyObj)
 	EVT_BUTTON(wxID_OK,mxBySourceCompilingOpts::OnButtonOk)
 	EVT_BUTTON(wxID_CANCEL,mxBySourceCompilingOpts::OnButtonCancel)
 	EVT_BUTTON(mxID_HELP_BUTTON,mxBySourceCompilingOpts::OnButtonHelp)
@@ -37,10 +40,21 @@ mxBySourceCompilingOpts::mxBySourceCompilingOpts(wxWindow *parent, project_file_
 	
 	left_sizer.BeginText( LANG(BYSRCOPTS_FILTER,"Filtrar") ).Short().Id(wxID_FIND).EndText(filter_sources);
 	project->GetFileList(sources_list,FT_SOURCE,true);
+	for(unsigned int i=0;i<sources_list.GetCount();i++) { 
+		wxString tpl = project->FindFromRelativePath(sources_list[i])->GetBinNameTpl();
+		objects.Add( tpl.IsEmpty() ? _default_obj_tpl : tpl );
+	}
 	list = new wxListBox(this,wxID_ANY,wxDefaultPosition,wxDefaultSize,sources_list,wxLB_MULTIPLE);
 	list->Select(sources_list.Index(last_source));
 	left_sizer.Add(list,sizers->BA5_Exp1);
 	
+	right_sizer.BeginLine()
+		.BeginText( LANG(BYSRCOPTS_OBJECT_FILE,"Archivo objeto") ).Expand().Value(_default_obj_tpl).EndText(obj_file)
+		.Space(10)
+		.BeginButton( LANG(BYSRCOPT_APPLY_TO_SELECTED_FILES,"Aplicar cambios") )
+		.Id(mxID_BYSRCOPTS_APPLY_OBJ).EndButton()
+		.EndLine();
+	right_sizer.BeginLabel("").EndLabel();
 	right_sizer.BeginSection( LANG(BYSRCOPTS_FROM_PROFILE,"Tomar desde el perfil") ) 
 		.BeginCheck( LANG(PROJECTCONFIG_COMPILING_EXTRA_ARGS,"Parametros extra para la compilación")) .EndCheck(fp_extra)
 		.BeginCheck( LANG(PROJECTCONFIG_COMPILING_MACROS,"Macros a definir") ).EndCheck(fp_macros)
@@ -61,7 +75,7 @@ mxBySourceCompilingOpts::mxBySourceCompilingOpts(wxWindow *parent, project_file_
 				.Add(profiles_list).Select(project->active_configuration->name).Id(wxID_OPEN).EndCombo(profiles)
 			.Space(10)
 			.BeginButton( LANG(BYSRCOPT_APPLY_TO_SELECTED_FILES,"Aplicar cambios") )
-				.Id(wxID_APPLY).EndButton()
+				.Id(mxID_BYSRCOPTS_APPLY_ARGS).EndButton()
 		.EndLine();
 	
 	top_sizer.Add(left_sizer,1).Add(right_sizer,2);
@@ -84,7 +98,16 @@ void mxBySourceCompilingOpts::OnButtonHelp (wxCommandEvent & evt) {
 
 #define _auxByScr_ALL_OPTS "${EXT} ${DEF} ${INC} ${STD} ${WAR} ${DBG} ${OPT} "
 
-void mxBySourceCompilingOpts::OnButtonApply (wxCommandEvent & evt) {
+void mxBySourceCompilingOpts::OnButtonApplyObj (wxCommandEvent & evt) {
+	wxString value = obj_file->GetValue();
+	for(unsigned int j=0;j<list->GetCount();j++) {
+		if (!list->IsSelected(j)) continue;
+		int p = sources_list.Index(list->GetString(j));
+		objects[p] = value;
+	}
+}
+
+void mxBySourceCompilingOpts::OnButtonApplyArgs (wxCommandEvent & evt) {
 	int prof = profiles->GetSelection();
 	wxString value;
 	if (fp_extra->GetValue()) value<<"${EXT} ";
@@ -115,6 +138,10 @@ void mxBySourceCompilingOpts::OnButtonOk (wxCommandEvent & evt) {
 			if (it->second=="${ALL}") { config[i].erase(it); it = config[i].begin(); } else ++it;
 		*(project->configurations[i]->by_src_compiling_options) = config[i];
 	}
+	for(unsigned int i=0;i<sources_list.GetCount();i++) {
+		project->FindFromRelativePath(sources_list[i])
+			->SetBinNameTemplate( objects[i]==_default_obj_tpl ? "" : objects[i] );
+	}
 	Close();
 }
 
@@ -122,8 +149,13 @@ void mxBySourceCompilingOpts::OnList (wxCommandEvent & evt) {
 	if (mask_list_selection_event) return;
 	wxString sel;
 	for(unsigned int j=0;j<list->GetCount();j++) 
-		if (list->IsSelected(j)) { if (sel.IsEmpty()) sel = list->GetString(j); else return; }
+		if (list->IsSelected(j)) { 
+			if (sel.IsEmpty()) sel = list->GetString(j);
+			else return; 
+		}
 	Load(profiles->GetSelection(),sel);
+	int psel = sources_list.Index(sel);
+	if (psel!=wxNOT_FOUND) obj_file->SetValue( objects[psel] );
 }
 
 void mxBySourceCompilingOpts::OnFilter (wxCommandEvent & evt) {
