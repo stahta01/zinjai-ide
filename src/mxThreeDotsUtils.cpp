@@ -4,6 +4,7 @@
 #include <wx/dirdlg.h>
 #include "mxThreeDotsUtils.h"
 #include "mxUtils.h"
+#include "mxFilename.h"
 
 
 static void stGetPathAndName(wxString &def_path, wxString &def_name, const wxFileName &fname){
@@ -36,7 +37,7 @@ static bool stHelperFunction1(wxWindow *parent, wxCtrl_t *text_ctrl, wxString re
 	}
 	text_ctrl->SetFocus();
 	// build the new value, set it to the control, and fix selection
-	if (!relative_path.IsEmpty()) res = mxUT::Relativize(res,relative_path);
+	if (!relative_path.IsEmpty()) res = mxFilename::Relativize(res,relative_path);
 	if (add_comillas) res = mxUT::Quotize(res);
 	wxString new_value = orig_value.Mid(0,pbeg) + res + orig_value.Mid(pend);
 	text_ctrl->SetValue(new_value);

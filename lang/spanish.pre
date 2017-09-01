@@ -319,7 +319,7 @@ Buscar &Resaltado
 MENUITEM_EDIT_LIST_HIGHLIGHTS
 &Listar Lineas Resaltadas
 MENUITEM_VIEW
-if_not_apple(
+&Ver
 MENUITEM_VIEW_SPLIT_VIEW
 &Duplicar vista
 MENUITEM_VIEW_LINE_WRAP
@@ -884,6 +884,8 @@ PROJECT_MINGW_CC_PROBLEM_DESC
 El proyecto que está abriendo fue guardado con una versión de ZinjaI que utilizaba\nversiones ahora desactualizadas de las herramientas de compilación (mingw). Los\narchivos compilados con esas herramientas no serán compatibles con los que se\ncompilen con la nueva versión disponible. Si utiliza el compilador por defecto\ndeberá recompilar todo el proyecto. ¿Desea eliminar ahora los objetos compilados\npara forzar la recompilación del proyecto antes de la próxima ejecución?\n\nNota: si su proyecto utiliza bibliotecas no provistas con ZinjaI, probablemente deba\nobtener además nuevas versiones de las mismas. En caso de no hacerlo, su programa\npodría finalizar anormalmente al intentar ejecutarlo.
 PROJECT_MINGW_CC_PROBLEM_MORE
 Mostrar información (web)...
+PROJECT_ERROR_DUPLICATE_OBJ
+Los archivos \"<{1}>\" y \"<{2}>\" generan el mismo objeto.
 PROJMNGR_CONFIRM_REPLACE
 Ya existe un archivo con ese nombre. Desea Reemplazarlo?
 PROJMNGR_CONFIRM_DETACH_ALSO
@@ -972,12 +974,12 @@ CAPTION_GROUPED_TREES
 Arboles
 CAPTION_PROJECT_TREE
 Arbol de Archivos
-MAINW_AUTOHIDE_SYMBOLS
-Simbolos
-CAPTION_SYMBOLS_TREE
-Arbol de Simbolos
 MAINW_AUTOHIDE_PROJECT
 Proyecto
+CAPTION_SYMBOLS_TREE
+Arbol de Simbolos
+MAINW_AUTOHIDE_SYMBOLS
+Simbolos
 CAPTION_EXPLORER_TREE
 Explorador de Archivos
 MAINW_AUTOHIDE_EXPLORER
@@ -2030,10 +2032,6 @@ MAINW_SHARE_AFTER_CLOSE
 Continuar compartiendo (\"sin modificaciones\") despues de cerrarlo.
 MAINW_QUICKHELP_INIT
 Coloca el cursor de texto sobre una palabra y presiona Shift+F1 para ver la ayuda en este cuadro.
-CAPTION_PROJECT_SYMBOLS_TREE
-Arbol de Simbolos
-CAPTION_PROJECT_PROJECT_TREE
-Arbol de Proyecto
 MAINW_PT_SOURCES
 Fuentes
 MAINW_PT_HEADERS
@@ -2483,9 +2481,9 @@ Archivos en el historial
 PREFERENCES_GENERAL_SHOW_FILES_EXPLORER_ON_STARTUP
 Mostrar el explorador de archivos al iniciar
 PREFERENCES_GENERAL_GROUP_TREES
-Agrupar arboles en un solo panel (*)
+Agrupar arboles en un solo panel
 PREFERENCES_GENERAL_AUTOHIDE_PANELS
-Ocultar paneles automaticamente (*)
+Ocultar paneles automaticamente
 PREFERENCES_SINGLETON
 Utilizar una sola instancia de ZinjaI al abrir archivos desde la linea de comandos
 PREFERENCES_GENERAL_CHECK_FOR_UPDATES
@@ -2507,7 +2505,7 @@ Permitir editar los fuentes durante la depuración
 PREFERENCES_DEBUG_REORGANIZE_PANELS
 Reacomodar los paneles al iniciar/finalizar la depuración
 PREFERENCES_DEBUG_INSPECTIONS_PANEL_ON_RIGHT
-Colocar el panel de inspecciones a la derecha (*)
+Colocar el panel de inspecciones a la derecha
 PREFERENCES_DEBUG_SHOW_THREAD_LIST
 Mostrar lista de hilos de ejecución
 PREFERENCES_DEBUG_SHOW_DEBUGGER_LOG

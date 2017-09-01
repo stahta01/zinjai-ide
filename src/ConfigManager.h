@@ -16,6 +16,7 @@
 #define CFG_GENERIC_WRITE(where,what) fil.AddLine(wxString(#what"=")<<where.what);
 #define CFG_GENERIC_WRITE_DN(name,what) fil.AddLine(wxString(name"=")<<what);
 #define CFG_TEXT_WRITE_DN(name,what) fil.AddLine(wxString(name"=")<<mxUT::Text2Line(what));
+#include "mxFilename.h"
 
 //! Elementos de la configuración relacionados a la depuración
 struct cfgDebug {

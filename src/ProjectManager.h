@@ -35,6 +35,7 @@
 		#undef DeleteFile
 	#endif
 #endif
+#include "mxFilename.h"
 
 
 class BreakPointInfo;
@@ -388,9 +389,7 @@ public:
 	bool IsCppOrJustC() const {
 		return m_relative_path.Len()<=2 || (m_relative_path[m_relative_path.Len()-1]!='c'&&m_relative_path[m_relative_path.Len()-1]!='C') || m_relative_path[m_relative_path.Len()-2]!='.';
 	}
-	wxString GetBinName(const wxString &temp_dir) const {
-		return DIR_PLUS_FILE(temp_dir,wxFileName(m_relative_path).GetName()+".o");
-	}
+	wxString GetBinName(const wxString &temp_dir) const;
 	bool IsInherited() const { return !m_inherited_from.IsEmpty(); }
 	wxString GetFatherProject() const { return m_inherited_from; }
 	bool IsInALibrary() const { return m_lib!=nullptr; }
@@ -411,6 +410,7 @@ private:
 	friend class ProjectManager;
 	wxString m_relative_path; ///< path relativo al path del proyecto
 	wxString m_full_path; ///< path absoluto y normalizado
+	wxString m_binary_fname_tpl; ///< patron para generar el nombre del archivo objeto
 	wxTreeItemId m_tree_item; ///< auxiliar para la gui, item en el arbol de proyecto
 	SourceExtras m_extras; ///< breakpoints, highlighted lines, cursor position
 	bool m_force_recompile; ///< indica que se debe recompilar independientemente de la fecha de modificacion (por ejemplo, si lo va a modificar un paso adicional)
@@ -431,7 +431,7 @@ private:
 	bool FatherProjectIsUnknown() const { return m_inherited_from == "<unknown father>"; }
 	void Rename(const wxString &project_path, const wxString &new_relative_path) { 
 		m_relative_path = new_relative_path;
-		m_full_path = mxUT::NormalizePath(DIR_PLUS_FILE(project_path,new_relative_path));
+		m_full_path = mxFilename::Normalize(DIR_PLUS_FILE(project_path,new_relative_path));
 	}
 };
 
@@ -641,6 +641,10 @@ public:
 	void DeleteFile(project_file_item *item, bool also_delete_from_disk);
 	/// Removes a file from the project and optionally from the disk, and optionally also the complement (include gui actions to confirm, also param is for internal use)
 	bool DeleteFile(wxTreeItemId tree_item);
+private:
+	project_file_item *FindDuplicateBinName(project_file_item *item);
+	project_file_item *FixBinaryFileName(project_file_item *item);
+public:
 	project_file_item *AddFile (eFileType where, wxFileName name, bool sort_tree=true);
 	/// For a file already in the project as inherited... this makes it an own file, regardless inheritance
 	void SetFileAsOwn(project_file_item *fitem);

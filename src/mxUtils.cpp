@@ -45,25 +45,6 @@ char path_sep = wxFileName::GetPathSeparator();
 std::map<wxString,wxArrayString> mxUT::FindIncludes_cache;
 std::map<wxString,wxDateTime> mxUT::AreIncludesUpdated_cache;
 
-/** 
-* Concatena una ruta y un nombre de archivo. Si este es relativo, agregando la 
-* barra si es necesario. Si el "archivo" era una ruta absoluta, la devuelve sin cambios.
-* Esta función se creó para encapsular las diferencias entre Windows y GNU/Linux,
-* particularmente, el caracter de separación, y la presencia/ausencia de la unidad.
-* La macro DIR_PLUS_FILE encapsula esta llamada utilizando el objeto utils.
-* @param dir El directorio base
-* @param fil El archivo. Puede ser solo un nombre, la parte final de una ruta, o una ruta completa
-* @return Un wxString con la ruta resultante completa
-**/
-wxString mxUT::JoinDirAndFile(wxString dir, wxString fil) {
-	if (dir.Len()==0 || (fil.Len()>1 && (fil[0]=='\\' || fil[0]=='/' || fil[1]==':')))
-		return fil;
-	else if (dir.Last()==path_sep)
-		return dir+fil;
-	else
-		return dir+path_sep+fil;
-}
-
 /*wxBoxSizer *mxUT::CreateSizerWithLabelAndText(wxWindow *win, wxWindowID id, wxTextCtrl * &text, wxString label) {
 	wxBoxSizer *sizerRow = s_last_sizer = new wxBoxSizer(wxHORIZONTAL);
 	text = new wxTextCtrl(win, id, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
@@ -213,7 +194,7 @@ wxMenuItem *mxUT::AddCheckToMenu(wxMenu *menu, wxWindowID id, const wxString &ca
 }
 
 void mxUT::AddTool(wxToolBar *toolbar, wxWindowID id, const wxString &caption, const wxString &filename, const wxString &status_text, wxItemKind kind) {
-	wxString full_filename=mxUT::JoinDirAndFile(config->Files.skin_dir,filename);
+	wxString full_filename=DIR_PLUS_FILE(config->Files.skin_dir,filename);
 	if (wxFileName::FileExists(full_filename)) {
 		toolbar->AddTool(id, caption, wxBitmap(full_filename,wxBITMAP_TYPE_PNG),caption, kind);
 		toolbar->SetToolLongHelp(id,status_text);
@@ -470,13 +451,13 @@ bool mxUT::XCopy(wxString src,wxString dst, bool ask, bool replace) {
 	wxString spec;
 	bool cont = dir.GetFirst(&filename, spec , wxDIR_DIRS);
 	while ( cont ) {
-		if (!XCopy(JoinDirAndFile(src,filename),JoinDirAndFile(dst,filename),true))
+		if (!XCopy(DIR_PLUS_FILE(src,filename),DIR_PLUS_FILE(dst,filename),true))
 			return false;
 		cont = dir.GetNext(&filename);
 	}	
 	cont = dir.GetFirst(&filename, spec , wxDIR_FILES);
 	while ( cont ) {
-		wxString dest_file = JoinDirAndFile(dst,filename);
+		wxString dest_file = DIR_PLUS_FILE(dst,filename);
 		cont = (!ask&&replace)||!(wxFileName::FileExists(dest_file));
 		if (!cont && ask) { // si ya existe preguntar si hay que pisar
 			mxMessageDialog::mdAns ret = 
@@ -489,7 +470,7 @@ bool mxUT::XCopy(wxString src,wxString dst, bool ask, bool replace) {
 				replace=cont;
 			}
 		}  
-		if (cont && !wxCopyFile(JoinDirAndFile(src,filename),dest_file))
+		if (cont && !wxCopyFile(DIR_PLUS_FILE(src,filename),dest_file))
 			return false;
 		cont = dir.GetNext(&filename);
 	}
@@ -871,23 +852,7 @@ void mxUT::OpenInBrowser(wxString url) {
 		wxLaunchDefaultBrowser(url);
 }
 
-/** 
-* Convierte un path absoluto en relativo, siempre y cuando no deba subir más
-* de 2 niveles desde el path de referencia
-**/
-wxString mxUT::Relativize(wxString name, wxString path) {
-	if (path.Last()=='\\' || path.Last()=='/') path.RemoveLast();
-	bool rr=false;
-	if (rr) name.RemoveLast();
-	wxFileName fname(name);
-	if (fname==path) return ".";
-	fname.MakeRelativeTo(path);
-	wxString rname = fname.GetFullPath();
-	if (rname.StartsWith(_T("../../..")) || rname.StartsWith(_T("..\\..\\..")))
-		return name;
-	else 
-		return rname;
-}
+
 
 void mxUT::OpenFolder(wxString path) {
 	if (config->Files.explorer_command==_T("<<sin configurar>>")) {
@@ -1295,33 +1260,5 @@ bool mxUT::ShellExecute (const wxString & path, const wxString &workdir) {
 	return wxExecute(command);
 }
 
-#ifdef __WIN32__
-#	define _is_path_char(str,p) (str[p]=='\\'||str[p]=='/'||p==1&&str[p]==':')
-#else
-#	define _is_path_char(str,p) (str[p]=='/')
-#endif
 
-wxString mxUT::NormalizePath (wxString path) {
-	int len = path.Len();
-	int p = 0, p0 = 0, delta=0;
-	do {
-		char c = path[p];
-		if (p==len || _is_path_char(path,p)) {
-			if (p0==p-2 && path[p-1]=='.' && path[p-2]=='.') {
-				int pa = p0-delta-2;
-				while(pa>0 && !_is_path_char(path,pa)) --pa;
-				if (pa>0) {
-					delta=p-pa;
-				}
-			} else if (p0==p-1 && path[p-1]=='.') {
-				delta+=2;
-			}
-			p0=p+1;
-		}
-		if (delta) path[p-delta]=c;
-		++p;
-	} while(p<=len);
-	if (delta) path.erase(len-delta);
-	return path;
-}
 

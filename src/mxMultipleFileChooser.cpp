@@ -133,7 +133,7 @@ void mxMultipleFileChooser::OnButtonDir(wxCommandEvent &event) {
 	wxDirDialog dlg(this,LANG(MULTIFILE_DIR_CAPTION,"Directorio donde buscar"),text.Len()?text:project->last_dir);
 	if (wxID_OK!=dlg.ShowModal()) return;
 	wxString dir=project->last_dir =dlg.GetPath();
-	basedir->SetValue(mxUT::Relativize(dir,project->path));
+	basedir->SetValue(mxFilename::Relativize(dir,project->path));
 }
 
 void mxMultipleFileChooser::OnButtonFind(wxCommandEvent &event) {

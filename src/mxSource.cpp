@@ -1,6 +1,7 @@
 #include <iostream>
 #include <wx/encconv.h>
 #include <wx/file.h>
+#include <wx/utils.h>
 #include "mxGCovSideBar.h"
 #include "mxSource.h"
 #include "mxUtils.h"
@@ -26,7 +27,6 @@
 #include "MenusAndToolsConfig.h"
 #include "mxInspectionExplorerDialog.h"
 #include "mxInspectionBaloon.h"
-#include <wx/utils.h>
 #include "LocalRefactory.h"
 #include "mxSourceParsingAux.h"
 //#include "linStuff.h"

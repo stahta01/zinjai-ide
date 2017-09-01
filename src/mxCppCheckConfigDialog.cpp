@@ -180,7 +180,7 @@ void mxCppCheckConfigDialog::OnButtonStandard (wxCommandEvent & evt) {
 void mxCppCheckConfigDialog::OnButtonSuppressFile (wxCommandEvent & evt) {
 	wxFileDialog dlg(this,_T("Ubicacion del ejecutable:"),DIR_PLUS_FILE(project->path,suppress_file->GetValue()));
 	if (wxID_OK==dlg.ShowModal())
-		suppress_file->SetValue(mxUT::Relativize(dlg.GetPath(),project->path));
+		suppress_file->SetValue(mxFilename::Relativize(dlg.GetPath(),project->path));
 }
 
 void mxCppCheckConfigDialog::OnButtonSuppressIds (wxCommandEvent & evt) {

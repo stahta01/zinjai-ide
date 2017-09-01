@@ -73,9 +73,6 @@ class wxBitmapButton;
 	#define DEBUG_INFO(info)
 #endif
 
-#define DIR_PLUS_FILE mxUT::JoinDirAndFile
-#define DIR_PLUS_FILE_2(a,b,c) mxUT::JoinDirAndFile(mxUT::JoinDirAndFile(a,b),c)
-	
 #define LANG1(key,text,arg1) 			mxUT::ReplaceLangArgs(LANG(key,text),arg1)
 #define LANG2(key,text,arg1,arg2) 		mxUT::ReplaceLangArgs(LANG(key,text),arg1,arg2)
 #define LANG3(key,text,arg1,arg2,arg3) 	mxUT::ReplaceLangArgs(LANG(key,text),arg1,arg2,arg3)
@@ -141,15 +138,6 @@ public:
 	
 	/** @brief Quita espacios del comienzo de una cadena **/
 	static wxString LeftTrim(wxString str);
-	
-	/** @brief Concatena una ruta y un nombre de archivo **/
-	static wxString JoinDirAndFile(wxString dir, wxString fil);
-	
-	/** @brief Convierte un path absoluto en relativo **/
-	static wxString Relativize(wxString fname, wxString path);
-	
-	/** @brief Contrae los ".." de los paths **/
-	static wxString NormalizePath(wxString path);
 	
 	/// @brief Concatena una cadena en una linea reemplazando saltos de linea por "\\n" (y escapando las demás '\\')
 	static wxString Text2Line(const wxString &text);

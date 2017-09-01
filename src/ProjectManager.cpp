@@ -132,7 +132,7 @@ void ProjectManager::ReloadFatherProjects() {
 	for(unsigned int i=0;i<project_inheritances.GetCount();i++) {  
 		FilesList flist; 
 		wxString zpr_full_path = project_inheritances[i];
-		wxString zpr_relative_path = mxUT::Relativize(zpr_full_path,path);
+		wxString zpr_relative_path = mxFilename::Relativize(zpr_full_path,path);
 		if (ReadProjectFilesList(zpr_full_path,flist,project_inheritances)) {
 			// warning: in *this al project_file_item paths are relative, 
 			// but ReadProjectFilesList puts full paths in project_file_item::m_relative_path
@@ -346,6 +346,8 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 						last_file = AddFile(FT_OTHER,filepath,false);
 					else if (section=="blacklist")
 						last_file = AddFile(FT_BLACKLIST,filepath,false);
+				} else if (p.Key()=="obj_path") {
+					if (last_file) last_file->m_binary_fname_tpl = p.AsString();
 				} else if (p.Key()=="cursor") {
 					if (last_file) last_file->GetSourceExtras().SetCurrentPos(p.AsString());
 				} else if (p.Key()=="readonly") {
@@ -698,6 +700,32 @@ ProjectManager::~ProjectManager() {
 	g_navigation_history.Reset();
 }
 
+
+project_file_item *ProjectManager::FindDuplicateBinName(project_file_item *item) {
+	wxString bin_name = item->GetBinName(temp_folder_short);
+	for( LocalListIterator<project_file_item*> other(&files.sources); other.IsValid(); other.Next() ) {
+		if (item!=*other && other->GetBinName(temp_folder_short) == bin_name) return *other;
+	}
+	return nullptr;
+}
+
+project_file_item *ProjectManager::FixBinaryFileName(project_file_item *item) {
+	project_file_item *dup = FindDuplicateBinName(item);
+	while (dup!=nullptr) {
+		if (!dup->m_binary_fname_tpl.IsEmpty() && !item->m_binary_fname_tpl.IsEmpty()) {
+			errors_manager->AddZinjaiError(true,LANG2(PROJECT_ERROR_DUPLICATE_OBJ,"Los archivos \"<{1}>\" y \"<{2}>\" generan el mismo objeto.",item->m_relative_path,dup->m_relative_path));
+			return dup;
+		}
+		project_file_item *aux = item->m_binary_fname_tpl.IsEmpty() ? item : dup;
+		int num = 1;
+		do {
+			aux->m_binary_fname_tpl = DIR_PLUS_FILE("${TEMP_DIR}",wxString("${SRC_FNAME}.")<<(++num)<<".o");
+		} while(FindDuplicateBinName(aux)!=nullptr);
+		dup = FindDuplicateBinName(item);
+	}
+	return nullptr;
+}
+
 // devuelve verdadero si lo inserta, falso si ya estaba
 project_file_item *ProjectManager::AddFile (eFileType where, wxFileName filename, bool sort_tree) {
 	
@@ -707,15 +735,13 @@ project_file_item *ProjectManager::AddFile (eFileType where, wxFileName filename
 	
 	// check if the file already exists somewhere in the project, if not create it (also updates main_window->project_tree)
 	project_file_item *fitem=nullptr;
-	GlobalListIterator<project_file_item*> git(&files.all);
-	while (git.IsValid()) { 
+	for( GlobalListIterator<project_file_item*> git(&files.all); git.IsValid(); git.Next() ) { 
 		if (git->GetRelativePath()==relative_path) {
 			if (git->GetCategory()==where) return *git;
 			fitem=*git; files.all.Remove(git);
 			main_window->project_tree.treeCtrl->Delete(fitem->GetTreeItem());
 			break;
 		}
-		git.Next();
 	}
 	if (!fitem) fitem = new project_file_item(path,relative_path,main_window->project_tree.AddFile(relative_path,where,sort_tree),where);
 	
@@ -727,6 +753,9 @@ project_file_item *ProjectManager::AddFile (eFileType where, wxFileName filename
 				project_library *lib = project->GetDefaultLib(configurations[i]);
 				if (lib) lib->sources<<" "<<mxUT::Quotize(relative_path);
 			}
+			// check if obj_name conflicts with any other source
+			FixBinaryFileName(fitem);
+			// add
 			files.sources.Add(fitem);
 			break;
 		case FT_HEADER:
@@ -799,7 +828,7 @@ bool ProjectManager::Save (bool as_template) {
 	CFG_GENERIC_WRITE_DN("version_required",version_required);
 	CFG_GENERIC_WRITE_DN("tab_width",tab_width);
 	CFG_BOOL_WRITE_DN("tab_use_spaces",tab_use_spaces);
-	CFG_GENERIC_WRITE_DN("explorer_path",mxUT::Relativize(main_window->explorer_tree.path,path));
+	CFG_GENERIC_WRITE_DN("explorer_path",mxFilename::Relativize(main_window->explorer_tree.path,path));
 	for(unsigned int i=0;i<inspection_improving_template_from.GetCount();i++)
 		CFG_GENERIC_WRITE_DN("inspection_improving_template",inspection_improving_template_from[i]+"|"+inspection_improving_template_to[i]);
 	
@@ -826,6 +855,7 @@ bool ProjectManager::Save (bool as_template) {
 		while (item.IsValid()) {
 			fil.AddLine(file_sections[i]);
 			CFG_GENERIC_WRITE_DN("path",item->m_relative_path);
+			if (!item->m_binary_fname_tpl.IsEmpty()) CFG_GENERIC_WRITE_DN("obj_path",item->m_binary_fname_tpl);
 			if (item->IsReadOnly()) CFG_GENERIC_WRITE_DN("readonly",1);
 			if (item->IsInherited()) CFG_GENERIC_WRITE_DN("inherited",1);
 			if (!item->AreSymbolsVisible()) CFG_GENERIC_WRITE_DN("hide_symbols",1);
@@ -1036,7 +1066,7 @@ project_file_item *ProjectManager::FindFromName(wxString name) {
 * @return puntero al project_file_item del archivo si lo encuenctra, nullptr si no lo encuentra
 **/
 project_file_item *ProjectManager::FindFromFullPath(wxString file) {
-	file = mxUT::NormalizePath(file);
+	file = mxFilename::Normalize(file);
 	GlobalListIterator<project_file_item*> it(&files.all);
 	while (it.IsValid()) {
 		if (it->GetFullPath()==file)
@@ -3654,3 +3684,14 @@ wxString project_library::GetPath(ProjectManager *project) const {
 	mxUT::ParameterReplace(retval,"${TEMP_DIR}",project->active_configuration->temp_folder);
 	return retval;
 }
+
+wxString project_file_item::GetBinName (const wxString & temp_dir) const {
+	if (m_binary_fname_tpl.IsEmpty()) 
+		return DIR_PLUS_FILE(temp_dir,mxFilename::GetFileName(m_relative_path,false)+".o");
+	wxString ret = m_binary_fname_tpl;
+	ret.Replace("${TEMP_DIR}",temp_dir);
+	ret.Replace("${SRC_DIR}",mxFilename::GetPath(m_relative_path));
+	ret.Replace("${SRC_FNAME}",mxFilename::GetFileName(m_relative_path,false));
+	return ret;
+}
+
