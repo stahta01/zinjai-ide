@@ -327,7 +327,7 @@ void MenusAndToolsConfig::LoadMenuData ( ) {
 		
 		BeginSubMenu(mnTOOLS, LANG(MENUITEM_TOOLS_CUSTOM_TOOLS,"Herramientas Personalizables"),"","customTools.png",mxID_TOOLS_CUSTOM_TOOLS,maMAPPED);
 			for (int i=0;i<MAX_CUSTOM_TOOLS;i++)
-				AddMenuItem(mnTOOLS, myMenuItem(wxString("custom_tool_")<<i,mxID_CUSTOM_TOOL_0+i, wxString()<<i<<": <NULL>").Description(wxString(LANG(MENUITEM_TOOLS_CUSTOM_TOOLS,"Herramientas Personalizables"))<<" -> "<<i<<": <NULL>").Icon(wxString("customTool")<<i<<".png"));
+				AddMenuItem(mnTOOLS, myMenuItem(wxString("custom_tool_")<<i,mxID_CUSTOM_TOOL_0+i, wxString()<<i<<": <NULL>").Description(wxString(LANG(MENUITEM_TOOLS_CUSTOM_TOOLS,"Herramientas Personalizables"))<<" -> "<<i<<": <NULL>"));
 			AddSeparator(mnTOOLS);
 			AddMenuItem(mnTOOLS, myMenuItem("custom_settings",mxID_TOOLS_CUSTOM_TOOLS_SETTINGS, LANG(MENUITEM_TOOLS_CUSTOM_TOOLS_SETTINGS,"&Configurar (generales)...")));
 			AddMenuItem(mnTOOLS, myMenuItem("project_tools_settings",mxID_TOOLS_PROJECT_TOOLS_SETTINGS, LANG(MENUITEM_TOOLS_PROJECT_TOOLS_SETTINGS,"&Configurar (de proyecto)...")).EnableIf(ecPROJECT));
@@ -943,7 +943,7 @@ void MenusAndToolsConfig::PopulateToolbar(int tb_id) {
 			if (project->custom_tools[i].on_toolbar) {
 				have_tool=true;
 				wxString str(LANG(TOOLBAR_CAPTION_TOOLS_CUSTOM_TOOL,"Herramienta Personalizada ")); str<<i<<" ("<<project->custom_tools[i].name<<")";
-				mxUT::AddTool(wx_toolbar,mxID_CUSTOM_PROJECT_TOOL_0+i,str,ipre+wxString("projectTool")<<i<<".png",str);
+				mxUT::AddTool(wx_toolbar,mxID_CUSTOM_PROJECT_TOOL_0+i,str,ipre+wxString("project_tool_")<<i<<".png",str);
 			}
 		}
 		if (!have_tool) { // si no hay definidas herramientas personalizadas, muestra el boton para configurarlas
