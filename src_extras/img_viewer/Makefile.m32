@@ -15,4 +15,4 @@ clean:
 	${GPP} ${OBJS} ${LDFLAGS} -o $@
 
 ${OBJS_DIR}:
-	mkdir ${OBJS_DIR}
+	mkdir -p ${OBJS_DIR}

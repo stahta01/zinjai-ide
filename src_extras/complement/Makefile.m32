@@ -18,4 +18,4 @@ clean:
 	${GPP} complement_wrap.cpp -O2 -o $@
 
 ${OBJS_DIR}:
-	mkdir ${OBJS_DIR}
+	mkdir -p ${OBJS_DIR}

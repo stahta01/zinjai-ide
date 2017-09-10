@@ -8,7 +8,7 @@ all: ../bin/cbrowser.bin
 include Makefile.common
 
 ${OBJS_DIR}:
-	mkdir ${OBJS_DIR}
+	mkdir -p ${OBJS_DIR}
 	
 ../bin:
 	mkdir ../bin
