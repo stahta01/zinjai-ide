@@ -177,7 +177,7 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 	doxygen=nullptr;
 	wxfb=nullptr;
 	version_required=0;
-	tab_width = config->Source.tabWidth;
+	tab_width = -1; // -1 to detect projects without that setting, will be fixed after reading "[general]" section
 	tab_use_spaces = config->Source.tabUseSpaces;
 	
 	bool project_template=false; // should be true only when creating a new project from a template

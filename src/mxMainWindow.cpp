@@ -2253,8 +2253,10 @@ void mxMainWindow::OnViewCompilerTree (wxCommandEvent &event) {
 }
 
 void mxMainWindow::OnViewExplorerTree (wxCommandEvent &event) {
-	if (m_aui->ToggleFromMenu(PaneId::Explorer))
+	if (!project && !m_aui->IsVisible(PaneId::Explorer)) SetExplorerPath(config->Files.last_dir);
+	if (m_aui->ToggleFromMenu(PaneId::Explorer)) {
 		explorer_tree.treeCtrl->SetFocus();
+	}
 }
 
 

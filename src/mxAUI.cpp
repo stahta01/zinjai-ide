@@ -226,7 +226,10 @@ bool mxAUI::ToggleFromMenu (PaneId::type id, wxWindow * win) {
 	bool retval = false;
 	if (win && !m_panes[id].window) Create(id,win);
 	EXPECT((!win && m_panes[id].window) || win==m_panes[id].window);
-	if (m_panes[id].hidden_helper) {
+	if (m_panes[id].container) {
+		Show(id,true);
+		retval = true;
+	} else if (m_panes[id].hidden_helper) {
 		m_wxaui.GetPane(m_panes[id].hidden_helper).Show();
 		m_panes[id].hidden_helper->ShowDock();
 		retval = true;
@@ -383,9 +386,7 @@ mxAUIContainer * mxAUI::CreateContainer (PaneId::type id) {
 bool mxAUI::OnKeyEscape (wxWindow *who) {
 	for(int i=0;i<PaneId::Count;i++) { 
 		if (m_panes[i].window==who || m_panes[i].hidden_helper==who) {
-			if (!m_panes[i].hidden_helper->IsDocked()) {
-				m_panes[i].hidden_helper->Hide();
-			}
+			Hide(PaneId::type(i));
 			return true;
 		}
 	}

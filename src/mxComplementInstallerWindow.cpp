@@ -139,7 +139,15 @@ void mxComplementInstallerWindow::Install(wxString fname) {
 #endif
 	}
 	
-	wxCopyFile(config->GetZinjaiBinPath(installer),config->GetUserTempPath(installer),true);
+#ifdef __WIN32__
+	static bool already_copied = false;
+	if (!already_copied) { 
+		already_copied = true;
+#endif
+		wxCopyFile(config->GetZinjaiBinPath(installer),config->GetUserTempPath(installer),true);
+#ifdef __WIN32__
+	}
+#endif
 	wxString zdir=config->zinjai_dir;
 #ifdef __WIN32__
 	if (zdir.Last()=='\\') zdir.RemoveLast(); // wx parsea mal los argumentos, si uno termina en \ lo pega con el que sigue

@@ -31,9 +31,9 @@ mxWelcomePanel::mxWelcomePanel(wxWindow *parent):wxHtmlWindow(parent,wxID_ANY,wx
 
 void mxWelcomePanel::Reload(bool reread_source) {
 	static wxString source; if (reread_source) source.Clear();
-	bool skin_file=wxFileName::FileExists(DIR_PLUS_FILE(config->Files.skin_dir,wxString(_T("welcome_panel_"))<<config->Init.language_file<<_T(".html")));
+	bool skin_file=wxFileName::FileExists(DIR_PLUS_FILE_2(config->Files.skin_dir,"welcome",config->Init.language_file+".html"));
 	if (!source.Len()) {
-		wxTextFile fil(SKIN_FILE(wxString(_T("welcome_panel_"))<<config->Init.language_file<<_T(".html")));
+		wxTextFile fil(SKIN_FILE(DIR_PLUS_FILE("welcome",config->Init.language_file+".html")));
 		fil.Open();
 		for ( wxString str = fil.GetFirstLine(); !fil.Eof(); str = fil.GetNextLine() ) {
 			source<<str;
@@ -42,9 +42,9 @@ void mxWelcomePanel::Reload(bool reread_source) {
 	}
 	wxString text=source;
 	if (skin_file)
-		text.Replace(_T("src=\""),wxString(_T("src=\""))<<DIR_PLUS_FILE(config->Files.skin_dir,""));
+		text.Replace(_T("src=\""),wxString(_T("src=\""))<<DIR_PLUS_FILE_2(config->Files.skin_dir,"welcome",""));
 	else
-		text.Replace(_T("src=\""),wxString(_T("src=\""))<<DIR_PLUS_FILE(_T("imgs"),""));
+		text.Replace(_T("src=\""),wxString(_T("src=\""))<<DIR_PLUS_FILE_2("imgs","welcome",""));
 	text.Replace(_T("${ZVERSION}"),wxString()<<VERSION);
 	wxColour background_colour=wxSystemSettings::GetColour( wxSYS_COLOUR_BTNFACE );
 	wxColour foreground_colour=wxSystemSettings::GetColour( wxSYS_COLOUR_BTNTEXT );
