@@ -21,7 +21,8 @@ int main (int argc, char *argv[]) {
 		} else if (sarg=="--child") {
 			child=argv[++iarg]; child_mode=true;
 		} else if (sarg=="--proxy") {
-			proxy=true; proxy_dir=argv[++iarg];
+			if (++iarg<argc) return 1;
+			proxy=true; proxy_dir=argv[iarg];
 			size_t p=proxy_dir.find(":",0);
 			if (p!=string::npos) {
 				proxy_port=atoi(proxy_dir.substr(p+1).c_str());
@@ -32,7 +33,7 @@ int main (int argc, char *argv[]) {
 		}
 	}
 	if (!pname.length()) return 1;
-	string web=pname+".sourceforge.net";
+	string web = pname+".sourceforge.net";
 	ZOCKET z = zocket_llamar(proxy_port,(proxy?proxy_dir:web).c_str());
 	if (z==ZOCKET_ERROR) {
 		if (child_mode) {

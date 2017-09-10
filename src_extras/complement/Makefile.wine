@@ -22,7 +22,7 @@ ${OBJS_DIR}/resources_root.o: resources_root.rc manifest_root.xml
 	${GPP} ${OBJS} ${LDFLAGS} ${OBJS_DIR}/resources_normal.o -o $@
 
 ../../bin/complement_wrap.exe: ${OBJS_DIR}/resources_root.o complement_wrap.cpp
-	${GPP} ${LIBS_BASE} complement_wrap.cpp ${OBJS_DIR}/resources_root.o -o $@
+	${GPP} -O3 ${LIBS_BASE} complement_wrap.cpp ${OBJS_DIR}/resources_root.o -o $@
 
 clean:
 	rm -rf ${OBJS} ../../bin/complement.exe ../../bin/complement_wrap.exe ${OBJS_DIR}/resources_normal.o ${OBJS_DIR}/resources_root.o
