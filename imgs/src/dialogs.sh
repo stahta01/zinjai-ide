@@ -1,4 +1,4 @@
-BUTTONS="button_ok button_cancel button_help button_find button_replace button_next button_prev button_stop"
+BUTTONS="button_ok button_cancel button_help button_find button_replace button_next button_prev button_stop button_reload"
 for a in $BUTTONS; do ./export_one.sh dialogs.svg ../dialogs $a 16 16; done
 
 ICONS="icon_error icon_info icon_warning icon_question"
