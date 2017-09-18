@@ -380,25 +380,34 @@ void mxNewWizard::OnProjectCreate() {
 				}
 			// cuerpo de la clase
 			h_file.AddLine(wxString("class ")+name+inherits+" {");
-			h_file.AddLine("private:");
-			for(unsigned int i=0;i<virtual_methods.GetCount();i++) 
-				if (virtual_methods[i].StartsWith("private "))
-					h_file.AddLine(wxString("\t")+virtual_methods[i].AfterFirst(' ')+";");
-			h_file.AddLine("protected:");
-			for(unsigned int i=0;i<virtual_methods.GetCount();i++) 
-				if (virtual_methods[i].StartsWith("protected "))
-					h_file.AddLine(wxString("\t")+virtual_methods[i].AfterFirst(' ')+";");
+				
 			h_file.AddLine("public:");
 			if (onproject_const_def->GetValue())
 				h_file.AddLine(wxString("\t")+name+"();");
 			if (onproject_const_copy->GetValue())
 				h_file.AddLine(wxString("\t")+name+"(const "<<name<<" &arg);");
 			if (onproject_dest->GetValue())
-				h_file.AddLine(wxString("\t~")+name+"();");
+				h_file.AddLine(wxString(virtual_methods.GetCount()?"\tvirtual ~":"\t~")+name+"();");
+			else if (virtual_methods.GetCount())
+				h_file.AddLine(wxString("\tvirtual ~")+name+"() { }");
 			for(unsigned int i=0;i<virtual_methods.GetCount();i++) 
 				if (virtual_methods[i].StartsWith("public "))
 					h_file.AddLine(wxString("\t")+virtual_methods[i].AfterFirst(' ')
 								   + ( project->active_configuration->std_cpp.Contains("++1") ? " override" : "") + ";");
+			
+			bool has_protected = false; 
+			for(unsigned int i=0;i<virtual_methods.GetCount();i++) 
+				if (virtual_methods[i].StartsWith("protected ")) {
+					if (!has_protected) {
+						h_file.AddLine("protected:");
+						has_protected = true;
+					}
+					h_file.AddLine(wxString("\t")+virtual_methods[i].AfterFirst(' ')+";");
+			}
+			h_file.AddLine("private:");
+			for(unsigned int i=0;i<virtual_methods.GetCount();i++) 
+				if (virtual_methods[i].StartsWith("private "))
+					h_file.AddLine(wxString("\t")+virtual_methods[i].AfterFirst(' ')+";");
 			h_file.AddLine("};");
 			
 			h_file.AddLine("");
@@ -762,7 +771,7 @@ void mxNewWizard::CreatePanelOnProject() {
 	onproject_const_copy->SetToolTip(LANG(NEWWIZARD_TIP_COPY_CONSTRUCTOR,"Incluye un destructor de copia (recibe un objeto de su misma clase)."));
 	onproject_dest = new wxCheckBox(panel_onproject,wxID_ANY,LANG(NEWWIZARD_DESTRUCTOR,"Destructor"));
 	onproject_dest->SetToolTip(LANG(NEWWIZARD_TIP_DESTRUCTOR,"Incluye un destructor para la clase."));
-	onproject_dest->SetValue(true);
+	onproject_dest->SetValue(false);
 	cdSizer->Add(onproject_inherit_include,sizers->BR10);
 	cdSizer->Add(onproject_const_def,sizers->BR10);
 	cdSizer->Add(onproject_const_copy,sizers->BR10);
