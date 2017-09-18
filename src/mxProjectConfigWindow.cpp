@@ -308,9 +308,9 @@ void mxProjectConfigWindow::OnClose(wxCloseEvent &event){
 	if (discard) DiscardChanges();
 	last_page_index=notebook->GetSelection();
 	for (int i=0;i<project->configurations_count;i++)
-		if (project->configurations[i]->bakup) {
-			delete project->configurations[i]->bakup;
-			project->configurations[i]->bakup=nullptr;
+		if (project->configurations[i]->backup) {
+			delete project->configurations[i]->backup;
+			project->configurations[i]->backup=nullptr;
 		}
 	Destroy();
 }
@@ -393,8 +393,8 @@ void mxProjectConfigWindow::OnRemoveConfigButton(wxCommandEvent &event) {
 		while (project->configurations[i]!=configuration)
 			i++;
 		// quitarla de memoria y el la lista del proyecto
-		if (project->configurations[i]->bakup)
-			delete project->configurations[i]->bakup;
+		if (project->configurations[i]->backup)
+			delete project->configurations[i]->backup;
 		delete project->configurations[i];
 		project->configurations_count--;
 		int sel=i;
@@ -437,7 +437,7 @@ void mxProjectConfigWindow::OnRenameConfigButton(wxCommandEvent &event) {
 				return;
 			}
 		configuration->name=res;
-		if (configuration->bakup) configuration->bakup->name=res;
+		if (configuration->backup) configuration->backup->name=res;
 		configuration_name->SetString(configuration_name->GetSelection(),res);
 		configuration_name->SetValue(res);
 	}
@@ -448,7 +448,7 @@ void mxProjectConfigWindow::OnRenameConfigButton(wxCommandEvent &event) {
 **/
 void mxProjectConfigWindow::LoadValues() {
 
-	if (configuration->bakup) configuration->bakup = new project_configuration(*configuration);
+	if (configuration->backup) configuration->backup = new project_configuration(*configuration);
 	
 	linking_extra_options->SetValue(configuration->linking_extra);
 	linking_libraries_dirs->SetValue(configuration->libraries_dirs );
@@ -848,9 +848,9 @@ void mxProjectConfigWindow::ReloadSteps(wxString selection) {
 
 void mxProjectConfigWindow::DiscardChanges() {
 	for (int i=0;i<project->configurations_count;i++)
-		if (project->configurations[i]->bakup) {
-			project->configurations[i]->bakup->extra_steps=project->configurations[i]->extra_steps;
-			*(project->configurations[i])=*(project->configurations[i]->bakup);
+		if (project->configurations[i]->backup) {
+			project->configurations[i]->backup->extra_steps=project->configurations[i]->extra_steps;
+			*(project->configurations[i])=*(project->configurations[i]->backup);
 		}
 }
 

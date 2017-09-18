@@ -5,6 +5,14 @@
 
 <!--<I>Note 1: A more detailed and English changelog can be found in the <A href="http://sourceforge.net/p/zinjai/code/ci/master/log/?path=" target="_blank">git repository's history</A>.</I><BR><BR>
 <I>Nota 2: Nuevo código para categorizar los cambios: New=nueva funcionalidad, Imp=mejora sobre una funcionalidad existente, Fix=corrección de un bug</I><BR><UL>-->
+</UL><BR><B>Release 2017092x</B><BR><UL>
+	<LI>Imp: El estándar C++ por defecto para un proyecto en blanco (sin plantilla) es c++14.</LI>
+	<LI>Imp: Mejoras en el código que se autogenera al agregar una clase a un proyecto a través del asistente.</LI>
+	<LI>Imp: En la configuración de un proyecto, se pueden usar las variables PROJECT_DIR, MINGW_DIR, ZINJAI_DIR y TEMP_DIR en la lista de macros a definir.</LI>
+	<LI>Imp: En la configuración de un proyecto, se pueden usar la variable PROJECT_PATH en los argumentos adicionales, tanto para compilación como para enlazado.</LI>
+	<LI>Imp: En el cuadro de configuración de una biblioteca a generar, utilizar la variable ${TEMP_DIR} para el valor por defecto para el directorio de salida.</LI>
+	<LI>Fix: En el cuadro de configuración de una biblioteca a generar, no mostrar fuentes que ya estén asociados a otras bibliotecas.</LI>
+	<LI>Fix: Agregados los íconos que faltaban en el tema de íconos por defecto, por los cuales se producía un segfault en algunos cuadros de diálogo (como el de configuración del esquema de colores).</LI>
 </UL><BR><B>Release 20170910</B><BR><UL>
 	<LI>New: Implementado un mini-mapa del código fuente (menu "Ver"->"Mostrar mini-map", funcionalidad en fase beta, podría resultar ineficiente o insetable).</LI>
 	<LI>New: Cuando el mensaje de error de clang o gcc sugiere una corrección en el tipeo de un identificador, al seleccionar el error en ZinjaI además de marcar la ubicación se ofrece la corrección a modo de autocompletado.</LI>

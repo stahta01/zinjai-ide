@@ -263,7 +263,7 @@ struct project_library {
 **/
 struct project_configuration {
 
-	project_configuration *bakup; ///< copia antes de modificar en el dialogo de opciones, para usar si se cancela
+	project_configuration *backup; ///< copia antes de modificar en el dialogo de opciones, para usar si se cancela
 	
 	wxString name; ///< nombre de la configuracion (unico y definido por usuario)
 	
@@ -308,7 +308,7 @@ struct project_configuration {
 	//! inicializa la configuración con los valores por defecto
 	project_configuration(wxString pname, wxString cname) {
 		by_src_compiling_options = new HashStringString();
-		bakup=nullptr;
+		backup=nullptr;
 		name=cname;
 		working_folder="";
 		always_ask_args=false;
@@ -334,14 +334,15 @@ struct project_configuration {
 		console_program=true;
 		dont_generate_exe=false;
 		toolchain="";
-		std_c=std_cpp="";
+		std_c=""; 
+		std_cpp="c++14";
 		for(int i=0;i<TOOLCHAIN_MAX_ARGS;i++) toolchain_arguments[i]="${DEFAULT}";
 	}
 	
 	/// inicializa una nueva configuracion a partir de una existente
 	project_configuration(wxString cname, project_configuration *copy_from) {
 		(*this)=*copy_from; // this copy is not correct, copies ptrs
-		bakup=nullptr;
+		backup=nullptr;
 		name=cname;
 		by_src_compiling_options = new HashStringString();
 		*by_src_compiling_options = *(copy_from->by_src_compiling_options);

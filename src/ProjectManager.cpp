@@ -2221,6 +2221,7 @@ void ProjectManager::AnalizeConfig(wxString path, bool exec_comas, wxString ming
 	mxUT::ParameterReplace(co_extra,"${MINGW_DIR}",mingw_dir);
 	mxUT::ParameterReplace(co_extra,"${TEMP_DIR}",temp_folder_short);
 	mxUT::ParameterReplace(co_extra,"${ZINJAI_DIR}",config->zinjai_dir);
+	mxUT::ParameterReplace(co_extra,"${PROJECT_PATH}",project->path);
 	// reemplazar subcomandos y agregar extras
 	if (exec_comas) co_extra = mxUT::ExecComas(path, co_extra);
 	
@@ -2231,6 +2232,8 @@ void ProjectManager::AnalizeConfig(wxString path, bool exec_comas, wxString ming
 	wxString co_defines;
 	if (active_configuration->macros.Len())
 		co_defines<<mxUT::Split(active_configuration->macros,"-D");
+	mxUT::ParameterReplace(co_defines,"${TEMP_DIR}",temp_folder_short);
+	mxUT::ParameterReplace(co_defines,"${PROJECT_PATH}",project->path);
 	compiling_options<<co_defines;
 		
 	wxString co_std_c, co_std_cpp;
@@ -2260,12 +2263,15 @@ void ProjectManager::AnalizeConfig(wxString path, bool exec_comas, wxString ming
 	// bibliotecas
 	linking_options<<mxUT::Split(active_configuration->libraries,"-l");
 	// reemplazar variables
-	wxString linking_extra = active_configuration->linking_extra;
-	mxUT::ParameterReplace(linking_extra,"${MINGW_DIR}",mingw_dir);
-	mxUT::ParameterReplace(linking_extra,"${TEMP_DIR}",temp_folder_short);
 	mxUT::ParameterReplace(linking_options,"${MINGW_DIR}",mingw_dir);
 	mxUT::ParameterReplace(linking_options,"${TEMP_DIR}",temp_folder_short);
 	mxUT::ParameterReplace(linking_options,"${ZINJAI_DIR}",config->zinjai_dir);
+	// extra args
+	wxString linking_extra = active_configuration->linking_extra;
+	mxUT::ParameterReplace(linking_extra,"${MINGW_DIR}",mingw_dir);
+	mxUT::ParameterReplace(linking_extra,"${TEMP_DIR}",temp_folder_short);
+	mxUT::ParameterReplace(linking_extra,"${PROJECT_PATH}",project->path);
+	mxUT::ParameterReplace(linking_extra,"${ZINJAI_PATH}",project->path);
 	// reemplazar subcomandos y agregar extras
 	if (exec_comas)
 		linking_options<<" "<<mxUT::ExecComas(path,linking_extra);
