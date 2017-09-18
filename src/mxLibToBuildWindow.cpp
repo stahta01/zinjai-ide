@@ -29,7 +29,7 @@ mxLibToBuildWindow::mxLibToBuildWindow(mxProjectConfigWindow *parent, project_co
 	CreateSizer sizer(this);
 	
 	sizer.BeginText(LANG(LIBTOBUILD_NAME,"Nombre")).Value(m_lib?m_lib->libname:"").EndText(m_name);
-	sizer.BeginText(LANG(LIBTOBUILD_DIR,"Directorio de salida")).Value(m_lib?m_lib->m_path:m_configuration->temp_folder).EndText(m_path);
+	sizer.BeginText(LANG(LIBTOBUILD_DIR,"Directorio de salida")).Value(m_lib?m_lib->m_path:"${TEMP_DIR}").EndText(m_path);
 	sizer.BeginText(LANG(LIBTOBUILD_FILE,"Archivo de salida")).ReadOnly().EndText(m_filename);
 	sizer.BeginText(LANG(LIBTOBUILD_EXTRA_LINK,"Opciones de enlazado")).Value(m_lib?m_lib->extra_link:"").EndText(m_extra_link);
 	
@@ -44,10 +44,12 @@ mxLibToBuildWindow::mxLibToBuildWindow(mxProjectConfigWindow *parent, project_co
 	wxSizer *szsrc_in = new wxBoxSizer(wxVERTICAL);
 	szsrc_in->Add(new wxStaticText(this,wxID_ANY,LANG(LIBTOBUILD_SOURCES_IN,"Fuentes a incluir")),sizers->Exp0);
 	m_sources_in = new wxListBox(this,wxID_ANY,wxDefaultPosition,wxDefaultSize,0,nullptr,wxLB_SORT|wxLB_EXTENDED|wxLB_NEEDED_SB);
+	m_sources_in->SetMinSize(wxSize(250,50));
 	szsrc_in->Add(m_sources_in,sizers->Exp1);
 	wxSizer *szsrc_out = new wxBoxSizer(wxVERTICAL);
 	szsrc_out->Add(new wxStaticText(this,wxID_ANY,LANG(LIBTOBUILD_SOURCES_OUT,"Fuentes a excluir")),sizers->Exp0);
 	m_sources_out = new wxListBox(this,wxID_ANY,wxDefaultPosition,wxDefaultSize,0,nullptr,wxLB_SORT|wxLB_EXTENDED|wxLB_NEEDED_SB);
+	m_sources_out->SetMinSize(wxSize(250,50));
 	szsrc_out->Add(m_sources_out,sizers->Exp1);
 	src_sizer->Add(szsrc_out,sizers->Exp1);
 	src_sizer->Add(szsrc_buttons,sizers->Center);
@@ -57,7 +59,6 @@ mxLibToBuildWindow::mxLibToBuildWindow(mxProjectConfigWindow *parent, project_co
 	sizer.BeginCheck(LANG(LIBTOBUILD_DEFAULT,"Biblioteca por defecto para nuevos fuentes")).Value(m_lib?m_lib->default_lib:false).EndCheck(m_default_lib);
 	sizer.BeginCheck(LANG(LIBTOBUILD_DO_LINK,"Enlazar en el ejecutable del proyecto")).Value(m_lib?m_lib->do_link:true).EndCheck(m_do_link);
 	
-//	mySizer->SetMinSize(400,400);
 	sizer.BeginBottom().Help().Cancel().Ok().EndBottom(this);
 	sizer.SetAndFit();
 	
@@ -66,7 +67,7 @@ mxLibToBuildWindow::mxLibToBuildWindow(mxProjectConfigWindow *parent, project_co
 	for(LocalListIterator<project_file_item*> item(&project->files.sources); item.IsValid(); item.Next()) {
 		if (m_lib && item->GetLibrary()==m_lib)
 			m_sources_in->Append(item->GetRelativePath());
-		else
+		else if (!item->GetLibrary())
 			m_sources_out->Append(item->GetRelativePath());
 		
 	}
