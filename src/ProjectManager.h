@@ -321,7 +321,7 @@ struct project_configuration {
 		compiling_extra="";
 		macros="";
 		headers_dirs="";
-		warnings_level=1;
+		warnings_level=2;
 		warnings_as_errors=false;
 		pedantic_errors=false;
 		debug_level=2;
