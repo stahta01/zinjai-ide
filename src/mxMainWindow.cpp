@@ -2432,6 +2432,13 @@ mxSource *mxMainWindow::OpenFile (const wxString &filename) {
 	return OpenFile(filename,!project);
 }
 
+static wxString GetNameForSaveAs(mxSource *src) {
+	wxFileDialog dlg (main_window, LANG(GENERAL_SAVE,"Guardar"),source->sin_titulo?config->Files.last_dir:source->GetPath(true),source->GetFileName(), "Any file (*)|*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+	dlg.SetWildcard("Todos los archivos|*|Archivos de C/C++|" WILDCARD_CPP "|Fuentes|" WILDCARD_SOURCE "|Cabeceras|" WILDCARD_HEADER);
+	if (dlg.ShowModal() == wxID_OK) return dlg.GetPath();
+	return wxEmptyString;
+}
+
 /**
 * - Al abrir un proyecto multiple indica si cerrar o no los archivos que tengamos abiertos de antes (1024 es no, otra cosa es si)
 * - Al abrir archivos sueltos puede contener respuestas a las preguntas de si agregar al proyecto, mover a la carpeta o esas cosas (para
@@ -2487,7 +2494,12 @@ void mxMainWindow::OpenFileFromGui (wxFileName filename, int *multiple) {
 							status_bar->SetStatusText(LANG(GENERAL_READY,"Listo"));
 							return;
 						} else if (res.yes) {
-							source->SaveSource();
+							if (source->sin_titulo) {
+								wxString fname = GetNameForSaveAs(source);
+								if (!fname.IsEmpty()) source->SaveSource(fname);
+							} else {
+								source->SaveSource();
+							}
 						}
 					} 
 					CloseSource(i);//notebook_sources->DeletePage(i);
@@ -2517,53 +2529,6 @@ void mxMainWindow::OpenFileFromGui (wxFileName filename, int *multiple) {
 			// constantes para setear bits en *multiple
 			const int always_attach=1; // ojo, esto se usa en OnProjectTreeAdd, asi que si se cambia el valor/significado, hay que revisar tambien ahi
 			const int never_attach=2;
-			const int always_move=4;
-			const int never_move=8;
-			const int always_replace=16;
-			const int never_replace=32;
-			// ver si hay que adjuntarlo al proyecto además de abrirlo
-			bool attach=true;
-			if (multiple && (*multiple)&(always_attach|never_attach)) {
-				attach=(*multiple)&always_attach;
-			} else {
-				mxMessageDialog::mdAns ans1 = 
-					mxMessageDialog(main_window,LANG(MAINW_ADD_TO_PROJECT_QUESTION,"¿Desea agregar el archivo al proyecto?"))
-						.Check1(multiple?LANG(MAINW_ADD_TO_PROJECT_CHECK,"Hacer lo mismo para todos"):"",false)
-						.Title(filename.GetFullPath()).IconQuestion().ButtonsYesNo().Run();
-				attach = ans1.yes;
-				if (multiple && ans1.check1) (*multiple)|=(attach?always_attach:never_attach);
-			}
-			if (attach) {
-				// si no esta en la carpeta del proyecto, preguntar si hay que copiarlo ahí
-				wxString aux_project_path=project->path; aux_project_path.Replace("\\","/",true); if (aux_project_path.EndsWith("/")) aux_project_path.RemoveLast();
-				wxString aux_file_path=filename.GetFullPath(); aux_file_path.Replace("\\","/",true); if (aux_file_path.EndsWith("/")) aux_file_path.RemoveLast();
-#ifdef __WIN32__
-				aux_file_path.MakeLower();
-				aux_project_path.MakeLower();
-#endif
-				if (!aux_file_path.StartsWith(aux_project_path)) {
-					wxString dest_filename=DIR_PLUS_FILE(project->path,filename.GetFullName());
-					bool move=false;
-					if (multiple && (*multiple)&(always_move|never_move)) {
-						move=(*multiple)&always_move;
-					} else {
-						mxMessageDialog::mdAns ans2 =
-							mxMessageDialog(main_window,LANG(MAINW_MOVE_TO_PROJECT_PATH_QUESTION,""
-															 "El archivo que intenta agregar no se encuentra en el directorio del\n"
-															 "proyecto. ¿Desea copiar el archivo al directorio del proyecto?"))
-								.Check1(multiple?LANG(MAINW_ADD_TO_PROJECT_CHECK,"Hacer lo mismo para todos"):"",false)
-								.Title(filename.GetFullPath()).IconQuestion().ButtonsYesNo().Run();
-						move = ans2.yes;
-						if (multiple && ans2.check1) (*multiple)|=(move?always_move:never_move);
-					}
-					if (move && wxFileExists(dest_filename)) {
-						bool replace=false;
-						if (multiple && (*multiple)|(always_replace|never_replace)) {
-							replace=(*multiple)|always_replace;
-						} else {
-							mxMessageDialog::mdAns ans3 =
-								mxMessageDialog(main_window,LANG(MAINW_OVERWRITE_ON_PROJECT_PATH_QUESTION,""
-																 "El archivo ya existe en el directorio de proyecto.\n"
 																 "¿Desea reemplazarlo?"))
 									.Check1(multiple?LANG(MAINW_ADD_TO_PROJECT_CHECK,"Hacer lo mismo para todos"):"",true)
 									.Title(filename.GetFullPath()).IconQuestion().ButtonsYesNo().Run();
@@ -2775,104 +2740,102 @@ void mxMainWindow::OnFileSave (wxCommandEvent &event) {
 void mxMainWindow::OnFileSaveAs (wxCommandEvent &event) {
 	IF_THERE_IS_SOURCE  {
 		mxSource *source=CURRENT_SOURCE;
-		wxFileDialog dlg (this, LANG(GENERAL_SAVE,"Guardar"),source->sin_titulo?config->Files.last_dir:source->GetPath(true),source->GetFileName(), "Any file (*)|*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
-		dlg.SetWildcard("Todos los archivos|*|Archivos de C/C++|" WILDCARD_CPP "|Fuentes|" WILDCARD_SOURCE "|Cabeceras|" WILDCARD_HEADER);
-		if (dlg.ShowModal() == wxID_OK) {
-			wxFileName file = dlg.GetPath();
+		wxString fname = GetNameForSaveAs(source);
+		if (fname.IsEmpty()) return;
+		wxFileName file = fname;
 #ifndef __WIN32__
-			// acentos en paths, no en nombres de archivos porque esos los detecta el file-picker
-			if (file.GetFullPath().IsEmpty()) { // problems due to ansi-wx on utf8-linux
-				mxMessageDialog(this,LANG(MAINW_CANT_PROBLEM_WITH_ACCENTS_ON_LOAD,""
-										  "El nombre del archivo o de algún directorio en su ruta\n"
-										  "contiene acentos u otro caracteres especiales. En este\n"
-										  "sistema ZinjaI no puede guardar correctamente los\n"
-										  "cambios del archivo a menos que modifique su nombre o ruta."))
-					.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
-				OnFileSaveAs(event);
-				return;
-			}
-#endif
-			if (!project) {
-				if (file.GetExt().Len()==0) {
-					bool do_add = config->Init.always_add_extension;
-					if (!do_add) {
-						mxMessageDialog::mdAns res =
-							mxMessageDialog(this,LANG(MAINW_NO_EXTENSION_ADD_CPP_QUESTION,""
-													  "No ha definido una extension en el nombre de archivo indicado.\n"
-													  "Si es un codigo fuente se recomienda utilizar la extension cpp\n"
-													  "para que el compilador pueda identificar el lenguaje.\n"
-													  "Desea agregar la extension cpp al nombre?"))
-								.Check1(LANG(MAINW_ALWAYS_APPEND_EXTENSION,"Siempre agregar la extension sin preguntar."),false)
-								.Title(LANG(GENERAL_WARNING,"Advertencia")).ButtonsYesNo().Run();
-						if (res.check1)
-							config->Init.always_add_extension=true;
-						do_add=res.yes;
-					}
-					if (do_add)
-						file.SetExt(source->IsCppOrJustC()?"cpp":"c");
-				}
-			}
-			if (source->SaveSource(file)) {
-				parser->RenameFile(source->GetFullPath(),file.GetFullPath());
-				wxString filename = file.GetFullName();
-				eFileType ftype=mxUT::GetFileType(filename);
-				source->SetPageText(filename);
-				if (project)
-					project->last_dir=dlg.GetDirectory();
-				else
-					config->Files.last_dir=dlg.GetDirectory();
-				if (!project) {
-					if (ftype==FT_SOURCE) {
-						notebook_sources->SetPageBitmap(notebook_sources->GetSelection(),*bitmaps->files.source);
-						source->SetStyle(wxSTC_LEX_CPP);
-						if (project_tree.treeCtrl->GetItemParent(source->GetTreeItem())!=project_tree.sources) {
-							project_tree.treeCtrl->Delete(source->GetTreeItem());
-							wxTreeItemId tree_item = project_tree.treeCtrl->AppendItem(project_tree.sources, filename, 1);
-							source->SetTreeItem(tree_item);
-						} else
-							project_tree.treeCtrl->SetItemText(source->GetTreeItem(),filename);
-						project_tree.treeCtrl->Expand(project_tree.sources);
-					} else if (ftype==FT_HEADER) {
-						notebook_sources->SetPageBitmap(notebook_sources->GetSelection(),*bitmaps->files.header);
-						source->SetStyle(wxSTC_LEX_CPP);
-						if (project_tree.treeCtrl->GetItemParent(source->GetTreeItem())!=project_tree.headers) {
-							project_tree.treeCtrl->Delete(source->GetTreeItem());
-							wxTreeItemId tree_item = project_tree.treeCtrl->AppendItem(project_tree.headers, filename, 2);
-							source->SetTreeItem(tree_item);
-						} else
-							project_tree.treeCtrl->SetItemText(source->GetTreeItem(),filename);
-						project_tree.treeCtrl->Expand(project_tree.headers);
-					} else {
-						wxString ext=file.GetExt();
-						notebook_sources->SetPageBitmap(notebook_sources->GetSelection(),*bitmaps->files.other);
-						if (ext=="HTM" || ext=="HTML")
-							source->SetStyle(wxSTC_LEX_HTML);
-						else if (ext=="XML")
-							source->SetStyle(wxSTC_LEX_XML);
-						else if (ext=="SH")
-							source->SetStyle(wxSTC_LEX_BASH);
-						else if (file.GetName().MakeUpper()=="MAKEFILE")
-							source->SetStyle(wxSTC_LEX_MAKEFILE);
-						if (project_tree.treeCtrl->GetItemParent(source->GetTreeItem())!=project_tree.others) {
-							project_tree.treeCtrl->Delete(source->GetTreeItem());
-							wxTreeItemId tree_item = project_tree.treeCtrl->AppendItem(project_tree.others, filename, 3);
-							source->SetTreeItem(tree_item);
-							project_tree.treeCtrl->Expand(project_tree.others);
-						} else { 
-							project_tree.treeCtrl->SetItemText(source->GetTreeItem(),filename);
-						}
-					}
-				}
-				if (!project) {
-					UpdateInHistory(file.GetFullPath(),false);
-					parser->ParseSource(source,true);
-				}
-	/*			if (symbols_tree.menuItem->IsChecked())
-					parser->ParseSource(source);*/
-			}
-			if (wxFileName(file.GetPath())==explorer_tree.path) 
-				SetExplorerPath(explorer_tree.path);
+		// acentos en paths, no en nombres de archivos porque esos los detecta el file-picker
+		if (file.GetFullPath().IsEmpty()) { // problems due to ansi-wx on utf8-linux
+			mxMessageDialog(this,LANG(MAINW_CANT_PROBLEM_WITH_ACCENTS_ON_LOAD,""
+									  "El nombre del archivo o de algún directorio en su ruta\n"
+									  "contiene acentos u otro caracteres especiales. En este\n"
+									  "sistema ZinjaI no puede guardar correctamente los\n"
+									  "cambios del archivo a menos que modifique su nombre o ruta."))
+				.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
+			OnFileSaveAs(event);
+			return;
 		}
+#endif
+		if (!project) {
+			if (file.GetExt().Len()==0) {
+				bool do_add = config->Init.always_add_extension;
+				if (!do_add) {
+					mxMessageDialog::mdAns res =
+						mxMessageDialog(this,LANG(MAINW_NO_EXTENSION_ADD_CPP_QUESTION,""
+												  "No ha definido una extension en el nombre de archivo indicado.\n"
+												  "Si es un codigo fuente se recomienda utilizar la extension cpp\n"
+												  "para que el compilador pueda identificar el lenguaje.\n"
+												  "Desea agregar la extension cpp al nombre?"))
+							.Check1(LANG(MAINW_ALWAYS_APPEND_EXTENSION,"Siempre agregar la extension sin preguntar."),false)
+							.Title(LANG(GENERAL_WARNING,"Advertencia")).ButtonsYesNo().Run();
+					if (res.check1)
+						config->Init.always_add_extension=true;
+					do_add=res.yes;
+				}
+				if (do_add)
+					file.SetExt(source->IsCppOrJustC()?"cpp":"c");
+			}
+		}
+		if (source->SaveSource(file)) {
+			parser->RenameFile(source->GetFullPath(),file.GetFullPath());
+			wxString filename = file.GetFullName();
+			eFileType ftype=mxUT::GetFileType(filename);
+			source->SetPageText(filename);
+			if (project)
+				project->last_dir=dlg.GetDirectory();
+			else
+				config->Files.last_dir=dlg.GetDirectory();
+			if (!project) {
+				if (ftype==FT_SOURCE) {
+					notebook_sources->SetPageBitmap(notebook_sources->GetSelection(),*bitmaps->files.source);
+					source->SetStyle(wxSTC_LEX_CPP);
+					if (project_tree.treeCtrl->GetItemParent(source->GetTreeItem())!=project_tree.sources) {
+						project_tree.treeCtrl->Delete(source->GetTreeItem());
+						wxTreeItemId tree_item = project_tree.treeCtrl->AppendItem(project_tree.sources, filename, 1);
+						source->SetTreeItem(tree_item);
+					} else
+						project_tree.treeCtrl->SetItemText(source->GetTreeItem(),filename);
+					project_tree.treeCtrl->Expand(project_tree.sources);
+				} else if (ftype==FT_HEADER) {
+					notebook_sources->SetPageBitmap(notebook_sources->GetSelection(),*bitmaps->files.header);
+					source->SetStyle(wxSTC_LEX_CPP);
+					if (project_tree.treeCtrl->GetItemParent(source->GetTreeItem())!=project_tree.headers) {
+						project_tree.treeCtrl->Delete(source->GetTreeItem());
+						wxTreeItemId tree_item = project_tree.treeCtrl->AppendItem(project_tree.headers, filename, 2);
+						source->SetTreeItem(tree_item);
+					} else
+						project_tree.treeCtrl->SetItemText(source->GetTreeItem(),filename);
+					project_tree.treeCtrl->Expand(project_tree.headers);
+				} else {
+					wxString ext=file.GetExt();
+					notebook_sources->SetPageBitmap(notebook_sources->GetSelection(),*bitmaps->files.other);
+					if (ext=="HTM" || ext=="HTML")
+						source->SetStyle(wxSTC_LEX_HTML);
+					else if (ext=="XML")
+						source->SetStyle(wxSTC_LEX_XML);
+					else if (ext=="SH")
+						source->SetStyle(wxSTC_LEX_BASH);
+					else if (file.GetName().MakeUpper()=="MAKEFILE")
+						source->SetStyle(wxSTC_LEX_MAKEFILE);
+					if (project_tree.treeCtrl->GetItemParent(source->GetTreeItem())!=project_tree.others) {
+						project_tree.treeCtrl->Delete(source->GetTreeItem());
+						wxTreeItemId tree_item = project_tree.treeCtrl->AppendItem(project_tree.others, filename, 3);
+						source->SetTreeItem(tree_item);
+						project_tree.treeCtrl->Expand(project_tree.others);
+					} else { 
+						project_tree.treeCtrl->SetItemText(source->GetTreeItem(),filename);
+					}
+				}
+			}
+			if (!project) {
+				UpdateInHistory(file.GetFullPath(),false);
+				parser->ParseSource(source,true);
+			}
+/*			if (symbols_tree.menuItem->IsChecked())
+				parser->ParseSource(source);*/
+		}
+		if (wxFileName(file.GetPath())==explorer_tree.path) 
+			SetExplorerPath(explorer_tree.path);
 	}
 }
 
