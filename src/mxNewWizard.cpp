@@ -265,17 +265,17 @@ void mxNewWizard::OnProjectCreate() {
 				pd_class *cls=parser->GetClass(base_classes[i]);
 				if (!cls) continue;
 				pd_func *func=cls->first_method;
-				while (func->next) { func=func->next; } // para atras, para que queden ordenadas como en el h
-				while (func->prev) {
+				while (func->next) func=func->next; // para atras, para que queden ordenadas como en el h
+				for (;func->prev;func=func->prev) {
 					wxString visib="private ";
 					if (func->properties&PD_CONST_PROTECTED) visib="protected ";
 					else if (func->properties&PD_CONST_PUBLIC) visib="public ";
+					if (func->name.Contains("~")) continue; // no heredar ctores virtuales
 					if (func->properties&PD_CONST_VIRTUAL_PURE) {
 						virtual_methods.Add(visib+func->full_proto+((func->properties&PD_CONST_CONST)?" const =0":" =0")); // const no deberia estar en el full proto?
 					} else if (func->properties&PD_CONST_VIRTUAL) {
 						virtual_methods.Add(visib+func->full_proto+((func->properties&PD_CONST_CONST)?" const":"")); // const no deberia estar en el full proto?
 					}
-					func=func->prev;
 				}
 			}
 			if (virtual_methods.GetCount()) {
@@ -387,9 +387,9 @@ void mxNewWizard::OnProjectCreate() {
 			if (onproject_const_copy->GetValue())
 				h_file.AddLine(wxString("\t")+name+"(const "<<name<<" &arg);");
 			if (onproject_dest->GetValue())
-				h_file.AddLine(wxString(virtual_methods.GetCount()?"\tvirtual ~":"\t~")+name+"();");
-			else if (virtual_methods.GetCount())
-				h_file.AddLine(wxString("\tvirtual ~")+name+"() { }");
+				h_file.AddLine(wxString("\t~")+name+"();");
+//			else if (virtual_methods.GetCount())
+//				h_file.AddLine(wxString("\tvirtual ~")+name+"() { }");
 			for(unsigned int i=0;i<virtual_methods.GetCount();i++) 
 				if (virtual_methods[i].StartsWith("public "))
 					h_file.AddLine(wxString("\t")+virtual_methods[i].AfterFirst(' ')
