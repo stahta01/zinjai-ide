@@ -6,6 +6,7 @@
 #include <wx/dir.h>
 #ifdef __APPLE__
 #	include <wx/stc/stc.h>
+#	include "mxHelpWindow.h"
 #endif
 
 #include "mxUtils.h"
@@ -58,9 +59,13 @@ void ConfigManager::DoInitialChecks() {
 	
 	// elegir un explorador de archivos
 	if (Files.explorer_command=="<<sin configurar>>") { // tratar de detectar automaticamente un terminal adecuado
-		if (mxUT::GetOutput("dolphin --version").Len())
+		if (mxUT::GetOutput("xdg-open --version").Len())
+			Files.explorer_command = "xdg-open";
+		else if (mxUT::GetOutput("nemo --version").Len())
+			Files.explorer_command = "nemo";
+		else if (mxUT::GetOutput("dolphin --version").Len())
 			Files.explorer_command = "dolphin";
-		if (mxUT::GetOutput("konqueror --version").Len())
+		else if (mxUT::GetOutput("konqueror --version").Len())
 			Files.explorer_command = "konqueror";
 		else if (mxUT::GetOutput("nautilus --version").Len())
 			Files.explorer_command = "nautilus";
@@ -135,6 +140,7 @@ void ConfigManager::DoInitialChecks() {
 	
 	// verificar si hay depurador
 	if (!Init.debugger_seen) {
+#ifdef __APPLE__
 		Init.debugger_seen = CheckComplaintAndInstall(
 			nullptr, config->Files.debugger_command+" --version",
 			LANG(CONFIG_DEBUGGER,"Depurador"),
@@ -142,6 +148,15 @@ void ConfigManager::DoInitialChecks() {
 			"el gestor de paquetes que corresponda a su distribución\n"
 			"(apt-get, yum, yast, installpkg, etc.)"),
 			"gdb");
+#else
+		Init.debugger_seen = CheckComplaintAndInstall(
+			nullptr, config->Files.debugger_command+" --version",
+			LANG(CONFIG_DEBUGGER,"Depurador"),
+			LANG(CONFIG_DEBUGGER_NOT_FOUND,"No se ha encontrado el depurador (gdb). Debe instalarlo con\n"
+			"el gestor de paquetes que corresponda a su distribución\n"
+			"(apt-get, yum, yast, installpkg, etc.)"),
+			"gdb");
+#endif	
 	}
 #endif	
 	Toolchain::SelectToolchain();
@@ -1008,22 +1023,33 @@ void ConfigManager::RecalcStuff ( ) {
 void ConfigManager::FinishiLoading ( ) {
 	
 	// load language translations
-	if (Init.language_file!="spanish") try_to_load_language();
+	
+//#ifndef __APPLE__
+	if (Init.language_file!="spanish") 
+//#endif
+	{
+		DEBUG_INFO("Loading language...");
+		try_to_load_language();
+	}
 	
 	// load syntax highlighting colors' scheme
+	DEBUG_INFO("Loading colours...");
 	color_theme::Initialize();
 	if (Init.colour_theme.IsEmpty()) g_ctheme->Load(DIR_PLUS_FILE(config_dir,"colours.zcs"));
 	else g_ctheme->Load(mxUT::WichOne(Init.colour_theme,"colours",true));
 	
 	// apply complement's patches to current config
+	DEBUG_INFO("Looking for patchs from complements...");
 	ApplyPatchsFromComplements();
 	
 	// check if extern tools are present and set some paths
+	DEBUG_INFO("Loding toolchains...");
 	Toolchain::LoadToolchains();
 	DoInitialChecks(); 
 	RecalcStuff();
 	
 	// create regular menus and toolbars' data
+	DEBUG_INFO("Creating menues...");
 	menu_data = new MenusAndToolsConfig();
 	if (s_delayed_config_lines) { // old way
 		for(unsigned int i=0;i<s_delayed_config_lines->toolbars_keys.GetCount();i++)
@@ -1039,6 +1065,7 @@ void ConfigManager::FinishiLoading ( ) {
 		menu_data->GetToolbarPosition(MenusAndToolsConfig::tbPROJECT)="T1";
 	}
 #if defined(__APPLE__) && defined(__STC_ZASKAR)
+	DEBUG_INFO("Fixing mac stuff...");
 	if (Init.mac_stc_zflags==-1) {
 		Init.mac_stc_zflags = 0;
 		if (mxMessageDialog(nullptr,LANG(CONFIG_MAC_DEADKEYS_PROBLEM_QUESTION,""
@@ -1055,6 +1082,7 @@ void ConfigManager::FinishiLoading ( ) {
 	wxSTC_SetZaskarsFlags(Init.mac_stc_zflags);
 #endif
 	
+	DEBUG_INFO("Initializing error recovery system...");
 	// initialize error recovery system
 	er_init(temp_dir.char_str());
 	
@@ -1120,6 +1148,9 @@ bool ConfigManager::ComplaintAndInstall(wxWindow *parent, const wxString &check_
 											 const wxString &website, const wxString &preferences_field) 
 {
 	wxString apt_message = GetTryToInstallCheckboxMessage(); // ver si tenemos apt-get
+#ifdef __APPLE__
+	if (pkgname=="gdb") apt_message = LANG(CONFIG_APTGET_BUILD_ESSENTIAL,"Intentar instalar ahora");
+#endif
 	wxString web_msg = website.Len()?(LANG1(CONFIG_GOTO_PACKAGE_WEBSITE,"Abrir sitio web (<{1}>)",website)):"";
 	wxString pref_msg = preferences_field.Len()?(LANG(CONFIG_OPEN_PREFERENCES,"Abrir el cuadro de Preferencias")):"";
 	
@@ -1131,6 +1162,9 @@ bool ConfigManager::ComplaintAndInstall(wxWindow *parent, const wxString &check_
 		if (check_output.Len() && !check_output.StartsWith("execvp")) // si anda, ya esta instalada
 			return true; 
 		// si falló apt-get, avisar e intentar abrir el sitio web de descarga
+#ifdef __APPLE__
+		if (pkgname=="gdb") return false;
+#endif
 		ans = mxMessageDialog(parent,LANG(CONFIG_APTGET_FAILED,"Falló la instalación automática."))
 				.Title(what).IconWarning().Check1(pref_msg,true).Check2(web_msg,true).Run();
 	}
@@ -1144,6 +1178,12 @@ bool ConfigManager::ComplaintAndInstall(wxWindow *parent, const wxString &check_
 }
 
 void ConfigManager::TryToInstallWithAptGet (wxWindow * parent, const wxString & what, const wxString & pkgname) {
+#ifdef __APPLE__
+	if (pkgname=="gdb") {
+		mxHelpWindow::ShowHelp("gdb_on_mac.html");
+		return;
+	}
+#endif
 	mxMessageDialog(parent,
 					LANG(CONFIG_ABOUT_TO_APTGET,"A continuación se intentará instalar el software faltante en una nueva\n"
 												"terminal. Podría requerir ingresar la contraseña del administrador.\n"

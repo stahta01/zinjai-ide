@@ -2,10 +2,15 @@
 #define LANGUAGE_H
 #include <string>
 #include "lang_index_macros.h"
-using namespace std;
 
-#define LANG(key,text) (g_language_buffer?g_language_buffer+g_language_index[LANG_##key]:text)
-
+#define LANG_MAP(key,text) (g_language_buffer?g_language_buffer+g_language_index[LANG_##key]:text)
+#ifdef __APPLE__
+extern wxCSConv cscUTF8;
+extern wxCSConv cscMAC;
+#	define LANG(key,text) cscMAC.cWC2MB(cscUTF8.cMB2WC( LANG_MAP(key,text) ))
+#else
+#	define LANG(key,text) LANG_MAP(key,text) 
+#endif
 /// Codigos de error para las funciones que administran el archivo y buffer de lenguaje
 enum LANGUAGE_ERROR { 
 	LANGERR_OK, ///< el lenguaje se cargó o regeneró sin problemas
@@ -22,9 +27,9 @@ enum LANGUAGE_ERROR {
 extern char *g_language_buffer;
 extern int *g_language_index;
 
-LANGUAGE_ERROR load_language(string lang_in, string lang_cache);
-LANGUAGE_ERROR compile_language(string lang_in, string lang_cache);
-LANGUAGE_ERROR is_language_compiled(string lang_in, string lang_cache);
+LANGUAGE_ERROR load_language(std::string lang_in, std::string lang_cache);
+LANGUAGE_ERROR compile_language(std::string lang_in, std::string lang_cache);
+LANGUAGE_ERROR is_language_compiled(std::string lang_in, std::string lang_cache);
 
 void try_to_load_language();
 

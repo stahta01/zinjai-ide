@@ -184,6 +184,17 @@ void mxHelpWindow::LoadHelp(wxString file) {
 bool mxHelpWindow::OnLink (wxString href) {
 	if (href=="cppreference:") {
 		Close(); mxReferenceWindow::ShowPage();
+#ifdef __APPLE__
+	} else if (href.StartsWith("action:")) {
+		wxString action = href.AfterFirst(':');
+		if (action=="gdb_on_mac") {
+			wxExecute(mxUT::GetCommandForRunningInTerminal(
+						"ZinjaI - download and install GDB",
+						"sh src_extras/mac-compile_gdb.sh"));
+		} else if (action=="keychain_access") {
+			wxExecute("/Applications/Utilities/Keychain\\ Access.app/Content/MacOS/Keychain\\ Access");
+		}
+#endif
 	} else if (href.StartsWith("foropen:")) {
 		main_window->NewFileFromTemplate(DIR_PLUS_FILE(config->Help.guihelp_dir,href.AfterFirst(':')),true);
 	} else if (href.StartsWith("http://")) {

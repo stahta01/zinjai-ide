@@ -1,5 +1,10 @@
 #include <fstream>
 #include <cstring>
+#ifdef __APPLE__
+#	include <wx/strconv.h>
+wxCSConv cscUTF8("utf8");
+wxCSConv cscMAC("MAC");
+#endif
 #include "Language.h"
 #include "Cpp11.h"
 #include "ConfigManager.h"

@@ -43,11 +43,11 @@ cp -u /mnt/ex/zinjai/third/gprof2dot/* zinjai.app/Contents/Resources/third/gprof
 mkdir -p zinjai.app/Contents/Resources/imgs
 cp -u /mnt/ex/zinjai/imgs/* zinjai.app/Contents/Resources/imgs/
 mkdir -p zinjai.app/Contents/Resources/imgs/welcome
-cp -u /mnt/ex/zinjai/imgs/welcome/* zinjai.app/Contents/Resources/welcome/
+cp -u /mnt/ex/zinjai/imgs/welcome/* zinjai.app/Contents/Resources/imgs/welcome/
 mkdir -p zinjai.app/Contents/Resources/imgs/dialogs
-cp -u /mnt/ex/zinjai/imgs/dialgos/* zinjai.app/Contents/Resources/dialogs/
+cp -u /mnt/ex/zinjai/imgs/dialogs/* zinjai.app/Contents/Resources/imgs/dialogs/
 mkdir -p zinjai.app/Contents/Resources/imgs/trees
-cp -u /mnt/ex/zinjai/imgs/trees/* zinjai.app/Contents/Resources/trees/
+cp -u /mnt/ex/zinjai/imgs/trees/* zinjai.app/Contents/Resources/imgs/trees/
 cp -u /mnt/ex/zinjai/imgs/descripcion.txt zinjai.app/Contents/Resources/imgs/
 cp -u /mnt/ex/zinjai/imgs/*.ico zinjai.app/Contents/Resources/imgs/
 mkdir -p zinjai.app/Contents/Resources/imgs/16
@@ -57,11 +57,11 @@ cp -u /mnt/ex/zinjai/imgs/24/* zinjai.app/Contents/Resources/imgs/24/
 mkdir -p zinjai.app/Contents/Resources/imgs/32
 cp -u /mnt/ex/zinjai/imgs/32/* zinjai.app/Contents/Resources/imgs/32/
 
-mkdir -p zinjai.app/Contents/Resources/imgs/skins
+mkdir -p zinjai.app/Contents/Resources/skins
 cp -ru /mnt/ex/zinjai/skins/* zinjai.app/Contents/Resources/skins/
-mkdir -p zinjai.app/Contents/Resources/imgs/samples
+mkdir -p zinjai.app/Contents/Resources/samples
 cp -u /mnt/ex/zinjai/samples/* zinjai.app/Contents/Resources/samples
-mkdir -p zinjai.app/Contents/Resources/imgs/lang
+mkdir -p zinjai.app/Contents/Resources/lang
 cp -ru /mnt/ex/zinjai/lang/*.pre zinjai.app/Contents/Resources/lang/
 cp /mnt/ex/zinjai/lang/*.txt zinjai.app/Contents/Resources/lang/
 
@@ -80,27 +80,27 @@ export PATH=/opt/mac/bin:/opt/mac/wx/bin:$PATH
 VERSION=$(cat zinjai.app/Contents/Resources/src/version.h |grep VERSION|cut -d ' ' -f 3)
 
 
-if mount|grep mnt; then sudo umount mnt; fi
-dd if=/dev/zero of=zinjai-ppc-$VERSION.dmg bs=512k count=72
-mkfs.hfsplus -v ZinjaI zinjai-ppc-$VERSION.dmg
-sudo mount -o loop zinjai-ppc-$VERSION.dmg mnt || exit 1
-rm -f zinjai.app/Contents/MacOS/zinjai
-rm -f zinjai.app/Contents/Resources/bin/img_viewer.bin
-rm -f zinjai.app/Contents/Resources/bin/complement.bin
-rm -f zinjai.app/Contents/Resources/bin/complement_wrap.bin
-rm -f zinjai.app/Contents/Resources/bin/cbrowser
-rm -f zinjai.app/Contents/Resources/bin/runner.bin
-rm -f zinjai.app/Contents/Resources/bin/mac-terminal-wrapper.bin
-rm -f zinjai.app/Contents/Resources/bin/updatem.bin
-make -f Makefile.ppc -C zinjai.app/Contents/Resources/src || exit 1
-make -f Makefile.ppc -C zinjai.app/Contents/Resources/src_extras || exit 1
-make -f Makefile.ppc -C zinjai.app/Contents/Resources/parser || exit 1
-echo Creating Package...
-sudo cp -r zinjai.app mnt/ || exit 1
-sudo umount mnt
+# if mount|grep mnt; then sudo umount mnt; fi
+# dd if=/dev/zero of=zinjai-ppc-$VERSION.dmg bs=512k count=72
+# mkfs.hfsplus -v ZinjaI zinjai-ppc-$VERSION.dmg
+# sudo mount -o loop zinjai-ppc-$VERSION.dmg mnt || exit 1
+# rm -f zinjai.app/Contents/MacOS/zinjai
+# rm -f zinjai.app/Contents/Resources/bin/img_viewer.bin
+# rm -f zinjai.app/Contents/Resources/bin/complement.bin
+# rm -f zinjai.app/Contents/Resources/bin/complement_wrap.bin
+# rm -f zinjai.app/Contents/Resources/bin/cbrowser
+# rm -f zinjai.app/Contents/Resources/bin/runner.bin
+# rm -f zinjai.app/Contents/Resources/bin/mac-terminal-wrapper.bin
+# rm -f zinjai.app/Contents/Resources/bin/updatem.bin
+# make -f Makefile.ppc -C zinjai.app/Contents/Resources/src || exit 1
+# make -f Makefile.ppc -C zinjai.app/Contents/Resources/src_extras || exit 1
+# make -f Makefile.ppc -C zinjai.app/Contents/Resources/parser || exit 1
+# echo Creating Package...
+# sudo cp -r zinjai.app mnt/ || exit 1
+# sudo umount mnt
 
 if mount|grep mnt; then sudo umount mnt; fi
-dd if=/dev/zero of=zinjai-m32-$VERSION.dmg bs=512k count=71
+dd if=/dev/zero of=zinjai-m32-$VERSION.dmg bs=512k count=74
 mkfs.hfsplus -v ZinjaI zinjai-m32-$VERSION.dmg
 sudo mount -o loop zinjai-m32-$VERSION.dmg mnt || exit 1
 rm -f zinjai.app/Contents/MacOS/zinjai

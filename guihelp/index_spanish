@@ -122,6 +122,7 @@
 			0 inspections_improving.html Mejora automática de inspecciones
 			0 debug_patch.html Corrección de un ejecutable durante la depuración
 			0 debug_gdb_panel.html Interfaz directa con gdb
+		0 gdb_on_mac.html Instalación de GDB en Mac OS
 	0 about.html Notas sobre ZinjaI
 		0 license.html Licencias y Contactos
 		0 ChangeLog.html Registro de Cambios
