@@ -225,7 +225,7 @@ public:
 	ConfigManager(wxString a_path);
 public:
 	static bool Initialize(const wxString &a_path);
-	void FinishiLoading();
+	void FinishLoading();
 	bool Save();	
 private:
 	void DoInitialChecks();

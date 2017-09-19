@@ -1,12 +1,14 @@
 #include <wx/control.h>
 #include <wx/button.h>
 #include <wx/stattext.h>
-#include "widgetDisabler.h"
-#include "mxUtils.h"
-#include "mxCommonConfigControls.h"
 #include <wx/combobox.h>
 #include <wx/textctrl.h>
 #include <wx/checkbox.h>
+#include "widgetDisabler.h"
+#include "mxUtils.h"
+#include "mxCommonConfigControls.h"
+
+using namespace std;
 
 widgetDisabler::widgetDisabler() {
 	m_first = nullptr;

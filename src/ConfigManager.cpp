@@ -1020,7 +1020,7 @@ void ConfigManager::RecalcStuff ( ) {
 	}
 }
 
-void ConfigManager::FinishiLoading ( ) {
+void ConfigManager::FinishLoading ( ) {
 	
 	// load language translations
 	

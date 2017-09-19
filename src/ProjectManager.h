@@ -287,7 +287,7 @@ struct project_configuration {
 	wxString macros; ///< lista de macros a definir (con -D)
 	wxString old_macros; ///< lista de macros a definir en la ultima corrida (para comparar y saber que recompilar por cambio de macros)
 	wxString headers_dirs; ///< lista de rutas adicionales donde buscar cabeceras (para pasar con -I)
-	int warnings_level; ///< nivel de advertencias a mostrar por el compilador: 0=ninguna 1=default 2=todas
+	int warnings_level; ///< nivel de advertencias a mostrar por el compilador: 0=ninguna 1=default 2=todas 3=extra
 	bool warnings_as_errors; ///< turn warning into errors (-Werror)
 	bool pedantic_errors; ///< forzar a cumplir el estandar (-pedantic-errors)
 	wxString std_c; ///< versión del estándar a utilizar para los fuentes C

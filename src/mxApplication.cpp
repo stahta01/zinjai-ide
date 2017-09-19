@@ -149,7 +149,7 @@ SHOW_MILLIS("Finishing config manager's initialization...");
 	
 	// verifica si hay compilador, terminal, etc instalado y configurado...
 	// ...y carga el resto de la configuracion (toolchains, colores, atajos, toolbars, etc)
-	config->FinishiLoading(); 
+	config->FinishLoading(); 
 	
 SHOW_MILLIS("Creating main window...");	
 	
