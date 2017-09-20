@@ -7,7 +7,7 @@ for a in $ICONS; do ./export_one.sh dialogs.svg ../dialogs $a 60 60; done
 PREFS="pref_help pref_general pref_debug pref_program pref_writing pref_skin pref_toolbars pref_paths pref_style"
 for a in $PREFS; do ./export_one.sh dialogs.svg ../dialogs $a 32 32; done
 
-HELP="help_prev help_next help_index help_copy help_tree help_print help_search"
+HELP="help_prev help_next help_index help_copy help_tree help_print help_search help_atop"
 for a in $HELP; do ./export_one.sh dialogs.svg ../dialogs $a 24 24; done
 
 ./export_one.sh dialogs.svg ../dialogs new_wizard 141 250

@@ -31,6 +31,7 @@ protected:
 	wxTreeCtrl *tree;
 	wxSashLayoutWindow *index_sash;
 	wxHtmlEasyPrinting *printer;
+	wxButton *m_button_tree, *m_button_atop, *m_button_index, *m_button_prev, *m_button_next, *m_button_search;
 	
 	void OnTreeEvent(wxTreeEvent &event);
 	void OnLinkEvent(wxHtmlLinkEvent &event);
@@ -44,9 +45,13 @@ protected:
 	void OnSearchEvent(wxCommandEvent &event);
 	void OnSashDragEvent(wxSashEvent& event);
 	void OnCharHookEvent(wxKeyEvent &event);
+	void OnAlwaysOnTop(wxCommandEvent &evt);
+	void OnMaximize(wxSizeEvent &evt);
+	void RepaintButtons();
 	
 public:
 	mxGenericHelpWindow(wxString title, bool use_tree);
+	void SetAlwaysOnTop(bool atop=true);
 	virtual ~mxGenericHelpWindow() {}
 	
 	virtual void OnPrev() { html->HistoryBack(); }

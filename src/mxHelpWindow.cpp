@@ -145,7 +145,7 @@ void mxHelpWindow::ShowIndex() {
 	LoadHelp(_index);
 }
 
-void mxHelpWindow::ShowHelp(wxString page, wxDialog *from_modal) {
+mxHelpWindow *mxHelpWindow::ShowHelp(wxString page, wxDialog *from_modal) {
 	
 	if (from_modal) {
 		if ( mxMessageDialog(from_modal,"Se cerrará este cuadro de diálogo (perdiendo los cambios)\n"
@@ -154,7 +154,7 @@ void mxHelpWindow::ShowHelp(wxString page, wxDialog *from_modal) {
 		{
 			from_modal->EndModal(0);
 		} else
-			return;
+			return nullptr;
 	}
 	
 	if (page=="") page=_index;
@@ -168,6 +168,7 @@ void mxHelpWindow::ShowHelp(wxString page, wxDialog *from_modal) {
 	}
 	if (page==_index) instance->search_text->SetFocus();
 	else instance->html->SetFocus();
+	return instance;
 }
 
 
@@ -192,7 +193,7 @@ bool mxHelpWindow::OnLink (wxString href) {
 						"ZinjaI - download and install GDB",
 						"sh src_extras/mac-compile_gdb.sh"));
 		} else if (action=="keychain_access") {
-			wxExecute("/Applications/Utilities/Keychain\\ Access.app/Content/MacOS/Keychain\\ Access");
+			wxExecute("\"/Applications/Utilities/Keychain Access.app/Content/MacOS/Keychain Access\"");
 		}
 #endif
 	} else if (href.StartsWith("foropen:")) {
