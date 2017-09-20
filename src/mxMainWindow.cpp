@@ -2432,7 +2432,7 @@ mxSource *mxMainWindow::OpenFile (const wxString &filename) {
 	return OpenFile(filename,!project);
 }
 
-static wxString GetNameForSaveAs(mxSource *src) {
+static wxString GetNameForSaveAs(mxSource *source) {
 	wxFileDialog dlg (main_window, LANG(GENERAL_SAVE,"Guardar"),source->sin_titulo?config->Files.last_dir:source->GetPath(true),source->GetFileName(), "Any file (*)|*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	dlg.SetWildcard("Todos los archivos|*|Archivos de C/C++|" WILDCARD_CPP "|Fuentes|" WILDCARD_SOURCE "|Cabeceras|" WILDCARD_HEADER);
 	if (dlg.ShowModal() == wxID_OK) return dlg.GetPath();
@@ -2529,7 +2529,53 @@ void mxMainWindow::OpenFileFromGui (wxFileName filename, int *multiple) {
 			// constantes para setear bits en *multiple
 			const int always_attach=1; // ojo, esto se usa en OnProjectTreeAdd, asi que si se cambia el valor/significado, hay que revisar tambien ahi
 			const int never_attach=2;
-																 "¿Desea reemplazarlo?"))
+			const int always_move=4;
+			const int never_move=8;
+			const int always_replace=16;
+			const int never_replace=32;
+			// ver si hay que adjuntarlo al proyecto además de abrirlo
+			bool attach=true;
+			if (multiple && (*multiple)&(always_attach|never_attach)) {
+				attach=(*multiple)&always_attach;
+			} else {
+				mxMessageDialog::mdAns ans1 = 
+					mxMessageDialog(main_window,LANG(MAINW_ADD_TO_PROJECT_QUESTION,"¿Desea agregar el archivo al proyecto?"))
+						.Check1(multiple?LANG(MAINW_ADD_TO_PROJECT_CHECK,"Hacer lo mismo para todos"):"",false)
+						.Title(filename.GetFullPath()).IconQuestion().ButtonsYesNo().Run();
+				attach = ans1.yes;
+				if (multiple && ans1.check1) (*multiple)|=(attach?always_attach:never_attach);
+			}
+			if (attach) {
+				// si no esta en la carpeta del proyecto, preguntar si hay que copiarlo ahí
+				wxString aux_project_path=project->path; aux_project_path.Replace("\\","/",true); if (aux_project_path.EndsWith("/")) aux_project_path.RemoveLast();
+				wxString aux_file_path=filename.GetFullPath(); aux_file_path.Replace("\\","/",true); if (aux_file_path.EndsWith("/")) aux_file_path.RemoveLast();
+#ifdef __WIN32__
+				aux_file_path.MakeLower();
+				aux_project_path.MakeLower();
+#endif
+				if (!aux_file_path.StartsWith(aux_project_path)) {
+					wxString dest_filename=DIR_PLUS_FILE(project->path,filename.GetFullName());
+					bool move=false;
+					if (multiple && (*multiple)&(always_move|never_move)) {
+						move=(*multiple)&always_move;
+					} else {
+						mxMessageDialog::mdAns ans2 =
+							mxMessageDialog(main_window,LANG(MAINW_MOVE_TO_PROJECT_PATH_QUESTION,""
+															 "El archivo que intenta agregar no se encuentra en el directorio del\n"
+															 "proyecto. ¿Desea copiar el archivo al directorio del proyecto?"))
+								.Check1(multiple?LANG(MAINW_ADD_TO_PROJECT_CHECK,"Hacer lo mismo para todos"):"",false)
+								.Title(filename.GetFullPath()).IconQuestion().ButtonsYesNo().Run();
+						move = ans2.yes;
+						if (multiple && ans2.check1) (*multiple)|=(move?always_move:never_move);
+					}
+					if (move && wxFileExists(dest_filename)) {
+						bool replace=false;
+						if (multiple && (*multiple)|(always_replace|never_replace)) {
+							replace=(*multiple)|always_replace;
+						} else {
+							mxMessageDialog::mdAns ans3 =
+								mxMessageDialog(main_window,LANG(MAINW_OVERWRITE_ON_PROJECT_PATH_QUESTION,""
+																 "El archivo ya existe en el directorio de proyecto.\n"																 "¿Desea reemplazarlo?"))
 									.Check1(multiple?LANG(MAINW_ADD_TO_PROJECT_CHECK,"Hacer lo mismo para todos"):"",true)
 									.Title(filename.GetFullPath()).IconQuestion().ButtonsYesNo().Run();
 							replace = ans3.yes;
@@ -2782,9 +2828,9 @@ void mxMainWindow::OnFileSaveAs (wxCommandEvent &event) {
 			eFileType ftype=mxUT::GetFileType(filename);
 			source->SetPageText(filename);
 			if (project)
-				project->last_dir=dlg.GetDirectory();
+				project->last_dir=file.GetPath();
 			else
-				config->Files.last_dir=dlg.GetDirectory();
+				config->Files.last_dir=file.GetPath();
 			if (!project) {
 				if (ftype==FT_SOURCE) {
 					notebook_sources->SetPageBitmap(notebook_sources->GetSelection(),*bitmaps->files.source);

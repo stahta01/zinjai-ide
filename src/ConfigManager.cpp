@@ -1180,7 +1180,7 @@ bool ConfigManager::ComplaintAndInstall(wxWindow *parent, const wxString &check_
 void ConfigManager::TryToInstallWithAptGet (wxWindow * parent, const wxString & what, const wxString & pkgname) {
 #ifdef __APPLE__
 	if (pkgname=="gdb") {
-		mxHelpWindow::ShowHelp("gdb_on_mac.html");
+		mxHelpWindow::ShowHelp("gdb_on_mac.html")->SetAlwaysOnTop(true);
 		return;
 	}
 #endif

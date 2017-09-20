@@ -1969,6 +1969,9 @@ void DebugManager::Start_ConfigureGdb ( ) {
 	if (!config->Debug.auto_solibs) SendCommand("set auto-solib-add off");
 //	SendCommand("set print addr off"); // necesito las direcciones para los helpers de los arreglos
 	SendCommand(_T("set print repeats 0"));
+#ifdef __APPLE__
+	SendCommand("set startup-with-shell off");
+#endif
 	SetFullOutput(false,true);
 	SetBlacklist();
 	// reiniciar sistema de inspecciones
