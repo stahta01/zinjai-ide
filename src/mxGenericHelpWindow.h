@@ -52,6 +52,7 @@ protected:
 public:
 	mxGenericHelpWindow(wxString title, bool use_tree);
 	void SetAlwaysOnTop(bool atop=true);
+	void HideIndexTree();
 	virtual ~mxGenericHelpWindow() {}
 	
 	virtual void OnPrev() { html->HistoryBack(); }

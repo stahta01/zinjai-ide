@@ -29,3 +29,6 @@ A continuación se describen los pasos necesarios para instalar gdb y firmarlo ad
  4. Luego de finalizar con la compilación de gdb del paso 2, y la generación y aplicación del nuevo certificado del paso 3, zinjai intentará reiniciar el servicio que gestiona estos accesos. En caso de que este último paso falle, deberá reiniciar su sistema para que los cambios tengan efecto.
 
 Si el proceso falla, igual puede utilizar ZinjaI para editar el código, compilar, y ejecutar sus programas. Pero no podrá utilizar las funcionalidades del menú "Depuración".
+
+
+Instructions based on: [https://llvm.org/svn/llvm-project/lldb/trunk/docs/code-signing.txt](https://llvm.org/svn/llvm-project/lldb/trunk/docs/code-signing.txt)

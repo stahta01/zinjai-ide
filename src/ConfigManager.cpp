@@ -385,6 +385,7 @@ bool ConfigManager::Load() {
 	}
 	
 #ifdef __APPLE__
+	if (Init.version<20170926 && Files.debugger_command=="gdb") Files.debugger_command = "~/.zinjai/gdb.bin";
 	if (Init.version<20170605) Files.terminal_command = DIR_PLUS_FILE("bin","mac-terminal-wrapper.bin"); // some installations still have an invalid configuration
 #endif
 	if (Init.version<20100806) Files.terminal_command.Replace("ZinjaI - Consola de Ejecucion","${TITLE}"); // NO USAR ACENTOS, PUEDE ROMER EL X!!!! (me daba un segfault en la libICE al poner el ó en EjeuciÓn)
@@ -705,8 +706,8 @@ void ConfigManager::LoadDefaults(){
 	Files.skin_dir="imgs";
 #ifdef __WIN32__
 	Files.toolchain="gcc6-mingw32";
-	Files.debugger_command="gdb";
-	Files.runner_command=DIR_PLUS_FILE("bin","runner.exe");
+	Files.runner_command=DIR_	Files.debugger_command="gdb";
+PLUS_FILE("bin","runner.exe");
 	Files.terminal_command="";
 	Files.explorer_command="explorer";
 	Files.img_viewer="";
@@ -715,7 +716,7 @@ void ConfigManager::LoadDefaults(){
 	Files.browser_command=""; // use "bin\\shellexecute.exe";
 #elif defined(__APPLE__)
 	Files.toolchain="gcc";
-	Files.debugger_command="gdb";
+	Files.debugger_command="~/.zinjai/gdb.bin";
 	Files.runner_command=DIR_PLUS_FILE("bin","runner.bin");
 	Files.terminal_command=DIR_PLUS_FILE("bin","mac-terminal-wrapper.bin");
 	Files.explorer_command="open";
@@ -1180,7 +1181,13 @@ bool ConfigManager::ComplaintAndInstall(wxWindow *parent, const wxString &check_
 void ConfigManager::TryToInstallWithAptGet (wxWindow * parent, const wxString & what, const wxString & pkgname) {
 #ifdef __APPLE__
 	if (pkgname=="gdb") {
-		mxHelpWindow::ShowHelp("gdb_on_mac.html")->SetAlwaysOnTop(true);
+		mxHelpWindow *helpw = mxHelpWindow::ShowHelp("gdb_on_mac.html");
+		helpw->SetAlwaysOnTop(true); // esto parece no funcionar, por eso el reacomodo que sigue
+		int w = wxSystemSettings::GetMetric(wxSYS_SCREEN_X);
+		int h = wxSystemSettings::GetMetric(wxSYS_SCREEN_Y);
+		helpw->Move(w/2,0); helpw->SetSize(w/2,h); helpw->HideIndexTree();
+		config->Init.pos_x = config->Init.pos_y = 0; config->Init.maximized=false;
+		config->Init.size_x = w/2; config->Init.size_y = h;
 		return;
 	}
 #endif

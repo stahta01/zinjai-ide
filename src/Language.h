@@ -7,8 +7,10 @@
 #ifdef __APPLE__
 extern wxCSConv cscUTF8;
 extern wxCSConv cscMAC;
+#	define _ZZ(text) cscMAC.cWC2MB(cscUTF8.cMB2WC(text))
 #	define LANG(key,text) cscMAC.cWC2MB(cscUTF8.cMB2WC( LANG_MAP(key,text) ))
 #else
+#	define _ZZ(text) text
 #	define LANG(key,text) LANG_MAP(key,text) 
 #endif
 /// Codigos de error para las funciones que administran el archivo y buffer de lenguaje

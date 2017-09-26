@@ -2271,7 +2271,7 @@ void ProjectManager::AnalizeConfig(wxString path, bool exec_comas, wxString ming
 	mxUT::ParameterReplace(linking_extra,"${MINGW_DIR}",mingw_dir);
 	mxUT::ParameterReplace(linking_extra,"${TEMP_DIR}",temp_folder_short);
 	mxUT::ParameterReplace(linking_extra,"${PROJECT_PATH}",project->path);
-	mxUT::ParameterReplace(linking_extra,"${ZINJAI_PATH}",project->path);
+	mxUT::ParameterReplace(linking_extra,"${ZINJAI_DIR}",project->path);
 	// reemplazar subcomandos y agregar extras
 	if (exec_comas)
 		linking_options<<" "<<mxUT::ExecComas(path,linking_extra);

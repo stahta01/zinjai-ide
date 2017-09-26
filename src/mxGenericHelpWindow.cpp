@@ -202,3 +202,8 @@ void mxGenericHelpWindow::SetAlwaysOnTop (bool atop) {
 	wxCommandEvent e2; OnAlwaysOnTop(e2);
 }
 
+void mxGenericHelpWindow::HideIndexTree () {
+	bottomSizer->SetItemMinSize(index_sash,0, 10);
+	bottomSizer->Layout();
+}
+

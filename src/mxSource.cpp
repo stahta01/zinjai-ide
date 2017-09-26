@@ -1886,7 +1886,7 @@ bool mxSource::AddInclude(wxString header, wxString optional_namespace) {
 			insertion_line_number++;
 		}
 	}
-	if (!using_namespace_present && header.Find(".")==wxNOT_FOUND && header.Last()!='\"') {
+	if (!using_namespace_present/* && header.Find(".")==wxNOT_FOUND && header.Last()!='\"'*/) {
 		p = PositionFromLine(insertion_line_number);
 		wxString line = wxString("using namespace ")+optional_namespace+";\n";
 		if (p<=lp)

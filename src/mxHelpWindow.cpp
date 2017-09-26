@@ -32,13 +32,13 @@ mxHelpWindow::mxHelpWindow(wxString file) : mxGenericHelpWindow(LANG(HELPW_CAPTI
 				i++;
 			if (i!=0 && str.Len()>i+3) {
 				if (i==tabs) {
-					node=tree->AppendItem(tree->GetItemParent(node),str.Mid(i+2).AfterFirst(' '),str[i]-'0');
+					node=tree->AppendItem(tree->GetItemParent(node),_ZZ(str.Mid(i+2).AfterFirst(' ')),str[i]-'0');
 				} else if (i>tabs) {
-					node=tree->AppendItem(node,str.Mid(i+2).AfterFirst(' '),str[i]-'0');
+					node=tree->AppendItem(node,_ZZ(str.Mid(i+2).AfterFirst(' ')),str[i]-'0');
 				} else {
 					for (unsigned int j=0;j<tabs-i;j++)
 						node=tree->GetItemParent(node);
-					node=tree->AppendItem(tree->GetItemParent(node),str.Mid(i+2).AfterFirst(' '),str[i]-'0');
+					node=tree->AppendItem(tree->GetItemParent(node),_ZZ(str.Mid(i+2).AfterFirst(' ')),str[i]-'0');
 				}
 				items[str.Mid(i+2).BeforeFirst(' ')]=node;
 				tabs=i;
@@ -193,7 +193,7 @@ bool mxHelpWindow::OnLink (wxString href) {
 						"ZinjaI - download and install GDB",
 						"sh src_extras/mac-compile_gdb.sh"));
 		} else if (action=="keychain_access") {
-			wxExecute("\"/Applications/Utilities/Keychain Access.app/Content/MacOS/Keychain Access\"");
+			wxExecute("\"/Applications/Utilities/Keychain Access.app/Contents/MacOS/Keychain Access\"");
 		}
 #endif
 	} else if (href.StartsWith("foropen:")) {
