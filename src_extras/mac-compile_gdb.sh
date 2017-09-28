@@ -6,12 +6,20 @@ cd .zinjai
 export GDBVER=8.0
 
 
+echo "CURRENT SHELL: $SHELL" > "$LOGFILE"
+
 function zsdo { 
-	echo "LA SIGUIENTE OPERACION PUEDE REQUERIR AUTENTICACION / THE FOLLOWING OPERATION COULD REQUIERE AUTHENTICATION" 
-	echo "RUNNING: \"sudo $1\""
-        echo ">>> sudo $1" >> "$LOGFILE"
-	sudo $1 2>> "$LOGFILE"
+	echo "LA SIGUIENTE OPERACION PUEDE REQUERIR AUTENTICACION / THE FOLLOWING OPERATION MAY REQUIERE AUTHENTICATION" 
+	echo "RUNNING: \"sudo" "$@""\""
+        echo ">>> sudo" "$@" >> "$LOGFILE"
+	sudo "$@" 2>> "$LOGFILE"
 	echo ""; echo "" >> "$LOGFILE"
+}
+
+function zqdo { 
+        echo ">>> $1" >> "$LOGFILE"
+	"$@" 2>> "$LOGFILE"
+	echo "" >> "$LOGFILE"
 }
 
 function zdo { 
@@ -44,20 +52,35 @@ if ! [ "$GDBVER" = "$(cat gdb.version)" ]; then
 	zdo_ni 7 "GOING BACK TO ZINJAI'S DIRECTORY" "VOLVIENDO AL DIRECTORIO DE ZINJAI" "cd .."
 	echo $GDBVER > gdb.version
 	zdo 8 "CLEANING TEMPORARY FILES" "BORRANDO ARCHIVOS TEMPORALES" "rm -rf gdb-$GDBVER.tar.gz gdb-$GDBVER"
+else
+	echo "GDB ALREADY PRESENT: $(cat gdb.version)" >> "$LOGFILE"
+	echo ""    
 fi
+echo -e \\033[2J\\033[H
+echo "BUILDING COMPLETE / COMPILACION FINALIZADA" 
 echo " "
-echo "PRESIONE ENTER CUANDO EL CERTIFICADO ESTE EN EL ESCRITORIO" 
+echo " "
 echo "PRESS RETURN WHEN THE CERTIFICATE IS ON THE DESKTOP"
+echo "PRESIONE ENTER CUANDO EL CERTIFICADO ESTE EN EL ESCRITORIO" 
+read x
 echo ""
-zsdo "security add-trust -d -r trustRoot -p basic -p codeSign -k /Library/Keychains/System.keychain ~/Desktop/zinjai.cer"
-rm -f ~/Desktop/zinjai.cer
+zsdo security add-trust -d -r trustRoot -p basic -p codeSign -k /Library/Keychains/System.keychain "$HOME/Desktop/zinjai-gdb.cer"
+zqdo rm -f "$HOME/Desktop/zinjai-gdb.cer"
+
+echo " "
+echo "PRESS RETURN WHEN THE CERTIFICATE IS IN LOGIN AGAIN"
+echo "PRESIONE ENTER CUANDO EL CERTIFICADO ESTE NUEVAMENTE EN INICIO DE SESION" 
 read x
-echo "PRESIONE ENTER CUANDO EL CERTIFICADO ESTE LISTO" 
-echo "PRESS RETURN WHEN THE CERTIFICATE IS READY"
-read x
+echo ""
 zdo 10 "APLYING CERTIFICATE TO GDB" "APLICANDO EL CERTIFICADO A GDB" "codesign -s zinjai-gdb -f gdb.bin"
 echo ""
-echo "INTENTANDO REINICIAR EL SISTEMA DE LLAVES / TRYING TO RESTART KEYCHAINS SYSTEM"
+echo ""
+echo "TRYING TO RESTART TASKGATED SERVICE / INTENTANDO REINICIAR EL SERVICIO TASKGATED "
+echo ""
 zsdo "killall taskgated"
 echo ""
-echo "YOU CAN CLOSE THIS WINDOW NOW / YA PUEDE CERRAR ESTA VENTANA"
+echo ""
+echo -e \\033[2J\\033[H
+echo "PROCESS FINISHED. YOU CAN CLOSE THIS WINDOW NOW."
+echo "PROCESO FINALIZADO. YA PUEDE CERRAR ESTA VENTANA."
+echo ""

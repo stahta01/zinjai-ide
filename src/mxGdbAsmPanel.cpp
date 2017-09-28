@@ -45,7 +45,7 @@ void mxGdbAsmPanel::Update ( ) {
 	} else {
 		map<AddressRange,wxString>::iterator it = m_cache.find(AddressRange(addr));
 		if (it==m_cache.end()) { // si es la primera vez que se analiza esa función
-			wxString ans = debug->SendCommand("disassemble /m");
+			wxString ans = debug->SendCommand("disassemble /m").stream;
 			AddressRange range = ParseCode(ans);
 			it = m_cache.insert(pair<AddressRange,wxString>(range,ans)).first;
 		} else { // si ya estaba desensamblada
@@ -71,29 +71,26 @@ mxGdbAsmPanel::AddressRange mxGdbAsmPanel::ParseCode (wxString ans) {
 	do {
 		wxString line = ans.BeforeFirst('\n');
 		ans = ans.AfterFirst('\n');
-		if (line.StartsWith("~")) {
-			// arreglar el formato
-			line = mxUT::UnEscapeString(line.Mid(1));
-			if (line.Last()=='\n') line.RemoveLast();
-			// evitar lineas en blanco
-			if (line.IsEmpty()) continue;
-			// quitar el indicador de la instruccion actual
-			if (line.StartsWith("=>")) { line[0]=' '; line[1]=' '; }
-			// determinar si es linea de código máquina, 
-			bool inner = false;
-			int i1=0, l=line.Len();
-			while(i1<l&&line[i1]==' ')++i1;
-			if (i1+2<l && line[i1]=='0' && line[i1+1]=='x') {
-				// y extrar la dirección para definir el rango de direcciones de la función
-				int i2 = i1; inner = true;
-				while(i2<l&&line[i2]!=' ')++i2;
-				range.m_to = AddressRange::Parse(line.Mid(i1,i2-i1));
-				m_addr_to_line[range.m_to] = m_code->GetLineCount()-1;
-				if (range.m_from==-1) range.m_from = range.m_to;
-			}
-			// mostrar la linea
-			m_code->AppendLine(line,!inner);
+		// arreglar el formato
+		if (line.Last()=='\n') line.RemoveLast();
+		// evitar lineas en blanco
+		if (line.IsEmpty()) continue;
+		// quitar el indicador de la instruccion actual
+		if (line.StartsWith("=>")) { line[0]=' '; line[1]=' '; }
+		// determinar si es linea de código máquina, 
+		bool inner = false;
+		int i1=0, l=line.Len();
+		while(i1<l&&line[i1]==' ')++i1;
+		if (i1+2<l && line[i1]=='0' && line[i1+1]=='x') {
+			// y extrar la dirección para definir el rango de direcciones de la función
+			int i2 = i1; inner = true;
+			while(i2<l&&line[i2]!=' ')++i2;
+			range.m_to = AddressRange::Parse(line.Mid(i1,i2-i1));
+			m_addr_to_line[range.m_to] = m_code->GetLineCount()-1;
+			if (range.m_from==-1) range.m_from = range.m_to;
 		}
+		// mostrar la linea
+		m_code->AppendLine(line,!inner);
 	} while(ans.size());
 	return range;
 }

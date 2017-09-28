@@ -28,15 +28,12 @@ public:
 		if (evt.GetKeyCode()==WXK_TAB) {
 			if (debug->CanTalkToGDB()) {
 				comp_options.Clear();
-				wxString ans = debug->SendCommand("complete ",GetValue());
+				wxString ans = debug->SendCommand("complete ",GetValue()).stream;
 				while (ans.Contains("\n")) {
 					wxString line=ans.BeforeFirst('\n');
 					ans=ans.AfterFirst('\n');
-					if (line.StartsWith("~\"")) {
-						wxString ue=mxUT::UnEscapeString(line.Mid(1));
-						while (ue.Len() && (ue.Last()=='\n'||ue.Last()=='\r')) ue.RemoveLast();
-						comp_options.Add(ue);
-					}
+					while (line.Len() && (line.Last()=='\n'||line.Last()=='\r')) line.RemoveLast();
+					comp_options.Add(line);
 				}
 				if (!comp_options.GetCount()) return;
 				if (comp_options.GetCount()==1) { SetText(comp_options[0]); return; }
@@ -123,10 +120,9 @@ void mxGdbCommandsPanel::OnInput (wxCommandEvent & event) {
 	wxString cmd=input->GetValue(); input->SetSelection(0,cmd.Len());
 	if (!cmd.Len()) return;
 	output->AppendText(wxString("> ")+cmd+"\n");
-	wxString ans = debug->SendCommand(cmd);
-	ProcessAnswer(ans);
+	ProcessAnswer(debug->SendCommand(cmd).full);
 }
-void mxGdbCommandsPanel::ProcessAnswer(wxString &ans) {
+void mxGdbCommandsPanel::ProcessAnswer(wxString ans) {
 	if (ans.Len() && ans.Last()!='\n') ans<<"\n";
 #ifdef __WIN32__
 	ans.Replace("\r","");
@@ -137,9 +133,9 @@ void mxGdbCommandsPanel::ProcessAnswer(wxString &ans) {
 		wxString line=ans.BeforeFirst('\n');
 		ans=ans.AfterFirst('\n');
 		if (line.StartsWith("~")) {
-			reg_msg<<mxUT::UnEscapeString(line.Mid(1));
+			reg_msg<<mxUT::UnEscapeString(line,true);
 		} else if (line.StartsWith("&")) {
-			wxString ue=mxUT::UnEscapeString(line.Mid(1));
+			wxString ue=mxUT::UnEscapeString(line,true);
 			if (ue.Len() && ue.Last()=='\n') ue.RemoveLast();
 			mi_msg<<"   & "<<ue<<"\n";
 		} else if (line.StartsWith("^")) {
@@ -158,8 +154,7 @@ void mxGdbCommandsPanel::ProcessAnswer(wxString &ans) {
 	}
 	output->AppendText(reg_msg+mi_msg);
 	if (mi_msg.Contains("   ^ running\n")) {
-		ans = debug->HowDoesItRuns(false); // cuando el usuario pone a ejecutar por su cuenta
-		ProcessAnswer(ans);
+		ProcessAnswer(debug->HowDoesItRuns(false)); // cuando el usuario pone a ejecutar por su cuenta
 	}
 }
 

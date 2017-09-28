@@ -1903,14 +1903,18 @@ bool mxSource::AddInclude(wxString header, wxString optional_namespace) {
 		StartStyling(0,wxSTC_INDICS_MASK);
 		SetStyling(GetLength(),0);
 		StartStyling(lse,0x1F);
+		wxString baloon_message;
 		if (!header_present) {
 			if (uncomment_line)
-				ShowBaloon(LANG2(SOURCE_UNCOMMENTED_FOR_HEADER,"Descomentada linea <{1}>: \"#include <{2}>\".",wxString()<<uncomment_line,oHeader));
+				baloon_message = LANG2(SOURCE_UNCOMMENTED_FOR_HEADER,"Descomentada linea <{1}>: \"#include <{2}>\".",wxString()<<uncomment_line,oHeader);
 			else
-				ShowBaloon(LANG1(SOURCE_ADDED_HEADER,"Cabecera agregada: <{1}>.",oHeader));
-		} else {
-			ShowBaloon(LANG1(SOURCE_ADDED_USING_NAMESPACE,"Agregado \"using namespace <{1}>;\"",optional_namespace));
+				baloon_message = LANG1(SOURCE_ADDED_HEADER,"Cabecera agregada: <{1}>.",oHeader);
+		} 
+		if (!using_namespace_present) {
+			if (!baloon_message.IsEmpty()) baloon_message += "\n";
+			baloon_message += LANG1(SOURCE_ADDED_USING_NAMESPACE,"Agregado \"using namespace <{1}>;\"",optional_namespace);
 		}
+		ShowBaloon(baloon_message);
 		return true;
 	} else {
 		ShowBaloon(wxString(LANG(SOURCE_HEADER_WAS_ALREADY,"Sin cambios, ya estaba la cabecera "))<<oHeader);

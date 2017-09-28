@@ -59,7 +59,7 @@ void er_sigsev(int sig) {
 	if (debug) {
 		ERR_REC_LOG_NORM(debug->status);
 		ERR_REC_LOG_NORM(debug->last_command);
-		ERR_REC_LOG_NORM(debug->last_answer);
+		ERR_REC_LOG_NORM(debug->last_answer.full);
 		ERR_REC_LOG_BOOL(debug->debugging);
 		ERR_REC_LOG_BOOL(debug->waiting);
 		ERR_REC_LOG_BOOL(debug->running);

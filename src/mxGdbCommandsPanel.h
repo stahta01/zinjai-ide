@@ -16,7 +16,7 @@ public:
 	void OnInput(wxCommandEvent &event);
 	void SetFocusToInput();
 	mxGdbCommandsPanel();
-	void ProcessAnswer(wxString &ans);
+	void ProcessAnswer(wxString ans);
 	void PrintMessage(const wxString &str);
 	
 	virtual void OnDebugStart() override { PrintMessage("gdb started"); }

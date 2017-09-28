@@ -77,16 +77,11 @@ END_EVENT_TABLE()
 void mxInspectionGridCellEditorControl::Autocomplete() {
 	if (GetValue().IsEmpty()) return;
 	if (!debug->CanTalkToGDB()) return;
+	wxString ans = debug->SendCommand("complete p ",GetValue()).stream;
 	comp_options.Clear(); 
-	wxString ans = debug->SendCommand("complete p ",GetValue());
 	while (ans.Contains("\n")) {
-		wxString line=ans.BeforeFirst('\n');
-		ans=ans.AfterFirst('\n');
-		if (line.StartsWith("~\"")) {
-			wxString ue=mxUT::UnEscapeString(line.Mid(1));
-			while (ue.Len() && (ue.Last()=='\n'||ue.Last()=='\r')) ue.RemoveLast();
-			comp_options.Add(ue.Mid(2));
-		}
+		comp_options.Add(ans.BeforeFirst('\n').Mid(2));
+		ans = ans.AfterFirst('\n');
 	}
 	if (!comp_options.GetCount()) return;
 	if (comp_options.GetCount()==1) { SetText(comp_options[0]); return; }

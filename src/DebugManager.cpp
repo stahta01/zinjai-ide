@@ -218,12 +218,14 @@ bool DebugManager::Start(wxString workdir, wxString exe, wxString args, bool sho
 	}
 #endif
 	
+	if (g_zinjai_debug_mode) wxMessageBox(wxString("Debug starting: ")+command);
 	pid = wxExecute(command,wxEXEC_ASYNC,process);
+	if (g_zinjai_debug_mode) wxMessageBox(wxString("PID: ")<<pid);
 	if (pid>0) {
 		input = process->GetInputStream();
 		output = process->GetOutputStream();
-		wxString hello = WaitAnswer();
-		if (hello.Find(_T("no debugging symbols found"))!=wxNOT_FOUND) {
+		GDBAnswer &hello = WaitAnswer();
+		if (hello.stream.Find("no debugging symbols found")!=wxNOT_FOUND) {
 			mxMessageDialog(main_window,LANG(DEBUG_NO_SYMBOLS,""
 											 "El ejecutable que se intenta depurar no contiene informacion de depuracion.\n"
 											 "Compruebe que en las opciones de depuracion este activada la informacion de\n"
@@ -241,7 +243,7 @@ bool DebugManager::Start(wxString workdir, wxString exe, wxString args, bool sho
 #ifdef __WIN32__
 		SendCommand(_T("-gdb-set new-console on"));
 #endif
-		if (args.Len()) cerr<<SendCommand("set args ",args);
+		if (args.Len()) SendCommand("set args ",args);
 //		SendCommand(_T(BACKTRACE_MACRO));
 		SendCommand(wxString(_T("-environment-cd "))<<mxUT::EscapeString(workdir,true));
 		main_window->PrepareGuiForDebugging(gui_is_prepared=true);
@@ -282,8 +284,7 @@ void DebugManager::ResetDebuggingStuff() {
 	// setear en -1 todos los ids de los pts de todos interrupcion, para evitar confusiones con depuraciones anteriores
 	GlobalListIterator<BreakPointInfo*> bpi=BreakPointInfo::GetGlobalIterator();
 	while (bpi.IsValid()) { bpi->gdb_id=-1; bpi.Next(); }
-	buffer[0]=buffer[1]=buffer[2]=buffer[3]=buffer[4]=buffer[5]=' ';
-	buffer[6]='\0';
+	m_gdb_buffer.Reset();
 	debugging = true;
 	child_pid = pid = 0;
 	input = nullptr;
@@ -321,8 +322,8 @@ bool DebugManager::SpecialStart(mxSource *source, const wxString &gdb_command, c
 	if (pid>0) {
 		input = process->GetInputStream();
 		output = process->GetOutputStream();
-		wxString hello = WaitAnswer();
-		if (hello.Find("no debugging symbols found")!=wxNOT_FOUND) {
+		GDBAnswer &hello = WaitAnswer();
+		if (hello.stream.Find("no debugging symbols found")!=wxNOT_FOUND) {
 			mxMessageDialog(main_window,LANG(DEBUG_NO_SYMBOLS,""
 											 "El ejecutable que se intenta depurar no contiene informacion de depuracion.\n"
 											 "Compruebe que en las opciones de depuracion este activada la informacion de\n"
@@ -339,14 +340,14 @@ bool DebugManager::SpecialStart(mxSource *source, const wxString &gdb_command, c
 //		SendCommand(_T(BACKTRACE_MACRO));
 		main_window->PrepareGuiForDebugging(gui_is_prepared=true);
 		// mostrar el backtrace y marcar el punto donde corto
-		wxString ans = SendCommand(gdb_command);
-		if (ans.Contains("^error,")) {
-			mxMessageDialog(main_window,wxString(LANG(DEBUG_SPECIAL_START_FAILED,"Ha ocurrido un error al iniciar la depuración:"))+debug->GetValueFromAns(ans,"msg",true,true))
+		GDBAnswer &ans = SendCommand(gdb_command);
+		if (ans.result.StartsWith("^error,")) {
+			mxMessageDialog(main_window,wxString(LANG(DEBUG_SPECIAL_START_FAILED,"Ha ocurrido un error al iniciar la depuración:"))+debug->GetValueFromAns(ans.result,"msg",true,true))
 				.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
 			main_window->SetCompilingStatus(LANG(DEBUG_STATUS_INIT_ERROR,"Error al iniciar depuracion"));
 			Stop(); return false;
 		}
-		while (!ans.Contains("*stopped")) ans=WaitAnswer();
+		while (!ans.async.Contains("*stopped")) /*ans=*/WaitAnswer(); /*WaitAnswer siempre pone el resultado en DebuggerInspection::last_answer*/
 		SetStateText(status_message);
 		UpdateBacktrace(true,true);
 		DebuggerInspection::OnDebugPause();
@@ -413,7 +414,7 @@ bool DebugManager::LoadCoreDump(wxString core_file, mxSource *source) {
 	if (pid>0) {
 		input = process->GetInputStream();
 		output = process->GetOutputStream();
-		wxString hello = WaitAnswer();
+		/*wxString hello =*/ WaitAnswer();
 		/// @todo: el mensaje puede aparecer por las bibliotecas, ver como diferenciar
 //		if (hello.Find(_T("no debugging symbols found"))!=wxNOT_FOUND) {
 //			mxMessageDialog(main_window,LANG(DEBUG_NO_SYMBOLS,"El ejecutable que se intenta depurar no contiene informacion de depuracion.\nCompruebe que en las opciones de depuracion que este activada la informacion de depuracion,\nverifique que no este seleccionada la opcion \"stripear el ejecutable\" en las opciones de enlazado,\n y recompile el proyecto si es necesario (Ejecucion->Limpiar y luego Ejecucion->Compilar).")).Title(LANG(GENERAL_ERROR,"Error").IconError().Run();
@@ -480,12 +481,13 @@ bool DebugManager::Stop(bool waitkey) {
 bool DebugManager::Run() {
 	if (waiting || !debugging) return false;
 	running = true;
-	wxString ans = SendCommand(_T("-exec-run"));
-	if (ans.Contains(_T("^running"))) {
+	GDBAnswer &ans = SendCommand(_T("-exec-run"));
+	if (ans.result.StartsWith("^running")) {
 		SetStateText(LANG(DEBUG_STATUS_RUNNING,"Ejecutando..."));
 		HowDoesItRuns(true);
 		return true;
 	} else {
+		if (g_zinjai_debug_mode) wxMessageBox(ans.result);
 		running = false;
 		return false;
 	}
@@ -503,7 +505,7 @@ wxString DebugManager::HowDoesItRuns(bool raise_zinjai_window) {
 	
 	while (true) { // para que vuelva a este punto cuando llega a un break point que no debe detener la ejecucion
 		running = true; 
-		wxString ans = WaitAnswer(); retval+=ans;
+		wxString ans = WaitAnswer().async; retval += last_answer.full;
 		running = false;
 		wxString state_text=LANG(DEBUG_STATUS_UNKNOWN,"Estado desconocido"); 
 		if (!process || status==DBGST_STOPPING) return retval;
@@ -625,7 +627,7 @@ wxString DebugManager::HowDoesItRuns(bool raise_zinjai_window) {
 			bool debug_ends = how=="exited-normally"||how=="exited";
 			if (debug_ends) raise_zinjai_window = false;
 			Stop(
-#ifndef __WIN32__
+#if !defined(__WIN32__) && !defined(__APPLE__)
 				debug_ends&&(wait_for_key_policy==WKEY_ALWAYS||(wait_for_key_policy==WKEY_ON_ERROR&&how=="exited"))
 #endif
 			);
@@ -697,7 +699,7 @@ int DebugManager::SetBreakPoint(BreakPointInfo *_bpi, bool quiet) {
 	if (waiting || !debugging) return 0;
 	wxString adr = GetAddress(_bpi->fname,_bpi->line_number);
 	if (!adr.Len()) { _bpi->SetStatus(BPS_ERROR_SETTING); if (!quiet) ShowBreakPointLocationErrorMessage(_bpi); return -1;  }
-	wxString ans = SendCommand(wxString("-break-insert \"\\\"")<<_bpi->fname<<":"<<_bpi->line_number+1<<"\\\"\"");
+	wxString ans = SendCommand(wxString("-break-insert \"\\\"")<<_bpi->fname<<":"<<_bpi->line_number+1<<"\\\"\"").result;
 	wxString num = GetSubValueFromAns(ans,"bkpt","number",true);
 	if (!num.Len()) { // a veces hay que poner dos barras (//) antes del nombre del archivo en vez de una (en los .h? ¿por que?)
 		wxString file=_bpi->fname;
@@ -705,7 +707,7 @@ int DebugManager::SetBreakPoint(BreakPointInfo *_bpi, bool quiet) {
 		if (p!=wxNOT_FOUND) {
 			wxString file2 = file.Mid(0,p);
 			file2<<'/'<<file.Mid(p);
-			ans = SendCommand(wxString("-break-insert \"")<<file2<<":"<<_bpi->line_number+1<<"\"");
+			ans = SendCommand(wxString("-break-insert \"")<<file2<<":"<<_bpi->line_number+1<<"\"").result;
 			num = GetSubValueFromAns(ans,"bkpt","number",true);
 		}
 	}
@@ -730,7 +732,7 @@ wxString DebugManager::InspectExpression(wxString var, bool full) {
 	if (waiting || !debugging) return "";
 	SetFullOutput(full);
 	if (var.StartsWith(">")) return GetMacroOutput(var.Mid(1));
-	return GetValueFromAns( SendCommand(_T("-data-evaluate-expression "),mxUT::EscapeString(var,true)),_T("value") ,true,true);
+	return GetValueFromAns( SendCommand("-data-evaluate-expression ",mxUT::EscapeString(var,true)).result,"value",true,true);
 }
 
 void DebugManager::SetBacktraceShowsArgs(bool show) {
@@ -745,8 +747,8 @@ bool DebugManager::UpdateBacktrace(bool and_threadlist, bool was_running) {
 	// averiguar las direcciones de cada frame, para saber donde esta cada inspeccion V2 
 	// ya no se usan "direcciones", sino que simplemente se numeran desde el punto de entrada para "arriba"
 	prev_stack = current_stack;
-	if (!GetValueFromAns(SendCommand("-stack-info-depth ",BACKTRACE_SIZE),"depth",true).ToLong(&current_stack.depth)) current_stack.depth=0;
-	current_stack.frames = current_stack.depth>0?SendCommand("-stack-list-frames 0 ",current_stack.depth-1):"";
+	if (!GetValueFromAns(SendCommand("-stack-info-depth ",BACKTRACE_SIZE).result,"depth",true).ToLong(&current_stack.depth)) current_stack.depth=0;
+	current_stack.frames = current_stack.depth>0 ? SendCommand("-stack-list-frames 0 ",current_stack.depth-1).result : "";
 	
 	bool retval = UpdateBacktrace(current_stack,true);
 	if (was_running) for(int i=0;i<backtrace_consumers.GetSize();i++) backtrace_consumers[i]->OnBacktraceUpdated(was_running);
@@ -826,7 +828,7 @@ bool DebugManager::UpdateBacktrace(const BTInfo &stack, bool is_current) {
 		} else {
 		
 			debug->SetFullOutput(false);
-			wxString args ,args_list = cant_levels?SendCommand("-stack-list-arguments 1 0 ",cant_levels-1):"";
+			wxString args ,args_list = cant_levels ? SendCommand("-stack-list-arguments 1 0 ",cant_levels-1).result : "";
 			const wxChar * chag = args_list.c_str();
 		//cerr<<"CHAG="<<endl<<chag<<endl<<endl;
 			i=args_list.Find("stack-args=");
@@ -933,24 +935,24 @@ bool DebugManager::UpdateBacktrace(const BTInfo &stack, bool is_current) {
 void DebugManager::StepIn() {
 	if (waiting || !debugging) return;
 	stepping_in = true; running = true;
-	wxString ans = SendCommand(step_by_asm_instruction?"-exec-step-instruction":"-exec-step");
-	if (ans.Mid(1,7)="running") HowDoesItRuns();
+	GDBAnswer &ans = SendCommand(step_by_asm_instruction?"-exec-step-instruction":"-exec-step");
+	if (ans.result.StartsWith("^running")) HowDoesItRuns();
 	else running = false;
 }
 
 void DebugManager::StepOut() {
 	if (waiting || !debugging) return;
 	running = true;
-	wxString ans = SendCommand("-exec-finish");
-	if (ans.Mid(1,7)="running") HowDoesItRuns();
+	GDBAnswer &ans = SendCommand("-exec-finish");
+	if (ans.result.StartsWith("^running")) HowDoesItRuns();
 	else running = false;
 }
 
 void DebugManager::StepOver() {
 	if (waiting || !debugging) return;
 	stepping_in = false; running = true;
-	wxString ans = SendCommand(step_by_asm_instruction?"-exec-next-instruction":"-exec-next");
-	if (ans.Mid(1,7)="running")	HowDoesItRuns();
+	GDBAnswer &ans = SendCommand(step_by_asm_instruction?"-exec-next-instruction":"-exec-next");
+	if (ans.result.StartsWith("^running")) HowDoesItRuns();
 	else running = false;
 }
 
@@ -989,7 +991,7 @@ bool DebugManager::FindOutChildPid() {
 	child_pid = winGetChildPid(pid);
 #else
 # ifdef __linux__
-	wxString val= mxUT::UnEscapeString(SendCommand("info proc status"));
+	wxString val = SendCommand("info proc status").stream;
 	int pos = val.Find("Pid:"); 
 	if (pos==wxNOT_FOUND) return false;
 	pos+=4; while (val[pos]==' '||val[pos]=='\t') pos++;
@@ -1018,133 +1020,125 @@ void DebugManager::Continue() {
 	
 	running = true;
 	MarkCurrentPoint();
-	wxString ans = SendCommand("-exec-continue");
-	if (ans.Mid(1,7)=="running") {
+	GDBAnswer &ans = SendCommand("-exec-continue");
+	if (ans.result.Mid(1,7)=="running") {
 		HowDoesItRuns(true);
 	} else 
 		running = false;
 }
 
-wxString DebugManager::WaitAnswer() {
-	waiting = true;
-	static wxString ret,warn;
-	ret.Clear(); warn.Clear();
-	int c=6,i,iwarn;
-	bool on_warn=false, first=true;
+DebugManager::GDBAnswer &DebugManager::WaitAnswer() {
+	boolFlagGuard waiting_guard(waiting,true);
+	last_answer.Clear();
 	while (process) {
-		// cortar warnings y otros mensajes del depurador para el usuario
-		while (buffer[c]!='\0') {
-			if (first || buffer[c]=='\r' || buffer[c]=='\n') {
-				if (on_warn) {
-					// si estabamos en un warning (mensaje para el debug_log_panel, o interesante para analizar por el DebugManager)
-					buffer[c]='\0';
-					warn<<buffer+iwarn;
-					if (warn.StartsWith("&\"Error in re-setting breakpoint ")) {
-						long bn=-1;	if (warn.Mid(33).BeforeFirst(':').ToLong(&bn)) {
-							BreakPointInfo *bpi=BreakPointInfo::FindFromNumber(bn,true);
-							if (bpi) bpi->SetStatus(BPS_ERROR_SETTING);
-							if (bpi) ShowBreakPointLocationErrorMessage(bpi);
-						}
-					} else if (warn[0]=='=' || warn.StartsWith("&\"warning:") ) {
-						if (warn[0]=='&') warn=warn.Mid(2,warn.Len()-3);
-						main_window->AddToDebugLog(warn);
-					} 
-					// eliminar el warning del buffer
-					warn.clear(); i=iwarn; c++;
-					while (buffer[c]!='\0')
-						buffer[i++]=buffer[c++];
-					buffer[i]='\0'; c=iwarn;
-				} else {
-					if (!first) c++; else first=false;
-				}
-				if ((on_warn = (buffer[c]=='=' || buffer[c]=='&'))) iwarn=c;
-			} else c++;
+		
+		// try to get some output from gdb
+		if (input->IsOk()) {
+			static char buffer[256];
+			int c = input->Read(buffer,255).LastRead();
+			m_gdb_buffer.Read(buffer,c);
+		} else break; // something went wrong
+		
+		GDBAnsBuffer::LineType type;
+		static wxString line;
+		while ( (type=m_gdb_buffer.GetNextLine(line))!=GDBAnsBuffer::NONE ) {
+			last_answer.full += line; last_answer.full +="\n";
+			_DBG_LOG_CALL(Log(wxString()<<"\n<<< "<<line));
+			switch(type) {
+				case GDBAnsBuffer::LOG_STREAM:
+					if (line.StartsWith("&\"Error in re-setting breakpoint ")) {
+							long bn=-1;	
+							if (line.Mid(33).BeforeFirst(':').ToLong(&bn)) {
+								BreakPointInfo *bpi = BreakPointInfo::FindFromNumber(bn,true);
+								if (bpi) {
+									bpi->SetStatus(BPS_ERROR_SETTING);
+									ShowBreakPointLocationErrorMessage(bpi);
+								}
+							}
+						} 
+					main_window->AddToDebugLog(line);
+				break;
+				
+				case GDBAnsBuffer::TARGET_STREAM:
+				case GDBAnsBuffer::CONSOLE_STREAM:
+					last_answer.stream += mxUT::UnEscapeString(line.Mid(2,line.Len()-3),false);
+				break;
+				
+				case GDBAnsBuffer::NOTIFY_ASYNC:
+					main_window->AddToDebugLog(line);
+				break;
+				case GDBAnsBuffer::EXEC_ASYNC:
+				case GDBAnsBuffer::STATUS_ASYNC:
+					last_answer.async += line;
+				break;
+				
+				case GDBAnsBuffer::RESULT:
+					last_answer.result += line;
+				break;
+				
+				case GDBAnsBuffer::PROMPT:
+					return last_answer; // normal return path
+				
+				default:
+//					last_answer.cli_output += line;
+					;
+			}
 		}
-		if (on_warn) {
-			warn<<buffer+iwarn;
-			buffer[iwarn]='\0';
-		}
-		c=i=6;
-		while (buffer[c]!='\0' && ! ((buffer[c]=='\n' || buffer[c]=='\r') && buffer[c-1]==' ' && buffer[c-2]==')' && buffer[c-3]=='b' && buffer[c-4]=='d' && buffer[c-5]=='g' && buffer[c-6]=='('))
-			c++;
-		if (buffer[c]!='\0') {
-			buffer[c-6]='\0';
-			ret<<buffer+6;
-			while (buffer[c]=='\r' || buffer[c]=='\n')
-				c++;
-			while (buffer[c]!='\0')
-				buffer[i++]=buffer[c++];
-			buffer[i]='\0';
-			_DBG_LOG_CALL(Log(wxString()<<"\n<<< "<<ret));
-			waiting = false;
-			last_answer = ret;
-			return ret;
-		}
-		if(c!=6) {
-			ret<<buffer+6;
-			buffer[5]=buffer[c-1];
-			buffer[4]=buffer[c-2];
-			buffer[3]=buffer[c-3];
-			buffer[2]=buffer[c-4];
-			buffer[1]=buffer[c-5];
-			buffer[0]=buffer[c-6];
-			buffer[6]='\0';
-		}
-		wxDateTime t1=wxDateTime::Now();
+		
+		// wait for gdb to generato more output
+		wxDateTime t1 = wxDateTime::Now();
 		while ( process && ! input->CanRead() && input->IsOk()) {
 			if (running) {
 				g_application->Yield(true);
 				wxMilliSleep(50);
 			} else {
 				wxMilliSleep(10);
-				wxTimeSpan t2=wxDateTime::Now()-t1;
+				wxTimeSpan t2 = wxDateTime::Now()-t1;
 				if (t2.GetSeconds()>30) {
 					if (mxMessageDialog(main_window,"Alguna operación en el depurador está tomando demasiado tiempo, desea interrumpirla?.")
 						.Title("UPS!").IconWarning().ButtonsYesNo().Run().yes ) 
 					{
-						return "";
+						return last_answer.Clear(false);
 					} else {
 						t1=wxDateTime::Now();
 					}
 				}
 			}
 		}
-		if (process && input->IsOk()) 
-			c = input->Read(buffer+6,249).LastRead();
-		else break;
-		buffer[c+6]='\0'; iwarn=c=6;
-		
+			
 	}
-	last_answer = "";
-	return "";
+	// this is not the happy path, something went wrong
+	last_answer.full += "<<<truncated output>>>";
+	last_answer.is_ok = false;
+	return last_answer;
 }
 
-wxString DebugManager::SendCommand(wxString command) {
+DebugManager::GDBAnswer &DebugManager::SendCommand(wxString command) {
 	waiting = true;
 	_DBG_LOG_CALL(Log(wxString()<<"\n>>> "<<command));
-	if (!process) return "";
-	last_command=command;
+	if (!process) return last_answer.Clear(false);
+	last_command = command;
 	output->Write(command.c_str(),command.Len());
 	output->Write("\n",1);
 	return WaitAnswer();
 }
 
-wxString DebugManager::SendCommand(wxString command, int i) {
+DebugManager::GDBAnswer &DebugManager::SendCommand(wxString command, int i) {
 	waiting = true;
 	_DBG_LOG_CALL(Log(wxString()<<"\n>>> "<<command<<i));
-	if (!process) return "";
+	if (!process) return last_answer.Clear(false);
 	command<<i<<"\n";
-	last_command=command;
+	last_command = command;
 	output->Write(command.c_str(),command.Len());
 	return WaitAnswer();
 }
 
-wxString DebugManager::SendCommand(wxString cmd1, wxString cmd2) {
+DebugManager::GDBAnswer &DebugManager::SendCommand(wxString cmd1, wxString cmd2) {
 	waiting = true;
 	_DBG_LOG_CALL(Log(wxString()<<"\n>>> "<<cmd1<<cmd2));
-	if (!process) return "";
+	if (!process) return last_answer.Clear(false);
 	cmd1<<cmd2<<"\n";
-	last_command=cmd1;
+	last_command = cmd1;
 	output->Write(cmd1.c_str(),cmd1.Len());
 	return WaitAnswer();
 }
@@ -1305,7 +1299,7 @@ wxString DebugManager::GetValueFromAns(wxString ans, wxString key, bool crop, bo
 							ret[i+d+1]='\n';
 						else if (ret[i+d+1]<='9' && ret[i+d+1]>='0' && i+3<l && ret[i+d+2]<='9' && ret[i+d+2]>='0' && ret[i+d+3]<='9' && ret[i+d+3]>='0')
 							{ ret[i+d+3]=(ret[i+d+1]-'0')*8*8+(ret[i+d+2]-'0')*8+(ret[i+d+3]-'0'); d+=2; l-=2; }
-						d++; l--;
+						d++; /*l--;*/
 						ret[i]=ret[i+d];
 						i++;
 					} else {
@@ -1314,7 +1308,7 @@ wxString DebugManager::GetValueFromAns(wxString ans, wxString key, bool crop, bo
 						i++;
 					}
 				}
-				return ret.Mid(0,l);
+				return ret.Mid(0,l-d);
 			}
 		}
 	}
@@ -1363,7 +1357,7 @@ wxString DebugManager::GetAddress(wxString fname, int line) {
 		if (fname[i]=='\\') 
 			fname[i]='/';
 #endif
-	wxString ans = SendCommand(wxString("info line \"")<<fname<<":"<<line+1<<"\"");
+	wxString ans = SendCommand(wxString("info line \"")<<fname<<":"<<line+1<<"\"").stream;
 	int r=ans.Find("starts at");
 	if (r!=wxNOT_FOUND) {
 		ans=ans.Mid(r);
@@ -1385,8 +1379,8 @@ bool DebugManager::Jump(wxString fname, int line) {
 	running = true;
 	wxString adr = GetAddress(fname,line);
 	if (adr.Len()) {
-		wxString ans=SendCommand("-gdb-set $pc=",adr);
-		if (ans.SubString(1,5)!="error") {
+		GDBAnswer &ans=SendCommand("-gdb-set $pc=",adr);
+		if (ans.result.StartsWith("^done")) {
 			MarkCurrentPoint(fname,line+1,mxSTC_MARK_EXECPOINT);
 			UpdateBacktrace(false,true);
 			running = false;
@@ -1415,8 +1409,8 @@ bool DebugManager::RunUntil(wxString fname, int line) {
 	running = true;
 	wxString adr = GetAddress(fname,line);
 	if (adr.Len()) {
-		wxString ans = SendCommand("advance *",adr); // aca estaba exec-until pero until solo funciona en un mismo frame, advance se los salta sin problemas
-		if (ans.SubString(1,5)=="error")
+		GDBAnswer &ans = SendCommand("advance *",adr); // aca estaba exec-until pero until solo funciona en un mismo frame, advance se los salta sin problemas
+		if (ans.result.StartsWith("^error"))
 			return false;
 		HowDoesItRuns(); /// @todo: guardar adr para comparar en HowDoesItRuns y saber si realmente llego o no a ese punto (siempre dice que si, aunque termine el programa sin pasar por ahi)
 		running = false;
@@ -1427,14 +1421,14 @@ bool DebugManager::RunUntil(wxString fname, int line) {
 
 bool DebugManager::Return(wxString what) {
 	if (waiting || !debugging) return false;
-	wxString ans = SendCommand(wxString(_T("-exec-return "))<<what);
-	if (ans.SubString(1,4)!="done") 
+	GDBAnswer &ans= SendCommand(wxString("-exec-return ")<<what);
+	if (ans.result.SubString(1,4)!="done") 
 		return false;
 	
-	wxString fname = GetSubValueFromAns(ans,_T("frame"),_T("fullname"),true);
+	wxString fname = GetSubValueFromAns(ans.result,"frame","fullname",true);
 	if (!fname.Len())
-		fname = GetSubValueFromAns(ans,_T("frame"),_T("file"),true);
-	wxString line =  GetSubValueFromAns(ans,_T("frame"),_T("line"),true);
+		fname = GetSubValueFromAns(ans.result,"frame","file",true);
+	wxString line =  GetSubValueFromAns(ans.result,"frame","line",true);
 	long fline = -1;
 	line.ToLong(&fline);
 	MarkCurrentPoint(fname,fline,mxSTC_MARK_EXECPOINT);
@@ -1515,13 +1509,13 @@ wxString DebugManager::GetNextItem(wxString &ans, int &from) {
 bool DebugManager::SelectFrame(long frame_id, long frame_level) {
 	if (frame_level==-1) frame_level = GetFrameLevel(frame_id); 
 	else if (frame_id==-1) frame_id = GetFrameID(frame_level); 
-	wxString ans = SendCommand("-stack-select-frame ",frame_level);
-	if (ans.Mid(1,4)=="done") { current_frame_id = frame_id; return true; }
+	GDBAnswer &ans = SendCommand("-stack-select-frame ",frame_level);
+	if (ans.result.StartsWith("^done")) { current_frame_id = frame_id; return true; }
 	else return false;
 }
 
 bool DebugManager::DoThat(wxString what) {
-	wxMessageBox(SendCommand(what),what,wxOK,main_window);
+	wxMessageBox(SendCommand(what).full,what,wxOK,main_window);
 	return true;
 }
 
@@ -1533,49 +1527,49 @@ void DebugManager::PopulateBreakpointsList(mxBreakList *break_list, bool also_wa
 	wxGrid *grid=break_list->grid;
 	if (debug->running) return;
 	grid->ClearGrid();
-	wxString ans=SendCommand(_T("-break-list"));
-	int p=ans.Find(_T("body=["))+6;
+	wxString ans = SendCommand("-break-list").result;
+	int p=ans.Find("body=[")+6;
 	wxString item=GetNextItem(ans,p);
-	while (item.Mid(0,5)==_T("bkpt=")) {
+	while (item.Mid(0,5)=="bkpt=") {
 		item=item.Mid(6); 
-		wxString type=GetValueFromAns(item,_T("type"),true);
-		wxString catch_type=GetValueFromAns(item,_T("catch-type"),true);
+		wxString type=GetValueFromAns(item,"type",true);
+		wxString catch_type=GetValueFromAns(item,"catch-type",true);
 		if (catch_type.IsEmpty() && type=="breakpoint") {
-			long id=-1; GetValueFromAns(item,_T("number"),true).ToLong(&id); 
+			long id=-1; GetValueFromAns(item,"number",true).ToLong(&id); 
 			BreakPointInfo *bpi=BreakPointInfo::FindFromNumber(id,true);
 			int cont=break_list->AppendRow(bpi?bpi->zinjai_id:-1);
-			grid->SetCellValue(cont,BL_COL_TYPE,_T("bkpt"));
-			grid->SetCellValue(cont,BL_COL_HIT,GetValueFromAns(item,_T("times"),true));
-			if (GetValueFromAns(item,_T("enabled"),true)==_T("y")) {
-				if (GetValueFromAns(item,_T("disp"),true)==_T("dis"))
-					grid->SetCellValue(cont,BL_COL_ENABLE,_T("once"));
+			grid->SetCellValue(cont,BL_COL_TYPE,"bkpt");
+			grid->SetCellValue(cont,BL_COL_HIT,GetValueFromAns(item,"times",true));
+			if (GetValueFromAns(item,"enabled",true)=="y") {
+				if (GetValueFromAns(item,"disp",true)=="dis")
+					grid->SetCellValue(cont,BL_COL_ENABLE,"once");
 				else
-					grid->SetCellValue(cont,BL_COL_ENABLE,_T("enabled"));
+					grid->SetCellValue(cont,BL_COL_ENABLE,"enabled");
 			} else
-				grid->SetCellValue(cont,BL_COL_ENABLE,_T("diabled"));
-			wxString fname = GetValueFromAns(item,_T("fullname"),true);
-			if (!fname.Len()) fname = GetValueFromAns(item,_T("file"),true);
-			grid->SetCellValue(cont,BL_COL_WHY,fname + _T(": line ") +GetValueFromAns(item,_T("line"),true));
-			grid->SetCellValue(cont,BL_COL_COND,GetValueFromAns(item,_T("cond"),true));
+				grid->SetCellValue(cont,BL_COL_ENABLE,"diabled");
+			wxString fname = GetValueFromAns(item,"fullname",true);
+			if (!fname.Len()) fname = GetValueFromAns(item,"file",true);
+			grid->SetCellValue(cont,BL_COL_WHY,fname + ": line " +GetValueFromAns(item,"line",true));
+			grid->SetCellValue(cont,BL_COL_COND,GetValueFromAns(item,"cond",true));
 		} else if (also_watchpoints) {
 			if(type.Contains("watchpoint") || !catch_type.IsEmpty()) {
 				int cont=break_list->AppendRow(-1);
 				if (!catch_type.IsEmpty()) {
 					grid->SetCellValue(cont,BL_COL_TYPE,"catch");
 				} else {
-					if (type.Mid(0,3)==_("rea")) {
-						grid->SetCellValue(cont,BL_COL_TYPE,_T("w(l)"));
-					} else if (type.Mid(0,3)==_("acc")) {
-						grid->SetCellValue(cont,BL_COL_TYPE,_T("w(e)"));
+					if (type.Mid(0,3)=="rea") {
+						grid->SetCellValue(cont,BL_COL_TYPE,"w(l)");
+					} else if (type.Mid(0,3)=="acc") {
+						grid->SetCellValue(cont,BL_COL_TYPE,"w(e)");
 					} else /*if (type.Mid(0,3)==_("acc"))*/ {
-						grid->SetCellValue(cont,BL_COL_TYPE,_T("w(l/e)"));
+						grid->SetCellValue(cont,BL_COL_TYPE,"w(l/e)");
 					}
 				}
-				grid->SetCellValue(cont,BL_COL_HIT,GetValueFromAns(item,_T("times"),true));
-				grid->SetCellValue(cont,BL_COL_ENABLE,GetValueFromAns(item,_T("enabled"),true)==_T("y")?_T("enabled"):_T("disabled"));
+				grid->SetCellValue(cont,BL_COL_HIT,GetValueFromAns(item,"times",true));
+				grid->SetCellValue(cont,BL_COL_ENABLE,GetValueFromAns(item,"enabled",true)=="y"?"enabled":"disabled");
 				grid->SetCellValue(cont,BL_COL_WHY,
-								   mxUT::UnEscapeString(GetValueFromAns(item,_T("number"),true)) + ": "
-														+GetValueFromAns(item,_T("what"),true) );
+								   /*mxUT::UnEscapeString(*/GetValueFromAns(item,"number",true/*)*/) + ": "
+														+GetValueFromAns(item,"what",true) );
 			}
 		}
 		item=GetNextItem(ans,p);
@@ -1593,8 +1587,8 @@ void DebugManager::SetBreakPointOptions(int num, int ignore_count) {
 bool DebugManager::SetBreakPointOptions(int num, wxString condition) {
 	wxString cmd("-break-condition ");
 	cmd<<num<<" "<<mxUT::EscapeString(condition);
-	wxString ans = SendCommand(cmd);
-	return ans.Len()>4 && ans.Mid(1,4)=="done";
+	GDBAnswer &ans = SendCommand(cmd);
+	return ans.result.StartsWith("^done");
 }
 
 void DebugManager::SetBreakPointEnable(BreakPointInfo *_bpi) {
@@ -1605,7 +1599,7 @@ void DebugManager::SetBreakPointEnable(BreakPointInfo *_bpi) {
 		cmd<<"disable ";
 	}
 	cmd<<_bpi->gdb_id;
-	wxString ans = SendCommand(cmd);
+	/*wxString ans = */SendCommand(cmd);
 }
 
 
@@ -1662,10 +1656,10 @@ void DebugManager::LiveSetBreakPointEnable(BreakPointInfo *_bpi) {
 
 int DebugManager::GetBreakHitCount(int num) {
 	long l=0;
-	wxString ans = SendCommand(_T("-break-info "),num);
-	int p = ans.Find(_T("times="));
+	GDBAnswer &ans = SendCommand("-break-info ",num);
+	int p = ans.result.Find("times=");
 	if (p==wxNOT_FOUND) return -1;
-	GetValueFromAns(ans.Mid(p),_T("times"),true).ToLong(&l);
+	GetValueFromAns(ans.result.Mid(p),"times",true).ToLong(&l);
 	return l;
 }
 
@@ -1676,61 +1670,50 @@ bool DebugManager::SaveCoreDump(wxString core_file) {
 }
 
 wxString DebugManager::GetMacroOutput(wxString cmd, bool keep_endl) {
-	wxString ans = SendCommand(cmd), ret;
-	int p=0, l=ans.Len(), d;
-	bool comillas=false;
-	while (p<l) {
-		if (ans[p]==126) {
-			p+=2;
-			int s=p;
-			bool ignore=false;
-			while (p<l && (ignore||ans[p]!='\"') ) {
-				if (ignore && ans[p]=='n') {
-					ret<<ans.Mid(s,p-s-1);
-					s=p+1;
-				} else if (!ignore && !comillas && ans[p]=='$') {
-					ret<<ans.Mid(s,p-s);
-					while (p<l && ans[p]!=' ') p++;
-					if (p<l) p++;
-					while (p<l && ans[p]!=' ') p++;
-					s=p+1;
-					continue;
+	GDBAnswer &ans = SendCommand(cmd), ret;
+	if (ans.result.StartsWith("^done")) {
+		wxString stream = ans.stream;
+		if (!keep_endl) stream.Replace("\n","",true);
+		
+		int d=0, l=stream.Len();
+		for(int p=0; p<l;++p) {
+			if(stream[p]=='\''||stream[p]=='\"') {
+				stream[p-d] = stream[p];
+				char c = stream[p++]; 
+				while (p<l && stream[p]!=c) { 
+					stream[p-d]=stream[p];
+					if(stream[p++]=='\\') {
+						stream[p-d]=stream[p];
+						++p; 
+					}
 				}
-				if (!ignore && ans[p]=='\\') ignore=true; 
-				else ignore=false;
-				p++;
+				stream[p-d]=stream[p];
+			} else if(stream[p]=='$') {
+				int p0 = p;
+				while (p<l && stream[p]!=' ') p++; // skip the $number
+				if (p<l) p++; // skip the space
+				while (p<l && stream[p]!=' ') p++; // skip the equal sign
+				// then cames another space
+				d+=p-p0+1;
+			} else {
+				stream[p-d]=stream[p];
 			}
-			ret<<ans.Mid(s,p-s);
-		} else if (ans[p]==94 && ans.Mid(p+1,5)=="error") {
-			int s=p+1;
-			while (p<l && ans[p]!='\n' && ans[p]!='\r') p++;
-			if (ans[p]=='\n' || ans[p]=='\r') p++;
-			return ans.Mid(s,p-s-1);
 		}
-		while (p<l && ans[p]!='\n' && ans[p]!='\r') p++;
-		if (ans[p]=='\n' || ans[p]=='\r')  { if (keep_endl&&ans[p]=='\n') ret<<"\n"; p++; }
-	}
-	p=0; l=ret.Len(); d=0;
-	while (p+d<l) {
-		if (ret[p+d]=='\\') {
-			d++;
-			if (ret[p+d]=='t') ret[p]='\t';
-			else ret[p]=ret[p+d];
-		} else 
-			if (d) ret[p]=ret[p+d];
-		p++;
-	}
-	return d?ret.Mid(0,l-d):ret;
+		if (d) stream=stream.Mid(0,l-d);
+		
+		return stream;
+	} else  
+		return ans.result;
 }
 
 bool DebugManager::EnableInverseExec() {
 	if (recording_for_reverse) {
 		if (inverse_exec) ToggleInverseExec();
-		wxString ans=SendCommand("record stop");
+		/*wxString ans = */SendCommand("record stop");
 		recording_for_reverse=false;
 	} else {
-		wxString ans=SendCommand("record");
-		if (!ans.Contains("error")) {
+		GDBAnswer &ans=SendCommand("record");
+		if (ans.result.StartsWith("^done")) {
 			recording_for_reverse=true;
 			return true;
 		} else 
@@ -1746,8 +1729,8 @@ bool DebugManager::EnableInverseExec() {
 bool DebugManager::ToggleInverseExec() {
 	if (!debugging || waiting) return false;
 	if (recording_for_reverse) {
-		wxString ans=inverse_exec?SendCommand("-gdb-set exec-direction forward"):SendCommand("-gdb-set exec-direction reverse");
-		if (!ans.Contains("error")) inverse_exec=!inverse_exec;
+		GDBAnswer &ans = inverse_exec ? SendCommand("-gdb-set exec-direction forward"):SendCommand("-gdb-set exec-direction reverse");
+		if (ans.result.StartsWith("^done")) inverse_exec=!inverse_exec;
 	} else {
 		mxMessageDialog(main_window,LANG(DEBUG_REVERSE_DISABLED,""
 										 "Solo se puede retroceder la ejecucion hasta el punto en donde la\n"
@@ -1765,7 +1748,7 @@ void DebugManager::UnregisterSource(mxSource *src) {
 }
 
 void DebugManager::UpdateThreads() {
-	wxString ans=SendCommand("-thread-list-ids");
+	wxString ans = SendCommand("-thread-list-ids").result;
 	if (ans.Contains("number-of-threads=\"0\"")) {
 		main_window->threadlist_ctrl->SetData(0,"-",LANG(THREADS_NO_THREADS,"<<No hay hilos>>"),"--","--");
 		main_window->threadlist_ctrl->SetNumber(1);
@@ -1778,7 +1761,7 @@ void DebugManager::UpdateThreads() {
 		while (i!=wxNOT_FOUND) {
 			ans=ans.Mid(i+11);
 			id=ans.BeforeFirst('\"');
-			det = SendCommand("-thread-info ",id);
+			det = SendCommand("-thread-info ",id).result;
 			i = det.Find("threads=");
 			func.Clear();
 			if (i!=wxNOT_FOUND) {
@@ -1809,9 +1792,9 @@ void DebugManager::ThreadListClean() {
 }
 
 bool DebugManager::SelectThread(long thread_id) {
-	wxString ans = SendCommand("-thread-select ",thread_id);
-	if (!ans.StartsWith("^done")) return false;
-	current_thread_id=thread_id; 
+	GDBAnswer &ans = SendCommand("-thread-select ",thread_id);
+	if (!ans.result.StartsWith("^done")) return false;
+	current_thread_id = thread_id; 
 	current_frame_id = GetFrameID(0);
 	return true;
 }
@@ -1857,34 +1840,35 @@ void DebugManager::ShowBreakPointConditionErrorMessage (BreakPointInfo *_bpi) {
 void DebugManager::SendSignal (const wxString & signame) {
 	if (waiting || !debugging || status==DBGST_STOPPING || status==DBGST_WAITINGKEY) return;
 	running = true; MarkCurrentPoint();
-	wxString ans = SendCommand("signal ",signame);
-	if (ans.Contains("^running")) {
+	GDBAnswer &ans = SendCommand("signal ",signame);
+	if (ans.result.StartsWith("^running")) {
 		HowDoesItRuns(true);
 	}
 	running = false;
 }
 
 bool DebugManager::GetSignals(vector<SignalHandlingInfo> & v) {
-	wxString ans; v.clear();
+	wxString info; v.clear();
 	if (debugging) {
 		if (waiting) {
 			mxMessageDialog(main_window,"Debe pausar o detener la ejecución para modificar el comportamiento ante señales.")
 				.Title(LANG(GENERAL_ERROR,"Error")).IconInfo().Run(); 
 			return false;
 		} else {
-			ans = SendCommand("info signals");
-			if (!ans.Contains("^done")) return false;
+			GDBAnswer &ans = SendCommand("info signals");
+			if (!ans.result.StartsWith("^done")) return false;
+			info = ans.full;
 		}
 	} else {
-		ans = mxUT::GetOutput("gdb --interpreter=mi --quiet --batch -ex \"info signal\"",true);
+		info = mxUT::GetOutput("gdb --interpreter=mi --quiet --batch -ex \"info signal\"",true);
 	}
-	while (ans.Contains('\n')) {
-		wxString line=ans.BeforeFirst('\n');
-		ans=ans.AfterFirst('\n');
+	while (info.Contains('\n')) {
+		wxString line=info.BeforeFirst('\n');
+		info=info.AfterFirst('\n');
 		// para saber si esta linea es una señal o no, vemos si empieza con ~"XXX, con XXX mayúsculas 
 		// otras lineas son por ej la cabecera de la tabla (~"Signal...), lineas en blanco /~"\n"), o de ayuda (~"Use...)
 		if (! (line.Len()>4 && line[0]=='~' && line[1]=='\"' && (line[2]>='A'&&line[2]<='Z') && (line[3]>='A'&&line[3]<='Z') && (line[4]>='A'&&line[4]<='Z') ) ) continue;
-		line = mxUT::UnEscapeString(line.Mid(1));
+		line = mxUT::UnEscapeString(line.Mid(1),true);
 		SignalHandlingInfo si;
 		// la primer palabra es el nombre
 		int i=0,i0=0, l=line.Len();
@@ -1925,8 +1909,8 @@ bool DebugManager::SetSignalHandling (SignalHandlingInfo & si, int i) {
 		cmd<<" "<<(si.print?"print":"noprint");
 		cmd<<" "<<(si.stop?"stop":"nostop");
 		cmd<<" "<<(si.pass?"pass":"nopass");
-		wxString ans = SendCommand(cmd);
-		if (!ans.Contains("^done")) return false;
+		GDBAnswer &ans = SendCommand(cmd);
+		if (!ans.result.StartsWith("^done")) return false;
 	}
 	if (i!=-1 && signal_handlers_state) signal_handlers_state[1][i]=si;
 	return true;
@@ -1935,7 +1919,7 @@ bool DebugManager::SetSignalHandling (SignalHandlingInfo & si, int i) {
 void DebugManager::Start_ConfigureGdb ( ) {
 	// averiguar la version de gdb
 	gdb_version = 0;
-	wxString ver=SendCommand("-gdb-version");
+	wxString ver = SendCommand("-gdb-version").stream;
 	unsigned int i=0; 
 	bool have_main_version=false;
 	while (i<ver.Len() && !have_main_version) {
@@ -2005,16 +1989,16 @@ void DebugManager::InvalidatePauseEvent(void *ptr) {
 /// @retval el numero id en gdb si lo agrego, "" si no pudo
 wxString DebugManager::AddWatchPoint (const wxString &expression, bool read, bool write) {
 	if (expression.IsEmpty()) return "";
-	wxString ans = SendCommand("-break-watch ",mxUT::EscapeString(expression));
-	if (!ans.StartsWith("^done")) return "";
-	wxString num = GetSubValueFromAns(ans,"wpt","number",true);
+	GDBAnswer &ans = SendCommand("-break-watch ",mxUT::EscapeString(expression));
+	if (!ans.result.StartsWith("^done")) return "";
+	wxString num = GetSubValueFromAns(ans.result,"wpt","number",true);
 	watchpoints[num] = expression;
 	return num;
 }
 
 bool DebugManager::DeleteWatchPoint (const wxString & num) {
-	wxString ans = SendCommand("-break-delete ",num);
-	return ans.StartsWith("^done");
+	GDBAnswer &ans = SendCommand("-break-delete ",num);
+	return ans.result.StartsWith("^done");
 }
 
 void DebugManager::SetBlacklist (bool clear_first) {

@@ -32,13 +32,13 @@ mxHelpWindow::mxHelpWindow(wxString file) : mxGenericHelpWindow(LANG(HELPW_CAPTI
 				i++;
 			if (i!=0 && str.Len()>i+3) {
 				if (i==tabs) {
-					node=tree->AppendItem(tree->GetItemParent(node),_ZZ(str.Mid(i+2).AfterFirst(' ')),str[i]-'0');
+					node=tree->AppendItem(tree->GetItemParent(node),_ZS(str.Mid(i+2).AfterFirst(' ')),str[i]-'0');
 				} else if (i>tabs) {
-					node=tree->AppendItem(node,_ZZ(str.Mid(i+2).AfterFirst(' ')),str[i]-'0');
+					node=tree->AppendItem(node,_ZS(str.Mid(i+2).AfterFirst(' ')),str[i]-'0');
 				} else {
 					for (unsigned int j=0;j<tabs-i;j++)
 						node=tree->GetItemParent(node);
-					node=tree->AppendItem(tree->GetItemParent(node),_ZZ(str.Mid(i+2).AfterFirst(' ')),str[i]-'0');
+					node=tree->AppendItem(tree->GetItemParent(node),_ZS(str.Mid(i+2).AfterFirst(' ')),str[i]-'0');
 				}
 				items[str.Mid(i+2).BeforeFirst(' ')]=node;
 				tabs=i;
@@ -83,7 +83,7 @@ void mxHelpWindow::OnSearch(wxString value) {
 		if (fname.Find('#')!=wxNOT_FOUND) fname = fname.BeforeFirst('#');
 		if (already_searched.Index(fname)!=wxNOT_FOUND) continue; 
 		else already_searched.Add(fname);
-		wxString result_line = wxString("<!--")<<title<<"--><LI><A href=\""<<it->first<<"\">"<<tree->GetItemText(it->second)<<"</A></LI>";
+		wxString result_line = wxString("<!--")<<_ZS(title)<<"--><LI><A href=\""<<it->first<<"\">"<<_ZW(title)<<"</A></LI>";
 		// ver si coincide en el título del ítem
 		bool title_matches = true;
 		wxString utitle = title.MakeUpper();

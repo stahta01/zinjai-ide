@@ -1,4 +1,4 @@
-#### GDB on Mac OS X
+#### Installing GDB on Mac OS
 
 El depurador por defecto en los sistemas Mac OS modernos es lldb. Sin embargo, *ZinjaI* solo está preparado para interactuar con gdb.
 
@@ -8,7 +8,7 @@ Sin embargo, se requiere firmar digitalmente al ejecutable del depurador para qu
 
 A continuación se describen los pasos necesarios para instalar gdb y firmarlo adecuadamente con la ayuda de *ZinjaI*:
 
- 1. Al iniciar ZinjaI, si el depurador no se encuentra instalado, se generará un mensaje de advertencia informándole tal situación, y se le ofrecerá (mediante un checkbox en el mismo mensaje) la descarga e instalación automática. Si el mensaje no aparece, puede lanzar el proceso nuevamente mediante [este enlace](action:gdb_on_mac).
+ 1. Puede lanzar el proceso nuevamente mediante [este enlace](action:gdb_on_mac) un script en una terminal que intentará descargar y compilar gdb, y lo asistirá en los últimos pasos del proceso de firmado.
  
  2. El script comenzará a descargar y compilar gdb (necesitará conexión a Internet si es la primera vez que lo ejecuta).
  

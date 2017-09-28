@@ -55,7 +55,7 @@ void mxInspectionPrint::OnDIValueChanged (DebuggerInspection * di) {
 	if (val.StartsWith("0x")) { // si es algun tipo de cadena, mostrarla sin comillas ni barras de escape
 		int p = val.Index(' ');
 		if (p!=wxNOT_FOUND && p+1<int(val.Len()) && val[p+1]=='\"') {
-			value->SetValue(mxUT::UnEscapeString(val.AfterFirst(' ')));
+			value->SetValue(mxUT::UnEscapeString(val.AfterFirst(' '),true));
 			return;
 		}
 	}

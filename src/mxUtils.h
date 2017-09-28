@@ -125,7 +125,7 @@ public:
 	
 	static wxString EscapeString(wxString str, bool add_comillas=false);
 	
-	static wxString UnEscapeString(wxString str);
+	static wxString UnEscapeString(wxString str, bool is_quoted);
 	
 	//! Elimina los elementos repetidos de un wxArrayString
 	static void Purgue(wxArrayString &array, bool sort=true);

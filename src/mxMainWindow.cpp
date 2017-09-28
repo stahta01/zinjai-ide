@@ -3342,7 +3342,7 @@ void mxMainWindow::OnDebugDoThat ( wxCommandEvent &event ) {
 	} else if (res=="gdb cmd") {
 		wxMessageBox (debug->last_command);
 	} else if (res=="gdb ans") {
-		wxMessageBox (debug->last_answer);
+		wxMessageBox (debug->last_answer.full);
 	} else if (res=="errorsave") {
 		er_sigsev(11);
 	} else if (res=="wxlog on") {

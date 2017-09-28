@@ -45,11 +45,11 @@ void mxLocalsGrid::Update () {
 	
 	debug->SetFullOutput(false);
 	
-	wxString s = debug->SendCommand(command," --all-values");
-	if (s.StartsWith("^error") && s.Contains("Undefined MI command")) {
+	wxString s = debug->SendCommand(command," --all-values").result;
+	if (s.StartsWith("^error") && s.Contains("Undefined MI command")) { // "^error: Undefined MI command: -foo-bar"
 		// fallback to deprecated command if gdb is old
 		command = "-stack-list-locals";
-		s = debug->SendCommand(command," --all-values");
+		s = debug->SendCommand(command," --all-values").result;
 	}
 	
 	int i = s.Find("name="), c=0;
@@ -69,7 +69,7 @@ void mxLocalsGrid::Update () {
 	if (n>c) DeleteRows(c,n-c);
 	
 	if (mxGrid::IsColumnVisible(LG_COL_TYPE)) {
-		wxString s = debug->SendCommand(command," --simple-values");
+		wxString s = debug->SendCommand(command," --simple-values").result;
 		int i =  s.Find("name="), c=0;
 		while(true) {
 			/*bool add =*/ GdbParse_GetNext(s,i,key,val);

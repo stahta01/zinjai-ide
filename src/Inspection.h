@@ -270,14 +270,15 @@ private:
 		wxString cmd = "-var-create - ";
 		if (IsFrameless()) cmd<<"@ "; else cmd<<"* "; 
 		thread_id=debug->current_thread_id; frame_id=debug->current_frame_id;
-		wxString ans = debug->SendCommand(cmd,mxUT::EscapeString(expression,true));
-		if (ans.Left(5)!="^done") return false;
-		if (debug->GetValueFromAns(ans,"reason",true)!="") { ErrorOnEvaluation(); return false; }
+		DebugManager::GDBAnswer &ans = debug->SendCommand(cmd,mxUT::EscapeString(expression,true));
+		if (!ans.result.StartsWith("^done")) return false;
+		// si falla durante la evaluacion de una expresion, llega "*stopped,reason="...",..."
+		if (debug->GetValueFromAns(ans.async,"reason",true)!="") { ErrorOnEvaluation(); return false; }
 		flags.Set(DIF_IN_SCOPE); // si no existen en el scope actual gdb no la crea, aunque se frameless
-		variable_object = debug->GetValueFromAns(ans,"name",true);
-		value_type = debug->GetValueFromAns(ans,"type",true);
-		gdb_value = debug->GetValueFromAns(ans,"value",true);
-		debug->GetValueFromAns(ans,"numchild",true).ToLong(&num_children);
+		variable_object = debug->GetValueFromAns(ans.result,"name",true);
+		value_type = debug->GetValueFromAns(ans.result,"type",true);
+		gdb_value = debug->GetValueFromAns(ans.result,"value",true,true);
+		debug->GetValueFromAns(ans.result,"numchild",true).ToLong(&num_children);
 		vo2di_map[variable_object] = this;
 		return true;
 	}
@@ -302,14 +303,14 @@ private:
 	
 	void VOEvaluate() {
 		__debug_log_method__;
-		wxString ans = debug->SendCommand(wxString("-var-evaluate-expression "),variable_object);
-		gdb_value = debug->GetValueFromAns(ans,"value",true,true);
+		DebugManager::GDBAnswer &ans = debug->SendCommand(wxString("-var-evaluate-expression "),variable_object);
+		gdb_value = debug->GetValueFromAns(ans.result,"value",true,true);
 	}
 	
 	bool VOAssign(const wxString &new_value) {
 		__debug_log_method__;
-		wxString ans = debug->SendCommand(wxString("-var-assign ")<<variable_object<<" "<<mxUT::EscapeString(new_value,true));
-		return ans.StartsWith("^done");
+		DebugManager::GDBAnswer &ans = debug->SendCommand(wxString("-var-assign ")<<variable_object<<" "<<mxUT::EscapeString(new_value,true));
+		return ans.result.StartsWith("^done");
 	}
 	
 	void DeleteHelper() {
@@ -372,9 +373,9 @@ public:
 	bool AskGDBIfIsEditable() {
 		if (!debug->debugging||debug->waiting) return false;
 		if (dit_type!=DIT_VARIABLE_OBJECT) return false;
-		wxString ans = debug->SendCommand("-var-show-attributes ",variable_object);
-		if (ans.Contains("noneditable")) return false;
-		else return ans.Contains("editable");
+		DebugManager::GDBAnswer &ans = debug->SendCommand("-var-show-attributes ",variable_object);
+		if (ans.result.Contains("noneditable")) return false;
+		else return ans.result.Contains("editable");
 	}
 	
 	void ForceVOUpdate() {
@@ -396,7 +397,7 @@ private:
 			else if (type[i]<'0'||type[i]>'9') break;
 		}
 		wxString mtype = type.Mid(0,pbeg); mtype.Replace("&","",true);
-		while (mtype.Contains("::") && debug->SendCommand(wxString("p (")<<mtype<<"*)0x0").StartsWith("^error")) // gdb seems to simplify some nested typenames and the does not recognize them with their full scoped name
+		while (mtype.Contains("::") && debug->SendCommand(wxString("p (")<<mtype<<"*)0x0").result.StartsWith("^error")) // gdb seems to simplify some nested typenames and the does not recognize them with their full scoped name
 			mtype=mtype.AfterFirst(':').Mid(1);
 		wxString mvalue = gdb_value; // evaluar con un vo algo como "&(p)" puede dar "0xBOO <tipo_de_p>", solo queremos la direccion
 		if (mvalue.StartsWith("0x")&&mvalue.Contains(" ")) mvalue=mvalue.BeforeFirst(' ');

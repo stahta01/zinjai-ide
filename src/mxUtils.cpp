@@ -914,8 +914,9 @@ wxString mxUT::EscapeString(wxString str, bool add_comillas) {
 	return str;
 }
 
-wxString mxUT::UnEscapeString(wxString str) {
-	int i=0, l=str.Len();
+wxString mxUT::UnEscapeString(wxString str, bool is_quoted) {
+	if (is_quoted) str = str.Mid(1,str.Len()-2);
+	int i = 0, l = str.Len();
 	while(i<l) {
 		if (str[i]=='\\') {
 			if (str[i]=='\\' && i+1<l && str[i+1]=='t') str[i+1]='\t';
@@ -923,8 +924,8 @@ wxString mxUT::UnEscapeString(wxString str) {
 			else if (str[i]=='\\' && i+1<l && str[i+1]=='r') str[i+1]='\r';
 			else if (str[i]=='\\' && i+1<l && str[i+1]=='b') str[i+1]='\b';
 			str=str.Mid(0,i)+str.Mid(i+1); l--;
-		} else if (str[i]=='\"' || str[i]=='\'') {
-			str=str.Mid(0,i)+str.Mid(i+1); l--; i--;
+//		} else if (str[i]=='\"' || str[i]=='\'') {
+//			str=str.Mid(0,i)+str.Mid(i+1); l--; i--;
 		}
 		i++;
 	}

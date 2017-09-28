@@ -8,6 +8,7 @@
 #include <map>
 #include "Cpp11.h"
 #include "SingleList.h"
+#include "GDBAnsBuffer.h"
 using namespace std;
 
 #define BACKTRACE_SIZE 100
@@ -129,7 +130,7 @@ private:
 	mxSource *current_source; ///< el fuente en cual se marco la ultima posicion para ejecutar
 	mxSource *notitle_source; ///< el ultimo fuente sin nombre que se le procesaron los breakpoints
 	int current_handle;
-	wxChar buffer[256];
+	GDBAnsBuffer m_gdb_buffer;
 	wxProcess *process;
 	wxOutputStream *output;
 	wxInputStream *input;
@@ -145,11 +146,29 @@ private:
 public:
 	static void Initialize();
 	~DebugManager();
+
 public:
-	wxString SendCommand(wxString command);
-	wxString SendCommand(wxString cmd1,wxString cmd2);
-	wxString SendCommand(wxString command, int i);
-	wxString last_command, last_answer;
+	struct GDBAnswer {
+		bool is_ok;
+		wxString stream;
+		wxString result;
+		wxString async;
+		wxString full;
+		GDBAnswer &Clear(bool ok=true) {
+			is_ok = ok;
+			full.Clear();
+			stream.Clear();
+			async.Clear();
+			result.Clear();
+			return *this;
+		}
+	} last_answer;
+	GDBAnswer& WaitAnswer();
+	wxString last_command;
+	GDBAnswer& SendCommand(wxString command);
+	GDBAnswer& SendCommand(wxString cmd1,wxString cmd2);
+	GDBAnswer& SendCommand(wxString command, int i);
+	
 	bool /*backtrace_visible,*/ threadlist_visible;
 	DEBUG_STATUS status;
 private:
@@ -196,7 +215,6 @@ public:
 	wxString GetValueFromAns(wxString ans, wxString key, bool crop = false, bool fix_slash=false);
 	wxString GetSubValueFromAns(wxString ans, wxString key1, wxString key2, bool crop=false, bool fix_slash=false);
 	wxString InspectExpression(wxString var, bool full=false);
-	wxString WaitAnswer();
 	
 	void SetStepMode(bool asm_mode_on);
 	bool IsAsmStepModeOn();

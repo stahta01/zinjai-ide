@@ -22,7 +22,9 @@ SingleList<myDIGlobalEventHandler*> DebuggerInspection::global_consumers;
 static wxString RemoveEscapeChar(wxString s) {
 	int i=0, l=s.Len();
 	while (i<l) {
-		if (s[i]=='\\') { s.erase(i,1); l--; } 
+		if (s[i]=='\\') {
+			s.erase(i,1); l--; 
+		} 
 		i++;
 	}
 	return s;
@@ -38,7 +40,7 @@ void DebuggerInspection::UpdateAllVO(const wxString &voname) {
 	
 	// consulta cuales vo cambiaron
 	debug->SetFullOutput(false);
-	wxString s = debug->SendCommand("-var-update --all-values ",voname);
+	wxString s = debug->SendCommand("-var-update --all-values ",voname).result;
 	if (!s.StartsWith("^done")) there_was_an_error_evaluating_an_inspecction=true;
 	else for(unsigned int i=6,l=s.Len();i<l-4;i++) { // empieza en 6 porque primero dice algo como "^done,...."
 		if (s[i]=='f' && s[i+1]=='r' && s[i+2]=='a' && s[i+3]=='m' && s[i+4]=='e' && s[i+5]=='=') { // hubo un problema al evaluar una inspección que requería código
@@ -82,7 +84,7 @@ void DebuggerInspection::UpdateAllVO(const wxString &voname) {
 			if (!u.new_num_children.IsEmpty()) { u.new_num_children.ToLong(&di.num_children); new_type=true; } 
 			if (!u.new_type.IsEmpty()) { di.value_type=u.new_type; new_type=true; }
 			if (di.flags.Get(DIF_IN_SCOPE)!=in_scope) { di.flags.Set(DIF_IN_SCOPE,in_scope); new_scope=true; }
-			if (in_scope && (new_type || !di.helper)) di.gdb_value=/*RemoveEscapeChar(*/u.value/*)*/;
+			if (in_scope && (new_type || !di.helper)) di.gdb_value=mxUT::UnEscapeString(u.value,false);
 			
 			if (di.dit_type==DIT_VARIABLE_OBJECT) {
 				if (in_scope) {
@@ -133,7 +135,7 @@ bool DebuggerInspection::Break(SingleList<DebuggerInspection*> &children, bool s
 	bool is_array = IsArray(); wxString base_pre = is_array?"[":".", base_post=is_array?"]":"";
 	
 	// crear y obtener vos hijos
-	wxString s = debug->SendCommand("-var-list-children ",variable_object);
+	wxString s = debug->SendCommand("-var-list-children ",variable_object).result;
 	struct child { wxString name,exp,type; long num_children; child():num_children(0){} };
 	for(unsigned int i=6,l=s.Len();i<l-4;i++) { // empieza en 6 porque primero dice algo como "^done,...."
 		if (s[i]=='n' && s[i+1]=='a' && s[i+2]=='m' && s[i+3]=='e' && s[i+4]=='=') { // por cada "child=" empieza un hijo...
@@ -399,6 +401,6 @@ wxString DebuggerInspection::RewriteExpressionForBreaking(wxString main_expr) {
 }
 
 wxString DebuggerInspection::GetValue ( ) const {
-	return RemoveEscapeChar(gdb_value);
+	return /*RemoveEscapeChar(*/gdb_value/*)*/;
 }
 

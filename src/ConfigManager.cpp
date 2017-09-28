@@ -1184,9 +1184,9 @@ void ConfigManager::TryToInstallWithAptGet (wxWindow * parent, const wxString & 
 		mxHelpWindow *helpw = mxHelpWindow::ShowHelp("gdb_on_mac.html");
 		helpw->SetAlwaysOnTop(true); // esto parece no funcionar, por eso el reacomodo que sigue
 		int w = wxSystemSettings::GetMetric(wxSYS_SCREEN_X);
-		int h = wxSystemSettings::GetMetric(wxSYS_SCREEN_Y);
-		helpw->Move(w/2,0); helpw->SetSize(w/2,h); helpw->HideIndexTree();
-		config->Init.pos_x = config->Init.pos_y = 0; config->Init.maximized=false;
+		int h = wxSystemSettings::GetMetric(wxSYS_SCREEN_Y)-120;
+		helpw->Move(w/2,50); helpw->SetSize(w/2,h); helpw->HideIndexTree();
+		config->Init.pos_x = config->Init.pos_y = 50; config->Init.maximized=false;
 		config->Init.size_x = w/2; config->Init.size_y = h;
 		return;
 	}

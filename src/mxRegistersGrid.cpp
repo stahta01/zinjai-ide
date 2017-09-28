@@ -24,22 +24,10 @@ struct BatchGuard {
 	
 };
 
-wxString GetRegularGdbOutput(wxString s) {
-	int l=s.Len(), i0=0, i1=0;
-	wxString ret;
-	do {
-		while(i1<l && s[i1]!='\n') i1++;
-		if (s[i0++]=='~') ret+=mxUT::UnEscapeString(s.Mid(i0,i1-i0));
-		i0=++i1;
-	} while (i1<l);
-	return ret;
-}
-
 void mxRegistersGrid::Update ( ) {
 	BatchGuard batch_guard(this);
-	wxString s = debug->SendCommand(all_registers?"info all-registers":"info registers") + "\n";
+	wxString s = debug->SendCommand(all_registers?"info all-registers":"info registers").stream + "\n";
 	int num_rows = GetNumberRows();
-	s = GetRegularGdbOutput(s);
 	int p0=0, pi=0, l=s.Len(), n=0;
 	while (pi!=wxNOT_FOUND) {
 		while (pi<l && s[pi]!='\n') pi++;
