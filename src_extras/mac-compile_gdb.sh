@@ -77,7 +77,7 @@ echo ""
 echo ""
 echo "TRYING TO RESTART TASKGATED SERVICE / INTENTANDO REINICIAR EL SERVICIO TASKGATED "
 echo ""
-zsdo "killall taskgated"
+zsdo killall taskgated
 echo ""
 echo ""
 echo -e \\033[2J\\033[H

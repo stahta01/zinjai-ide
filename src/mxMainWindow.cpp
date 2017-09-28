@@ -3312,8 +3312,7 @@ void mxMainWindow::OnDebugDoThat ( wxCommandEvent &event ) {
 				wxTextCtrl *ctrl;
 				mxDbgLogWin() { 
 					ctrl = new wxTextCtrl(main_window,wxID_ANY,"",wxDefaultPosition,wxDefaultSize,wxTE_MULTILINE);
-					main_window->m_aui->AddPane(ctrl,wxAuiPaneInfo().Float().CloseButton(true).MaximizeButton(true).Resizable(true).Caption("Debug Log").Show());
-					main_window->m_aui->Update();
+					main_window->m_aui->AttachGenericPane(ctrl,"GDB log")->Top().Dock();
 				}
 				~mxDbgLogWin() { main_window->m_aui->DetachPane(ctrl); ctrl->Destroy(); }
 				void Open() { ctrl->Clear(); }

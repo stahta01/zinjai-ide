@@ -189,9 +189,12 @@ bool mxHelpWindow::OnLink (wxString href) {
 	} else if (href.StartsWith("action:")) {
 		wxString action = href.AfterFirst(':');
 		if (action=="gdb_on_mac") {
-			wxExecute(mxUT::GetCommandForRunningInTerminal(
-						"ZinjaI - download and install GDB",
-						"sh src_extras/mac-compile_gdb.sh"));
+			wxString command = mxUT::GetCommandForRunningInTerminal(
+								"ZinjaI - download and install GDB",
+								"sh src_extras/mac-compile_gdb.sh");
+#warning SACAR EL CERR
+			cerr << "About to run: " << command << endl;
+			wxExecute(command);
 		} else if (action=="keychain_access") {
 			wxExecute("\"/Applications/Utilities/Keychain Access.app/Contents/MacOS/Keychain Access\"");
 		}

@@ -163,6 +163,10 @@ public:
 			return *this;
 		}
 	} last_answer;
+private:
+	void ReadGDBOutput();
+	void SendCommandNW(wxString command); ///< does not waits for answare, just writes to output stream
+public:
 	GDBAnswer& WaitAnswer();
 	wxString last_command;
 	GDBAnswer& SendCommand(wxString command);

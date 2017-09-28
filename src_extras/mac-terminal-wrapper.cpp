@@ -12,19 +12,21 @@ int main(int argc, char *argv[]) {
 	if (strncmp(cwd+lcwd-4,"/bin",4)==0) cwd[lcwd-4]='\0';
 	else if (strncmp(cwd+lcwd-5,"/bin/",5)==0) cwd[lcwd-5]='\0';
 	
-	// build a command to run tha auxiliar script
-	strcpy(path,"open ");
+	// build a command to run that auxiliar script
+	strcpy(path,"open -W "); // -W is for this process to wait the launched process, not async
 	strcat(path,getenv("HOME"));
 	strcat(path,"/.zinjai/runner.command");
 	
+	char *fname = path +8;
+	
 	// write the auxiliar script that actually does the job
-	ofstream f(path+5,ios::trunc);
+	ofstream f(fname,ios::trunc); // 8 es el len de "open -W "
 	f<<"echo -e \\\\E]0\\;'Zinjai - Consola de Ejecucion'\\\\a && clear && cd \"";
 	f<<cwd<<"\" &&";
 	for (int i=1;i<argc;i++)
 		f<<" \""<<argv[i]<<"\"";
 	f.close();
-	chmod(path+5,448);
+	chmod(fname,448);
 	
 	// run the command that launch the script
 	system(path);

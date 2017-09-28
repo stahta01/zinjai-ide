@@ -157,7 +157,11 @@ bool DebugManager::Start(wxString workdir, wxString exe, wxString args, bool sho
 		wait_for_key_policy = wait_for_key;
 	//	mxUT::ParameterReplace(tty_cmd,_T("${ZINJAI_DIR}"),wxGetCwd());
 		tty_process = new wxProcess(main_window->GetEventHandler(),mxPROCESS_DEBUG);
+#warning SACAR CERR
+		cerr << "Launching tty process: " << tty_cmd << endl;
 		tty_pid = wxExecute(tty_cmd,wxEXEC_ASYNC,tty_process);
+#warning SACAR CERR
+		cerr << "tty_pid=" << tty_pid << endl;
 	} else {
 		tty_pid=0; tty_process=nullptr;
 	}
@@ -284,6 +288,7 @@ void DebugManager::ResetDebuggingStuff() {
 	// setear en -1 todos los ids de los pts de todos interrupcion, para evitar confusiones con depuraciones anteriores
 	GlobalListIterator<BreakPointInfo*> bpi=BreakPointInfo::GetGlobalIterator();
 	while (bpi.IsValid()) { bpi->gdb_id=-1; bpi.Next(); }
+	_DBG_LOG_CALL(Log("\n<<<NEW SESSION>>>\n"));
 	m_gdb_buffer.Reset();
 	debugging = true;
 	child_pid = pid = 0;
@@ -342,6 +347,8 @@ bool DebugManager::SpecialStart(mxSource *source, const wxString &gdb_command, c
 		// mostrar el backtrace y marcar el punto donde corto
 		GDBAnswer &ans = SendCommand(gdb_command);
 		if (ans.result.StartsWith("^error,")) {
+#warning SACAR EL CERR
+			cerr << "ans=^error" << endl;
 			mxMessageDialog(main_window,wxString(LANG(DEBUG_SPECIAL_START_FAILED,"Ha ocurrido un error al iniciar la depuración:"))+debug->GetValueFromAns(ans.result,"msg",true,true))
 				.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
 			main_window->SetCompilingStatus(LANG(DEBUG_STATUS_INIT_ERROR,"Error al iniciar depuracion"));
@@ -445,11 +452,19 @@ bool DebugManager::LoadCoreDump(wxString core_file, mxSource *source) {
 
 bool DebugManager::Stop(bool waitkey) {
 #ifndef __WIN32__
-	if (status==DBGST_WAITINGKEY) { process->Kill(tty_pid,wxSIGKILL); status=DBGST_STOPPING; return false; }
+	if (status==DBGST_WAITINGKEY) {
+#warning SACAR EL CERR
+		cerr << "Enviando SIGKILL a tty_pid: " << tty_pid << endl;
+		process->Kill(tty_pid,wxSIGKILL); 
+		status=DBGST_STOPPING; 
+		return false; 
+	}
 #endif
 	if (status==DBGST_STOPPING) return false; else status=DBGST_STOPPING;
 	if (waiting || !debugging) {
 #if defined(__APPLE__) || defined(__WIN32__)
+#warning SACAR EL CERR
+		cerr << "Enviando SIGKILL a pid: " << pid << endl;
 		process->Kill(pid,wxSIGKILL);
 		return false;
 #else
@@ -460,6 +475,7 @@ bool DebugManager::Stop(bool waitkey) {
 	if (pid) {
 		last_command=_T("-gdb-exit\n");
 #ifndef __WIN32__
+#warning VER DE MOSTRAR EL CODIGO DE SALIDA QUE DA GDB (buscar exit-code)
 		if (waitkey && !tty_dev.IsEmpty()) {
 			wxString cmd; 
 			status = DBGST_WAITINGKEY; // to be able to kill it with Stop button
@@ -468,12 +484,12 @@ bool DebugManager::Stop(bool waitkey) {
 				<< mxUT::Quotize(config->Files.runner_command)
 				<< " -lang \"" << config->Init.language_file << "\""
 				<< " -debug-end <> " 
-				<< tty_dev << " >&0 2>&1\n";
-			output->Write(cmd.c_str(),cmd.Len());
+				<< tty_dev << " >&0 2>&1";
+			SendCommandNW(cmd);
 		}
 #endif
-		output->Write("-exec-abort\n",12);
-		output->Write("-gdb-exit\n",10);
+		SendCommandNW("-exec-abort");
+		SendCommandNW("-gdb-exit");
 	}
 	return true;
 }
@@ -481,7 +497,7 @@ bool DebugManager::Stop(bool waitkey) {
 bool DebugManager::Run() {
 	if (waiting || !debugging) return false;
 	running = true;
-	GDBAnswer &ans = SendCommand(_T("-exec-run"));
+	GDBAnswer &ans = SendCommand("-exec-run");
 	if (ans.result.StartsWith("^running")) {
 		SetStateText(LANG(DEBUG_STATUS_RUNNING,"Ejecutando..."));
 		HowDoesItRuns(true);
@@ -627,8 +643,11 @@ wxString DebugManager::HowDoesItRuns(bool raise_zinjai_window) {
 			bool debug_ends = how=="exited-normally"||how=="exited";
 			if (debug_ends) raise_zinjai_window = false;
 			Stop(
-#if !defined(__WIN32__) && !defined(__APPLE__)
-				debug_ends&&(wait_for_key_policy==WKEY_ALWAYS||(wait_for_key_policy==WKEY_ON_ERROR&&how=="exited"))
+#ifndef __WIN32__
+				debug_ends
+#	ifndef __APPLE__
+				&&(wait_for_key_policy==WKEY_ALWAYS||(wait_for_key_policy==WKEY_ON_ERROR&&how=="exited"))
+#	endif
 #endif
 			);
 		}
@@ -975,6 +994,8 @@ void DebugManager::Pause() {
 	// as a wx project)... that's why next times I use the debuged process'id (child_pid) instead of 
 	// the debugger's pid (pid)... but not the first time cause I need to talk with gdb once the 
 	// program has started in order to find out that child_pid (see FindOutChildPid())
+#warning SACAR EL CERR
+	cerr << "Enviando SIGINT a " << (child_pid!=0?"child_pid":"pid") << ": " << (child_pid!=0?child_pid:pid) << endl;
 	process->Kill(child_pid!=0?child_pid:pid,wxSIGINT);
 #endif
 }
@@ -1027,17 +1048,28 @@ void DebugManager::Continue() {
 		running = false;
 }
 
+void DebugManager::ReadGDBOutput() {
+	if (input->IsOk() && input->CanRead()) {
+		int n;
+		do {
+			static char buffer[256];
+			n = input->Read(buffer,255).LastRead();
+#warning SACAR EL CERR
+			cerr << "READ: " <<n << endl;
+			m_gdb_buffer.Read(buffer,n);
+		} while (n==255 && input->CanRead());
+	}
+}
+
 DebugManager::GDBAnswer &DebugManager::WaitAnswer() {
 	boolFlagGuard waiting_guard(waiting,true);
 	last_answer.Clear();
-	while (process) {
+	while(process || m_gdb_buffer.HasData()) {
 		
 		// try to get some output from gdb
-		if (input->IsOk()) {
-			static char buffer[256];
-			int c = input->Read(buffer,255).LastRead();
-			m_gdb_buffer.Read(buffer,c);
-		} else break; // something went wrong
+		if (process) ReadGDBOutput();
+#warning SACAR EL CERR
+		else cerr << "NO PROCESS IN WAIT" << endl;
 		
 		GDBAnsBuffer::LineType type;
 		static wxString line;
@@ -1085,9 +1117,9 @@ DebugManager::GDBAnswer &DebugManager::WaitAnswer() {
 			}
 		}
 		
-		// wait for gdb to generato more output
+		// wait for gdb to generate more output
 		wxDateTime t1 = wxDateTime::Now();
-		while ( process && ! input->CanRead() && input->IsOk()) {
+		while ( process && input->IsOk() && !input->CanRead()) {
 			if (running) {
 				g_application->Yield(true);
 				wxMilliSleep(50);
@@ -1098,6 +1130,7 @@ DebugManager::GDBAnswer &DebugManager::WaitAnswer() {
 					if (mxMessageDialog(main_window,"Alguna operación en el depurador está tomando demasiado tiempo, desea interrumpirla?.")
 						.Title("UPS!").IconWarning().ButtonsYesNo().Run().yes ) 
 					{
+						_DBG_LOG_CALL(Log(wxString()<<"\n<<<TIME OUT>>>\n"));
 						return last_answer.Clear(false);
 					} else {
 						t1=wxDateTime::Now();
@@ -1105,12 +1138,21 @@ DebugManager::GDBAnswer &DebugManager::WaitAnswer() {
 				}
 			}
 		}
-			
+		
 	}
 	// this is not the happy path, something went wrong
-	last_answer.full += "<<<truncated output>>>";
+	_DBG_LOG_CALL(Log(wxString()<<"\n<<<TRUNCATED OUTPUT>>>\n"));
+	last_answer.full += "<<<TRUNCATED OUTPUT>>>";
 	last_answer.is_ok = false;
 	return last_answer;
+}
+
+void DebugManager::SendCommandNW(wxString command) {
+	_DBG_LOG_CALL(Log(wxString()<<"\n>>> "<<command));
+	if (!process) return;
+	last_command = command;
+	output->Write(command.c_str(),command.Len());
+	output->Write("\n",1);
 }
 
 DebugManager::GDBAnswer &DebugManager::SendCommand(wxString command) {
@@ -1438,14 +1480,20 @@ bool DebugManager::Return(wxString what) {
 }
 
 void DebugManager::ProcessKilled() {
+#warning SACAR EL CERR
+	cerr << "PROCESS KILLED" << endl;
+	ReadGDBOutput(); // this event can be triggered within a wxYield called inside WaitAnswer, so will get the remaining output before deleting the process
 	delete debug_patcher;
 	_DBG_LOG_CALL(Close());
 	MarkCurrentPoint();
 	notitle_source = nullptr;
 	debugging=false;
 #ifndef __WIN32__
-	if (tty_process)
+	if (tty_process) {
+#warning SACAR EL CERR
+		cerr << "Enviando SIGKILL a tty_pid: " << tty_pid << endl;
 		tty_process->Kill(tty_pid,wxSIGKILL);
+	}
 #endif
 	delete process;
 	process=nullptr;
@@ -1460,6 +1508,8 @@ void DebugManager::ProcessKilled() {
 
 #ifndef __WIN32__
 void DebugManager::TtyProcessKilled() {
+#warning SACAR EL CERR
+	cerr << "TtyProcessKilled" << endl;
 	if (pid && debugging && status!=DBGST_STOPPING) Stop();
 	delete tty_process;
 	tty_process = nullptr;

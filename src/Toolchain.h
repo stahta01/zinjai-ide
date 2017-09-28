@@ -3,6 +3,10 @@
 #include <wx/string.h>
 #include <wx/arrstr.h>
 
+#ifdef __WIN32__
+#	define CURRENT_MINGW "mingw32-gcc6"
+#endif
+
 #define TOOLCHAIN_MAX_ARGS 5
 
 /// type of toolchain

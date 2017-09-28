@@ -19,16 +19,16 @@ SingleList<myDIGlobalEventHandler*> DebuggerInspection::global_consumers;
 	wxFFile g_inspection_log_file(_INSPECTION_LOG,"w+");
 #endif
 
-static wxString RemoveEscapeChar(wxString s) {
-	int i=0, l=s.Len();
-	while (i<l) {
-		if (s[i]=='\\') {
-			s.erase(i,1); l--; 
-		} 
-		i++;
-	}
-	return s;
-}
+//static wxString RemoveEscapeChar(wxString s) {
+//	int i=0, l=s.Len();
+//	while (i<l) {
+//		if (s[i]=='\\') {
+//			s.erase(i,1); l--; 
+//		} 
+//		i++;
+//	}
+//	return s;
+//}
 
 void DebuggerInspection::UpdateAllVO(const wxString &voname) {
 	__debug_log_static_method__;

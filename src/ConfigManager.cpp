@@ -480,13 +480,19 @@ bool ConfigManager::Load() {
 	}
 	
 	
-	if (Init.version<20161130) {
-		if (Files.toolchain=="gcc-mingw32") Files.toolchain="mingw32-gcc6";
 #ifdef __WIN32__
+	if (Init.version<20170929) {
+		if (Files.toolchain=="gcc6-mingw32") Files.toolchain=CURRENT_MINGW;
+	} else if (Init.version<20161130) {
+		if (Files.toolchain=="gcc-mingw32") Files.toolchain=CURRENT_MINGW;
+	} else if (Init.version<20170828) {
+		if (Files.toolchain=="gcc5-mingw32") Files.toolchain=CURRENT_MINGW;
+	}
+	
+	if (Init.version<20161130) {
 		if (Help.wxhelp_index=="MinGW\\wx\\docs\\wx_contents.html") Help.wxhelp_index="";
+	}
 #endif
-	} else if (Init.version<20170828)
-		if (Files.toolchain=="gcc5-mingw32") Files.toolchain="mingw32-gcc6";
 	
 	return true;
 }
@@ -705,9 +711,9 @@ void ConfigManager::LoadDefaults(){
 	Files.temp_dir=DIR_PLUS_FILE(config_dir,"tmp");
 	Files.skin_dir="imgs";
 #ifdef __WIN32__
-	Files.toolchain="gcc6-mingw32";
-	Files.runner_command=DIR_	Files.debugger_command="gdb";
-PLUS_FILE("bin","runner.exe");
+	Files.toolchain=CURRENT_MINGW;
+	Files.debugger_command="gdb";
+	Files.runner_command=DIR_PLUS_FILE("bin","runner.exe");
 	Files.terminal_command="";
 	Files.explorer_command="explorer";
 	Files.img_viewer="";
@@ -717,7 +723,7 @@ PLUS_FILE("bin","runner.exe");
 #elif defined(__APPLE__)
 	Files.toolchain="gcc";
 	Files.debugger_command="~/.zinjai/gdb.bin";
-	Files.runner_command=DIR_PLUS_FILE("bin","runner.bin");
+	Files.runner_command=GetZinjaiBinPath("runner.bin");
 	Files.terminal_command=DIR_PLUS_FILE("bin","mac-terminal-wrapper.bin");
 	Files.explorer_command="open";
 	Files.img_viewer="open";
@@ -727,7 +733,7 @@ PLUS_FILE("bin","runner.exe");
 #else
 	Files.toolchain="gcc";
 	Files.debugger_command="gdb";
-	Files.runner_command=DIR_PLUS_FILE(GetZinjaiBinDir(),"runner.bin");
+	Files.runner_command=GetZinjaiBinPath("runner.bin");
 	Files.explorer_command="<<sin configurar>>";
 	Files.terminal_command="<<sin configurar>>";
 	Files.img_viewer="";

@@ -18,7 +18,7 @@ public:
 		OTHER ///< "..."
 	};
 	GDBAnsBuffer() 
-		: m_buf((wxChar*)std::malloc(256*sizeof(wxChar))), m_capacity(256), 
+		: m_buf((wxChar*)std::malloc(1024*sizeof(wxChar))), m_capacity(1024), 
 		m_len(0), m_done(0), m_unprocessed_lines(0) 
 	{ 
 		
@@ -35,6 +35,7 @@ public:
 			m_buf[m_len++] = data[i];
 		}
 	}
+	bool HasData() const { return m_unprocessed_lines!=0; }
 	LineType GetNextLine(wxString &line) { 
 		if (m_unprocessed_lines==0) { return NONE; }
 		// find next '\n'... the line will go from m_buf to that '\n'

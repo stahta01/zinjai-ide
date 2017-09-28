@@ -132,8 +132,11 @@ int main(int argc, char *argv[]) {
 			enable_core_dump();
 #endif
 		} else if (strcmp(argv[i],"-debug-end")==0) {
-			cerr<<endl<<endl<<lang_debug_finished[lang_idx]<<endl<<lang_press_key_to_close[lang_idx];
+			cerr<<endl<<endl<<lang_debug_finished[lang_idx];
+#ifndef __APPLE__
+			cerr<<endl<<lang_press_key_to_close[lang_idx];
 			do_waitkey();
+#endif
 			return 0;
 		} else if (strcmp(argv[i],"-lang")==0) {
 			i++;
