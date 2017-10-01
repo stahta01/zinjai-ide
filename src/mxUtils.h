@@ -43,7 +43,6 @@
 #include "Language.h"
 #include "Cpp11.h"
 
-
 class wxBoxSizer;
 class wxTextCtrl;
 class wxStaticText;
@@ -55,23 +54,6 @@ class wxToolBar;
 class wxComboBox;
 class wxButton;
 class wxBitmapButton;
-
-#ifdef _ZINJAI_DEBUG
-//	extern wxString g_debug_string;
-//	#define DEBUG_QH_SET(lala) g_debug_string=""; g_debug_string<<mxUT::ToHtml(wxString()<<lala)<<"<BR>"; main_window->ShowInQuickHelpPanel(g_debug_string);
-//	#define DEBUG_QH_ADD(lala) g_debug_string<<mxUT::ToHtml(wxString()<<lala)<<"  "; main_window->ShowInQuickHelpPanel(g_debug_string);
-//	#define DEBUG_QH_ADDNL(lala) g_debug_string<<mxUT::ToHtml(wxString()<<lala)<<"<BR> "; main_window->ShowInQuickHelpPanel(g_debug_string);
-//	#ifdef __WIN32__
-//		#include <wx/msgdlg.h>
-//		#define DEBUG_INFO(info) wxMessageBox(wxString()<<info);
-//	#else
-		#include <iostream>
-		using namespace std;
-		#define DEBUG_INFO(info) cerr<<info<<endl;
-//	#endif
-#else
-	#define DEBUG_INFO(info)
-#endif
 
 #define LANG1(key,text,arg1) 			mxUT::ReplaceLangArgs(LANG(key,text),arg1)
 #define LANG2(key,text,arg1,arg2) 		mxUT::ReplaceLangArgs(LANG(key,text),arg1,arg2)
@@ -277,10 +259,6 @@ public:
 	static bool ShellExecute(const wxString &path, const wxString &workdir="");
 
 };
-
-extern bool g_zinjai_debug_mode; ///< cuando se pone en true zinjai muestra con wxMessageBox información interna, (ver _IF_DEBUGMODE), para ayudar a encontrar un error en version release, se activa desde Do That con "set verbose"
-
-#define _IF_DEBUGMODE(x) if (g_zinjai_debug_mode) wxMessageBox(wxString()<<x)
 
 #endif
 

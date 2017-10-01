@@ -33,6 +33,7 @@
 #include "MenusAndToolsConfig.h"
 #include "mxOSD.h"
 #include "mxThreeDotsUtils.h"
+#include "ZLog.h"
 
 
 bool g_zinjai_debug_mode = false;
@@ -502,7 +503,7 @@ wxString mxUT::ExecComas(wxString where, wxString line) {
 
 wxString mxUT::GetOutput(wxString command, bool also_error, bool use_cache) {
 
-	_IF_DEBUGMODE("mxUT::GetOutput: command: "<<command);
+	ZLINF2("Utils","GetOutput: command: "<<command);
 	
 	static HashStringString cache;
 	if (command=="") { cache.clear(); return ""; }
@@ -531,7 +532,7 @@ wxString mxUT::GetOutput(wxString command, bool also_error, bool use_cache) {
 			ret<<"\n"<<output[i];
 	if (use_cache) cache[command]=ret;
 	
-	_IF_DEBUGMODE("mxUT::GetOutput: output: "<<ret);
+	ZLINF2("Utils","GetOutput: output: "<<ret);
 	return ret;
 }
 
@@ -1124,7 +1125,8 @@ void mxUT::ProcessGraph (wxString graph_file, bool use_fdp, wxString output, wxS
 				wxString,title, wxString,command, wxString,output );
 		
 	_LAMBDAEX_1( lmbProcGraph, int,retval, s_lmbProcGraph,args, {
-		_IF_DEBUGMODE(args.command + (wxString("\nretval=")<<retval) );
+		ZLINF2("Utils","ProcessGraph, command: "<<args.command);
+		ZLINF2("Utils","ProcessGraph, retval: "<<retval);
 		if (!retval && args.show) {
 			if (args.as_image) mxUT::LaunchImageViewer(args.title,args.output);
 			else               mxUT::LaunchGraphViewer(args.title,args.output);
@@ -1236,15 +1238,17 @@ int mxUT::LaunchImageViewer (const wxString &window_title, const wxString &image
 	wxString command = config->Files.img_viewer;
 	if (command.IsEmpty()) command = mxUT::Quotize( config->GetZinjaiBinPath(_if_win32("img_viewer.exe","img_viewer.bin")) );
 	command<<" "<<Quotize(image_file)<<" \""<<window_title<<"\"";
+	ZLINF2("Utils","LaunchImageViewer command: "<<command);
 	int retval = wxExecute(command);
-	_IF_DEBUGMODE(command+"\nretal="+(wxString()<<retval));
+	ZLINF2("Utils","LaunchImageViewer retval: "<<retval);
 	return retval;
 }
 
 int mxUT::LaunchGraphViewer (const wxString &window_title, const wxString &graph_file) {
 	wxString command = config->Files.xdot_command+" -n "<<Quotize(graph_file);
+	ZLINF2("Utils","LaunchGraphViewer command: "<<command);
 	int retval = wxExecute(command);
-	_IF_DEBUGMODE(command+"\nretal="+(wxString()<<retval));
+	ZLINF2("Utils","LaunchGraphViewer retval: "<<retval);
 	return retval;
 }
 

@@ -7,6 +7,7 @@
 #include "SingleList.h"
 #include "Flag.h"
 #include <wx/msgdlg.h>
+#include "ZLog.h"
 using namespace std;
 
 ////! Información acerca de una inspección en el depurador
@@ -189,7 +190,7 @@ struct DebuggerInspection {
 	static void ProcessPendingActions() {
 		__debug_log_static_method__;
 		if (debug->debugging && debug->waiting) {
-			DEBUG_INFO("ERROR: ProcessPendingActions: debug->debugging && debug->waiting");
+			ZLERR("Inspection","ProcessPendingActions: debug->debugging && debug->waiting");
 		}
 		int dont_run_now_count = 0, initial_size = pending_actions.GetSize();
 		for(int i=0;i<pending_actions.GetSize();i++) {
@@ -545,7 +546,7 @@ public:
 			if (dit_type!=DIT_GHOST) {
 				map<wxString,DebuggerInspection*>::iterator it=vo2di_map.find(variable_object);
 				if (it!=vo2di_map.end()) vo2di_map.erase(it); // el if siempre debería dar true
-				else { DEBUG_INFO("ERROR: Inspection::Destroy: it==vo2di_map.end(): "<<variable_object); }
+				else { ZLERR2("Inspection","Destroy: it==vo2di_map.end(): "<<variable_object); }
 			}
 		}
 		// quitarla de la lista total de inspecciones a reestablecer al reiniciar la depuración

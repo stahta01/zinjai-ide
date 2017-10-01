@@ -49,6 +49,7 @@
 #include <wx/txtstrm.h>
 #include "mxCompilerArgEnabler.h"
 #include "mxAUI.h"
+#include "ZLog.h"
 using namespace std;
 
 /// @brief Muestra el cuadro de configuración de cppcheck (mxCppCheckConfigDialog)
@@ -153,7 +154,7 @@ void mxMainWindow::OnToolsCppCheckRun(wxCommandEvent &event) {
 	if (extra_args.Len()) args<<" "<<extra_args;
 	
 	wxString command = mxUT::Quotize(config->Files.cppcheck_command)<<" "<<cppargs<<" --template \"[{file}:{line}] ({severity},{id}) {message}\" "<<args<<" "<<file_args;
-	_IF_DEBUGMODE(command);
+	ZLINF("Tools-cppcheck",command);
 	cppcheck->Launch(path,command);
 	
 }
@@ -668,7 +669,7 @@ void mxMainWindow::OnToolsGprofShow (wxCommandEvent &event) {
 	nodt.ToDouble(&edge_tres); edgt.ToDouble(&node_tres);
 	command<<" "<<mxUT::Quotize(gout)<<" -e "<<edge_tres<<" -n "<<node_tres<<" -o "<<mxUT::Quotize(pout);
 	int retval=mxExecute(command,wxEXEC_NODISABLE|wxEXEC_SYNC);
-	_IF_DEBUGMODE( command + (wxString("\nretval: ")<<retval) );
+	ZLINF("Tools-gprof",command + (wxString("\nretval: ")<<retval) );
 	if (retval) { 
 		osd.Hide(); 
 		mxMessageDialog(this,wxString(LANG(MAINW_GPROF_ERROR,"Ha ocurrido un error al intentar procesar la información de perfilado"))+" (error 2).")
@@ -912,10 +913,10 @@ void mxMainWindow::ToolsPreproc( int id_command ) {
 		wxString command = wxString(cpp?current_toolchain.cpp_compiler:current_toolchain.c_compiler)+
 			(cpp?project->cpp_compiling_options:project->c_compiling_options)+" "+mxUT::Quotize(fname)+" -c -E -o "+mxUT::Quotize(bin_name);
 		if (id_command==1) command<<" -fdirectives-only -C";
-		_IF_DEBUGMODE(command);
-		int x =mxUT::Execute(project->path,command, wxEXEC_SYNC/*|wxEXEC_HIDE*/);	
+		ZLINF2("Tools-preproc","cmd: "<<command);
+		int x = mxUT::Execute(project->path,command, wxEXEC_SYNC/*|wxEXEC_HIDE*/);	
 		if (x!=0) { 
-			_IF_DEBUGMODE(x);
+			ZLINF2("Tools-preproc","retval: "<<x);
 			osd.Hide();
 			mxMessageDialog(this,LANG(MAINW_PREPROC_ERROR,"No se pudo preprocesar correctamente el fuente."))
 				.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
@@ -936,10 +937,10 @@ void mxMainWindow::ToolsPreproc( int id_command ) {
 		z_opts<<"-E "; if (id_command==1) z_opts<<"-fdirectives-only -C ";
 		wxString comp_opts = src->GetCompilerOptions();
 		wxString command = wxString(cpp?current_toolchain.cpp_compiler:current_toolchain.c_compiler)+z_opts+"\""+fname+"\" "+comp_opts+" -o \""+bin_name<<"\"";
-		_IF_DEBUGMODE(command);
+		ZLINF2("Tools-preproc","cmd: "<<command);
 		int x =mxUT::Execute(src->source_filename.GetPath(),command, wxEXEC_SYNC/*|wxEXEC_HIDE*/);	
 		if (x!=0) {
-			_IF_DEBUGMODE(x);
+			ZLINF2("Tools-preproc","retval: "<<x);
 			osd.Hide();
 			mxMessageDialog(this,LANG(MAINW_PREPROC_ERROR,"No se pudo preprocesar correctamente el fuente."))
 				.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();

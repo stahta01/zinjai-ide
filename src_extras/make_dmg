@@ -80,24 +80,24 @@ export PATH=/opt/mac/bin:/opt/mac/wx/bin:$PATH
 VERSION=$(cat zinjai.app/Contents/Resources/src/version.h |grep VERSION|cut -d ' ' -f 3)
 
 
-# if mount|grep mnt; then sudo umount mnt; fi
-# dd if=/dev/zero of=zinjai-ppc-$VERSION.dmg bs=512k count=72
-# mkfs.hfsplus -v ZinjaI zinjai-ppc-$VERSION.dmg
-# sudo mount -o loop zinjai-ppc-$VERSION.dmg mnt || exit 1
-# rm -f zinjai.app/Contents/MacOS/zinjai
-# rm -f zinjai.app/Contents/Resources/bin/img_viewer.bin
-# rm -f zinjai.app/Contents/Resources/bin/complement.bin
-# rm -f zinjai.app/Contents/Resources/bin/complement_wrap.bin
-# rm -f zinjai.app/Contents/Resources/bin/cbrowser
-# rm -f zinjai.app/Contents/Resources/bin/runner.bin
-# rm -f zinjai.app/Contents/Resources/bin/mac-terminal-wrapper.bin
-# rm -f zinjai.app/Contents/Resources/bin/updatem.bin
-# make -f Makefile.ppc -C zinjai.app/Contents/Resources/src || exit 1
-# make -f Makefile.ppc -C zinjai.app/Contents/Resources/src_extras || exit 1
-# make -f Makefile.ppc -C zinjai.app/Contents/Resources/parser || exit 1
-# echo Creating Package...
-# sudo cp -r zinjai.app mnt/ || exit 1
-# sudo umount mnt
+if mount|grep mnt; then sudo umount mnt; fi
+dd if=/dev/zero of=zinjai-ppc-$VERSION.dmg bs=512k count=74
+mkfs.hfsplus -v ZinjaI zinjai-ppc-$VERSION.dmg
+sudo mount -o loop zinjai-ppc-$VERSION.dmg mnt || exit 1
+rm -f zinjai.app/Contents/MacOS/zinjai
+rm -f zinjai.app/Contents/Resources/bin/img_viewer.bin
+rm -f zinjai.app/Contents/Resources/bin/complement.bin
+rm -f zinjai.app/Contents/Resources/bin/complement_wrap.bin
+rm -f zinjai.app/Contents/Resources/bin/cbrowser
+rm -f zinjai.app/Contents/Resources/bin/runner.bin
+rm -f zinjai.app/Contents/Resources/bin/mac-terminal-wrapper.bin
+rm -f zinjai.app/Contents/Resources/bin/updatem.bin
+make -f Makefile.ppc -C zinjai.app/Contents/Resources/src || exit 1
+make -f Makefile.ppc -C zinjai.app/Contents/Resources/src_extras || exit 1
+make -f Makefile.ppc -C zinjai.app/Contents/Resources/parser || exit 1
+echo Creating Package...
+sudo cp -r zinjai.app mnt/ || exit 1
+sudo umount mnt
 
 if mount|grep mnt; then sudo umount mnt; fi
 dd if=/dev/zero of=zinjai-m32-$VERSION.dmg bs=512k count=74

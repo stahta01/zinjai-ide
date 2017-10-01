@@ -2670,9 +2670,9 @@ bool ProjectManager::WxfbGenerate(wxString fbp_file, wxString fbase, bool force_
 	if (osd) osd->Create(main_window,LANG(PROJMNGR_REGENERATING_WXFB,"Regenerando proyecto wxFormBuilder..."));
 	
 	wxString command=mxUT::Quotize(config->Files.wxfb_command)+" -g "+mxUT::Quotize(fbp_file);
-	_IF_DEBUGMODE("command: "<<command);
+	ZLINF2("Tools-wxfb","command: "<<command);
 	int ret = mxExecute(command, wxEXEC_NODISABLE|wxEXEC_SYNC);
-	_IF_DEBUGMODE("exit value: "<<ret);
+	ZLINF2("Tools-wxfb","exit value: "<<ret);
 
 	if (fbase.Len()) {
 		if (ret) {

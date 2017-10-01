@@ -564,7 +564,6 @@ bool HelpManager::ReloadDoxyIndex() {
 				top.file=str.AfterFirst('>').BeforeLast('<');
 				if (!top.file.EndsWith(_T(".html")))
 					top.file<<_T(".html");
-//				cerr<<top.file<<endl;
 			} else if (tag.StartsWith(_T("name"))) {
 				top.name=str.AfterFirst('>').BeforeLast('<');
 				if (top.name.Contains("::"))
@@ -619,7 +618,6 @@ wxString HelpManager::GetDoxyInfo(pd_class *aclass, wxString &desc) {
 				str.Replace(_T("</a>"),_T("</aZZZ>"));
 				str.Replace(_T("<a "),_T("<aZZZ "));
 				desc+=str+"\n";
-//				cerr<<"DESC: "<<str<<endl;
 			} else if ( str.Contains("name=\"_details\"")||str.Contains("name=\"details\"")) on_desc=true;
 		}
 		fil.Close();

@@ -5,6 +5,7 @@
 #include "ids.h"
 #include "mxUtils.h"
 #include "execution_workaround.h"
+#include "ZLog.h"
 
 BEGIN_EVENT_TABLE(mxOSD, wxDialog)
 	EVT_PAINT (mxOSD::OnPaint)
@@ -87,9 +88,9 @@ void mxOSD::ShowText(wxString str, int time, bool corner) {
 		timer->Start(time,true);
 	}
 	Show(); Refresh(); 
-DEBUG_INFO("wxYield:in  mxOSD::ShowText");
+	ZLINF("OSD","ShowText wxYield:in");
 	wxYield();
-DEBUG_INFO("wxYield:out mxOSD::ShowText");
+	ZLINF("OSD","ShowText wxYield:out");
 }
 
 void mxOSD::OnPaint (wxPaintEvent &event) {

@@ -30,6 +30,7 @@
 #include "lnxStuff.h"
 #include "Cpp11.h"
 #include "gdbParser.h"
+#include "ZLog.h"
 using namespace std;
 
 //#define BACKTRACE_MACRO "define zframeaddress\nset $fi=0\nwhile $fi<$arg0\nprintf \"*zframe-%u={\",$fi\ninfo frame $fi\nprintf \"}\\n\"\nset $fi=$fi+1\nend\nend"
@@ -157,11 +158,9 @@ bool DebugManager::Start(wxString workdir, wxString exe, wxString args, bool sho
 		wait_for_key_policy = wait_for_key;
 	//	mxUT::ParameterReplace(tty_cmd,_T("${ZINJAI_DIR}"),wxGetCwd());
 		tty_process = new wxProcess(main_window->GetEventHandler(),mxPROCESS_DEBUG);
-#warning SACAR CERR
-		cerr << "Launching tty process: " << tty_cmd << endl;
+		ZLINF2("DebugManager","Start, Launching tty process, cmd: "<<tty_cmd);
 		tty_pid = wxExecute(tty_cmd,wxEXEC_ASYNC,tty_process);
-#warning SACAR CERR
-		cerr << "tty_pid=" << tty_pid << endl;
+		ZLINF2("DebugManager","Start, Launching tty process, pid: "<<tty_pid);
 	} else {
 		tty_pid=0; tty_process=nullptr;
 	}
@@ -222,9 +221,10 @@ bool DebugManager::Start(wxString workdir, wxString exe, wxString args, bool sho
 	}
 #endif
 	
-	if (g_zinjai_debug_mode) wxMessageBox(wxString("Debug starting: ")+command);
+	ZLINF("DebugManager","Debug starting");
+	ZLINF2("DebugManager","cmd: "<<command);
 	pid = wxExecute(command,wxEXEC_ASYNC,process);
-	if (g_zinjai_debug_mode) wxMessageBox(wxString("PID: ")<<pid);
+	ZLINF2("DebugManager","pid: "<<pid);
 	if (pid>0) {
 		input = process->GetInputStream();
 		output = process->GetOutputStream();
@@ -347,8 +347,8 @@ bool DebugManager::SpecialStart(mxSource *source, const wxString &gdb_command, c
 		// mostrar el backtrace y marcar el punto donde corto
 		GDBAnswer &ans = SendCommand(gdb_command);
 		if (ans.result.StartsWith("^error,")) {
-#warning SACAR EL CERR
-			cerr << "ans=^error" << endl;
+			ZLINF2("DebugManager","SpecialStart, Error on fisrt cmd: "<<gdb_command); 
+			ZLINF("DebugManager","SpecialStart, Error on fisrt cmd, ans contains ^error");
 			mxMessageDialog(main_window,wxString(LANG(DEBUG_SPECIAL_START_FAILED,"Ha ocurrido un error al iniciar la depuración:"))+debug->GetValueFromAns(ans.result,"msg",true,true))
 				.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
 			main_window->SetCompilingStatus(LANG(DEBUG_STATUS_INIT_ERROR,"Error al iniciar depuracion"));
@@ -453,8 +453,7 @@ bool DebugManager::LoadCoreDump(wxString core_file, mxSource *source) {
 bool DebugManager::Stop(bool waitkey) {
 #ifndef __WIN32__
 	if (status==DBGST_WAITINGKEY) {
-#warning SACAR EL CERR
-		cerr << "Enviando SIGKILL a tty_pid: " << tty_pid << endl;
+		ZLINF2("DebugManager","Stop, Enviando SIGKILL a tty_pid:"<<tty_pid);
 		process->Kill(tty_pid,wxSIGKILL); 
 		status=DBGST_STOPPING; 
 		return false; 
@@ -463,8 +462,7 @@ bool DebugManager::Stop(bool waitkey) {
 	if (status==DBGST_STOPPING) return false; else status=DBGST_STOPPING;
 	if (waiting || !debugging) {
 #if defined(__APPLE__) || defined(__WIN32__)
-#warning SACAR EL CERR
-		cerr << "Enviando SIGKILL a pid: " << pid << endl;
+		ZLINF2("DebugManager","Stop, Enviando SIGKILL a pid:"<<pid);
 		process->Kill(pid,wxSIGKILL);
 		return false;
 #else
@@ -503,7 +501,7 @@ bool DebugManager::Run() {
 		HowDoesItRuns(true);
 		return true;
 	} else {
-		if (g_zinjai_debug_mode) wxMessageBox(ans.result);
+		ZLWAR2("DebugManager","Run -exec-run failed, ans="<<ans.result);
 		running = false;
 		return false;
 	}
@@ -527,7 +525,7 @@ wxString DebugManager::HowDoesItRuns(bool raise_zinjai_window) {
 		if (!process || status==DBGST_STOPPING) return retval;
 		int st_pos = ans.Find(_T("*stopped"));
 		if (st_pos==wxNOT_FOUND) {
-			_IF_DEBUGMODE(wxMessageBox(wxString("HowDoesItRuns answer: ")<<ans));
+			ZLINF2("DebugManager","HowDoesItRuns, unknown state, answer: "<<ans);
 			SetStateText(state_text);
 			_DBG_LOG_CALL(Log(wxString()<<"ERROR RUNNING: "<<ans));
 			return retval;
@@ -809,8 +807,10 @@ bool DebugManager::UpdateBacktrace(const BTInfo &stack, bool is_current) {
 		while (chfr[i]!='}') { i++; if (chfr[i]=='\''||chfr[i]=='\"') GdbParse_SkipString(chfr,i,sll); }
 		wxString s(stack.frames.SubString(p,i-1));
 #ifdef _ZINJAI_DEBUG
-		if (GetValueFromAns(s,"level",true)!=(wxString()<<(cant_levels)))
-			cerr<<"ERROR: DebugManager::Backtrace  wrong frame level!!!"<<endl;
+		if (GetValueFromAns(s,"level",true)!=(wxString()<<(cant_levels))) {
+			ZLERR2("DebugManager","UpdateBacktrace, wrong frame level, cant="<<cant_levels);
+			ZLERR2("DebugManager","UpdateBacktrace, wrong frame level, num="<<s);
+		}
 #endif
 		main_window->backtrace_ctrl->SetCellValue(cant_levels,BG_COL_LEVEL,wxString()<<cant_levels);
 		wxString func = GetValueFromAns(s,"func",true);
@@ -849,7 +849,6 @@ bool DebugManager::UpdateBacktrace(const BTInfo &stack, bool is_current) {
 			debug->SetFullOutput(false);
 			wxString args ,args_list = cant_levels ? SendCommand("-stack-list-arguments 1 0 ",cant_levels-1).result : "";
 			const wxChar * chag = args_list.c_str();
-		//cerr<<"CHAG="<<endl<<chag<<endl<<endl;
 			i=args_list.Find("stack-args=");
 			if (i==wxNOT_FOUND) {
 				for (int c=0;c<stack.depth;c++)
@@ -994,8 +993,7 @@ void DebugManager::Pause() {
 	// as a wx project)... that's why next times I use the debuged process'id (child_pid) instead of 
 	// the debugger's pid (pid)... but not the first time cause I need to talk with gdb once the 
 	// program has started in order to find out that child_pid (see FindOutChildPid())
-#warning SACAR EL CERR
-	cerr << "Enviando SIGINT a " << (child_pid!=0?"child_pid":"pid") << ": " << (child_pid!=0?child_pid:pid) << endl;
+	ZLINF2("DebugManager","Pause, Enviando SIGINT a "<<(child_pid!=0?"child_pid: ":"pid: ")<<(child_pid!=0?child_pid:pid));
 	process->Kill(child_pid!=0?child_pid:pid,wxSIGINT);
 #endif
 }
@@ -1054,8 +1052,6 @@ void DebugManager::ReadGDBOutput() {
 		do {
 			static char buffer[256];
 			n = input->Read(buffer,255).LastRead();
-#warning SACAR EL CERR
-			cerr << "READ: " <<n << endl;
 			m_gdb_buffer.Read(buffer,n);
 		} while (n==255 && input->CanRead());
 	}
@@ -1068,8 +1064,7 @@ DebugManager::GDBAnswer &DebugManager::WaitAnswer() {
 		
 		// try to get some output from gdb
 		if (process) ReadGDBOutput();
-#warning SACAR EL CERR
-		else cerr << "NO PROCESS IN WAIT" << endl;
+		else { ZLWAR("DebugManager","WaitAnswer, process==nullptr"); }
 		
 		GDBAnsBuffer::LineType type;
 		static wxString line;
@@ -1480,8 +1475,7 @@ bool DebugManager::Return(wxString what) {
 }
 
 void DebugManager::ProcessKilled() {
-#warning SACAR EL CERR
-	cerr << "PROCESS KILLED" << endl;
+	ZLINF("DebugManager","ProcessKilled");
 	ReadGDBOutput(); // this event can be triggered within a wxYield called inside WaitAnswer, so will get the remaining output before deleting the process
 	delete debug_patcher;
 	_DBG_LOG_CALL(Close());
@@ -1490,8 +1484,7 @@ void DebugManager::ProcessKilled() {
 	debugging=false;
 #ifndef __WIN32__
 	if (tty_process) {
-#warning SACAR EL CERR
-		cerr << "Enviando SIGKILL a tty_pid: " << tty_pid << endl;
+		ZLINF2("DebugManager","ProcessKilled, enviando SIGKILL a tty_pid: "<<tty_pid);
 		tty_process->Kill(tty_pid,wxSIGKILL);
 	}
 #endif
@@ -1508,8 +1501,7 @@ void DebugManager::ProcessKilled() {
 
 #ifndef __WIN32__
 void DebugManager::TtyProcessKilled() {
-#warning SACAR EL CERR
-	cerr << "TtyProcessKilled" << endl;
+	ZLINF("DebugManager","TtyProcessKilled");
 	if (pid && debugging && status!=DBGST_STOPPING) Stop();
 	delete tty_process;
 	tty_process = nullptr;

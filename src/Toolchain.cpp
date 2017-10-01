@@ -6,6 +6,7 @@
 #include "ProjectManager.h"
 #include <wx/msgdlg.h>
 #include <iostream>
+#include "ZLog.h"
 using namespace std;
 
 Toolchain *Toolchain::toolchains=nullptr;
@@ -234,7 +235,7 @@ bool Toolchain::CheckVersion(bool cpp, int _v, int _s) {
 			str.BeforeFirst('.').ToLong(&v);
 			str.AfterFirst('.').BeforeFirst('.').ToLong(&s);
 			version_cpp=v*1000+s;
-			DEBUG_INFO("Toolchain::CheckVersion cpp: "<<version_cpp);
+			ZLINF2("Toolchain","CheckVersion g++: "<<version_cpp);
 		}
 		return version_cpp>=_v*1000+_s;
 	} else {
@@ -245,7 +246,7 @@ bool Toolchain::CheckVersion(bool cpp, int _v, int _s) {
 			str.BeforeFirst('.').ToLong(&v);
 			str.AfterFirst('.').BeforeFirst('.').ToLong(&s);
 			version_c=v*1000+s;
-			DEBUG_INFO("Toolchain::CheckVersion c: "<<version_c);
+			ZLINF2("Toolchain","CheckVersion gcc: "<<version_c);
 		}
 		return version_c>=_v*1000+_s;
 	}

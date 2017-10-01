@@ -124,7 +124,7 @@ bool mxAUI::OnPaneClose (wxWindow * window) {
 
 mxAUIPaneInfo mxAUI::AttachGenericPane(wxWindow *ctrl, wxString title, bool handle_deletion) {
 	wxAuiPaneInfo pane_info;
-	pane_info.CloseButton(true).MaximizeButton(true).Resizable(true).Caption(title).Show();
+	pane_info.CloseButton(true).MaximizeButton(true).Resizable(true).Caption(title).Show().Float();
 //	if (position!=wxDefaultPosition) pane_info.FloatingPosition(position);
 //	if (size!=wxDefaultSize) pane_info.BestSize(size);
 	m_wxaui.AddPane(ctrl,pane_info);

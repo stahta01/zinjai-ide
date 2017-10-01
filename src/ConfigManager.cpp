@@ -1035,28 +1035,28 @@ void ConfigManager::FinishLoading ( ) {
 	if (Init.language_file!="spanish") 
 //#endif
 	{
-		DEBUG_INFO("Loading language...");
+		ZLINF("ConfigManager","Loading language...");
 		try_to_load_language();
 	}
 	
 	// load syntax highlighting colors' scheme
-	DEBUG_INFO("Loading colours...");
+	ZLINF("ConfigManager","Loading colours...");
 	color_theme::Initialize();
 	if (Init.colour_theme.IsEmpty()) g_ctheme->Load(DIR_PLUS_FILE(config_dir,"colours.zcs"));
 	else g_ctheme->Load(mxUT::WichOne(Init.colour_theme,"colours",true));
 	
 	// apply complement's patches to current config
-	DEBUG_INFO("Looking for patchs from complements...");
+	ZLINF("ConfigManager","Looking for patchs from complements...");
 	ApplyPatchsFromComplements();
 	
 	// check if extern tools are present and set some paths
-	DEBUG_INFO("Loding toolchains...");
+	ZLINF("ConfigManager","Loading toolchains...");
 	Toolchain::LoadToolchains();
 	DoInitialChecks(); 
 	RecalcStuff();
 	
 	// create regular menus and toolbars' data
-	DEBUG_INFO("Creating menues...");
+	ZLINF("ConfigManager","Creating menues...");
 	menu_data = new MenusAndToolsConfig();
 	if (s_delayed_config_lines) { // old way
 		for(unsigned int i=0;i<s_delayed_config_lines->toolbars_keys.GetCount();i++)
@@ -1072,7 +1072,7 @@ void ConfigManager::FinishLoading ( ) {
 		menu_data->GetToolbarPosition(MenusAndToolsConfig::tbPROJECT)="T1";
 	}
 #if defined(__APPLE__) && defined(__STC_ZASKAR)
-	DEBUG_INFO("Fixing mac stuff...");
+	ZLINF("ConfigManager","Fixing mac stuff...");
 	if (Init.mac_stc_zflags==-1) {
 		Init.mac_stc_zflags = 0;
 		if (mxMessageDialog(nullptr,LANG(CONFIG_MAC_DEADKEYS_PROBLEM_QUESTION,""
@@ -1089,7 +1089,7 @@ void ConfigManager::FinishLoading ( ) {
 	wxSTC_SetZaskarsFlags(Init.mac_stc_zflags);
 #endif
 	
-	DEBUG_INFO("Initializing error recovery system...");
+	ZLINF("ConfigManager","Initializing error recovery system...");
 	// initialize error recovery system
 	er_init(temp_dir.char_str());
 	

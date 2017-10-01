@@ -2,6 +2,7 @@
 #include <iostream>
 #include <wx/app.h>
 #include "ConfigManager.h"
+#include "ZLog.h"
 using namespace std;
 
 static bool s_someone_is_running = false;
@@ -32,32 +33,30 @@ void fix_command_for_wxexecute(wxString &command) {
 long mxExecute(wxString command, int sync, wxProcess *process) {
 	fix_command_for_wxexecute(command);
 #ifdef _ZINJAI_DEBUG
-	cerr<<"execution_workaround: Enters, command="<<command<<endl;
-	if (s_someone_is_running) cerr<<"execution_workaround: COLLISION!"<<endl;
+	ZLDBG2("execution_workaround","Enters, command="<<command);
 #endif
-	if (s_someone_is_running) return 0;
+	if (s_someone_is_running) { ZLWAR("execution_workaround","COLLISION!"); return 0; }
 	s_someone_is_running=true;
 	long ret=wxExecute(command,sync,process);
 	s_someone_is_running=false;	
 #ifdef _ZINJAI_DEBUG
-	cerr<<"execution_workaround: Exits, command="<<command<<endl;
-	cerr<<"execution_workaround: Exits, retval="<<ret<<endl;
+	ZLDBG2("execution_workaround","Exits, command="<<command);
+	ZLDBG2("execution_workaround","Exits, retval="<<ret);
 #endif
 	return ret;
 }
 long mxExecute(wxString command, wxArrayString& output, int flags) {
 	fix_command_for_wxexecute(command);
 #ifdef _ZINJAI_DEBUG
-	cerr<<"execution_workaround: Enters, command="<<command<<endl;
-	if (s_someone_is_running) cerr<<"execution_workaround: COLLISION!"<<endl;
+	ZLDBG2("execution_workaround","Enters, command="<<command);
 #endif
-	if (s_someone_is_running) return 0;
+	if (s_someone_is_running) { ZLDBG("execution_workaround","COLLISION!"); return 0; }
 	s_someone_is_running=true;
 	long ret=wxExecute(command,output,flags);
 	s_someone_is_running=false;
 #ifdef _ZINJAI_DEBUG
-	cerr<<"execution_workaround: Exits, command="<<command<<endl;
-	cerr<<"execution_workaround: Exits, retval="<<ret<<endl;
+	ZLDBG2("execution_workaround","Exits, command="<<command);
+	ZLDBG2("execution_workaround","Exits, retval="<<ret);
 #endif
 	return ret;
 }
@@ -65,17 +64,16 @@ long mxExecute(wxString command, wxArrayString& output, int flags) {
 long mxExecute(wxString command, wxArrayString& output, wxArrayString& errors, int flags) {
 	fix_command_for_wxexecute(command);
 #ifdef _ZINJAI_DEBUG
-	cerr<<"execution_workaround: Enters, command="<<command<<endl;
-	if (s_someone_is_running) cerr<<"execution_workaround: COLLISION!"<<endl;
+	ZLDBG2("execution_workaround", "Enters, command="<<command);
 #else
-	if (s_someone_is_running) return 0;
+	if (s_someone_is_running) { ZWARN("execution_workaround","COLLISION"); return 0; }
 #endif
 	s_someone_is_running=true;
 	long ret=wxExecute(command,output,errors,flags);
 	s_someone_is_running=false;
 #ifdef _ZINJAI_DEBUG
-	cerr<<"execution_workaround: Exits, command="<<command<<endl;
-	cerr<<"execution_workaround: Exits, retval="<<ret<<endl;
+	ZLDBG2("execution_workaround","Exits, command="<<command);
+	ZLDBG2("execution_workaround","Exits, retval="<<ret);
 #endif
 	return ret;
 }

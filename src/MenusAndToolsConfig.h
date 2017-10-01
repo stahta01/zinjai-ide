@@ -9,6 +9,7 @@
 #ifdef _ZINJAI_DEBUG
 #include<iostream>
 #endif
+#include "ZLog.h"
 using namespace std;
 
 class wxMenuBar;
@@ -194,9 +195,7 @@ private:
 					break;
 				}
 			}
-#ifdef _ZINJAI_DEBUG
-			if (!label.Len()) { cerr<<"EMPTY TOOLBAR ITEM!!"<<endl; }
-#endif
+			if (label.IsEmpty()) { ZLWAR("myToolbarItem","Empty toolbar item"); }
 			label.Replace("&","",true);
 			description.Replace("&","",true);
 		}

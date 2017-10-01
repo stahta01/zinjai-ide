@@ -34,6 +34,7 @@
 #include "mxAUI.h"
 #include "mxNewWizard.h"
 #include "EnvVars.h"
+#include "ZLogOstream.h"
 using namespace std;
 
 
@@ -57,16 +58,26 @@ bool mxApplication::OnInit() {
 	
 	if (argc==2 && wxString(argv[1])=="--help") {
 		cout << "ZinjaI's command line special arguments:" << endl;
-		cout << "   --help:         prints this help text and exit" << endl;
-		cout << "   --version:      display installed version and exit" << endl;
-		cout << "   --new-source:   shows the wizard for creating a new simple program" << endl;
-		cout << "   --new-project:  shows the wizard for creating a new project" << endl;
-		cout << "   --last-source:  opens the first file from Recent Files' list" << endl;
-		cout << "   --last-project: opens the first file from Recent Projects' list" << endl;
+		cout << "   --help          prints this help text and exit" << endl;
+		cout << "   --version       display installed version and exit" << endl;
+		cout << "   --new-source    shows the wizard for creating a new simple program" << endl;
+		cout << "   --new-project   shows the wizard for creating a new project" << endl;
+		cout << "   --last-source   opens the first file from Recent Files' list" << endl;
+		cout << "   --last-project  opens the first file from Recent Projects' list" << endl;
+		cout << "   --cerr          use std::cerr as internal logging output" << endl;
+		cout << "   --log <fame>    write internal logging output to file <fname>" << endl;
 		return false;
 	}
 	
-SHOW_MILLIS("Entering OnInit...");
+	for(int i=1;i<argc;i++) { 
+		if (wxString(argv[i])=="--cerr") {
+			new ZLogCerr();
+		} else if (wxString(argv[i])=="--log") {
+			new ZLogOstream(argv[++i]);
+		}
+	}
+	
+	ZLINF("Application","Entering OnInit...");
 	
 #ifdef _ZINJAI_DEBUG
 	wxLog::SetActiveTarget(new wxLogStderr());
@@ -77,7 +88,7 @@ SHOW_MILLIS("Entering OnInit...");
 	
 	sizers = new mxSizers();
 	
-SHOW_MILLIS("About to find out zinjai_dir...");
+	ZLINF("Application","About to find out zinjai_dir...");
 	
 	wxFileName f_path = wxGetCwd(); 
 	f_path.MakeAbsolute();
@@ -109,7 +120,7 @@ SHOW_MILLIS("About to find out zinjai_dir...");
 						"working path is the right one.","Error");
 	}
 	
-SHOW_MILLIS("About to load ConfigManager...");
+	ZLINF("Application","About to load ConfigManager...");
 	
 	// fix some env vars changed by the launcher and make zinjai's dir public
 	EnvVars::Init(zpath);
@@ -127,7 +138,7 @@ SHOW_MILLIS("About to load ConfigManager...");
 	// si delega la carga a otra instancia termina inmediatamente
 	if (InitSingleton(cmd_path)) return false;
 
-SHOW_MILLIS("Initializing art...");
+	ZLINF("Application","Initializing art...");
 	
 	// init image handlers and show splash screen
 	wxImage::AddHandler(new wxPNGHandler);
@@ -137,7 +148,7 @@ SHOW_MILLIS("Initializing art...");
 	// load art and help files
 	mxArt::Initialize();
 	
-SHOW_MILLIS("Initializing help system...");
+	ZLINF("Application","Initializing help system...");
 	
 	// inicialize HelpManager
 	HelpManager::Initialize();
@@ -145,13 +156,13 @@ SHOW_MILLIS("Initializing help system...");
 	// inicialize CodeHelper
 	CodeHelper::Initialize();
 
-SHOW_MILLIS("Finishing config manager's initialization...");
+	ZLINF("Application","Finishing config manager's initialization...");
 	
 	// verifica si hay compilador, terminal, etc instalado y configurado...
 	// ...y carga el resto de la configuracion (toolchains, colores, atajos, toolbars, etc)
 	config->FinishLoading(); 
 	
-SHOW_MILLIS("Creating main window...");	
+	ZLINF("Application","Creating main window...");	
 	
 	// create main window
 	if (config->Init.size_x==0 || config->Init.size_y==0)
@@ -159,7 +170,7 @@ SHOW_MILLIS("Creating main window...");
 	else
 		main_window = new mxMainWindow(nullptr, wxID_ANY, "ZinjaI", wxPoint(config->Init.pos_x,config->Init.pos_y), wxSize(config->Init.size_x,config->Init.size_y));
 
-SHOW_MILLIS("Initializing DebugManager...");	
+	ZLINF("Application","Initializing DebugManager...");	
 	
 	// inicialize debug manager
 	DebugManager::Initialize();
@@ -167,7 +178,7 @@ SHOW_MILLIS("Initializing DebugManager...");
 	// set top window and let the magic do the rest
 	SetTopWindow(main_window);
 
-SHOW_MILLIS("Icon installer and tips...");	
+	ZLINF("Application","Icon installer and tips...");	
 	
 #if !defined(__WIN32__) && !defined(__APPLE__)
 	if (first_run) new mxIconInstaller(true);
@@ -184,11 +195,11 @@ SHOW_MILLIS("Icon installer and tips...");
 		if (g_splash) g_splash->ShouldClose();
 	}
 	
-SHOW_MILLIS("Loading welcome panel...");	
+	ZLINF("Application","Loading welcome panel...");	
 	
 	LoadFilesOrWelcomePanel(cmd_path);
 	
-SHOW_MILLIS("Welcome panel done...");	
+	ZLINF("Application","Welcome panel done...");	
 	
 	// si estaba abriendo un proyecto el usuario puede haber cerrado la ventana antes de que el parser termine
 	if (!main_window) return false;
@@ -205,18 +216,14 @@ SHOW_MILLIS("Welcome panel done...");
 	// devolver el foco a la ventana de sugerencias si existe, para que se pueda cerrar con Esc
 	if (g_tips_window) g_tips_window->Raise();
 	
-//#ifdef _ZINJAI_DEBUG
-//	cerr<<"Initialization complete: "<<wxGetLocalTimeMillis()-start_time<<"ms"<<endl;
-//#endif
-	
-SHOW_MILLIS("Checking for error recovery files...");	
+	ZLINF("Application","Checking for error recovery files...");	
 	// recuperarse de un segfault y/o buscar actualizaciones
 	if (!mxErrorRecovering::RecoverSomething()) {
 		if (config->Init.check_for_updates) 
 			mxUpdatesChecker::BackgroundCheck();
 	}
 	
-SHOW_MILLIS("ZinjaI's initialization complete, you're clear to take off!");	
+	ZLINF("Application","ZinjaI's initialization complete, you're clear to take off!");	
 	
 	return true;
 }
@@ -296,16 +303,21 @@ void mxApplication::LoadFilesOrWelcomePanel(const wxString &cmd_path) {
 		main_window->Refresh();
 		wxYield();
 		if (g_splash) g_splash->ShouldClose();
+		bool filter_args = true;
 		for (int i=1; i<argc;i++) {
 			wxString argi(argv[i]);
-			if (argi=="--new-source" ) {
-				mxNewWizard::GetInstance()->RunWizard(_T("templates"));
-			} else if (argi==_T("--new-project")) {
-				mxNewWizard::GetInstance()->RunWizard(_T("new_project"));
-			} else if (argi=="--last-source" && config->Files.last_source[0].Len()) {
-				main_window->OpenFileFromGui(wxString(config->Files.last_source[0]));
-			} else if (argi=="--last-project" && config->Files.last_project[0].Len()) {
-				main_window->OpenFileFromGui(wxString(config->Files.last_project[0]));
+			if (filter_args && argi.StartsWith("--")) {
+				if (argi=="--new-source" ) {
+					mxNewWizard::GetInstance()->RunWizard(_T("templates"));
+				} else if (argi==_T("--new-project")) {
+					mxNewWizard::GetInstance()->RunWizard(_T("new_project"));
+				} else if (argi=="--last-source" && config->Files.last_source[0].Len()) {
+					main_window->OpenFileFromGui(wxString(config->Files.last_source[0]));
+				} else if (argi=="--last-project" && config->Files.last_project[0].Len()) {
+					main_window->OpenFileFromGui(wxString(config->Files.last_project[0]));
+				} else if (argi=="--") {
+					filter_args = false;
+				}
 //			} else if (wxString(argv[i])==".") {
 //				main_window->ShowExplorerTreePanel();
 			} else if (!argi.IsEmpty()) {

@@ -7,6 +7,7 @@
 #include "Parser.h"
 #include "mxCompiler.h"
 #include "raii.h"
+#include "ZLog.h"
 
 CustomToolsPack::CustomToolsPack(int _cant) :tools(new OneCustomTool[_cant]),cant(_cant) {
 	
@@ -180,10 +181,11 @@ mxCustomToolProcess::mxCustomToolProcess(const OneCustomTool &_tool) : tool(_too
 #endif
 	}
 	
-	_IF_DEBUGMODE(cmd);
+	ZLINF2("CustomTools","cmd: "<<cmd);
 	RaiiWorkDirChanger cwd_guard(workdir); // set temp cwd
 	int pid = wxExecute(cmd,exec_flags,this);
 	cwd_guard.RestoreNow();
+	ZLINF2("CustomTools","pid: "<<pid);
 	
 	if (tool.output_mode==CT_OUTPUT_DIALOG) output_view->Launched(this,pid);
 	else if (!tool.async_exec) OnTerminate(0,pid);
@@ -231,6 +233,6 @@ int CustomToolsPack::GetFreeSpot ( ) {
 }
 
 mxCustomToolProcess::~mxCustomToolProcess ( ) {
-	DEBUG_INFO("mxCustomToolProcess::~mxCustomToolProcess");
+	ZLINF("CustomTools","mxCustomToolProcess::~mxCustomToolProcess");
 }
 

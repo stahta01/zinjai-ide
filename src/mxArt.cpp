@@ -11,6 +11,7 @@
 #include <iostream>
 #include <wx/wfstream.h>
 #include <wx/image.h>
+#include "ZLog.h"
 using namespace std;
 	
 mxArt *bitmaps = nullptr;
@@ -109,7 +110,7 @@ wxString mxArt::GetSkinImagePath(const wxString &fname, bool replace_if_missing)
 	if (is_default) {
 #ifdef _ZINJAI_DEBUG
 		if (!wxFileName::FileExists(DIR_PLUS_FILE(default_path,fname)))
-			cerr<<"MISSING IMAGE: "<<DIR_PLUS_FILE(default_path,fname)<<endl;
+			ZLWAR2("Art","GetSkinImagePath, Missing image: "<<DIR_PLUS_FILE(default_path,fname));
 #endif
 		return DIR_PLUS_FILE(default_path,fname);
 	} else {
@@ -117,13 +118,13 @@ wxString mxArt::GetSkinImagePath(const wxString &fname, bool replace_if_missing)
 		if (!replace_if_missing || wxFileName::FileExists(fskin)) {
 #ifdef _ZINJAI_DEBUG
 			if (!wxFileName::FileExists(fskin))
-				cerr<<"MISSING IMAGE: "<<fskin<<endl;
+				ZLWAR2("Art","GetSkinImagePath, Missing image: "<<fskin);
 #endif
 			return fskin;
 		} else {
 #ifdef _ZINJAI_DEBUG
 			if (!wxFileName::FileExists(DIR_PLUS_FILE(default_path,fname)))
-				cerr<<"MISSING IMAGE: "<<DIR_PLUS_FILE(default_path,fname)<<endl;
+				ZLWAR2("Art","GetSkinImagePath, Missing image: "<<DIR_PLUS_FILE(default_path,fname));
 #endif
 			return DIR_PLUS_FILE(default_path,fname);
 		}
@@ -165,7 +166,7 @@ const wxBitmap & mxArt::GetBitmap(const wxString &fname, bool is_optional) {
 	HasBitmap(fname,is_optional); 
 #ifdef _ZINJAI_DEBUG
 	if (!last_bmp)
-		cerr<<"MISSING IMAGE: "<<fname<<endl;
+		ZLWAR2("Art","GetBitmap, Missing image: "<<fname);
 #endif
 	return *last_bmp;
 }

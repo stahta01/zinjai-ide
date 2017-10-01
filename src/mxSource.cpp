@@ -2427,9 +2427,9 @@ void mxSource::ShowBaloon(wxString str, int p) {
 	SetCalltipMode(MXS_BALOON);
 	wxStyledTextCtrl::CallTipShow(p,str);
 	// para que queríamos un yield aca???
-	DEBUG_INFO("wxYield:in  mxSource::ShowBaloon");
+	ZLINF("Source","ShowBaloon wxYield:in");
 	wxYield();
-	DEBUG_INFO("wxYield:out mxSource::ShowBaloon");
+	ZLINF("Source","ShowBaloon wxYield:out");
 }
 	
 wxString mxSource::FindTypeOfByPos(int p,int &dims, bool include_template_spec, bool first_call) {

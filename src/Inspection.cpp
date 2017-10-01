@@ -75,7 +75,7 @@ void DebuggerInspection::UpdateAllVO(const wxString &voname) {
 			// busca el DebuggerInspection para el vo (por su nombre gdb)
 			map<wxString,DebuggerInspection*>::iterator it=vo2di_map.find(u.name);
 			if (it==vo2di_map.end()) {
-				DEBUG_INFO("ERROR: Inspection::UpdateAllVO: it==vo2di_map.end()");
+				ZLERR("Inspection","UpdateAllVO: it==vo2di_map.end()");
 				continue;
 			}
 			// actualiza el estado del DebuggerInspection y notifica a la interfaz mediante consumer

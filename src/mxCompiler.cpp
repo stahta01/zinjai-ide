@@ -123,9 +123,9 @@ void mxCompiler::BuildOrRunProject(bool prepared, GenericAction *on_end) {
 	if (project->GetWxfbActivated() && project->GetWxfbConfiguration()->working) return;
 	main_window->extern_compiler_output->Clear();
 	main_window->SetCompilingStatus(LANG(GENERAL_PREPARING_BUILDING,"Preparando compilación..."),true);
-DEBUG_INFO("wxYield:in  mxCompiler::BuildOrRunProject");
+	ZLINF("Compiler","BuildOrRunProject wxYield:in");
 	wxYield();
-DEBUG_INFO("wxYield:out mxCompiler::BuildOrRunProject");
+	ZLINF("Compiler","BuildOrRunProject wxYield:out");
 	if (prepared || project->PrepareForBuilding(nullptr)) { // si hay que compilar/enlazar
 		if (!EnsureCompilerNotRunning()) return;
 		fms_move( fms_delete(project->post_compile_action), on_end );

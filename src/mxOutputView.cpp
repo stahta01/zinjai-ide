@@ -97,8 +97,9 @@ void mxOutputView::Launch(wxString path, wxString command) {
 	process->Redirect();
 	RaiiWorkDirChanger cwd_guard(path); // set temp cwd
 	command=command.Mid(0,4000);
-	_IF_DEBUGMODE(command);
+	ZLINF2("OutputView","cmd: "<<command);
 	pid = wxExecute(command,wxEXEC_ASYNC,process);
+	ZLINF2("OutputView","pid: "<<pid);
 	cwd_guard.RestoreNow();
 	if (pid) { 
 		working=true;

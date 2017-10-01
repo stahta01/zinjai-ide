@@ -85,6 +85,7 @@
 #include "EnvVars.h"
 #include "mxMiniMapPanel.h"
 #include "mxHidenPanel.h"
+#include "ZLog.h"
 using namespace std;
 
 #define SIN_TITULO (wxString("<")<<LANG(UNTITLED,"sin_titulo_")<<(++untitled_count)<<">")
@@ -515,7 +516,7 @@ mxMainWindow::mxMainWindow(wxWindow* parent, wxWindowID id, const wxString& titl
 	: wxFrame(parent, id, title, pos, size, style) 
 {
 	
-SHOW_MILLIS("Entering mxMainWindow's constructor...");	
+	ZLINF("Application","Entering mxMainWindow's constructor...");	
 	
 	EXTERNAL_SOURCE=(mxSource*)this;
 	focus_source=nullptr;
@@ -534,7 +535,7 @@ SHOW_MILLIS("Entering mxMainWindow's constructor...");
 	SetIcon(wxIcon(zinjai_xpm));
 #endif
 	
-SHOW_MILLIS("Initializing aui_manager, menues and toolbars...");	
+	ZLINF("MainWindow","Initializing aui_manager, menues and toolbars...");	
 	
  	m_aui = make_unique<mxAUI>(this);
 	mxAUIFreezeGuard aui_guard(*m_aui);
@@ -543,7 +544,7 @@ SHOW_MILLIS("Initializing aui_manager, menues and toolbars...");
 	CreateStatusBar(1,0);
 	status_bar->SetStatusText(LANG(MAINW_INITIALIZING,"Inicializando..."));	
 	
-SHOW_MILLIS("Initializing aui_manager, panels...");	
+	ZLINF("MainWindow","Initializing aui_manager, panels...");	
 
 	m_aui->Create(PaneId::Project, project_tree.Create(this) );
 	m_aui->Create(PaneId::Symbols, CreateSymbolsTree() );
@@ -569,7 +570,7 @@ SHOW_MILLIS("Initializing aui_manager, panels...");
 	
 	m_aui->Update();
 	
-SHOW_MILLIS("Initializing parser and toolchain...");	
+	ZLINF("MainWindow","Initializing parser and toolchain...");	
 
 	parser = new Parser(this);
 	g_code_helper->AppendIndexes(config->Help.autocomp_indexes);
@@ -581,7 +582,7 @@ SHOW_MILLIS("Initializing parser and toolchain...");
 	compiler->timer = new wxTimer(GetEventHandler(),mxID_COMPILER_TIMER);
 	find_replace_dialog = nullptr; // new mxFindDialog(this,wxID_ANY);
 	
-SHOW_MILLIS("Almost done with mxMainWindow...");	
+	ZLINF("MainWindow","Almost done with mxMainWindow...");	
 
 	current_after_events_action = call_after_events = nullptr;
 	after_events_timer = new wxTimer(GetEventHandler(),mxID_TIMER_AFTER_EVENTS);
@@ -595,7 +596,7 @@ SHOW_MILLIS("Almost done with mxMainWindow...");
 	
 	Show(true); Maximize(config->Init.maximized);
 	
-SHOW_MILLIS("mxMainWindow construction finished...");	
+	ZLINF("MainWindow","mxMainWindow construction finished...");	
 
 	// stuff that needs main_window setted to work
 	main_window = this;
@@ -1173,9 +1174,9 @@ void mxMainWindow::OnSelectError (wxTreeEvent &event) {
 		}
 	}
 	// ver que dijo el compilador
-DEBUG_INFO("wxYield:in  mxMainWindow::OnSelectError");
+	ZLINF("MainWindow","OnSelectError wxYield:in");
 	wxYield();
-DEBUG_INFO("wxYield:out mxMainWindow::OnSelectError");
+	ZLINF("MainWindow","OnSelectError wxYield:out");
 	mxCompilerItemData *comp_data = (mxCompilerItemData*)(compiler_tree.treeCtrl->GetItemData(event.GetItem()));
 	wxString error_message = comp_data ? comp_data->file_info : "";
 	if (!error_message.Len()) error_message = compiler_tree.treeCtrl->GetItemText(event.GetItem());
@@ -1650,8 +1651,7 @@ void mxMainWindow::OnProcessTerminate (wxProcessEvent& event) {
 		compile_and_run=compile_and_run->next;
 	}
 	if (!compile_and_run) { // esto no deberia ocurrir?
-		DEBUG_INFO("Warning: Unknown process id: "<<event.GetPid());
-		cerr<<"Warning: Unknown process id: "<<event.GetPid()<<endl;
+		ZLWAR2("MainWindow","OnProcessTerminate, Unknown process id: "<<event.GetPid());
 		return;
 	}
 	// ver si hay otro proceso de compilacion en curso en paralelo
@@ -2100,9 +2100,9 @@ void mxMainWindow::OnViewFullScreen(wxCommandEvent &event) {
 		m_aui->OnFullScreenStart(); // reacomodar los paneles
 		mxOSD::MakeTimed(this,LANG(MAINW_FULLSCREEN_OUT_TIP,"Presione F11 para salir del modo pantalla completa"),3000);
 		Raise();
-DEBUG_INFO("wxYield:in  mxMainWindow::OnViewFullScreen");
+		ZLINF("MainWindow","OnViewFullScreen wxYield:in");
 		wxYield();
-DEBUG_INFO("wxYield:out mxMainWindow::OnViewFullScreen");
+		ZLINF("MainWindow","OnViewFullScreen wxYield:out");
 //		IF_THERE_IS_SOURCE CURRENT_SOURCE->SetFocus();
 	}
 	
@@ -2356,9 +2356,9 @@ mxSource *mxMainWindow::OpenFile (const wxString &filename, bool add_to_project)
 		} else {
 			mxOSDGuard osd(this,LANG(WXFB_OPENING,"Abriendo wxFormBuilder..."));
 			wxExecute(wxString("\"")+config->Files.wxfb_command+"\" \""+filename+"\"");
-DEBUG_INFO("wxYield:in  mxMainWindow::OpenFile");
+			ZLINF("MainWindow","OpenFile wxYield:in");
 			wxYield(); 
-DEBUG_INFO("wxYield:out mxMainWindow::OpenFile");
+			ZLINF("MainWindow","OpenFile wxYield:out");
 			wxMilliSleep(1000);
 		}
 		return EXTERNAL_SOURCE;
@@ -3144,9 +3144,9 @@ void mxMainWindow::OnDebugRun( wxCommandEvent &event ) {
 			debug->Continue();
 	} else {
 		SetCompilingStatus("Preparando depuración...");
-DEBUG_INFO("wxYield:in mxMainWindow::OnDebugRun");
+		ZLINF("MainWindow","OnDebugRun wxYield:in");
 		wxYield();
-DEBUG_INFO("wxYield:out mxMainWindow::OnDebugRun");
+		ZLINF("MainWindow","OnDebugRun wxYield:out");
 		if (project) {
 			if (project->active_configuration->exec_method==EMETHOD_SCRIPT) { // if the script launches the executable, we can only attach the debugger to it
 				OnDebugAttach(event);
@@ -3312,9 +3312,8 @@ void mxMainWindow::OnDebugDoThat ( wxCommandEvent &event ) {
 				wxTextCtrl *ctrl;
 				mxDbgLogWin() { 
 					ctrl = new wxTextCtrl(main_window,wxID_ANY,"",wxDefaultPosition,wxDefaultSize,wxTE_MULTILINE);
-					main_window->m_aui->AttachGenericPane(ctrl,"GDB log")->Top().Dock();
+					main_window->m_aui->AttachGenericPane(ctrl,"GDB log",true)->Top().Dock();
 				}
-				~mxDbgLogWin() { main_window->m_aui->DetachPane(ctrl); ctrl->Destroy(); }
 				void Open() { ctrl->Clear(); }
 				void Close() {}
 				void Log(const wxString &s) { ctrl->AppendText(s); ctrl->SetSelection(ctrl->GetValue().Len(),ctrl->GetValue().Len()); }
@@ -3332,12 +3331,28 @@ void mxMainWindow::OnDebugDoThat ( wxCommandEvent &event ) {
 			};
 			_DBG_LOG_ST_CALL(Set(new mxDbgLogFile(arg)));
 		}
-	} else if (res=="debug on") {
-		g_zinjai_debug_mode = true;
-		SetStatusText("DoThat: Modo debug activado");
-	} else if (res=="debug off") {
-		g_zinjai_debug_mode = false;
-		SetStatusText("DoThat: Modo debug desactivado");
+	} else if (res=="log panel") {
+		struct mxZLogPanel : public ZLog {
+			wxTextCtrl *ctrl;
+			mxZLogPanel() : ZLog("mxZLogPanel") { 
+				ctrl = new wxTextCtrl(main_window,wxID_ANY,"",wxDefaultPosition,wxDefaultSize,wxTE_MULTILINE);
+				main_window->m_aui->AttachGenericPane(ctrl,"ZinjaI log",true)->Top().Dock();
+			}
+			void DoLog(ZLog::Level lvl, const char *grp, const wxString &s) { 
+				ctrl->AppendText(GetString(lvl,grp,s)+"\n"); 
+				ctrl->SetSelection(ctrl->GetValue().Len(),ctrl->GetValue().Len()); 
+			}
+		};
+		new mxZLogPanel();
+	} else if (res.StartsWith("log msg ")) {
+		struct mxZLogMessageBox : public ZLog {
+			wxString filter;
+			mxZLogMessageBox(wxString p) : ZLog("mxZLogMessageBox"), filter(p) { }
+			void DoLog(ZLog::Level lvl, const char *grp, const wxString &s) {
+				if (filter==grp) wxMessageBox(GetString(lvl,grp,s));
+			}
+		};
+		new mxZLogMessageBox(res.AfterFirst(' ').AfterFirst(' '));
 	} else if (res=="gdb cmd") {
 		wxMessageBox (debug->last_command);
 	} else if (res=="gdb ans") {

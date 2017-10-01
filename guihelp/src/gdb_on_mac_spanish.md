@@ -6,7 +6,7 @@ Suponiendo que el sistema en el que se encuentra ya tiene correctamente instalad
 
 Sin embargo, se requiere firmar digitalmente al ejecutable del depurador para que el sistema le otorgue los permisos necesarios para controlar a los programas a depurar. Lamentablemente, el proceso de generación de la firma necesaria no es simple y no está automatizado. 
 
-A continuación se describen los pasos necesarios para instalar gdb y firmarlo adecuadamente con la ayuda de *ZinjaI*:
+**A continuación se describen los pasos necesarios para instalar gdb y firmarlo adecuadamente con la ayuda de *ZinjaI*:**
 
  1. Lanzar el proceso de descarga y compilación mediante [este enlace](action:gdb_on_mac) (necesitará conexión a Internet si es la primera vez que lo ejecuta).
  
@@ -27,8 +27,9 @@ A continuación se describen los pasos necesarios para instalar gdb y firmarlo ad
  3. Por último, *ZinjaI* intentará reiniciar el servicio que gestiona estos accesos (en caso de que este último paso falle, deberá reiniciar su sistema para que los cambios tengan efecto).
  
 Si completa este proceso con éxito, podrá comenzar a utilizar las funcionalidades de depuración de ZinjaI. 
-* Es normal que en la primer depuración, el sistema le pida usuario y contraseña. En las sisguientes ya no será necesario.
-* Es normal que al ejecutar en depuración vea en consola el mensaje *&"warning: GDB: Failed to set controlling terminal: Operation not permitted\n"*. Puede ignorar este mensaje.
+
+  * Es normal que en la primer depuración, el sistema le pida usuario y contraseña. En las sisguientes ya no será necesario.
+  * Es normal que al ejecutar en depuración vea en consola el mensaje *&"warning: GDB: Failed to set controlling terminal: Operation not permitted\n"*. Puede ignorar este mensaje.
 
 Si el proceso falla, igual puede utilizar *ZinjaI* para editar el código, compilar, y ejecutar sus programas. Pero no podrá utilizar las funcionalidades del menú *Depuración*.
 
