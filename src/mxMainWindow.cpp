@@ -4452,10 +4452,21 @@ static void SuggestFix(mxSource *source, int pos, const wxString &error, const w
 	if (message.IsEmpty()) return;
 	wxString fix = message.AfterFirst('\'').BeforeFirst('\'');
 	if (!fix.IsEmpty()) {
-		g_autocomp_list.Init();
-		g_autocomp_list.Add(fix,"",message);
-		int pend = source->WordEndPosition(pos,true);
-		source->ShowAutoComp(pend-pos,g_autocomp_list.GetResult());
+		
+		class ShowAutocompAfterEventsAction: public mxMainWindow::AfterEventsAction {
+			mxSource *m_src; int m_pos;
+			wxString m_fix, m_msg;
+		public: 
+			ShowAutocompAfterEventsAction(mxSource *src, int pos, const wxString &fix, const wxString &msg) 
+				: m_src(src), m_pos(pos), m_fix(fix), m_msg(msg) { }
+			void Run() override { 
+				g_autocomp_list.Init();
+				g_autocomp_list.Add(m_fix,"",m_msg);
+				int pend = m_src->WordEndPosition(m_pos,true);
+				m_src->ShowAutoComp(pend-m_pos,g_autocomp_list.GetResult(),false);
+			}
+		};
+		main_window->CallAfterEvents(new ShowAutocompAfterEventsAction(source,pos,fix,message));
 	}
 }
 
@@ -4495,12 +4506,16 @@ void mxMainWindow::OnSelectErrorCommon (const wxString & error, const wxString &
 			if (i==preline.Len()) {
 				n+=source->PositionFromLine(line-1)-1;
 				source->SelectError(0,n,n);
+				// el siguiente if no deberia ser necesario, pero el autocomp de 
+				// SuggestFix deja el foco en el fuente y no en la lista, al menos
+				// con paneles autoocultables en linux
+				if (!m_aui->IsVisible(PaneId::Compiler)) 
+					m_aui->Show(PaneId::Compiler,true);
+				SuggestFix(source,n,error,first_child);
 #ifndef __WIN32__
 				if (set_focus_timer)
 #endif
 					SetFocusToSourceAfterEvents();
-				m_aui->Show(PaneId::Compiler,true);
-				SuggestFix(source,n,error,first_child);
 				return;
 			}
 		}
@@ -4603,12 +4618,16 @@ void mxMainWindow::OnAfterEventsTimer (wxTimerEvent & event) {
 	current = call_after_events; 
 	call_after_events = nullptr;
 	while (current) {
+		ZLDBG("MainWindow","AfterEventsAction, Run");
 		AfterEventsAction *next = current->m_next;
 		if (current->m_do_run) current->Run(); 
 		delete current;
 		current = next;
 	}
-	if (call_after_events) after_events_timer->Start(50,true);
+	if (call_after_events) {
+		ZLDBG("MainWindow","AfterEventsAction, new actions detected");
+		after_events_timer->Start(50,true);
+	}
 }
 
 void mxMainWindow::SetFocusToSourceAfterEvents () {

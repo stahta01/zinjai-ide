@@ -13,6 +13,7 @@ tab_width=4
 tab_use_spaces=0
 explorer_path=.
 inherits_from=
+current_source=version.h
 path_char=/
 [source]
 path=mxSource.cpp
@@ -962,6 +963,7 @@ cursor=74:151
 [other]
 path=version.h
 cursor=0:24
+open=true
 [other]
 path=../todo.txt
 cursor=0:0

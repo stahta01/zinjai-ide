@@ -14,7 +14,7 @@
    height="1052.3622"
    id="svg2"
    version="1.1"
-   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
+   inkscape:version="0.92+devel (3a69646, 2017-09-29)"
    sodipodi:docname="splashes3.svg"
    viewBox="0 0 744.09448 1052.3622">
   <sodipodi:namedview
@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.29804745"
-     inkscape:cx="20536.342"
-     inkscape:cy="-3990.0562"
+     inkscape:zoom="0.42150275"
+     inkscape:cx="20625.678"
+     inkscape:cy="-3768.4054"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -37,7 +37,8 @@
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:snap-global="false">
+     inkscape:snap-global="false"
+     inkscape:document-rotation="0">
     <sodipodi:guide
        position="34725,-5981.2501"
        orientation="0,1"
@@ -10853,7 +10854,7 @@
          sodipodi:role="line"
          id="tspan26749"
          x="20580.525"
-         y="1685.043">v20170926</tspan></text>
+         y="1685.043">v20171002</tspan></text>
     <text
        inkscape:export-ydpi="30.056633"
        inkscape:export-xdpi="30.056633"
@@ -10866,7 +10867,7 @@
          y="4596.9678"
          x="20514.723"
          id="tspan26753"
-         sodipodi:role="line">v20170926</tspan></text>
+         sodipodi:role="line">v20171002</tspan></text>
     <g
        transform="translate(-6278.3982,-270.94156)"
        id="g26819">
