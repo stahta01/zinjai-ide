@@ -3303,7 +3303,7 @@ void mxMainWindow::OnDebugDoThat ( wxCommandEvent &event ) {
 	static wxString what;
 	wxString res = mxGetTextFromUser("Comando:", "Comandos internos" , what, this);
 	if (res=="help") {
-		wxMessageBox ("errorsave, kboom, debug on, debug off, wxlog on, wxlog off, gdb cmd, gdb ans, dbglog <file>/win/off");
+		wxMessageBox ("errorsave, kboom, wxlog on, wxlog off, gdb cmd, gdb ans, dbglog <file>/win/off, log <file>/panel/msg <group>");
 	} else if (res.StartsWith("dbglog ")) {
 		wxString arg=res.AfterFirst(' ');
 		if (arg=="off") _DBG_LOG_ST_CALL(UnSet());
@@ -3338,9 +3338,12 @@ void mxMainWindow::OnDebugDoThat ( wxCommandEvent &event ) {
 				ctrl = new wxTextCtrl(main_window,wxID_ANY,"",wxDefaultPosition,wxDefaultSize,wxTE_MULTILINE);
 				main_window->m_aui->AttachGenericPane(ctrl,"ZinjaI log",true)->Top().Dock();
 			}
-			void DoLog(ZLog::Level lvl, const char *grp, const wxString &s) { 
-				ctrl->AppendText(GetString(lvl,grp,s)+"\n"); 
-				ctrl->SetSelection(ctrl->GetValue().Len(),ctrl->GetValue().Len()); 
+			void DoLog(ZLog::Level lvl, const char *grp, const wxString &str) { 
+				wxString msg = GetString(lvl,grp,str);
+				if (!msg.IsEmpty()) {
+					ctrl->AppendText(msg+"\n"); 
+					ctrl->SetSelection(ctrl->GetValue().Len(),ctrl->GetValue().Len()); 
+				}
 			}
 		};
 		new mxZLogPanel();
@@ -3348,8 +3351,11 @@ void mxMainWindow::OnDebugDoThat ( wxCommandEvent &event ) {
 		struct mxZLogMessageBox : public ZLog {
 			wxString filter;
 			mxZLogMessageBox(wxString p) : ZLog("mxZLogMessageBox"), filter(p) { }
-			void DoLog(ZLog::Level lvl, const char *grp, const wxString &s) {
-				if (filter==grp) wxMessageBox(GetString(lvl,grp,s));
+			void DoLog(ZLog::Level lvl, const char *grp, const wxString &str) {
+				if (filter==grp) {
+					wxString msg = GetString(lvl,grp,str);
+					if (!msg.IsEmpty()) wxMessageBox(msg);
+				}
 			}
 		};
 		new mxZLogMessageBox(res.AfterFirst(' ').AfterFirst(' '));

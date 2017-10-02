@@ -1,6 +1,7 @@
 #ifndef GDBANSBUFFER_H
 #define GDBANSBUFFER_H
 #include <wx/string.h>
+#include <cstdlib>
 
 class GDBAnsBuffer {
 public:

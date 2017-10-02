@@ -66,7 +66,7 @@ long mxExecute(wxString command, wxArrayString& output, wxArrayString& errors, i
 #ifdef _ZINJAI_DEBUG
 	ZLDBG2("execution_workaround", "Enters, command="<<command);
 #else
-	if (s_someone_is_running) { ZWARN("execution_workaround","COLLISION"); return 0; }
+	if (s_someone_is_running) { ZLWAR("execution_workaround","COLLISION"); return 0; }
 #endif
 	s_someone_is_running=true;
 	long ret=wxExecute(command,output,errors,flags);

@@ -1,0 +1,37 @@
+<HTML><HEAD><TITLE>ZinjaI -  Installing GDB on Mac OS</TITLE></HEAD><BODY>
+<h4>Installing GDB on Mac OS</h4>
+
+<p>El depurador por defecto en los sistemas Mac OS modernos es lldb. Sin embargo, <em>ZinjaI</em> solo está preparado para interactuar con gdb.</p>
+
+<p>Suponiendo que el sistema en el que se encuentra ya tiene correctamente instalado un compilador (gcc o llvm-clang, usualmente instalados a través de XCode), <em>ZinjaI</em> puede automatizarle la descarga y compilación del depurador.</p>
+
+<p>Sin embargo, se requiere firmar digitalmente al ejecutable del depurador para que el sistema le otorgue los permisos necesarios para controlar a los programas a depurar. Lamentablemente, el proceso de generación de la firma necesaria no es simple y no está automatizado. </p>
+
+<p>A continuación se describen los pasos necesarios para instalar gdb y firmarlo adecuadamente con la ayuda de <em>ZinjaI</em>:</p>
+
+<ol>
+<li><p>Puede lanzar el proceso nuevamente mediante <a href="action:gdb_on_mac">este enlace</a> un script en una terminal que intentará descargar y compilar gdb, y lo asistirá en los últimos pasos del proceso de firmado.</p></li>
+<li><p>El script comenzará a descargar y compilar gdb (necesitará conexión a Internet si es la primera vez que lo ejecuta).</p></li>
+<li><p>Mientras tanto, puede comenzar a generar una llave adecuada para firmar gdb. Utilice <a href="action:keychain_access">este enlace</a> para abrir el cuadro de configuración de <q>Accesso a Llaves</q> de sus sistema y siga las siguientes instrucciones:</p>
+
+<ol>
+<li>In Keychain Access&#39; list in the upper left hand corner of the window select <q>login</q>.</li>
+<li>Go to the app menu (upper border of the screen) and select <q>Keychain Access</q> -&gt; <q>Certificate Assistant</q> -&gt; <q>Create a Certificate...</q></li>
+<li>In the recently opened dialog, set the following settings: <q>Name</q>-&gt;<q>zinjai-gdb</q>, <q>Identity Type</q>-&gt;<q>Self Signed Root</q>, <q>Certificate Type</q>-&gt;<q>Code Signing</q></li>
+<li>Click <q>Create</q>, then <q>Continue</q>, then <q>Done</q> to finish the wizard.</li>
+<li>Click on the <q>My Certificates</q> on one of the left side panels.</li>
+<li>In the main list of the window, double the new certificate: <q>zinjai-gdb</q> </li>
+<li>Turn down the <q>Trust</q> disclosure triangle, scroll to the <q>Code sign</q> trust pulldown menu and select <q>Always Trust</q> and authenticate as needed using your username and password.</li>
+<li>Drag the new <q>zinjai-gdb</q> code signing from the <q>login</q> keychain to the <q>System</q> keychain in the Keychains pane on the left hand side of the main Keychain Access window. You&#39;ll have to authorize a few more times, and set it to be <q>Always trusted</q> when asked. (<q>sistema</q> <q>permitir siempre</q>)</li>
+<li>Drag the new certificate from the Keychain Access window to the system Desktop.</li>
+<li>Go to the terminal launched in step one, wait for it to finish compiling and hit enter once when it asks you for the first time.</li>
+<li>In the keychain access dialog, drag <q>zinjai-gdb</q> back to <q>login</q>. </li>
+<li>Finally, you can close that window and hit enter one more time in the step one&#39;s terminal.</li>
+</ol></li>
+<li><p>Luego de finalizar con la compilación de gdb del paso 2, y la generación y aplicación del nuevo certificado del paso 3, zinjai intentará reiniciar el servicio que gestiona estos accesos. En caso de que este último paso falle, deberá reiniciar su sistema para que los cambios tengan efecto.</p></li>
+</ol>
+
+<p>Si el proceso falla, igual puede utilizar ZinjaI para editar el código, compilar, y ejecutar sus programas. Pero no podrá utilizar las funcionalidades del menú <q>Depuración</q>.</p>
+
+<p>Instructions based on: <a href="https://llvm.org/svn/llvm-project/lldb/trunk/docs/code-signing.txt">https://llvm.org/svn/llvm-project/lldb/trunk/docs/code-signing.txt</a></p>
+</BODY></HTML>

@@ -34,7 +34,7 @@ protected:
 #ifdef _ZINJAI_DEBUG
 		case ZLog::Debug:   return wxString() << '>' << grp << ": " << str;
 #else
-		case ZLog::Debug:   return;
+		case ZLog::Debug:   return "";
 #endif
 		default:   return wxString() << "(INVALID LOG LEVEL)" << grp << ": " << str;
 		}

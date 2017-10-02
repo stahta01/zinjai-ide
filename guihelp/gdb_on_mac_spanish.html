@@ -1,0 +1,43 @@
+<HTML><HEAD><TITLE>ZinjaI -  Instalación de GDB en Mac OS</TITLE></HEAD><BODY>
+<h4>Instalación de GDB en Mac OS</h4>
+
+<p>El depurador por defecto en los sistemas Mac OS modernos es lldb. Sin embargo, <em>ZinjaI</em> solo está preparado para interactuar con gdb.</p>
+
+<p>Suponiendo que el sistema en el que se encuentra ya tiene correctamente instalado un compilador (gcc o llvm-clang, usualmente instalados a través de XCode), <em>ZinjaI</em> puede automatizarle la descarga y compilación del depurador.</p>
+
+<p>Sin embargo, se requiere firmar digitalmente al ejecutable del depurador para que el sistema le otorgue los permisos necesarios para controlar a los programas a depurar. Lamentablemente, el proceso de generación de la firma necesaria no es simple y no está automatizado. </p>
+
+<p><strong>A continuación se describen los pasos necesarios para instalar gdb y firmarlo adecuadamente con la ayuda de <em>ZinjaI</em>:</strong></p>
+
+<ol>
+<li><p>Lanzar el proceso de descarga y compilación mediante <a href="action:gdb_on_mac">este enlace</a> (necesitará conexión a Internet si es la primera vez que lo ejecuta).</p></li>
+<li><p>Mientras tanto, utilice <a href="action:keychain_access">este enlace</a> para abrir el cuadro de configuración de <em>Accesso a Llaves</em> de sus sistema y siga las siguientes instrucciones:</p>
+
+<ol>
+<li>En el panel de la izquierda de la ventana, seleccione <em>Inicio de sesión</em></li>
+<li>Vaya al menú de la aplicación (borde superior de la pantalla) y seleccione: <em>Acceso a llaveros</em> -&gt; <em>Asistente para certificados</em> -&gt; <em>Crear un ceritificado...</em></li>
+<li>En el nuevo cuadro de diálogo, configure: <em>Nombre</em>-&gt;<em>zinjai-gdb</em>, <em>Tipo de Identidad</em>-&gt;<em>Raiz auto-firmada</em>, <em>Tipo de Certificado</em>-&gt;<em>Firma de Codigo</em></li>
+<li>Click en <em>Crear</em>, luego en <em>Continuar</em>, luego en <em>Aceptar</em> para finalizar el asistente.</li>
+<li>Click en <em>Mis certificados</em> en un de los paneles de la izquierda.</li>
+<li>En la lista principal de la ventana, doble click en el nuevo certificado: <em>zinjai-gdb</em></li>
+<li>Despliegue la sección <em>Confiar</em> con un click en el triangulo, busque <em>Firma de codigo</em> y seleccione <em>Confiar siempre</em>. Luego deberá autenticarse con huella digital y/o password para confirmar el cambio.</li>
+<li>Arrastre el nuevo certificado <em>zinjai-gdb</em> desde <em>Inicio de sesión</em> hacia <em>Sistema</em> en el panel de la izquierda. Tendrá que volver a autenticarse una o dos veces. En una de ellas, cuando tenga la oportunidad, seleccione <em>Permitir siempre</em> y <em>Confiar Siempre</em>.</li>
+<li>Seleccion <em>Sistema</em>, y arrastre el nuevo certificado desde la ventana de <em>Acceso a llaves</em> hacia el escritorio. </li>
+<li>Vaya a la terminal lanzada en el paso 1, y cuando la compilación finalice y el script se lo pida, presione enter solo una vez.</li>
+<li>En la ventana de acceso a llaves, arrastar <em>zinjai-gdb</em> nuevamente a <em>inicio de sesión</em>. </li>
+<li>Finalmente puede cerrar esa ventana, y presionar enter una vez más en la consola del paso 1 para concluir el proceso.</li>
+</ol></li>
+<li><p>Por último, <em>ZinjaI</em> intentará reiniciar el servicio que gestiona estos accesos (en caso de que este último paso falle, deberá reiniciar su sistema para que los cambios tengan efecto).</p></li>
+</ol>
+
+<p>Si completa este proceso con éxito, podrá comenzar a utilizar las funcionalidades de depuración de ZinjaI. </p>
+
+<ul>
+<li>Es normal que en la primer depuración, el sistema le pida usuario y contraseña. En las sisguientes ya no será necesario.</li>
+<li>Es normal que al ejecutar en depuración vea en consola el mensaje <em>&amp;<q>warning: GDB: Failed to set controlling terminal: Operation not permitted\n</q></em>. Puede ignorar este mensaje.</li>
+</ul>
+
+<p>Si el proceso falla, igual puede utilizar <em>ZinjaI</em> para editar el código, compilar, y ejecutar sus programas. Pero no podrá utilizar las funcionalidades del menú <em>Depuración</em>.</p>
+
+<p>Instrucciones basadas en: <a href="http://llvm.org/svn/llvm-project/lldb/trunk/docs/code-signing.txt">http://llvm.org/svn/llvm-project/lldb/trunk/docs/code-signing.txt</a></p>
+</BODY></HTML>

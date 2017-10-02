@@ -10,7 +10,8 @@ protected:
 public:
 	ZLogOstream(const char *name) : ZLog(name), m_ost(nullptr) { }
 	void DoLog(Level lvl, const char *grp, const wxString &str) {
-		(*m_ost) << ZLog::GetString(lvl,grp,str) << endl;
+		wxString msg = ZLog::GetString(lvl,grp,str);
+		if (!msg.IsEmpty()) (*m_ost) << msg << endl;
 	}
 };
 
