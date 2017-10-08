@@ -823,6 +823,7 @@ bool DebugManager::UpdateBacktrace(const BTInfo &stack, bool is_current) {
 		} else {
 			main_window->backtrace_ctrl->SetCellValue(cant_levels,BG_COL_FUNCTION,func);
 			wxString fname = GetValueFromAns(s,"fullname",true,true);
+//			if (!fname.IsEmpty()&&!fname.EndsWith(".cpp")) asm("int3");
 			if (!fname.Len()) fname = GetValueFromAns(s,"file",true,true);
 			fname.Replace("\\\\",sep,true);
 			fname.Replace("//",sep,true);
@@ -1331,19 +1332,15 @@ wxString DebugManager::GetValueFromAns(wxString ans, wxString key, bool crop, bo
 				
 				int l=ret.Len(),i=0,d=0;
 				while (i<l) {
-					if (ret[i+d]=='\\') { 
-						if (ret[i+d+1]=='n') 
-							ret[i+d+1]='\n';
-						else if (ret[i+d+1]<='9' && ret[i+d+1]>='0' && i+3<l && ret[i+d+2]<='9' && ret[i+d+2]>='0' && ret[i+d+3]<='9' && ret[i+d+3]>='0')
-							{ ret[i+d+3]=(ret[i+d+1]-'0')*8*8+(ret[i+d+2]-'0')*8+(ret[i+d+3]-'0'); d+=2; l-=2; }
-						d++; /*l--;*/
-						ret[i]=ret[i+d];
-						i++;
-					} else {
-						if (d) 
-							ret[i]=ret[i+d];
-						i++;
+					if (ret[i]=='\\') { 
+						if (ret[i+1]=='n') ret[i+1]='\n';
+						if (ret[i+1]=='n') ret[i+1]='\t';
+						else if (ret[i+1]<='9' && ret[i+1]>='0' && i+3<l && ret[i+2]<='9' && ret[i+2]>='0' && ret[i+3]<='9' && ret[i+3]>='0')
+							{ ret[i+3]=(ret[i+1]-'0')*8*8+(ret[i+2]-'0')*8+(ret[i+3]-'0'); i+=2; }
+						i++; d++; ret[i-d] = ret[i];
 					}
+					if (d) ret[i-d]=ret[i];
+					i++;
 				}
 				return ret.Mid(0,l-d);
 			}

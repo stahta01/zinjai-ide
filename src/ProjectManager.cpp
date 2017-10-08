@@ -2621,7 +2621,7 @@ void ProjectManager::WxfbGetFiles() {
 **/
 bool ProjectManager::WxfbGenerate(bool show_osd, project_file_item *cual) {
 	if (!config->CheckWxfbPresent()) {
-		wxfb->autoupdate_projects_temp_disabled = true;
+		wxfb->temp_disabled = true;
 		return false;
 	}
 	boolFlagGuard wxfb_working_guard(wxfb->working);
@@ -2682,8 +2682,8 @@ bool ProjectManager::WxfbGenerate(wxString fbp_file, wxString fbase, bool force_
 				 "(probablemente la ruta al ejecutable de wxFormBuilder no esté\n"
 				 "correctamente definida. Verifique esta propiedad en la pestaña \"Rutas 2\"\n"
 				 "del cuadro de \"Preferencias\").");
-			if (wxfb->autoupdate_projects && !wxfb->autoupdate_projects_temp_disabled) {
-				wxfb->autoupdate_projects_temp_disabled = true;
+			if (wxfb->autoupdate_projects && !wxfb->temp_disabled) {
+				wxfb->temp_disabled = true;
 				message += "\n\n";
 				message += LANG(PROJMNGR_REGENERATING_ERROR_2,""
 								"La actualización automática de estos proyectos\nse deshabilitará temporalmente.");
@@ -2720,8 +2720,8 @@ bool ProjectManager::WxfbGenerate(wxString fbp_file, wxString fbase, bool force_
 		wxString message = LANG(PROJMNGR_REGENERATING_ERROR_4,""
 								"No se pudieron actualizar correctamente los proyectos wxFormBuilder\n"
 								"(probablemente no se puede escribir en la carpeta de proyecto).");
-		if (wxfb->autoupdate_projects && !wxfb->autoupdate_projects_temp_disabled) {
-			wxfb->autoupdate_projects_temp_disabled = true;
+		if (wxfb->autoupdate_projects && !wxfb->temp_disabled) {
+			wxfb->temp_disabled = true;
 			message += "\n\n";
 			message += LANG(PROJMNGR_REGENERATING_ERROR_2,""
 							"La actualización automática de estos proyectos\nse deshabilitará temporalmente.");
@@ -2920,7 +2920,7 @@ void ProjectManager::ActivateWxfb(bool do_activate) {
 	if (do_activate) {
 		WxfbGetFiles();
 		if (!config->CheckWxfbPresent()) {
-			GetWxfbConfiguration()->autoupdate_projects_temp_disabled = true;
+			GetWxfbConfiguration()->temp_disabled = true;
 		}
 	}
 	main_window->m_aui->Update(); // para que se de cuenta de el cambio en la barra de herramientas
@@ -3386,7 +3386,7 @@ ProjectManager::WxfbAutoCheckData::WxfbAutoCheckData() {
 **/
 void ProjectManager::WxfbAutoCheckStep1() {
 	
-	if (loading || !wxfb || !wxfb->activate_integration || !wxfb->autoupdate_projects || wxfb->autoupdate_projects_temp_disabled || wxfb->working) return;
+	if (loading || !wxfb || !wxfb->activate_integration || !wxfb->autoupdate_projects || wxfb->temp_disabled || wxfb->working) return;
 	
 	if (parser->working) {
 		class LaunchProjectWxfbAutoUpdateStep1Action : public Parser::OnEndAction {

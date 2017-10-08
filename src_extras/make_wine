@@ -43,7 +43,7 @@ zmkdir zinjai
     zmkdir zinjai/imgs
     cp -u $SRC/imgs/descripcion.txt zinjai/imgs/
     cp -u $SRC/imgs/*.png zinjai/imgs/
-    cp -u $SRC/imgs/*.html zinjai/imgs/
+#    cp -u $SRC/imgs/*.html zinjai/imgs/
 #    zmkdir fuentes/imgs
 #    cp -u $SRC/imgs/*.ico fuentes/imgs/
     zmkdir zinjai/imgs/welcome

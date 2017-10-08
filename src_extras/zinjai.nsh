@@ -66,7 +66,7 @@ Section "Registrar Extensiones" SEC01b
   ${registerExtension} "$INSTDIR\zinjai.exe" ".hxx" "hxx - C/C++ header" "$INSTDIR\zinjai.exe,1"
 SectionEnd
 
-Section "Compilador (migw32-gcc6)" SEC02
+Section "Compilador (mingw32-gcc6)" SEC02
   SetOutPath "$INSTDIR\"
   File /R "mingw\*"
 SectionEnd

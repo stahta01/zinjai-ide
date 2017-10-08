@@ -481,12 +481,9 @@ bool ConfigManager::Load() {
 	
 	
 #ifdef __WIN32__
-	if (Init.version<20170929) {
-		if (Files.toolchain=="gcc6-mingw32") Files.toolchain=CURRENT_MINGW;
-	} else if (Init.version<20161130) {
-		if (Files.toolchain=="gcc-mingw32") Files.toolchain=CURRENT_MINGW;
-	} else if (Init.version<20170828) {
-		if (Files.toolchain=="gcc5-mingw32") Files.toolchain=CURRENT_MINGW;
+	if (Init.version<20171006) {
+		if (Files.toolchain=="gcc-mingw32"||Files.toolchain=="gcc5-mingw32"||Files.toolchain=="gcc6-mingw32") 
+			Files.toolchain=CURRENT_MINGW;
 	}
 	
 	if (Init.version<20161130) {
@@ -920,8 +917,8 @@ bool ConfigManager::CheckWxfbPresent() {
 							"no se encuentra correctamente instalado/configurado en\n"
 							"su PC. Si ya se encuentra instalado debe configurar su\n"
 							"ubicación en el cuadro de \"Preferencias\".");
-	if (wxfb_conf->autoupdate_projects && !wxfb_conf->autoupdate_projects_temp_disabled) {
-		wxfb_conf->autoupdate_projects_temp_disabled = true;
+	if (wxfb_conf->autoupdate_projects && !wxfb_conf->temp_disabled) {
+		wxfb_conf->temp_disabled = true;
 		message += "\n\n";
 		message += LANG(PROJMNGR_REGENERATING_ERROR_2,""
 						"La actualización automática de estos proyectos\nse deshabilitará temporalmente.");
@@ -932,7 +929,7 @@ bool ConfigManager::CheckWxfbPresent() {
 								 message, "wxformbuilder", "http://wxformbuilder.org","wxformbuilder");
 	// puede ser que lo acabe de instalar el CheckComplaintAndInstall con apt-get
 	if (just_installed) {
-		wxfb_conf->autoupdate_projects_temp_disabled = false;
+		wxfb_conf->temp_disabled = false;
 		config->Init.wxfb_seen = true;
 	}
 	return config->Init.wxfb_seen;
