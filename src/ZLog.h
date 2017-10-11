@@ -39,6 +39,7 @@ protected:
 		default:   return wxString() << "(INVALID LOG LEVEL)" << grp << ": " << str;
 		}
 	}
+	const char* m_name;
 private:
 	static ZLog *s_first;
 	ZLog *m_prev,*m_next;
@@ -46,7 +47,6 @@ private:
 		DoLog(lvl,grp,str); if (m_next) m_next->LogAndForward(lvl,grp,str);
 	}
 	virtual void DoLog(Level l, const char *group, const wxString &str) = 0;
-	const char* m_name;
 };
 
 #endif

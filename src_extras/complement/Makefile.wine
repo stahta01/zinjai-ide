@@ -1,7 +1,8 @@
 MINGW_DIR=c:/MinGW
 GPP=wine "${MINGW_DIR}"/bin/mingw32-g++
 CXXFLAGS=-O3 -I"${MINGW_DIR}"/wx/include
-LIBS_BASE=-mwindows -s -static-libstdc++ -static-libgcc
+LIBS_BASE= -static-libstdc++ -static-libgcc
+NO_LIBS_BASE= -s
 LDFLAGS=${LIBS_BASE} -L"${MINGW_DIR}"/wx/lib -lwxmsw28_stc -lwxmsw28_aui -lwxmsw28_html -lwxmsw28_core -lwxbase28_net -lwxbase28 -lwxmsw28_adv -lwxtiff -lwxjpeg -lwxpng -lwxzlib -lwxregex -lwxexpat -lwinmm -lshell32 -lcomctl32 -lole32 -loleaut32 -luuid -lrpcrt4 -ladvapi32 -lwsock32 -lodbc32 -lkernel32 -luser32 -lgdi32 -lcomdlg32 -lwinspool 
 OBJS_DIR=../../temp/complement/release.wine
 
@@ -22,7 +23,7 @@ ${OBJS_DIR}/resources_root.o: resources_root.rc manifest_root.xml
 	${GPP} ${OBJS} ${LDFLAGS} ${OBJS_DIR}/resources_normal.o -o $@
 
 ../../bin/complement_wrap.exe: ${OBJS_DIR}/resources_root.o complement_wrap.cpp
-	${GPP} -O3 ${LIBS_BASE} complement_wrap.cpp ${OBJS_DIR}/resources_root.o -o $@
+	${GPP} -O0 ${LIBS_BASE} complement_wrap.cpp ${OBJS_DIR}/resources_root.o -o $@
 
 clean:
 	rm -rf ${OBJS} ../../bin/complement.exe ../../bin/complement_wrap.exe ${OBJS_DIR}/resources_normal.o ${OBJS_DIR}/resources_root.o

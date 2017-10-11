@@ -3332,17 +3332,16 @@ void mxMainWindow::OnDebugDoThat ( wxCommandEvent &event ) {
 			_DBG_LOG_ST_CALL(Set(new mxDbgLogFile(arg)));
 		}
 	} else if (res=="log panel") {
-		struct mxZLogPanel : public ZLog {
-			wxTextCtrl *ctrl;
-			mxZLogPanel() : ZLog("mxZLogPanel") { 
-				ctrl = new wxTextCtrl(main_window,wxID_ANY,"",wxDefaultPosition,wxDefaultSize,wxTE_MULTILINE);
-				main_window->m_aui->AttachGenericPane(ctrl,"ZinjaI log",true)->Top().Dock();
+		struct mxZLogPanel : public ZLog, public wxTextCtrl {
+//			wxTextCtrl *ctrl;
+			mxZLogPanel() : ZLog("mxZLogPanel"), wxTextCtrl(main_window,wxID_ANY,"",wxDefaultPosition,wxDefaultSize,wxTE_MULTILINE) {
+				main_window->m_aui->AttachGenericPane(this,"ZinjaI log",true)->Top().Dock();
 			}
 			void DoLog(ZLog::Level lvl, const char *grp, const wxString &str) { 
 				wxString msg = GetString(lvl,grp,str);
 				if (!msg.IsEmpty()) {
-					ctrl->AppendText(msg+"\n"); 
-					ctrl->SetSelection(ctrl->GetValue().Len(),ctrl->GetValue().Len()); 
+					this->AppendText(msg+"\n"); 
+					this->SetSelection(this->GetValue().Len(),this->GetValue().Len()); 
 				}
 			}
 		};
@@ -4261,7 +4260,7 @@ void mxMainWindow::ShowDiffSideBar(bool bar, bool map) {
 
 void mxMainWindow::ShowGCovSideBar() {
 	if (mxGCovSideBar::HaveInstance()) return;
-	m_aui->AttachGenericPane(&(mxGCovSideBar::GetInstance()), "gcov", true)->Left().Row(10);
+	m_aui->AttachGenericPane(&(mxGCovSideBar::GetInstance()), "gcov", true)->Left().Dock().Row(10);
 }
 
 mxSource *mxMainWindow::GetCurrentSource() {

@@ -1,7 +1,8 @@
 MINGW_DIR="C:/MinGW"
 GPP=wine "${MINGW_DIR}"/bin/mingw32-g++
 WINDRES=wine "${MINGW_DIR}"/bin/windres
-FLAGS=-s -static-libgcc -static-libstdc++
+FLAGS=-s
+EXT_FLAGS=-static-libgcc -static-libstdc++
 
 all: ../bin ../bin/updatem.exe ../bin/runner.exe ../bin/shellexecute.exe ../bin/lsdeps.exe ../log.exe
 	$(MAKE) -f Makefile.wine -C complement
@@ -25,13 +26,13 @@ clean:
 	${GPP} ${FLAGS} -static-libgcc -O2 lsdeps.cpp itlib.cpp peliberr.cpp  -o $@
 
 ../bin/runner.exe: runner.cpp
-	${GPP} ${FLAGS} -O3 runner.cpp -o $@
+	${GPP} ${FLAGS} ${EXT_FLAGS} -O3 runner.cpp -o $@
 
 ../bin/shellexecute.exe: shellexecute.cpp
-	${GPP} -s -O3 -static-libgcc -static-libstdc++ -mwindows shellexecute.cpp -o $@
+	${GPP} -s -O0 -mwindows shellexecute.cpp -o $@
 
 ../bin/updatem.exe: updatem.cpp zockets.cpp zockets.h ../release.w32/xmlres.o
-	${GPP} ${FLAGS} -mwindows updatem.cpp zockets.cpp -lwsock32 xmlres.o -o $@
+	${GPP} ${FLAGS} -O0 -mwindows updatem.cpp zockets.cpp -lwsock32 xmlres.o -o $@
 
 ../log.exe: log-w32.cpp
-	${GPP} -mwindows -static-libgcc -static-libstdc++ log-w32.cpp -o $@
+	${GPP} -mwindows log-w32.cpp -o $@

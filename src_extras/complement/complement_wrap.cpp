@@ -1,23 +1,23 @@
 #include<cstring>
 #include<iostream>
 #if defined(__WIN32__)
-#include<io.h>
-#include<windows.h>
-#include <conio.h>
+#	include<io.h>
+#	include<windows.h>
+#	include <conio.h>
 #else
-#include<cstdlib>
-#if !defined(__APPLE__)
-#include<wait.h>
-#endif
-#include <termios.h>
-#include <unistd.h>
+#	include<cstdlib>
+#	if !defined(__APPLE__)
+#		include<wait.h>
+#	endif
+#	include <termios.h>
+#	include <unistd.h>
 #endif
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
 	if (argc<2) return 1;
-#if defined(_WIN32) || defined(__WIN32__)
+#if defined(__WIN32__)
 
 		string command;
 		command+="\"";
@@ -32,9 +32,9 @@ int main(int argc, char *argv[]) {
 		STARTUPINFO si;
 		PROCESS_INFORMATION pi;
 		
-		ZeroMemory( &si, sizeof(si) );
+		memset( &si, 0, sizeof(si) );
 		si.cb = sizeof(si);
-		ZeroMemory( &pi, sizeof(pi) );
+		memset( &pi, 0, sizeof(pi) );
 		
 		// Start the child process.
 		CreateProcess( NULL, // No module name (use command line).
@@ -51,14 +51,6 @@ int main(int argc, char *argv[]) {
 		
 #else
 	system((string("sudo ")+argv[1]).c_str());
-//	char **margv= new char*[argc];
-//	margv[0]="sudo";
-//	for (int i=1;i<argc;i++) {
-//		margv[i]=argv[i];
-//	}
-//	margv[argc]=NULL;
-//	
-//	execvp(margv[0],margv);
 	return 0;
 #endif
 }

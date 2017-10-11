@@ -49,7 +49,7 @@ int main (int argc, char *argv[]) {
 	request+="/version HTTP/1.1\nhost:";
 	request+=web+"\n\n";
 	zocket_escribir(z,request.c_str(),request.size());
-	char data[1024]; int c=1024;
+	char data[1025]; int c=1024;
 	string all_data, site_ver;
 	for (int i=0;i<100;i++) {
 		c=1024; Sleep(150);

@@ -31,6 +31,9 @@ public:
 	ZLogCerr() : ZLogOstream("ZLogCerr") { 
 		m_ost = &std::cerr;
 	}
+	~ZLogCerr() { 
+		DoLog(ZLog::Info,"ZLogOstream",wxString("Deleting logger ")<<m_name);
+	}
 };
 
 

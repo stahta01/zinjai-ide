@@ -10,10 +10,10 @@ ZLog::ZLog (const char *name) : m_prev(nullptr), m_next(s_first), m_name(name) {
 }
 
 ZLog::~ZLog ( ) {
-	ZLINF2("ZLog","Deleting logger "<<m_name);
 	if (m_next) m_next->m_prev = m_prev;
 	if (m_prev) m_prev->m_next = m_next;
 	else s_first = m_next;
+	ZLINF2("ZLog","Deleting logger "<<m_name);
 }
 
 
