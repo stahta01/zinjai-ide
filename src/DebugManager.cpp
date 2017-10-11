@@ -237,7 +237,7 @@ bool DebugManager::Start(wxString workdir, wxString exe, wxString args, bool sho
 											 "en las opciones de enlazado, y recompile el proyecto si es necesario (Ejecucion->Limpiar\n"
 											 "y luego Ejecucion->Compilar)."))
 				.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
-			SendCommand(_T("-gdb-exit"));
+			SendCommandNW(_T("-gdb-exit"));
 			debugging = false; has_symbols=false;
 			main_window->SetCompilingStatus(LANG(DEBUG_STATUS_INIT_ERROR,"Error al iniciar depuracion"));
 			return false;
@@ -336,7 +336,7 @@ bool DebugManager::SpecialStart(mxSource *source, const wxString &gdb_command, c
 											 "en las opciones de enlazado, y recompile el proyecto si es necesario (Ejecucion->Limpiar\n"
 											 "y luego Ejecucion->Compilar)."))
 				.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
-			SendCommand("-gdb-exit");
+			SendCommandNW("-gdb-exit");
 			debugging = false;
 			return false;
 		}
@@ -425,7 +425,7 @@ bool DebugManager::LoadCoreDump(wxString core_file, mxSource *source) {
 		/// @todo: el mensaje puede aparecer por las bibliotecas, ver como diferenciar
 //		if (hello.Find(_T("no debugging symbols found"))!=wxNOT_FOUND) {
 //			mxMessageDialog(main_window,LANG(DEBUG_NO_SYMBOLS,"El ejecutable que se intenta depurar no contiene informacion de depuracion.\nCompruebe que en las opciones de depuracion que este activada la informacion de depuracion,\nverifique que no este seleccionada la opcion \"stripear el ejecutable\" en las opciones de enlazado,\n y recompile el proyecto si es necesario (Ejecucion->Limpiar y luego Ejecucion->Compilar).")).Title(LANG(GENERAL_ERROR,"Error").IconError().Run();
-//			SendCommand(_T("-gdb-exit"));
+//			SendCommandNW(_T("-gdb-exit"));
 //			debugging = false;
 //			return false;
 //		}

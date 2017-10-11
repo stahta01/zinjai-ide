@@ -3,7 +3,7 @@
 
 ZLog *ZLog::s_first = nullptr;
 
-ZLog::ZLog (const char *name) : m_prev(nullptr), m_next(s_first), m_name(name) {
+ZLog::ZLog (const char *name) : m_name(name), m_prev(nullptr), m_next(s_first) {
 	ZLINF2("ZLog","Initializing logger "<<m_name);
 	if (s_first) s_first->m_prev = this;
 	s_first = this;
