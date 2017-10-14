@@ -4249,7 +4249,7 @@ void mxMainWindow::ShowDiffSideBar(bool bar, bool map) {
 	mxAUIFreezeGuard guard(*m_aui);
 	if (map) {
 		if (!mxDiffSideBar::HaveInstance()) {
-			m_aui->AttachGenericPane(&(mxDiffSideBar::GetInstance()),"diff",true)->Right().Row(2).Show().MaxSize(20,-1);
+			m_aui->AttachGenericPane(&(mxDiffSideBar::GetInstance()),"diff",true)->Right().Dock().Row(2).Show().MaxSize(20,-1);
 		}
 	}
 	if (bar) {
