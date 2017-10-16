@@ -126,7 +126,8 @@ void mxComplementInstallerWindow::Install(wxString fname) {
 			return;
 		}
 #ifdef __WIN32__
-		caller = config->GetZinjaiBinPath("complement_wrap.exe");
+		installer = "sudo_complement.exe";
+//		caller = config->GetZinjaiBinPath("complement_wrap.exe");
 #else
 		wxString gksu = mxUT::GetOutput("gksu --version",true);
 		if (gksu.Contains("--message"))
@@ -143,6 +144,11 @@ void mxComplementInstallerWindow::Install(wxString fname) {
 	static bool already_copied = false;
 	if (!already_copied) { 
 		already_copied = true;
+		wxArrayString dlls;
+		mxUT::GetFilesFromDir(dlls,config->GetZinjaiBinDir(),true);
+		for(size_t i=0;i<dlls.GetCount();i++) 
+			if (dlls[i].Lower().EndsWith(".dll"))
+				wxCopyFile(config->GetZinjaiBinPath(dlls[i]),config->GetUserTempPath(dlls[i]),true);
 #endif
 		wxCopyFile(config->GetZinjaiBinPath(installer),config->GetUserTempPath(installer),true);
 #ifdef __WIN32__
@@ -152,21 +158,23 @@ void mxComplementInstallerWindow::Install(wxString fname) {
 #ifdef __WIN32__
 	if (zdir.Last()=='\\') zdir.RemoveLast(); // wx parsea mal los argumentos, si uno termina en \ lo pega con el que sigue
 #endif
-	wxString command = mxUT::Quotize(config->GetUserTempPath(installer))+" --lang="+config->Init.language_file+" "+mxUT::Quotize(zdir)+" "+mxUT::Quotize(fname);
+	wxString exe = config->GetUserTempPath(installer);
+	wxString args = wxString()+"--lang="+config->Init.language_file+" "+mxUT::Quotize(zdir)+" "+mxUT::Quotize(fname);
+	wxString command = mxUT::Quotize(exe)+" "+args;
 #ifdef __WIN32__
 	if (!writable) {
-		char *cmd=new char[command.Len()+1];
-		char *ccaller=new char[caller.Len()+1];
-		strcpy(cmd,command.c_str());
-		strcpy(ccaller,caller.c_str());
+		char *cexe= new char[exe.Len()+1];
+		strcpy(cexe,exe.c_str());
+		char *cargs=new char[caller.Len()+1];
+		strcpy(cargs,args.c_str());
 			
 		SHELLEXECUTEINFO sinfo;
 		memset(&sinfo, 0, sizeof(SHELLEXECUTEINFO));
 		sinfo.cbSize       = sizeof(SHELLEXECUTEINFO);
 		sinfo.fMask        = 0;
 		sinfo.hwnd         = nullptr;
-		sinfo.lpFile       = ccaller;
-		sinfo.lpParameters = cmd;
+		sinfo.lpFile       = cexe;
+		sinfo.lpParameters = cargs;
 		sinfo.lpVerb       = "runas"; // <<-- this is what makes a UAC prompt show up
 		sinfo.nShow        = SW_NORMAL;
 		// The only way to get a UAC prompt to show up
@@ -175,7 +183,7 @@ void mxComplementInstallerWindow::Install(wxString fname) {
 		// cannot open/start a UAC prompt by simply spawning
 		// a process that has the correct XML manifest.
 		/*BOOL result =*/ ShellExecuteEx(&sinfo);
-		
+		delete [] cexe; delete [] cargs;
 	} else
 #endif
 	wxExecute(caller.Len()?caller+" "+mxUT::EscapeString(command,true):command);

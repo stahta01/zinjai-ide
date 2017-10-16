@@ -36,7 +36,8 @@ zmkdir zinjai
     cp -u $SRC/zinjai.dir zinjai/
     cp -u $SRC/bin/img_viewer.exe zinjai/bin/
     cp -u $SRC/bin/complement.exe zinjai/bin/
-    cp -u $SRC/bin/complement_wrap.exe zinjai/bin/
+    cp -u $SRC/bin/sudo_complement.exe zinjai/bin/
+#    cp -u $SRC/bin/complement_wrap.exe zinjai/bin/
     cp -u $SRC/bin/shellexecute.exe zinjai/bin/
     cp -u $SRC/bin/updatem.exe zinjai/bin/
     cp -u $SRC/readme.txt zinjai/
