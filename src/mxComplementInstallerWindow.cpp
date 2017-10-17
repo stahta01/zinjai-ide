@@ -1,10 +1,9 @@
-#include <wx/file.h>
 #include <cstdio>
 #include <fstream>
 #include <cstring>
 #include <iostream>
+#include <wx/file.h>
 #include "mxCommonConfigControls.h"
-using namespace std;
 #include "mxComplementInstallerWindow.h"
 #include "mxBitmapButton.h"
 #include "Language.h"

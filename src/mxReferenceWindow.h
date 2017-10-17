@@ -4,6 +4,7 @@
 #include <stack>
 #include <map>
 #include <vector>
+#include "Cpp11.h"
 using namespace std;
 
 class mxReferenceWindow:public mxGenericHelpWindow {
@@ -25,6 +26,9 @@ class mxReferenceWindow:public mxGenericHelpWindow {
 	
 	stack<wxString> history_prev;
 	stack<wxString> history_next;
+//	bool CurrentPageIsHome() override;
+	bool CanPrev() override;
+	bool CanNext() override;
 	
 public:
 	static void ShowPage(wxString page="");

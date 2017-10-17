@@ -187,9 +187,9 @@ static void ButtonSetEnabled(wxButton *button, bool value) {
 void mxGenericHelpWindow::RepaintButtons ( ) {
 	if (m_button_tree) ButtonSetToggled(m_button_tree, bottomSizer->GetItem(index_sash)->GetMinSize().GetWidth()>10);
 	ButtonSetToggled(m_button_atop, GetWindowStyleFlag()&wxSTAY_ON_TOP);
-	ButtonSetToggled(m_button_index, html->GetOpenedPageTitle()=="Ayuda de PSeInt - Índice");
-	ButtonSetEnabled(m_button_prev, html->HistoryCanBack());
-	ButtonSetEnabled(m_button_next, html->HistoryCanForward());
+	ButtonSetToggled(m_button_index, CurrentPageIsHome());
+	ButtonSetEnabled(m_button_prev, CanPrev());
+	ButtonSetEnabled(m_button_next, CanNext());
 	ButtonSetEnabled(m_button_search, !search_text->GetValue().IsEmpty());
 }
 
