@@ -32,7 +32,7 @@ public:
 	wxPanel *CreateGeneralPanel(wxNotebook *notebook);
 	wxPanel *CreateFilesPanel(wxNotebook *notebook);
 	
-	void OnCheckCopyConfig(wxCommandEvent &evt);
+//	void OnCheckCopyConfig(wxCommandEvent &evt);
 	void OnButtonConfigD(wxCommandEvent &evt);
 	void OnButtonConfigU(wxCommandEvent &evt);
 	void OnButtonStyle(wxCommandEvent &evt);

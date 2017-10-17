@@ -40,6 +40,7 @@
 #include "mxAUI.h"
 #include "IniFile.h"
 #include "EnvVars.h"
+#include "ZLog.h"
 using namespace std;
 
 #ifdef __WIN32__
@@ -159,6 +160,8 @@ void ProjectManager::ReloadFatherProjects() {
 
 // abrir un proyecto existente
 ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_TOOLS) {
+	
+	ZLINF2("ProjectManager","Loading project file: "<<name.GetFullPath());
 	
 	errors_manager->Reset(true);
 	
@@ -667,6 +670,8 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 // liberar memoria al destruir el proyecto
 ProjectManager::~ProjectManager() {
 
+	ZLINF2("ProjectManager","Destroying project: "<<path<<filename);
+	
 	parser->CleanAll();
 	Autocoder::GetInstance()->Reset("");
 	

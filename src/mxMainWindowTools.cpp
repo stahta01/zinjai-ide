@@ -65,6 +65,7 @@ void mxMainWindow::OnToolsCppCheckRun(wxCommandEvent &event) {
 	
 	wxString file_args, cppargs, toargs, extra_args, path;
 	cppcheck_configuration *project_cppcheck_config = project ? project->GetCppCheckConfiguration() : nullptr;
+	bool get_defines_from_args = true;
 	
 	if (project) {
 		
@@ -90,8 +91,8 @@ void mxMainWindow::OnToolsCppCheckRun(wxCommandEvent &event) {
 		toargs=project->cpp_compiling_options;
 		
 		// extra_args
-		if (project_cppcheck_config->copy_from_config)
-			extra_args<<mxUT::Split(project_cppcheck_config->config_d,"-D")<<" "<<mxUT::Split(project_cppcheck_config->config_u,"-U");
+		get_defines_from_args = project_cppcheck_config->copy_from_config;
+		extra_args<<mxUT::Split(project_cppcheck_config->config_d,"-D")<<" "<<mxUT::Split(project_cppcheck_config->config_u,"-U");
 		
 		// cppargs
 		cppargs<<mxUT::Split(project_cppcheck_config->style,"--enable=")<<" ";
@@ -127,13 +128,13 @@ void mxMainWindow::OnToolsCppCheckRun(wxCommandEvent &event) {
 	wxArrayString array;
 	mxUT::Split(toargs,array,false,true);
 	for (unsigned int i=0;i<array.GetCount();i++) {
-		if ((!project || project_cppcheck_config->copy_from_config) && array[i].StartsWith("-D")) {
+		if (get_defines_from_args && array[i].StartsWith("-D")) {
 			if (array[i].Len()==2) {
 				args<<" -D "<<array[++i];
 			} else {
 				args<<" -D "<<array[i].Mid(2);
 			}
-		} else if ((!project || project_cppcheck_config->copy_from_config) && array[i].StartsWith("\"-D")) {
+		} else if (get_defines_from_args && array[i].StartsWith("\"-D")) {
 			if (array[i]=="\"-D\"")
 				args<<" -D "<<array[++i];
 			else

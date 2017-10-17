@@ -190,7 +190,7 @@ void mxGenericHelpWindow::RepaintButtons ( ) {
 	ButtonSetToggled(m_button_index, CurrentPageIsHome());
 	ButtonSetEnabled(m_button_prev, CanPrev());
 	ButtonSetEnabled(m_button_next, CanNext());
-	ButtonSetEnabled(m_button_search, !search_text->GetValue().IsEmpty());
+//	ButtonSetEnabled(m_button_search, !search_text->GetValue().IsEmpty()); // falta el evento al modificar el cuadro de texto
 }
 
 void mxGenericHelpWindow::OnMaximize (wxSizeEvent & evt) {
