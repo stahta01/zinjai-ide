@@ -144,15 +144,12 @@ class mxAUI : public wxAuiManager {
 		wxWindow *window;
 		mxHidenPanel *hidden_helper;
 		mxAUIContainer *container;
-		bool delete_on_close;
-		mxPaneInfo() : window(nullptr), hidden_helper(nullptr), container(nullptr), delete_on_close(false) {}
-		mxPaneInfo(wxWindow *win) : window(win), hidden_helper(nullptr), container(nullptr), delete_on_close(false) {}
+		mxPaneInfo() : window(nullptr), hidden_helper(nullptr), container(nullptr) {}
+		mxPaneInfo(wxWindow *win) : window(win), hidden_helper(nullptr), container(nullptr) {}
 		bool operator==(const mxPaneInfo &other) const { return window==other.window; }
-		mxPaneInfo &DeleteOnClose() { delete_on_close = true; return *this; }
 		mxPaneInfo &HiddenHelper(mxHidenPanel *helper) { hidden_helper = helper; return *this; }
 	};
 	mxPaneInfo m_panes[PaneId::Count];
-	SingleList<mxPaneInfo> m_generic_panes;
 public:
 	mxAUI(mxMainWindow *main_window);
 	mxAUIContainer *CreateContainer(PaneId::type id);
