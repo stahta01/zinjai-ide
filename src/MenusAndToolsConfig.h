@@ -208,6 +208,8 @@ private:
 	
 	
 	int icon_size;
+public:
+	void SetToolbarIconSize(int size=-1);
 	
 	//! Información sobre la posición y visibilidad de una barra de herramientas
 	struct toolbarPosition {

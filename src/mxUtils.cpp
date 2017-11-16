@@ -183,7 +183,8 @@ wxMenuItem *mxUT::AddItemToMenu(wxMenu *menu, wxWindowID id, const wxString &cap
 
 wxMenuItem *mxUT::AddSubMenuToMenu(wxMenu *menu, wxMenu *menu_h, const wxString &caption, const wxString &help, const wxString &filename) {
 	wxMenuItem *item = 	menu->AppendSubMenu(menu_h, caption, help);
-	if (filename.Len() && bitmaps->HasBitmap(DIR_PLUS_FILE("16",filename),true))
+	// en windows, al menos con wx 2.8, si le pongo icono me cambia el tamaño de la fuente
+	if (_if_win32(OSDep::GetDPI()>96 &&,) filename.Len() && bitmaps->HasBitmap(DIR_PLUS_FILE("16",filename),true))
 		item->SetBitmap(bitmaps->GetBitmap(DIR_PLUS_FILE("16",filename),true));
 	return item;
 }

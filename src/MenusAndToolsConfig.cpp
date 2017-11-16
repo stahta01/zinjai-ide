@@ -7,6 +7,7 @@
 #include "mxMessageDialog.h"
 #include "DebugManager.h"
 #include "mxAUI.h"
+#include "osdep.h"
 
 MenusAndToolsConfig *menu_data;
 
@@ -417,9 +418,14 @@ void MenusAndToolsConfig::LoadMenuData ( ) {
 	
 }
 
+void MenusAndToolsConfig::SetToolbarIconSize(int size) {
+	if (size==-1) icon_size=OSDep::GetDPI()>=120?32:24;
+	else icon_size=size;
+}
+
 void MenusAndToolsConfig::LoadToolbarsData ( ) {
 	
-	icon_size=24;
+	SetToolbarIconSize();
 	
 	toolbars[tbFILE].Init("file",LANG(CAPTION_TOOLBAR_FILE,"Archivo"),"T1"); {
 		AddToolbarItem(tbFILE,myToolbarItem(menues[mnFILE],mxID_FILE_NEW).Visible());

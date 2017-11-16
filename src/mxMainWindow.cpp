@@ -86,6 +86,7 @@
 #include "mxMiniMapPanel.h"
 #include "mxHidenPanel.h"
 #include "ZLog.h"
+#include "osdep.h"
 using namespace std;
 
 #define SIN_TITULO (wxString("<")<<LANG(UNTITLED,"sin_titulo_")<<(++untitled_count)<<">")
@@ -1464,9 +1465,11 @@ wxAuiNotebook *mxMainWindow::CreateNotebookSources() {
 	return notebook_sources;
 }
 
+#define lateral_trees_width OSDep::GetDPI()*160/96
+
 wxTreeCtrl* mxMainWindow::CreateExplorerTree() {
 
-	explorer_tree.treeCtrl = new mxTreeCtrl(this, mxID_TREE_EXPLORER, wxDefaultPosition, wxSize(160,100), wxTR_DEFAULT_STYLE | wxNO_BORDER /*| wxTR_HIDE_ROOT*/);
+	explorer_tree.treeCtrl = new mxTreeCtrl(this, mxID_TREE_EXPLORER, wxDefaultPosition, wxSize(lateral_trees_width,100), wxTR_DEFAULT_STYLE | wxNO_BORDER /*| wxTR_HIDE_ROOT*/);
 	
 	wxImageList* imglist = new wxImageList(16, 16,true,5);
 	
@@ -1488,7 +1491,7 @@ wxTreeCtrl* mxMainWindow::CreateExplorerTree() {
 wxTreeCtrl *mxMainWindow::project_tree_struct::Create(wxWindow *parent) {
 	EXPECT(treeCtrl==nullptr);
 	
-	treeCtrl = new mxTreeCtrl(parent, mxID_TREE_PROJECT, wxPoint(0,0), wxSize(160,100), wxTR_DEFAULT_STYLE | wxNO_BORDER | wxTR_HIDE_ROOT);
+	treeCtrl = new mxTreeCtrl(parent, mxID_TREE_PROJECT, wxPoint(0,0), wxSize(lateral_trees_width,100), wxTR_DEFAULT_STYLE | wxNO_BORDER | wxTR_HIDE_ROOT);
 					
 	wxImageList* imglist = new wxImageList(16, 16,true,5);
 	
@@ -1560,7 +1563,7 @@ void mxMainWindow::project_tree_struct::ClearSelection() {
 }
 
 wxTreeCtrl* mxMainWindow::CreateSymbolsTree() {
-	symbols_tree.treeCtrl = new mxTreeCtrl(this, mxID_TREE_SYMBOLS, wxPoint(0,0), wxSize(160,100), wxTR_DEFAULT_STYLE | wxNO_BORDER | wxTR_HIDE_ROOT);
+	symbols_tree.treeCtrl = new mxTreeCtrl(this, mxID_TREE_SYMBOLS, wxPoint(0,0), wxSize(lateral_trees_width,100), wxTR_DEFAULT_STYLE | wxNO_BORDER | wxTR_HIDE_ROOT);
 	wxImageList* imglist = new wxImageList(16, 16, true, 15);
 	imglist->Add(bitmaps->GetBitmap("trees/as_folder.png"));
 	imglist->Add(wxArtProvider::GetBitmap(wxART_NORMAL_FILE, wxART_OTHER, wxSize(16,16)));
@@ -1590,7 +1593,7 @@ wxTreeCtrl* mxMainWindow::CreateSymbolsTree() {
 
 wxPanel* mxMainWindow::CreateCompilerTree() {
 	
-	compiler_panel = new wxPanel(this,wxID_ANY,wxDefaultPosition,wxSize(160,250));
+	compiler_panel = new wxPanel(this,wxID_ANY,wxDefaultPosition,wxSize(lateral_trees_width,250));
 	
 	compiler_tree.treeCtrl = new mxTreeCtrl(compiler_panel, mxID_TREE_COMPILER, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE | wxNO_BORDER | wxTR_HIDE_ROOT);
 // 	wxFont tree_font=compiler_tree.treeCtrl->GetFont();

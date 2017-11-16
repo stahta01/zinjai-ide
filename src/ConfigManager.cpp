@@ -1063,6 +1063,9 @@ void ConfigManager::FinishLoading ( ) {
 		menu_data->LoadShortcutsSettings(DIR_PLUS_FILE(config_dir,"shortcuts.zsc"));
 		menu_data->LoadToolbarsSettings(DIR_PLUS_FILE(config_dir,"toolbar.ztb"));
 	}
+	if (Init.version<20171110) { 
+		menu_data->SetToolbarIconSize();
+	}
 	if (Init.version<20141030) { 
 		menu_data->GetToolbarPosition(MenusAndToolsConfig::tbDEBUG)="t3";
 		menu_data->GetToolbarPosition(MenusAndToolsConfig::tbSTATUS)="t3";

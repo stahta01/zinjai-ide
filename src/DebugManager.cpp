@@ -26,8 +26,7 @@
 #include "Inspection.h"
 #include "DebugPatcher.h"
 #include "MenusAndToolsConfig.h"
-#include "winStuff.h"
-#include "lnxStuff.h"
+#include "osdep.h"
 #include "Cpp11.h"
 #include "gdbParser.h"
 #include "ZLog.h"
@@ -1008,7 +1007,7 @@ void DebugManager::Pause() {
 bool DebugManager::FindOutChildPid() {
 	if (child_pid!=0) return true; // si ya se sabe cual es, no hace nada
 #ifdef __WIN32__
-	child_pid = winGetChildPid(pid);
+	child_pid = OSDep::GetChildPid(pid);
 #else
 # ifdef __linux__
 	wxString val = SendCommand("info proc status").stream;
@@ -1031,9 +1030,9 @@ void DebugManager::Continue() {
 	if (config->Debug.return_focus_on_continue && FindOutChildPid()) {
 		// intentar darle el foco a alguna ventana de la aplicacion, o a la terminal si no hay ventana
 # ifdef __WIN32__
-		setFocus(child_pid);
+		OSDep::SetFocus(child_pid);
 # else
-		if (!setFocus(child_pid)) setFocus(tty_pid);
+		if (!OSDep::SetFocus(child_pid)) OSDep::SetFocus(tty_pid);
 # endif
 	}
 #endif
