@@ -5,6 +5,7 @@
 #!define PRODUCT_VERSION "20081014"
 #!define PRODUCT_PUBLISHER "PIPEH"
 !define PRODUCT_WEB_SITE "http://zinjai.sourceforge.net"
+!define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\ZinjaI"
 
 SetCompressor lzma
 

@@ -1171,6 +1171,7 @@ void mxMainWindow::AuxToolsDisassemble1(GenericActionEx<wxString> *on_end) {
 		
 		// define the lambda for after running the commmand
 		_LAMBDAEX_1( lmbDasm2oe, int,retval, s_lmbDasm2oe,args, {
+			ZLINF2("OBJDump","retval: "<<retval);
 			if (retval==0) {
 				(*(args.plast_disassembled_binary))=args.in_fname; // for memoization
 				args.on_end->Do(args.out_fname); delete args.on_end; 
@@ -1179,8 +1180,9 @@ void mxMainWindow::AuxToolsDisassemble1(GenericActionEx<wxString> *on_end) {
 		} );
 		
 		// finally launch the process and show the osd message
+		ZLINF2("OBJDump","command: "<<command);
 		mxOSD::Execute( command, LANG(OSD_DISASSEMBLING,"Desensamblando..."), new lmbDasm2oe(lmb_arg) );
-
+		
 	} else // si no necesita volver a correr objdump
 		on_end->Do(out_fname); 
 }
