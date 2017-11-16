@@ -1049,12 +1049,12 @@ void DebugManager::Continue() {
 
 void DebugManager::ReadGDBOutput() {
 	if (input->IsOk() && input->CanRead()) {
-		int n;
+		int n, watchdog=0;
 		do {
 			static char buffer[256];
 			n = input->Read(buffer,255).LastRead();
 			m_gdb_buffer.Read(buffer,n);
-		} while (n==255 && input->CanRead());
+		} while (++watchdog!=1000 && n==255 && input->CanRead());
 	}
 }
 
@@ -1110,6 +1110,14 @@ DebugManager::GDBAnswer &DebugManager::WaitAnswer() {
 				default:
 //					last_answer.cli_output += line;
 					;
+			}
+		}
+		if (m_gdb_buffer.GetLen()>10000) {
+			if (mxMessageDialog(main_window,"Alguna operación en el depurador está tomando demasiado tiempo, desea interrumpirla?.")
+				.Title("UPS!").IconWarning().ButtonsYesNo().Run().yes ) 
+			{
+				_DBG_LOG_CALL(Log(wxString()<<"\n<<<TOO MANY OUTPUT>>>\n"));
+				return last_answer.Clear(false);
 			}
 		}
 		
