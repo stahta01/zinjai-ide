@@ -40,6 +40,7 @@
 #include "mxAUI.h"
 #include "IniFile.h"
 #include "EnvVars.h"
+#include "ZLog.h"
 using namespace std;
 
 #ifdef __WIN32__
@@ -159,6 +160,8 @@ void ProjectManager::ReloadFatherProjects() {
 
 // abrir un proyecto existente
 ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_TOOLS) {
+	
+	ZLINF2("ProjectManager","Loading project file: "<<name.GetFullPath());
 	
 	errors_manager->Reset(true);
 	
@@ -667,6 +670,8 @@ ProjectManager::ProjectManager(wxFileName name):custom_tools(MAX_PROJECT_CUSTOM_
 // liberar memoria al destruir el proyecto
 ProjectManager::~ProjectManager() {
 
+	ZLINF2("ProjectManager","Destroying project: "<<path<<filename);
+	
 	parser->CleanAll();
 	Autocoder::GetInstance()->Reset("");
 	
@@ -2677,11 +2682,7 @@ bool ProjectManager::WxfbGenerate(wxString fbp_file, wxString fbase, bool force_
 	if (fbase.Len()) {
 		if (ret) {
 			if (osd) osd->Hide();
-			wxString message = LANG(PROJMNGR_REGENERATING_ERROR_1,""
-				 "No se pudieron actualizar correctamente los proyectos wxFormBuilder\n"
-				 "(probablemente la ruta al ejecutable de wxFormBuilder no esté\n"
-				 "correctamente definida. Verifique esta propiedad en la pestaña \"Rutas 2\"\n"
-				 "del cuadro de \"Preferencias\").");
+			wxString message = LANG1(PROJMNGR_REGENERATING_ERROR_1,"No se pudo actualizar automáticamente el código generado a partir de:\n<{1}>",fbp_file);
 			if (wxfb->autoupdate_projects && !wxfb->temp_disabled) {
 				wxfb->temp_disabled = true;
 				message += "\n\n";
@@ -2689,9 +2690,9 @@ bool ProjectManager::WxfbGenerate(wxString fbp_file, wxString fbase, bool force_
 								"La actualización automática de estos proyectos\nse deshabilitará temporalmente.");
 			}
 //			bool just_installed =	
-				config->CheckComplaintAndInstall(main_window, "", LANG(GENERAL_WARNING,"Advertencia"), 
-												 message, "wxformbuilder", "http://wxformbuilder.org","wxformbuilder");
-//			mxMessageDialog(main_window,message).Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
+//				config->CheckComplaintAndInstall(main_window, "", LANG(GENERAL_WARNING,"Advertencia"), 
+//												 message, "wxformbuilder", "http://wxformbuilder.org","wxformbuilder");
+			mxMessageDialog(main_window,message).Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
 			return false;
 		}
 		
@@ -2717,9 +2718,8 @@ bool ProjectManager::WxfbGenerate(wxString fbp_file, wxString fbase, bool force_
 	fil.Open();
 	if (!fil.IsOpened()) {
 		if (osd) osd->Hide();
-		wxString message = LANG(PROJMNGR_REGENERATING_ERROR_4,""
-								"No se pudieron actualizar correctamente los proyectos wxFormBuilder\n"
-								"(probablemente no se puede escribir en la carpeta de proyecto).");
+		wxString message = LANG1(PROJMNGR_REGENERATING_ERROR_1,"No se pudo actualizar automáticamente el código generado a partir de:\n<{1}>",fbp_file);
+		message << "\n" << LANG(PROJMNGR_REGENERATING_ERROR_4,"(probablemente no se pueda escribir en la carpeta de proyecto).");
 		if (wxfb->autoupdate_projects && !wxfb->temp_disabled) {
 			wxfb->temp_disabled = true;
 			message += "\n\n";

@@ -36,6 +36,8 @@ MAINW_CPPCHECK_MISSING
 CppCheck no se encuentra correctamente instalado/configurado\nen su pc. Si ya se encuentra instalado debe configurar su\nubiciación en el cuadro de \"Preferencias\".
 CONFIG_MAC_DEADKEYS_PROBLEM_QUESTION
 ¿Utiliza un teclado en español donde '[' y '{' se ingresan con\nAltGr y las teclas que están a la derecha de las teclas 'P' y 'Ñ'?\n\nNota: si más tarde detecta problemas con estas teclas puede volver\na cambiar esta configuación desde el cuadro de preferencias.\n
+CONFIG_APTGET_BUILD_ESSENTIAL
+Intentar instalar ahora
 CONFIG_GOTO_PACKAGE_WEBSITE
 Abrir sitio web (<{1}>)
 CONFIG_OPEN_PREFERENCES
@@ -44,8 +46,6 @@ CONFIG_APTGET_FAILED
 Falló la instalación automática.
 CONFIG_ABOUT_TO_APTGET
 A continuación se intentará instalar el software faltante en una nueva\nterminal. Podría requerir ingresar la contraseña del administrador.\nZinjaI continuará cuando se cierre dicha terminal.
-CONFIG_APTGET_BUILD_ESSENTIAL
-Intentar instalar ahora
 MAINW_CUSTOM_TOOL_UNDEFINED
 Esta herramienta no esta correctamente configurada.\nUtilice el comando \"Configuracion\" del submenu \"Herramientas Personalizadas\" del menu \"Herramientas\".
 GENERAL_ERROR
@@ -923,9 +923,9 @@ Ejecutando...
 PROJMNGR_REGENERATING_WXFB
 Regenerando proyecto wxFormBuilder...
 PROJMNGR_REGENERATING_ERROR_1
-No se pudieron actualizar correctamente los proyectos wxFormBuilder\n(probablemente la ruta al ejecutable de wxFormBuilder no esté\ncorrectamente definida. Verifique esta propiedad en la pestaña \"Rutas 2\"\ndel cuadro de \"Preferencias\").
+No se pudo actualizar automáticamente el código generado a partir de:\n<{1}>
 PROJMNGR_REGENERATING_ERROR_4
-No se pudieron actualizar correctamente los proyectos wxFormBuilder\n(probablemente no se puede escribir en la carpeta de proyecto).
+(probablemente no se pueda escribir en la carpeta de proyecto).
 OSD_GENERATING_GRAPH
 Generando grafo...
 PROJMNGR_PROJECT_GRAPH_BYTES
@@ -1159,7 +1159,9 @@ Opciones de compilación por fuente
 BYSRCOPTS_FILTER
 Filtrar
 BYSRCOPTS_OBJECT_FILE
-Archivo objeto:
+Archivo objeto
+BYSRCOPT_APPLY_TO_SELECTED_FILES
+Aplicar cambios
 BYSRCOPTS_FROM_PROFILE
 Tomar desde el perfil
 PROJECTCONFIG_COMPILING_EXTRA_ARGS
@@ -1182,8 +1184,6 @@ BYSRCOPT_ALL_PROFILES
 <<todos los perfiles>>
 BYSRCOPT_PROFILE
 Aplicar para el perfil
-BYSRCOPT_APPLY_TO_SELECTED_FILES
-Aplicar cambios
 COLORS_CAPTION
 Definir Colores
 GENERAL_CANCEL_BUTTON
@@ -2081,7 +2081,7 @@ Hacer lo mismo para todos
 MAINW_MOVE_TO_PROJECT_PATH_QUESTION
 El archivo que intenta agregar no se encuentra en el directorio del\nproyecto. ¿Desea copiar el archivo al directorio del proyecto?
 MAINW_OVERWRITE_ON_PROJECT_PATH_QUESTION
-El archivo ya existe en el directorio de proyecto.\n¿Desea reemplazarlo?
+El archivo ya existe en el directorio de proyecto.\n
 MAINW_ERROR_PRITING
 Ha ocurrido un error al intentar imprimir
 MAINW_CANT_OPEN_TEMPLATE_WHILE_PROJECT

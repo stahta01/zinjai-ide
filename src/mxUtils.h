@@ -234,6 +234,7 @@ public:
 	/// for replacing aguments in translate strings for gui messages (version for 3 arguments)
 	static wxString ReplaceLangArgs(wxString src, wxString arg1, wxString arg2, wxString arg3);
 	
+	static void RemoveCharInplace(wxString &s, char c);
 	
 	static bool ExtensionIsCpp(const wxString &ext) { return ext=="c" || ext=="cpp" || ext=="cxx" || ext=="c++"; }
 	static bool ExtensionIsH(const wxString &ext) { return ext=="h" || ext=="hpp" || ext=="hxx" || ext=="h++"; }

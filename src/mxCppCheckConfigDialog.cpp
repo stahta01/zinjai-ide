@@ -17,7 +17,7 @@
 #include "mxCommonConfigControls.h"
 
 BEGIN_EVENT_TABLE(mxCppCheckConfigDialog,wxDialog)
-	EVT_CHECKBOX(mxID_CPPCHECK_COPYCONFIG,mxCppCheckConfigDialog::OnCheckCopyConfig)
+//	EVT_CHECKBOX(mxID_CPPCHECK_COPYCONFIG,mxCppCheckConfigDialog::OnCheckCopyConfig)
 	EVT_BUTTON(mxID_CPPCHECK_CONFIG_D,mxCppCheckConfigDialog::OnButtonConfigD)
 	EVT_BUTTON(mxID_CPPCHECK_CONFIG_U,mxCppCheckConfigDialog::OnButtonConfigU)
 	EVT_BUTTON(mxID_CPPCHECK_STYLE,mxCppCheckConfigDialog::OnButtonStyle)
@@ -61,7 +61,7 @@ wxPanel *mxCppCheckConfigDialog::CreateGeneralPanel(wxNotebook *notebook) {
 	sizer.BeginText( LANG(CPPCHECK_CONFIG_U,"  Configuraciones a saltear") )
 		.Value(project_cppcheck_config->config_u).Button(mxID_CPPCHECK_CONFIG_U).EndText(config_u);
 	
-	config_u->Enable(!copy_from_config->GetValue()); config_d->Enable(!copy_from_config->GetValue());
+//	config_u->Enable(!copy_from_config->GetValue()); config_d->Enable(!copy_from_config->GetValue());
 	
 	sizer.BeginText( LANG(CPPCHECK_STYLE,"Verificaciones adicionales") )
 		.Value(project_cppcheck_config->style).Button(mxID_CPPCHECK_STYLE).EndText(style);
@@ -132,11 +132,11 @@ wxPanel *mxCppCheckConfigDialog::CreateFilesPanel (wxNotebook * notebook) {
 	return sizer.GetPanel();
 }
 
-void mxCppCheckConfigDialog::OnCheckCopyConfig (wxCommandEvent & evt) {
-	evt.Skip();
-	config_u->Enable(!copy_from_config->GetValue());
-	config_d->Enable(!copy_from_config->GetValue());
-}
+//void mxCppCheckConfigDialog::OnCheckCopyConfig (wxCommandEvent & evt) {
+//	evt.Skip();
+//	config_u->Enable(!copy_from_config->GetValue());
+//	config_d->Enable(!copy_from_config->GetValue());
+//}
 
 void mxCppCheckConfigDialog::OnButtonConfigD (wxCommandEvent & evt) {
 	new mxEnumerationEditor(this,LANG(CPPCHECK_CONFIG_D,"Configurations to analize"),config_d,true);

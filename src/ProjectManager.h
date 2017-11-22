@@ -528,7 +528,7 @@ public:
 	valgrind_configuration* GetValgrindConfiguration();
 	wxfb_configuration* GetWxfbConfiguration(bool create_activated=true);
 	bool HasWxfbConfiguration() const { return wxfb!=nullptr; }
-	bool GetWxfbActivated() { return wxfb && wxfb->activate_integration && !wxfb->temp_disabled; }
+	bool GetWxfbActivated(bool ignore_temp_disabled=false) { return wxfb && wxfb->activate_integration && (ignore_temp_disabled || !wxfb->temp_disabled); }
 	
 	project_configuration *active_configuration; ///< puntero a la configuracion activa
 	project_configuration *configurations[100]; ///< arreglo de configuraciones, ver configurations_count

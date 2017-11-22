@@ -337,3 +337,15 @@ bool mxReferenceWindow::PopulateInitialTree ( ) {
 	return index_loaded=true;
 }
 
+//bool mxReferenceWindow::CurrentPageIsHome ( ) {
+//	return html->getc()==_index;
+//}
+
+bool mxReferenceWindow::CanPrev ( ) {
+	return !history_prev.empty();
+}
+
+bool mxReferenceWindow::CanNext ( ) {
+	return !history_next.empty();
+}
+

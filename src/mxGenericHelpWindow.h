@@ -62,6 +62,10 @@ public:
 	virtual bool OnLink(wxString href){return true;};
 	virtual void OnTree(wxTreeItemId item){};
 	
+	virtual bool CurrentPageIsHome() { return false; }
+	virtual bool CanPrev() { return html->HistoryCanBack(); }
+	virtual bool CanNext() { return html->HistoryCanForward(); }
+	
 };
 
 #endif

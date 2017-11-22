@@ -1637,7 +1637,7 @@ wxPanel* mxMainWindow::CreateCompilerTree() {
 }
 
 void mxMainWindow::OnProcessTerminate (wxProcessEvent& event) {
-	if (event.GetPid()==debug->pid) {
+	if (event.GetPid()==debug->gdb_pid) {
 		debug->ProcessKilled();
 		return;
 #ifndef __WIN32__
@@ -2353,7 +2353,7 @@ mxSource *mxMainWindow::OpenFile (const wxString &filename, bool add_to_project)
 	if (filename=="" || !wxFileName::FileExists(filename))
 		return nullptr;
 	
-	if (project && project->GetWxfbActivated() && filename.Len()>4 && filename.Mid(filename.Len()-4).CmpNoCase(".fbp")==0) {
+	if (project && project->GetWxfbActivated(true) && filename.Len()>4 && filename.Mid(filename.Len()-4).CmpNoCase(".fbp")==0) {
 		if (add_to_project) {
 			project->AddFile(FT_OTHER,filename);
 		} else {

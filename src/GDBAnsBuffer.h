@@ -64,7 +64,7 @@ public:
 	void Reset() {
 		m_unprocessed_lines = 0; m_done = m_len = 0;
 	}
-	
+	int GetLen() const { return m_len-m_done; }
 private:
 	wxChar *m_buf;
 	int m_capacity; ///< total buffer size

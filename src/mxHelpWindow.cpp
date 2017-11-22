@@ -265,4 +265,7 @@ void mxHelpWindow::SelectTreeItem (const wxString &fname) {
 	ignore_tree_event=false;
 }
 
+//bool mxHelpWindow::CurrentPageIsHome ( ) {
+//	return html->GetOpenedPageTitle()==);
+//}
 

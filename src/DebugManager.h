@@ -134,7 +134,7 @@ private:
 	wxProcess *process;
 	wxOutputStream *output;
 	wxInputStream *input;
-	long pid; ///< pid del proceso de gdb
+	long gdb_pid; ///< pid del proceso de gdb
 	long child_pid; ///< pid del proceso que esta siendo depurado, o 0, se averigua bajo demanda con FindOutChildPid
 	bool FindOutChildPid(); ///< @brief intenta determinar el pid del proceso depurado
 public:
@@ -297,6 +297,8 @@ public:
 	void SendSignal(const wxString &signame);
 	bool GetSignals(vector<SignalHandlingInfo> &v);
 	bool SetSignalHandling(SignalHandlingInfo &si, int i=-1);
+	
+	bool InterruptOperation();
 	
 	/// @brief ejecuta en gdb los comandos necesarios para definir fuentes y funciones que debe evitar el step-in
 	void SetBlacklist(bool clear_first=false);

@@ -36,6 +36,8 @@ MAINW_CPPCHECK_MISSING
 CppCheck isn't present in your system or its path isn't correctly defined\nin ZinjaI's settings. To download Doxygen go to http://cppcheck.sourceforge.net.\nIf it is already installed, check the path in "Paths 2" tab in\nPreference's dialog (from "File" menu).
 CONFIG_MAC_DEADKEYS_PROBLEM_QUESTION
 Do you use Alt Gr plus the keys rigth to 'P' and 'ÃƒÂ‘' for\ninserting '[' and '{' symbols (Spanish-ISO keyboard)?\n\nNote: if you experience problems with your keyboard later,\nyou'll be able to change this setting from Preferences diagog.
+CONFIG_APTGET_BUILD_ESSENTIAL
+Try to install it now.
 CONFIG_GOTO_PACKAGE_WEBSITE
 Open website (<{1}>)
 CONFIG_OPEN_PREFERENCES
@@ -44,8 +46,6 @@ CONFIG_APTGET_FAILED
 Automatic installation failled.
 CONFIG_ABOUT_TO_APTGET
 The missing software will be installed next in a new terminal.\nThis action may require root password.\nZinjaI will continue when the new terminal is closed.
-CONFIG_APTGET_BUILD_ESSENTIAL
-Try to install it now.
 MAINW_CUSTOM_TOOL_UNDEFINED
 This tool is not completelly configured.\nUse item "Settings..." in "Custom Tools" submenu from "Tools" menu.
 GENERAL_ERROR
@@ -923,9 +923,9 @@ Running...
 PROJMNGR_REGENERATING_WXFB
 Regenerating wxFormBuilder project...
 PROJMNGR_REGENERATING_ERROR_1
-There was an error regenerating a wxFormBuilder project.\nCheck your wxFormBuilder path setting in "Preferences" dialog.
+There was an error regenerating code from a wxFormBuilder project:\n<{1}>
 PROJMNGR_REGENERATING_ERROR_4
-There was an error regenerating a wxFormBuilder project\n(check write permisions in your project's folder).
+(check write permisions in your project's folder).
 OSD_GENERATING_GRAPH
 Generating graph...
 PROJMNGR_PROJECT_GRAPH_BYTES
@@ -1160,6 +1160,8 @@ BYSRCOPTS_FILTER
 Filter
 BYSRCOPTS_OBJECT_FILE
 Object file
+BYSRCOPT_APPLY_TO_SELECTED_FILES
+Apply changes
 BYSRCOPTS_FROM_PROFILE
 Use profile's settings
 PROJECTCONFIG_COMPILING_EXTRA_ARGS
@@ -1182,8 +1184,6 @@ BYSRCOPT_ALL_PROFILES
 <<all profiles>>
 BYSRCOPT_PROFILE
 Apply in profile
-BYSRCOPT_APPLY_TO_SELECTED_FILES
-Apply changes
 COLORS_CAPTION
 Define Colours
 GENERAL_CANCEL_BUTTON
@@ -1629,9 +1629,9 @@ In project
 EXEINFO_OBJ_PATH
 Object file path
 EXEINFO_READONLY
-Solo lectura
+Read only
 EXEINFO_IGNORE_SYMBOLS
-Ignorar símbolos en búsquedas
+Ignore symbols when searching functions/classes
 EXEINFO_MODIFIED
 Modified
 EXEINFO_UPDATED

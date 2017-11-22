@@ -433,7 +433,7 @@ define pwstring
 		help pwstring
 	else
 		printf "{"
-		call printf("string=\"%ls\"", ($arg0)._M_data())
+		printf "string=\"%ls\"", ($arg0)._M_data()
 		printf ", size/length=%u", ($arg0)._M_rep()->_M_length
 		printf ", capacity=%u", ($arg0)._M_rep()->_M_capacity
 		printf ", ref-count=%d", ($arg0)._M_rep()->_M_refcount

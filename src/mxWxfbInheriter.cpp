@@ -57,7 +57,7 @@ mxWxfbInheriter::mxWxfbInheriter(wxWindow *parent, wxString classname, bool upda
 	
 	wxBoxSizer *baseSizer = new wxBoxSizer(wxHORIZONTAL);
 	base_class = new wxComboBox(this, wxID_ANY,mode==WXFBI_UPDATE_EXISTING_CLASS?user_classes[0]:wxfb_classes[0], wxDefaultPosition, wxDefaultSize, mode==WXFBI_UPDATE_EXISTING_CLASS?user_classes:wxfb_classes, wxCB_READONLY);
-	baseSizer->Add(new wxStaticText(this, wxID_ANY, mode==WXFBI_NEW_CLASS_ANY?LANG(WXFB_BASECLASS,"Clase base:"):LANG(WXFB_INHERITEDCLASS,"Clase heredada:"), wxDefaultPosition, wxDefaultSize, 0), sizers->BA5_Left);
+	baseSizer->Add(new wxStaticText(this, wxID_ANY, mode==WXFBI_NEW_CLASS_SPECIFIC?LANG(WXFB_BASECLASS,"Clase base:"):LANG(WXFB_INHERITEDCLASS,"Clase heredada:"), wxDefaultPosition, wxDefaultSize, 0), sizers->BA5_Left);
 	baseSizer->Add(base_class, sizers->BA5_Exp1);
 	mySizer->Add(baseSizer, sizers->BA5_Exp1);
 	

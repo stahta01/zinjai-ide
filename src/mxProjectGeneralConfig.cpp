@@ -96,7 +96,7 @@ wxPanel *mxProjectGeneralConfig::CreateTabGeneral(wxNotebook *notebook) {
 		.Value(project->macros_file).Button(mxID_DEBUG_MACROS).EndText(project_debug_macros);
 //	tab_width->Enable(custom_tab->GetValue());
 //	tab_use_spaces->Enable(custom_tab->GetValue());
-	sizer.BeginButton(LANG(PROJECTGENERAL_AUTOIMPROVE_TEMPLATES," Mejora de inspecciones según tipo ")).Id(mxID_PROJECT_CONFIG_AUTOIMPROVE_TEMPLATES).EndButton();
+	sizer.BeginButton(LANG(PROJECTGENERAL_AUTOIMPROVE_TEMPLATES," Mejora de inspecciones según tipo ")).Id(mxID_PROJECT_CONFIG_AUTOIMPROVE_TEMPLATES).Expand().EndButton();
 
 	sizer.SetAndFit();
 	return sizer.GetPanel();
@@ -105,12 +105,12 @@ wxPanel *mxProjectGeneralConfig::CreateTabGeneral(wxNotebook *notebook) {
 wxPanel *mxProjectGeneralConfig::CreateTabAdvanced(wxNotebook *notebook) {
 	CreatePanelAndSizer sizer(notebook);
 		
-	sizer.BeginButton(LANG(PROJECTGENERAL_COMPILE_AND_RUN," Compilación y Ejecución (generales)... ")).Id(mxID_RUN_CONFIG).EndButton();
-	sizer.BeginButton(LANG(PROJECTGENERAL_BYSRC_OPTIONS," Opciones de Compilación (por fuente)... ")).Id(mxID_PROJECT_CONFIG_BYSRC).EndButton();
-	sizer.BeginButton(LANG(PROJECTGENERAL_DOXYGEN," Configuración Doxygen... ")).Id(mxID_TOOLS_DOXY_CONFIG).EndButton();
-	sizer.BeginButton(LANG(PROJECTGENERAL_CPPCHECK," Configuración CppCheck... ")).Id(mxID_TOOLS_CPPCHECK_CONFIG).EndButton();
-	sizer.BeginButton(LANG(PROJECTGENERAL_WXFB," Integración con wxFormBuilder... ")).Id(mxID_TOOLS_WXFB_CONFIG).EndButton();
-	sizer.BeginButton(LANG(PROJECTGENERAL_CUSTOM_TOOLS," Herramientas Personalizadas... ")).Id(mxID_PROJECT_CONFIG_CUSTOM_TOOLS).EndButton();
+	sizer.BeginButton(LANG(PROJECTGENERAL_COMPILE_AND_RUN," Compilación y Ejecución (generales)... ")).Id(mxID_RUN_CONFIG).Expand().EndButton();
+	sizer.BeginButton(LANG(PROJECTGENERAL_BYSRC_OPTIONS," Opciones de Compilación (por fuente)... ")).Id(mxID_PROJECT_CONFIG_BYSRC).Expand().EndButton();
+	sizer.BeginButton(LANG(PROJECTGENERAL_DOXYGEN," Configuración Doxygen... ")).Id(mxID_TOOLS_DOXY_CONFIG).Expand().EndButton();
+	sizer.BeginButton(LANG(PROJECTGENERAL_CPPCHECK," Configuración CppCheck... ")).Id(mxID_TOOLS_CPPCHECK_CONFIG).Expand().EndButton();
+	sizer.BeginButton(LANG(PROJECTGENERAL_WXFB," Integración con wxFormBuilder... ")).Id(mxID_TOOLS_WXFB_CONFIG).Expand().EndButton();
+	sizer.BeginButton(LANG(PROJECTGENERAL_CUSTOM_TOOLS," Herramientas Personalizadas... ")).Id(mxID_PROJECT_CONFIG_CUSTOM_TOOLS).Expand().EndButton();
 	
 	sizer.SetAndFit();
 	return sizer.GetPanel();
@@ -120,9 +120,9 @@ wxPanel *mxProjectGeneralConfig::CreateTabInfo(wxNotebook *notebook) {
 	CreatePanelAndSizer sizer(notebook);
 	
 	sizer.BeginText(LANG(PROJECTGENERAL_ZPR_FILE,"Archivo de proyecto:")).Value(project->filename).ReadOnly().EndText();
-	sizer.BeginButton(LANG(PROJECTGENERAL_STATISTICS," Estadísticas... ")).Id(mxID_TOOLS_PROJECT_STATISTICS).EndButton();
-	sizer.BeginButton(LANG(PROJECTGENERAL_GRAPH," Grafo de archivos... ")).Id(mxID_TOOLS_DRAW_PROJECT).EndButton();
-	sizer.BeginButton(LANG(PROJECTGENERAL_LIZARD," Análisis de complejidad... ")).Id(mxID_TOOLS_LIZARD_RUN).EndButton();
+	sizer.BeginButton(LANG(PROJECTGENERAL_STATISTICS," Estadísticas... ")).Id(mxID_TOOLS_PROJECT_STATISTICS).Expand().EndButton();
+	sizer.BeginButton(LANG(PROJECTGENERAL_GRAPH," Grafo de archivos... ")).Id(mxID_TOOLS_DRAW_PROJECT).Expand().EndButton();
+	sizer.BeginButton(LANG(PROJECTGENERAL_LIZARD," Análisis de complejidad... ")).Id(mxID_TOOLS_LIZARD_RUN).Expand().EndButton();
 
 	sizer.SetAndFit();
 	return sizer.GetPanel();

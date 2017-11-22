@@ -132,7 +132,7 @@ void er_sigsev(int sig) {
 	
 	// at least in windows, leaving gdb alive can turn the inferior into a zombie-like process
 	// that will not be possible to kill with the task manager and not be visible either
-	if (debug && debug->process && debug->pid) debug->process->Kill(debug->pid,wxSIGKILL);
+	if (debug && debug->process && debug->gdb_pid) debug->process->Kill(debug->gdb_pid,wxSIGKILL);
 #ifndef __WIN32__
 	if (debug && debug->tty_process && debug->tty_pid) debug->tty_process->Kill(debug->tty_pid,wxSIGKILL);
 #endif

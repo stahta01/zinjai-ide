@@ -112,13 +112,6 @@ bool mxAUI::OnPaneClose (wxWindow * window) {
 			return true;
 		}
 	}
-	int iaux = m_generic_panes.Find(window);
-	if (iaux!=m_generic_panes.NotFound()) {
-		m_wxaui.DetachPane(window);
-		if (m_generic_panes[iaux].delete_on_close) window->Destroy();
-		m_generic_panes.Remove(iaux);
-		return true;
-	}
 	return false;
 }
 
@@ -127,8 +120,8 @@ mxAUIPaneInfo mxAUI::AttachGenericPane(wxWindow *ctrl, wxString title, bool hand
 	pane_info.CloseButton(true).MaximizeButton(true).Resizable(true).Caption(title).Show().Float();
 //	if (position!=wxDefaultPosition) pane_info.FloatingPosition(position);
 //	if (size!=wxDefaultSize) pane_info.BestSize(size);
+	if (handle_deletion) pane_info.DestroyOnClose();
 	m_wxaui.AddPane(ctrl,pane_info);
-	if (handle_deletion) m_generic_panes.Add(mxPaneInfo(ctrl).DeleteOnClose());
 	return mxAUIPaneInfo(*this,ctrl);
 }
 

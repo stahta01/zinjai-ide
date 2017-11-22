@@ -2,9 +2,7 @@
 #include <wx/stream.h>
 #include <wx/msgdlg.h>
 #include <algorithm>
-#include <fstream>
 #include <vector>
-#include <iostream>
 #include "DebugManager.h"
 #include "mxCompiler.h"
 #include "ConfigManager.h"
@@ -54,7 +52,7 @@ DebugManager::DebugManager() {
 	process = nullptr;
 	input = nullptr;
 	output = nullptr;
-	pid = 0;
+	gdb_pid = 0;
 	notitle_source = current_source = nullptr;
 #ifndef __WIN32__
 	tty_pid = 0;
@@ -177,7 +175,7 @@ bool DebugManager::Start(wxString workdir, wxString exe, wxString args, bool sho
 		command<<_T(" -x \"")<<DIR_PLUS_FILE(project->path,project->macros_file)<<"\"";
 #ifndef __WIN32__
 	if (show_console) {
-		pid=0;
+		gdb_pid=0;
 		wxDateTime t0=wxDateTime::Now(); // algunas terminales no esperan a que lo de adentro se ejecute para devolver el control (mac por ejemplo)
 		while ((tty_pid || (wxDateTime::Now()-t0).GetSeconds()<10) && !wxFileName::FileExists(tty_file))
 			{ wxYield(); wxMilliSleep(100); }
@@ -222,9 +220,9 @@ bool DebugManager::Start(wxString workdir, wxString exe, wxString args, bool sho
 	
 	ZLINF("DebugManager","Debug starting");
 	ZLINF2("DebugManager","cmd: "<<command);
-	pid = wxExecute(command,wxEXEC_ASYNC,process);
-	ZLINF2("DebugManager","pid: "<<pid);
-	if (pid>0) {
+	gdb_pid = wxExecute(command,wxEXEC_ASYNC,process);
+	ZLINF2("DebugManager","gdb_pid: "<<gdb_pid);
+	if (gdb_pid>0) {
 		input = process->GetInputStream();
 		output = process->GetOutputStream();
 		GDBAnswer &hello = WaitAnswer();
@@ -262,7 +260,7 @@ bool DebugManager::Start(wxString workdir, wxString exe, wxString args, bool sho
 				).Title("Error al iniciar depurador").IconError().Run();
 			main_window->PrepareGuiForDebugging(false);
 	}
-	pid=0;
+	gdb_pid=0;
 	debugging = false;
 	main_window->SetCompilingStatus(LANG(DEBUG_STATUS_INIT_ERROR,"Error al iniciar depuracion"));
 	return false;
@@ -290,7 +288,7 @@ void DebugManager::ResetDebuggingStuff() {
 	_DBG_LOG_CALL(Log("\n<<<NEW SESSION>>>\n"));
 	m_gdb_buffer.Reset();
 	debugging = true;
-	child_pid = pid = 0;
+	child_pid = gdb_pid = 0;
 	input = nullptr;
 	output = nullptr;
 	step_by_asm_instruction = false;
@@ -322,8 +320,8 @@ bool DebugManager::SpecialStart(mxSource *source, const wxString &gdb_command, c
 	command<<" "<<mxUT::Quotize(exe);	
 	process = new wxProcess(main_window->GetEventHandler(),mxPROCESS_DEBUG);
 	process->Redirect();
-	pid = wxExecute(command,wxEXEC_ASYNC,process);
-	if (pid>0) {
+	gdb_pid = wxExecute(command,wxEXEC_ASYNC,process);
+	if (gdb_pid>0) {
 		input = process->GetInputStream();
 		output = process->GetOutputStream();
 		GDBAnswer &hello = WaitAnswer();
@@ -379,7 +377,7 @@ bool DebugManager::SpecialStart(mxSource *source, const wxString &gdb_command, c
 		return true;
 	}
 	debugging = false;
-	pid = 0;
+	gdb_pid = 0;
 	return false;	
 }
 	
@@ -416,8 +414,8 @@ bool DebugManager::LoadCoreDump(wxString core_file, mxSource *source) {
 	command<<" -c "<<mxUT::Quotize(core_file)<<" "<<mxUT::Quotize(exe);	
 	process = new wxProcess(main_window->GetEventHandler(),mxPROCESS_DEBUG);
 	process->Redirect();
-	pid = wxExecute(command,wxEXEC_ASYNC,process);
-	if (pid>0) {
+	gdb_pid = wxExecute(command,wxEXEC_ASYNC,process);
+	if (gdb_pid>0) {
 		input = process->GetInputStream();
 		output = process->GetOutputStream();
 		/*wxString hello =*/ WaitAnswer();
@@ -444,7 +442,7 @@ bool DebugManager::LoadCoreDump(wxString core_file, mxSource *source) {
 //		}
 		return true;
 	}
-	pid=0;
+	gdb_pid=0;
 	debugging = false;
 	return false;
 }
@@ -461,15 +459,15 @@ bool DebugManager::Stop(bool waitkey) {
 	if (status==DBGST_STOPPING) return false; else status=DBGST_STOPPING;
 	if (waiting || !debugging) {
 #if defined(__APPLE__) || defined(__WIN32__)
-		ZLINF2("DebugManager","Stop, Enviando SIGKILL a pid:"<<pid);
-		process->Kill(pid,wxSIGKILL);
+		ZLINF2("DebugManager","Stop, Enviando SIGKILL a pid:"<<gdb_pid);
+		process->Kill(gdb_pid,wxSIGKILL);
 		return false;
 #else
 		Pause();
 #endif
 	}
 	waiting=true;
-	if (pid) {
+	if (gdb_pid) {
 		last_command=_T("-gdb-exit\n");
 #ifndef __WIN32__
 #warning VER DE MOSTRAR EL CODIGO DE SALIDA QUE DA GDB (buscar exit-code)
@@ -979,13 +977,13 @@ void DebugManager::Pause() {
 	should_pause=true;
 	if (!waiting && !debugging) return;
 #ifdef __WIN32__
-	if (!winLoadDBP()) {
+	if (!OSDep::winLoadDBP()) {
 		mxMessageDialog(main_window,"Esta caracteristica no se encuentra presente\n"
 									"en versiones de Windows previas a XP-SP2")
 			.Title(LANG(GENERAL_ERROR,"Error")).IconError().Run();
 		return;
 	}
-	if (FindOutChildPid()) winDebugBreak(child_pid);
+	if (FindOutChildPid()) OSDep::winDebugBreak(child_pid);
 #else
 	// for some reason, since some system-level updated sending SIGINT to gdb started working weird...
 	// was working only for the first time in each debug session, but being ignored (or causing other
@@ -993,8 +991,8 @@ void DebugManager::Pause() {
 	// as a wx project)... that's why next times I use the debuged process'id (child_pid) instead of 
 	// the debugger's pid (pid)... but not the first time cause I need to talk with gdb once the 
 	// program has started in order to find out that child_pid (see FindOutChildPid())
-	ZLINF2("DebugManager","Pause, Enviando SIGINT a "<<(child_pid!=0?"child_pid: ":"pid: ")<<(child_pid!=0?child_pid:pid));
-	process->Kill(child_pid!=0?child_pid:pid,wxSIGINT);
+	ZLINF2("DebugManager","Pause, Enviando SIGINT a "<<(child_pid!=0?"child_pid: ":"pid: ")<<(child_pid!=0?child_pid:gdb_pid));
+	process->Kill(child_pid!=0?child_pid:gdb_pid,wxSIGINT);
 #endif
 }
 
@@ -1007,7 +1005,7 @@ void DebugManager::Pause() {
 bool DebugManager::FindOutChildPid() {
 	if (child_pid!=0) return true; // si ya se sabe cual es, no hace nada
 #ifdef __WIN32__
-	child_pid = OSDep::GetChildPid(pid);
+	child_pid = OSDep::GetChildPid(gdb_pid);
 #else
 # ifdef __linux__
 	wxString val = SendCommand("info proc status").stream;
@@ -1048,18 +1046,41 @@ void DebugManager::Continue() {
 
 void DebugManager::ReadGDBOutput() {
 	if (input->IsOk() && input->CanRead()) {
-		int n;
+		int n, watchdog=0;
 		do {
 			static char buffer[256];
 			n = input->Read(buffer,255).LastRead();
 			m_gdb_buffer.Read(buffer,n);
-		} while (n==255 && input->CanRead());
+		} while (++watchdog!=1000 && n==255 && input->CanRead());
 	}
 }
 
 DebugManager::GDBAnswer &DebugManager::WaitAnswer() {
+	
+	struct WatchDog {
+		bool running;
+		int lines;
+		wxDateTime t0;
+		WatchDog(bool r) : running(r), lines(0) { if (!r) t0=wxDateTime::Now(); }
+		bool NewLine() { if (!running) { if (++lines%1000) return Check(); } return false; }
+		bool Check() {
+			if ((wxDateTime::Now()-t0).GetSeconds()>=1/*0*/) {
+				if (mxMessageDialog(main_window,"Alguna operación en el depurador está tomando demasiado tiempo, desea interrumpirla?.")
+					.Title("UPS!").IconWarning().ButtonsYesNo().Run().yes ) 
+				{
+					_DBG_LOG_CALL(Log(wxString()<<"\n<<<TIME OUT>>>\n"));
+					return true;
+				} else {
+					t0 = wxDateTime::Now();
+				}
+			}
+			return false;
+		}
+	};
+	
 	boolFlagGuard waiting_guard(waiting,true);
 	last_answer.Clear();
+	WatchDog watchdog(running);
 	while(process || m_gdb_buffer.HasData()) {
 		
 		// try to get some output from gdb
@@ -1074,15 +1095,15 @@ DebugManager::GDBAnswer &DebugManager::WaitAnswer() {
 			switch(type) {
 				case GDBAnsBuffer::LOG_STREAM:
 					if (line.StartsWith("&\"Error in re-setting breakpoint ")) {
-							long bn=-1;	
-							if (line.Mid(33).BeforeFirst(':').ToLong(&bn)) {
-								BreakPointInfo *bpi = BreakPointInfo::FindFromNumber(bn,true);
-								if (bpi) {
-									bpi->SetStatus(BPS_ERROR_SETTING);
-									ShowBreakPointLocationErrorMessage(bpi);
-								}
+						long bn=-1;	
+						if (line.Mid(33).BeforeFirst(':').ToLong(&bn)) {
+							BreakPointInfo *bpi = BreakPointInfo::FindFromNumber(bn,true);
+							if (bpi) {
+								bpi->SetStatus(BPS_ERROR_SETTING);
+								ShowBreakPointLocationErrorMessage(bpi);
 							}
-						} 
+						}
+					}
 					main_window->AddToDebugLog(line);
 				break;
 				
@@ -1110,26 +1131,30 @@ DebugManager::GDBAnswer &DebugManager::WaitAnswer() {
 //					last_answer.cli_output += line;
 					;
 			}
+			if (watchdog.NewLine()) { // too many lines
+				InterruptOperation();
+				_DBG_LOG_CALL(Log(wxString()<<"\n<<<TIME OUT 1>>>\n"));
+				return last_answer.Clear(false);
+			}
+		}
+		
+		if (watchdog.NewLine()) { // a line too long
+			InterruptOperation();
+			_DBG_LOG_CALL(Log(wxString()<<"\n<<<TIME OUT 2>>>\n"));
+			return last_answer.Clear(false);
 		}
 		
 		// wait for gdb to generate more output
-		wxDateTime t1 = wxDateTime::Now();
-		while ( process && input->IsOk() && !input->CanRead()) {
+		while (process && input->IsOk() && !input->CanRead()) {
 			if (running) {
 				g_application->Yield(true);
 				wxMilliSleep(50);
 			} else {
 				wxMilliSleep(10);
-				wxTimeSpan t2 = wxDateTime::Now()-t1;
-				if (t2.GetSeconds()>30) {
-					if (mxMessageDialog(main_window,"Alguna operación en el depurador está tomando demasiado tiempo, desea interrumpirla?.")
-						.Title("UPS!").IconWarning().ButtonsYesNo().Run().yes ) 
-					{
-						_DBG_LOG_CALL(Log(wxString()<<"\n<<<TIME OUT>>>\n"));
-						return last_answer.Clear(false);
-					} else {
-						t1=wxDateTime::Now();
-					}
+				if (watchdog.Check()) { // long time no answer
+					InterruptOperation();
+					_DBG_LOG_CALL(Log(wxString()<<"\n<<<TIME OUT 3>>>\n"));
+					return last_answer.Clear(false);
 				}
 			}
 		}
@@ -1486,7 +1511,7 @@ void DebugManager::ProcessKilled() {
 #endif
 	delete process;
 	process=nullptr;
-	pid=0;
+	gdb_pid=0;
 	running = debugging = waiting = false;
 	status=DBGST_NULL;
 	wxCommandEvent evt;
@@ -1498,7 +1523,7 @@ void DebugManager::ProcessKilled() {
 #ifndef __WIN32__
 void DebugManager::TtyProcessKilled() {
 	ZLINF("DebugManager","TtyProcessKilled");
-	if (pid && debugging && status!=DBGST_STOPPING) Stop();
+	if (gdb_pid && debugging && status!=DBGST_STOPPING) Stop();
 	delete tty_process;
 	tty_process = nullptr;
 	tty_pid = 0;
@@ -1711,8 +1736,7 @@ wxString DebugManager::GetMacroOutput(wxString cmd, bool keep_endl) {
 	GDBAnswer &ans = SendCommand(cmd), ret;
 	if (ans.result.StartsWith("^done")) {
 		wxString stream = ans.stream;
-		if (!keep_endl) stream.Replace("\n","",true);
-		
+		if (!keep_endl) mxUT::RemoveCharInplace(stream,'\n');
 		int d=0, l=stream.Len();
 		for(int p=0; p<l;++p) {
 			if(stream[p]=='\''||stream[p]=='\"') {
@@ -2104,5 +2128,18 @@ void DebugManager::SetStepMode (bool asm_mode_on) {
 
 bool DebugManager::IsAsmStepModeOn() {
 	return step_by_asm_instruction;
+}
+
+/// sends Ctrl+C, used to interrupt a command taking too long or generating too much output
+bool DebugManager::InterruptOperation ( ) {
+	if (process && gdb_pid && process->Exists(gdb_pid)) {
+#ifdef __WIN32__
+		OSDep::winDebugBreak(child_pid);
+#else
+		process->Kill(gdb_pid,wxSIGINT);
+#endif
+		return true;
+	}
+	return false;
 }
 

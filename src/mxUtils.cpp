@@ -34,6 +34,9 @@
 #include "mxOSD.h"
 #include "mxThreeDotsUtils.h"
 #include "ZLog.h"
+#ifdef __WIN32__
+#	include "osdep.h"
+#endif
 
 
 bool g_zinjai_debug_mode = false;
@@ -1267,4 +1270,14 @@ bool mxUT::ShellExecute (const wxString & path, const wxString &workdir) {
 }
 
 
+/// this function exists because wxString::Replace("c","",true) is incredibly slow (try inspecting a vector of 10000 elements)!!
+void mxUT::RemoveCharInplace (wxString & s, char c) {
+	int l = s.Len(), d = 0;
+	for(int i=0;i<l;++i) {
+		char x = s[i];
+		if (x==c) ++d;
+		else if (d) s[i-d] = x;
+	}
+	s.Remove(l-d);
+}
 

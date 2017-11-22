@@ -138,9 +138,11 @@ Toolchain &Toolchain::SelectToolchain ( ) {
 			current_toolchain.SetPaths();
 			if (toolchains[i].CheckVersion(false,0,0)) current_toolchain.version_c=toolchains[i].version_c;
 			if (toolchains[i].CheckVersion(true,0,0)) current_toolchain.version_cpp=toolchains[i].version_cpp;
+			ZLINF2("Toolchain","Selecting toolchain:"<<current_toolchain.file);
 			return current_toolchain;
 		}
 	}
+	ZLWAR("Toolchain","Using default toolchain config");
 	current_toolchain=Toolchain();
 	current_toolchain.SetArgumets();
 	current_toolchain.SetPaths();
