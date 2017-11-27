@@ -225,7 +225,7 @@ bool DebugManager::Start(wxString workdir, wxString exe, wxString args, bool sho
 	if (gdb_pid>0) {
 		input = process->GetInputStream();
 		output = process->GetOutputStream();
-		GDBAnswer &hello = WaitAnswer();
+		GDBAnswer &hello = WaitAnswer(true); // true para que no salte el watchdog, la carga de libs puede tardar bastante 
 		if (hello.stream.Find("no debugging symbols found")!=wxNOT_FOUND) {
 			mxMessageDialog(main_window,LANG(DEBUG_NO_SYMBOLS,""
 											 "El ejecutable que se intenta depurar no contiene informacion de depuracion.\n"
@@ -491,7 +491,6 @@ bool DebugManager::Stop(bool waitkey) {
 
 bool DebugManager::Run() {
 	if (waiting || !debugging) return false;
-	running = true;
 	GDBAnswer &ans = SendCommand("-exec-run");
 	if (ans.result.StartsWith("^running")) {
 		SetStateText(LANG(DEBUG_STATUS_RUNNING,"Ejecutando..."));
@@ -499,7 +498,6 @@ bool DebugManager::Run() {
 		return true;
 	} else {
 		ZLWAR2("DebugManager","Run -exec-run failed, ans="<<ans.result);
-		running = false;
 		return false;
 	}
 }
@@ -515,9 +513,7 @@ wxString DebugManager::HowDoesItRuns(bool raise_zinjai_window) {
 	MarkCurrentPoint();
 	
 	while (true) { // para que vuelva a este punto cuando llega a un break point que no debe detener la ejecucion
-		running = true; 
-		wxString ans = WaitAnswer().async; retval += last_answer.full;
-		running = false;
+		wxString ans = WaitAnswer(true).async; retval += last_answer.full;
 		wxString state_text=LANG(DEBUG_STATUS_UNKNOWN,"Estado desconocido"); 
 		if (!process || status==DBGST_STOPPING) return retval;
 		int st_pos = ans.Find(_T("*stopped"));
@@ -950,26 +946,22 @@ bool DebugManager::UpdateBacktrace(const BTInfo &stack, bool is_current) {
 
 void DebugManager::StepIn() {
 	if (waiting || !debugging) return;
-	stepping_in = true; running = true;
+	stepping_in = true;
 	GDBAnswer &ans = SendCommand(step_by_asm_instruction?"-exec-step-instruction":"-exec-step");
 	if (ans.result.StartsWith("^running")) HowDoesItRuns();
-	else running = false;
 }
 
 void DebugManager::StepOut() {
 	if (waiting || !debugging) return;
-	running = true;
 	GDBAnswer &ans = SendCommand("-exec-finish");
 	if (ans.result.StartsWith("^running")) HowDoesItRuns();
-	else running = false;
 }
 
 void DebugManager::StepOver() {
 	if (waiting || !debugging) return;
-	stepping_in = false; running = true;
+	stepping_in = false;
 	GDBAnswer &ans = SendCommand(step_by_asm_instruction?"-exec-next-instruction":"-exec-next");
 	if (ans.result.StartsWith("^running")) HowDoesItRuns();
-	else running = false;
 }
 
 
@@ -1035,13 +1027,9 @@ void DebugManager::Continue() {
 	}
 #endif
 	
-	running = true;
 	MarkCurrentPoint();
 	GDBAnswer &ans = SendCommand("-exec-continue");
-	if (ans.result.Mid(1,7)=="running") {
-		HowDoesItRuns(true);
-	} else 
-		running = false;
+	if (ans.result.Mid(1,7)=="running") HowDoesItRuns(true);
 }
 
 void DebugManager::ReadGDBOutput() {
@@ -1055,7 +1043,9 @@ void DebugManager::ReadGDBOutput() {
 	}
 }
 
-DebugManager::GDBAnswer &DebugManager::WaitAnswer() {
+DebugManager::GDBAnswer &DebugManager::WaitAnswer(bool set_reset_running) {
+	
+	boolFlagGuard running_guard(set_reset_running?&running:nullptr);
 	
 	struct WatchDog {
 		bool running;
@@ -1434,18 +1424,16 @@ wxString DebugManager::GetAddress(wxString fname, int line) {
 **/
 bool DebugManager::Jump(wxString fname, int line) {
 	if (waiting || !debugging) return false;
-	running = true;
+	boolFlagGuard running_guard(running); // para que se ponia en true aca? se puede sacar?
 	wxString adr = GetAddress(fname,line);
 	if (adr.Len()) {
 		GDBAnswer &ans=SendCommand("-gdb-set $pc=",adr);
 		if (ans.result.StartsWith("^done")) {
 			MarkCurrentPoint(fname,line+1,mxSTC_MARK_EXECPOINT);
 			UpdateBacktrace(false,true);
-			running = false;
 			return true;
 		}
 	}
-	running = false;
 	return false;
 }
 
@@ -1464,12 +1452,10 @@ bool DebugManager::Jump(wxString fname, int line) {
 **/
 bool DebugManager::RunUntil(wxString fname, int line) {
 	if (waiting || !debugging) return false;
-	running = true;
 	wxString adr = GetAddress(fname,line);
 	if (adr.Len()) {
 		GDBAnswer &ans = SendCommand("advance *",adr); // aca estaba exec-until pero until solo funciona en un mismo frame, advance se los salta sin problemas
 		if (ans.result.StartsWith("^error"))
-			return false;
 		HowDoesItRuns(); /// @todo: guardar adr para comparar en HowDoesItRuns y saber si realmente llego o no a ese punto (siempre dice que si, aunque termine el programa sin pasar por ahi)
 		running = false;
 		return true;
@@ -1901,12 +1887,11 @@ void DebugManager::ShowBreakPointConditionErrorMessage (BreakPointInfo *_bpi) {
 
 void DebugManager::SendSignal (const wxString & signame) {
 	if (waiting || !debugging || status==DBGST_STOPPING || status==DBGST_WAITINGKEY) return;
-	running = true; MarkCurrentPoint();
+	MarkCurrentPoint();
 	GDBAnswer &ans = SendCommand("signal ",signame);
 	if (ans.result.StartsWith("^running")) {
 		HowDoesItRuns(true);
 	}
-	running = false;
 }
 
 bool DebugManager::GetSignals(vector<SignalHandlingInfo> & v) {

@@ -167,7 +167,7 @@ private:
 	void ReadGDBOutput();
 	void SendCommandNW(wxString command); ///< does not waits for answare, just writes to output stream
 public:
-	GDBAnswer& WaitAnswer();
+	GDBAnswer& WaitAnswer(bool set_reset_running = false);
 	wxString last_command;
 	GDBAnswer& SendCommand(wxString command);
 	GDBAnswer& SendCommand(wxString cmd1,wxString cmd2);
