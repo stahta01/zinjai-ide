@@ -1,8 +1,8 @@
+#include <algorithm>
+#include <vector>
 #include <wx/process.h>
 #include <wx/stream.h>
 #include <wx/msgdlg.h>
-#include <algorithm>
-#include <vector>
 #include "DebugManager.h"
 #include "mxCompiler.h"
 #include "ConfigManager.h"
@@ -165,14 +165,6 @@ bool DebugManager::Start(wxString workdir, wxString exe, wxString args, bool sho
 	wxString command(config->Files.debugger_command);
 	command<<_T(" -quiet -nx -interpreter=mi");
 	if (config->Debug.readnow) command<<_T(" --readnow");
-	// macros para gdb generales
-	if (wxFileName(config->Debug.macros_file).FileExists())
-		command<<_T(" -x \"")<<config->Debug.macros_file<<"\"";
-	else if (wxFileName(config->GetZinjaiSamplesPath("debug_macros.gdb")).FileExists())
-		command<<_T(" -x \"")<<config->GetZinjaiSamplesPath("debug_macros.gdb")<<"\"";
-	// macros para gdb del proyecto
-	if (project && project->macros_file.Len() && wxFileName(DIR_PLUS_FILE(project->path,project->macros_file)).FileExists())
-		command<<_T(" -x \"")<<DIR_PLUS_FILE(project->path,project->macros_file)<<"\"";
 #ifndef __WIN32__
 	if (show_console) {
 		gdb_pid=0;
@@ -313,10 +305,6 @@ bool DebugManager::SpecialStart(mxSource *source, const wxString &gdb_command, c
 	command<<_T(" -quiet -nx -interpreter=mi");
 	if (config->Debug.readnow)
 		command<<_T(" --readnow");
-	if (wxFileName(DIR_PLUS_FILE(config->zinjai_dir,config->Debug.macros_file)).FileExists())
-		command<<_T(" -x \"")<<DIR_PLUS_FILE(config->zinjai_dir,config->Debug.macros_file)<<"\"";
-	if (project && project->macros_file.Len() && wxFileName(DIR_PLUS_FILE(project->path,project->macros_file)).FileExists())
-		command<<_T(" -x \"")<<DIR_PLUS_FILE(project->path,project->macros_file)<<"\"";
 	command<<" "<<mxUT::Quotize(exe);	
 	process = new wxProcess(main_window->GetEventHandler(),mxPROCESS_DEBUG);
 	process->Redirect();
@@ -407,10 +395,6 @@ bool DebugManager::LoadCoreDump(wxString core_file, mxSource *source) {
 	command<<_T(" -quiet -nx -interpreter=mi");
 	if (config->Debug.readnow)
 		command<<_T(" --readnow");
-	if (wxFileName(DIR_PLUS_FILE(config->zinjai_dir,config->Debug.macros_file)).FileExists())
-		command<<_T(" -x \"")<<DIR_PLUS_FILE(config->zinjai_dir,config->Debug.macros_file)<<"\"";
-	if (project && project->macros_file.Len() && wxFileName(DIR_PLUS_FILE(project->path,project->macros_file)).FileExists())
-		command<<_T(" -x \"")<<DIR_PLUS_FILE(project->path,project->macros_file)<<"\"";
 	command<<" -c "<<mxUT::Quotize(core_file)<<" "<<mxUT::Quotize(exe);	
 	process = new wxProcess(main_window->GetEventHandler(),mxPROCESS_DEBUG);
 	process->Redirect();
@@ -1985,6 +1969,7 @@ void DebugManager::Start_ConfigureGdb ( ) {
 		}
 		i++;
 	}
+
 #ifdef __WIN32__
 	if (config->Debug.no_debug_heap) SendCommand("set environment _NO_DEBUG_HEAP 1");
 #endif
@@ -2005,6 +1990,16 @@ void DebugManager::Start_ConfigureGdb ( ) {
 #endif
 	SetFullOutput(false,true);
 	SetBlacklist();
+	
+	// macros para gdb generales
+	if (wxFileName(config->Debug.macros_file).FileExists())
+		SendCommand("source ",mxUT::Quotize(config->Debug.macros_file));
+	else if (wxFileName(config->GetZinjaiSamplesPath(config->Debug.macros_file)).FileExists())
+		SendCommand("source ",mxUT::Quotize(config->GetZinjaiSamplesPath(config->Debug.macros_file)));
+	// macros para gdb del proyecto
+	if (project && project->macros_file.Len() && wxFileName(DIR_PLUS_FILE(project->path,project->macros_file)).FileExists())
+		SendCommand("source ",mxUT::Quotize(DIR_PLUS_FILE(project->path,project->macros_file)));
+	
 	// reiniciar sistema de inspecciones
 	DebuggerInspection::OnDebugStart();
 	for(int i=0;i<backtrace_consumers.GetSize();i++) backtrace_consumers[i]->OnDebugStart();

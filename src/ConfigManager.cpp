@@ -862,7 +862,7 @@ void ConfigManager::LoadDefaults(){
 	Debug.raise_main_window = true;
 	Debug.compile_again = true;
 	Debug.format = "";
-	Debug.macros_file = DIR_PLUS_FILE(config_dir,"debug_macros.gdb");
+	Debug.macros_file = "debug_macros.gdb";
 	Debug.inspections_on_right = false;
 	Debug.show_thread_panel = false;
 	Debug.show_log_panel = false;
