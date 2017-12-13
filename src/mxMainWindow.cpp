@@ -2375,7 +2375,7 @@ mxSource *mxMainWindow::OpenFile (const wxString &filename, bool add_to_project)
 		source->SetFocus();
 		not_opened=false;
 	} else {
-		project_file_item *fitem=project?project->FindFromName(filename):nullptr;
+		project_file_item *fitem = project?project->FindFromFullPath(filename):nullptr;
 		source = new mxSource(notebook_sources, AvoidDuplicatePageText(wxFileName(filename).GetFullName()),fitem);
 		source->sin_titulo=false;
 		source->LoadFile(filename);
@@ -2383,50 +2383,24 @@ mxSource *mxMainWindow::OpenFile (const wxString &filename, bool add_to_project)
 		source->SetCompilerOptions(g_templates->GetParsedCompilerArgs(source->IsCppOrJustC()));
 		if (project) source->m_extras->ToSource(source);
 	}
-	wxString ext=wxFileName(filename).GetExt().MakeLower();
-	if (mxUT::ExtensionIsCpp(ext)) {
-		if (not_opened) notebook_sources->AddPage(source, source->page_text, true, *bitmaps->files.source);
-		if (add_to_project) {
-			if (project) {
-				 if (!project->FindFromFullPath(filename)) {
-					project_file_item *fi=project->AddFile(FT_SOURCE,filename);
-					source->SetTreeItem(fi->GetTreeItem());
-				 }
-			} else {
-				wxTreeItemId tree_item = project_tree.AddFile(filename,FT_SOURCE);
-				source->SetTreeItem(tree_item);
-			}
-			source->never_parsed=false;
-			parser->ParseFile(filename);
+	
+	eFileType ftype = mxUT::GetFileType(filename,false);
+	project_file_item *fitem = project ? project->FindFromFullPath(filename) : nullptr;
+	if (not_opened) notebook_sources->AddPage(source, source->page_text, true, *bitmaps->files.GetFromType(ftype));
+	if (add_to_project) {
+		if (project) {
+			 if (!fitem) fitem = project->AddFile(ftype,filename);
+			 source->SetTreeItem(fitem->GetTreeItem());
+		} else {
+			wxTreeItemId tree_item = project_tree.AddFile(filename,ftype);
+			source->SetTreeItem(tree_item);
 		}
-	} else if (ext=="" || mxUT::ExtensionIsH(ext)) {
-		if (not_opened) notebook_sources->AddPage(source, source->page_text, true, *bitmaps->files.header);
-		if (add_to_project) {
-			if (project) {
-				if (!project->FindFromFullPath(filename)) {
-					project_file_item *fi=project->AddFile(FT_HEADER,filename);
-					source->SetTreeItem( fi->GetTreeItem() );
-				}
-			} else {
-				wxTreeItemId tree_item = project_tree.AddFile(filename,FT_HEADER);
-				source->SetTreeItem(tree_item);
-			}
-			source->never_parsed=false;
-			parser->ParseFile(filename);
-		}
-	} else {
-		if (not_opened) notebook_sources->AddPage(source, source->page_text, true, *bitmaps->files.other);
-		if (add_to_project) {
-			if (project) {
-				if (!project->FindFromFullPath(filename)) {
-					project_file_item *fi=project->AddFile(FT_OTHER,filename);
-					source->SetTreeItem( fi->GetTreeItem() );
-				}
-			} else {
-				wxTreeItemId tree_item = project_tree.AddFile(filename,FT_OTHER);
-				source->SetTreeItem(tree_item);
-			}
-		}
+		source->never_parsed=false;
+		parser->ParseFile(filename);
+	}
+	if (ftype!=FT_OTHER && add_to_project) {
+		source->never_parsed=false;
+		parser->ParseFile(filename);
 	}
 	return source;
 }

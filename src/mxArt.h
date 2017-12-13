@@ -3,6 +3,7 @@
 #include <wx/string.h>
 #include <map>
 #include <wx/filename.h>
+#include "enums.h"
 using namespace std;
 
 class wxBitmap;
@@ -24,6 +25,11 @@ public:
 		const wxBitmap *source;
 		const wxBitmap *header;
 		const wxBitmap *other;
+		const wxBitmap *GetFromType(eFileType t) {
+			if (t==FT_SOURCE) return source;
+			if (t==FT_HEADER) return header;
+			return other;
+		}
 	} files;
 	struct {
 		const wxBitmap *icon02_define;
