@@ -67,8 +67,11 @@ void mxTipsWindow::ShowAnyTip() {
 		changelog=false;
 		wxString tip(TIP_INITIAL_TEXT);
 		if (retry_num==42) {
-			tip<<"Exploradores de una raza de seres pandimensionales e hiperinteligentes construyen <I>Pensamiento Profundo</I>, el segundo mejor ordenador del universo, para calcular el sentido de la vida, el universo y todo lo demás. Después de siete millones y medio de años meditando la pregunta, <I>Pensamiento Profundo</I> revela la respuesta:"
-				"<BR>- ¡<B>Cuarenta y dos</B>!<BR>- ¿Es eso todo lo que tienes que mostrar tras siete millones y medio de años de trabajo?<BR>- Lo he comprobado muy minuciosamente -dijo el ordenador-, y ésa es casi definitivamente la respuesta.<BR><BR>de <I>La Guia del Autoestopista Galáctico</I>, por <I>Douglas Adams</I><BR>";
+			if (config->Init.language_file=="spanish") {
+				tip = "<center><br><br>Tip especial nro 42:<br><h2>¡NO SE ASUSTE!</h2></center>";
+			} else {
+				tip = "<center><br><br>Special tip number 42:<br><h2>DON'T PANIC!</h2></center>";
+			}
 		} else {
 			while (tip==TIP_INITIAL_TEXT)
 				tip<<file[TIPS_TO_SKIP+rand()%(file.GetLineCount()-TIPS_TO_SKIP)];
@@ -101,7 +104,7 @@ mxTipsWindow::mxTipsWindow(wxWindow* parent, wxWindowID id, const wxPoint& pos, 
 	showtip_checkbox->SetValue(config->Init.show_tip_on_startup);
 	wxButton *otherone_button = new mxBitmapButton (this,mxID_TIP_OTHERONE,bitmaps->buttons.ok,LANG(TIPS_OTHER,"Otra")); 
 	wxButton *close_button = new mxBitmapButton (this,mxID_TIP_CLOSE,bitmaps->buttons.cancel,LANG(TIPS_CLOSE,"Cerrar")); 
-	SetAffirmativeId(mxID_TIP_OTHERONE);
+//	SetAffirmativeId(mxID_TIP_OTHERONE);
 	SetEscapeId(mxID_TIP_CLOSE);
 
 	bottomSizer->Add(showtip_checkbox, sizers->BA5_Exp1);
@@ -115,17 +118,18 @@ mxTipsWindow::mxTipsWindow(wxWindow* parent, wxWindowID id, const wxPoint& pos, 
 	mySizer->Add(bottomSizer, sizers->Exp0);
 	SetSizerAndFit(mySizer);
 
-	tooltip->SetFocus();
-	Show(); close_button->SetFocus();
+//	tooltip->SetFocus();
+	Show(); otherone_button->SetFocus();
 	Raise();
 }
 
 void mxTipsWindow::OnKeyDown(wxKeyEvent &evt) {
-	if (evt.GetKeyCode()==WXK_ESCAPE) {
-		Close();
-	} else if (evt.GetKeyCode()==WXK_RETURN || evt.GetKeyCode()==WXK_NUMPAD_ENTER) {
-		ShowAnyTip();
-	} else if (evt.GetKeyCode()==WXK_F1) {
+//	if (evt.GetKeyCode()==WXK_ESCAPE) {
+//		Close();
+//	} else if (evt.GetKeyCode()==WXK_RETURN || evt.GetKeyCode()==WXK_NUMPAD_ENTER) {
+//		ShowAnyTip();
+//	} else
+	if (evt.GetKeyCode()==WXK_F1) {
 		Close();
 		mxHelpWindow::ShowHelp(changelog?"ChangeLog.html":"index.html");
 	} else evt.Skip();

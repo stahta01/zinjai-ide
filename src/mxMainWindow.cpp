@@ -3511,6 +3511,7 @@ void mxMainWindow::OnToolbarFindEnter (wxCommandEvent &evt) {
 		mxSource *src=CURRENT_SOURCE;
 		src->SetModify(false);
 		int delay=200;
+		int tabs_count = notebook_sources->GetPageCount();
 		for (int i=0;i<20;i++) {
 			wxString s("\n"), d(i,' ');
 			s<<d<<" _A_\n"<<d<<"  O \n"<<d<<"  |\\\n"<<d<<"  |/\n";
@@ -3519,6 +3520,7 @@ void mxMainWindow::OnToolbarFindEnter (wxCommandEvent &evt) {
 			if (i%4==2) s<<d<<" /|\n"<<d<<"/ |\n";
 			if (i%4==3) s<<d<<" /|\n"<<d<<" |\\\n";
 			src->SetText(s); wxYield();	wxMilliSleep(delay);
+			if (tabs_count != int(notebook_sources->GetPageCount())) return;
 		}
 		wxString d(23,' ');
 		src->SetText(wxString()<<"\n"<<d<<" _A_\n"<<d<<"  O |\n"<<d<<" /|/\n"<<d<<" || \n"<<d<<" / \\\n"<<d<<" | |\n");

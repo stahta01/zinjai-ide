@@ -1,4 +1,22 @@
+	- wxfb integration
+		- al detectar clases eliminadas y creadas, ofrecer la alternativa de "renombrar" una clase base que ya tenga herencias
+		- al renombrar el archivo.wxfb, la lista de archivos wxfb cacheada en el proyecto queda desactualizada y obliga a desactivar la integracion
+		- simplificar los mensajes, sobre todo el de eliminar (tal vez mover los detalles a una pag especial de la ayuda)
+	
+	- tips/huevo mientras compila
+
+	- seleccion múltiple en el arbol de proyectos (para cambiar de categoría, o eliminar un grupo)
+	- opción de re-buscar un fuente (para cuando los fuentes se movieron respecto al zpr)
+	- informar sobre archivos faltantes ni bien se carga el proyecto (en el panel de compilacion?, como los errores de la herencia?)
+
+
+time machine para deshacer/rehacer... que permita ir y venir con un slider pero en modo read-only
+
+copiar para la tabla de backtrace
+
+
 // esto esta muy desactualizado
+
 
 
 usar "cppcheck --errorlist --xml --xml-version=2" para los mensajes detallados de los errores?
@@ -16,8 +34,6 @@ bajo: poder guardar y abrir resultados de gprof
 
 Otras:
 
-opciones de compilación por fuente
-
 alguna forma de herencia de configuraciones de proyectos???? algo para los mil msuites con qt5s
 	opcion, una forma de decir que lo lea de un campo de un archivo tipo ini, que podria ser o no un zpr
 		de otro zpr: "${ZPR|msuite_qt.zpr|debug_win32}" // si se omite el "|debug_win32" se busca una config con el mismo nombre que la actual
@@ -29,10 +45,6 @@ alguna forma de herencia de configuraciones de proyectos???? algo para los mil m
 
 importante: revisar el GetOutput y evaluar implementarlo por fuera de wx para evitar el problema del wxyield (llamada a g++ --dumpversion como ejemplo)
 
-
-posibles bugs:
-	revisar lo de agregar .cpp al guardar
-	revisar lo de correr un cpp cuando se intenta correr un h
 
 mas opciones para crear un proyecto:
 	elegir que perfiles incluir
