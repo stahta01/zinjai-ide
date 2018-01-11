@@ -137,6 +137,7 @@ bool OSDep::SetFocus(unsigned long pid) {
 	}
 	XFlush(display); 
 	XSync(display, False);
+	XCloseDisplay(display);
 	return !match.result().empty();
 }
 
