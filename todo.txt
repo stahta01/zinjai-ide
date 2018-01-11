@@ -17,7 +17,7 @@ copiar para la tabla de backtrace
 
 // esto esta muy desactualizado
 
-
+un toggle-button en la barra de depuracion para habilitar/deshabilitar las inspecciones por tooltips
 
 usar "cppcheck --errorlist --xml --xml-version=2" para los mensajes detallados de los errores?
 

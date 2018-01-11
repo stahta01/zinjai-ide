@@ -28,6 +28,7 @@
 #include "Cpp11.h"
 #include "gdbParser.h"
 #include "ZLog.h"
+#include "asserts.h"
 using namespace std;
 
 //#define BACKTRACE_MACRO "define zframeaddress\nset $fi=0\nwhile $fi<$arg0\nprintf \"*zframe-%u={\",$fi\ninfo frame $fi\nprintf \"}\\n\"\nset $fi=$fi+1\nend\nend"
@@ -1035,10 +1036,11 @@ DebugManager::GDBAnswer &DebugManager::WaitAnswer(bool set_reset_running) {
 		bool running;
 		int lines;
 		wxDateTime t0;
-		WatchDog(bool r) : running(r), lines(0) { if (!r) t0=wxDateTime::Now(); }
-		bool NewLine() { if (!running) { if (++lines%1000) return Check(); } return false; }
+		WatchDog(bool r) : running(r), lines(0) { if (!running) t0=wxDateTime::Now(); }
+		bool NewLine() { if (!running) { if ((++lines)%1000==0) return Check(); } return false; }
 		bool Check() {
-			if ((wxDateTime::Now()-t0).GetSeconds()>=1/*0*/) {
+			EXPECT(!running);
+			if ((wxDateTime::Now()-t0).GetSeconds()>=10) {
 				if (mxMessageDialog(main_window,"Alguna operación en el depurador está tomando demasiado tiempo, desea interrumpirla?.")
 					.Title("UPS!").IconWarning().ButtonsYesNo().Run().yes ) 
 				{
