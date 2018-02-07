@@ -6,6 +6,7 @@
 #include <iostream>
 #include <wx/dir.h>
 #include <wx/choicdlg.h>
+#include <wx/settings.h>
 	
 	
 using namespace std;
@@ -84,6 +85,8 @@ mxWindow::mxWindow():wxFrame(NULL,wxID_ANY,"mxLangTool") {
 //	nav_sizer->Add(new wxButton(this,mxNEXT,"Next"),wxSizerFlags().Proportion(0).Expand());
 	main_sizer->Add(nav_sizer,wxSizerFlags().Proportion(0).Expand());
 	
+	SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
+	
 	btan->SetDefault();	
 	SetSizerAndFit(main_sizer);
 	list->Append("loading...");
@@ -128,7 +131,7 @@ void mxWindow::LoadLang(wxHashStringString &hash, wxString lang) {
 	hash.clear();
 	wxTextInputStream is(ff);
 	wxString key,text;
-	while (true) {
+	while (ff.IsOk()) {
 		wxString key = is.ReadLine();
 		key.Trim(false).Trim(true);
 		if (key=="END") break;

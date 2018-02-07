@@ -35,6 +35,7 @@
 #include "mxNewWizard.h"
 #include "EnvVars.h"
 #include "ZLogOstream.h"
+#include "osdep.h"
 using namespace std;
 
 
@@ -76,6 +77,9 @@ bool mxApplication::OnInit() {
 			new ZLogOstream(argv[++i]);
 		}
 	}
+	
+	ZLINF("OSDepp","AppInit...");
+	OSDep::AppInit();
 	
 	ZLINF("Application","Entering OnInit...");
 	
