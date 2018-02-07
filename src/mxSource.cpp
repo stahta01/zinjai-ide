@@ -2819,6 +2819,7 @@ void mxSource::OnToolTipTime (wxStyledTextEvent &event) {
 	} else 
 	// si se esta depurando, evaluar la inspeccion	
 	if (debug->IsPaused()) {
+		if (!config->Debug.inspect_on_mouse_over) return;
 		int e = GetSelectionEnd();
 		int s = GetSelectionStart();
 		if (e==s || p<s || p>e) {

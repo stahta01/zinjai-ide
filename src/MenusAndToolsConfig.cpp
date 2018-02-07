@@ -411,6 +411,8 @@ void MenusAndToolsConfig::LoadMenuData ( ) {
 		AddMenuItem(mnHIDDEN, myMenuItem("last_compiler_output",mxID_COMPILER_POPUP_FULL,LANG(MAINW_OPEN_LAST_COMPILER_OUTPUT,"Abrir última salida")));
 		AddMenuItem(mnHIDDEN, myMenuItem("attach_multiple_files",mxID_PROJECT_POPUP_ADD_MULTI,LANG(MAINW_PROJECT_FILE_POPUP_ADD_MULTI,"&Agregar Múltiples Archivos...")).EnableIf(ecPROJECT));
 		AddMenuItem(mnHIDDEN, myMenuItem("set_as_master",mxID_FILE_SET_AS_MASTER,LANG(MENUITEM_FILE_SET_AS_MASTER,"Ejecutar siempre este fuente")).EnableIf(ecSOURCE).Checkeable(false));
+		
+		AddMenuItem(mnHIDDEN, myMenuItem("inspect_on_mover",mxID_DEBUG_INSPECT_ON_MOUSE_OVER,LANG(PREFERENCES_DEBUG_INSPECT_ON_MOUSE_OVER,"Mostrar el valor de una variables al colocar el mouse sobre la misma") ).EnableIf(ecDEBUG_PAUSED).Checkeable(true));
 	
 		for(int i=0;i<MAX_PROJECT_CUSTOM_TOOLS;i++) AddMenuItem(mnHIDDEN, myMenuItem(wxString("project_tool_")<<i,mxID_CUSTOM_PROJECT_TOOL_0+i,LANG1(MENUITEM_HIDDEN_PROJECT_CUSTOM_TOOL,"Herramienta personalizada de proyecto <{1}>",wxString()<<i)).ShortCut(""));
 		
@@ -559,6 +561,7 @@ void MenusAndToolsConfig::LoadToolbarsData ( ) {
 		AddToolbarItem(tbDEBUG,myToolbarItem(menues[mnDEBUG],mxID_DEBUG_SAVE_CORE_DUMP));
 		AddToolbarItem(tbDEBUG,myToolbarItem(menues[mnDEBUG],mxID_DEBUG_PATCH));
 #endif
+		AddToolbarItem(tbDEBUG,myToolbarItem(menues[mnHIDDEN],mxID_DEBUG_INSPECT_ON_MOUSE_OVER).Visible().Checkeable());
 	}
 	
 	

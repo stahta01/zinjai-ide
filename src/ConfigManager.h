@@ -36,6 +36,7 @@ struct cfgDebug {
 	bool readnow;
 	bool show_do_that;
 	bool inspections_on_right;
+	bool inspect_on_mouse_over;
 	bool show_thread_panel;
 	bool show_log_panel;
 	bool return_focus_on_continue;

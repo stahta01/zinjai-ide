@@ -2524,6 +2524,8 @@ PREFERENCES_DEBUG_ACTIVATE_WINDOW_ON_INTERRUPTION
 Focus ZinjaI's window when debugging is interrupted
 PREFERENCES_DEBUG_RETURN_FOCUS_ON_CONTINUE
 Return focus to debugged application when continuing after a breakpoint
+PREFERENCES_DEBUG_INSPECT_ON_MOUSE_OVER
+Evaluate a variable by placing the mouse over it.
 PREFERENCES_DEBUG_ENABLE_CORE_DUMP
 Enable core dumps when running without debugger
 PREFERENCES_DEBUG_CATCH_THROW

@@ -14,7 +14,7 @@
    height="1052.3622"
    id="svg14643"
    version="1.1"
-   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
+   inkscape:version="0.92+devel (a137093a10, 2017-11-17)"
    sodipodi:docname="menu_debug.svg"
    viewBox="0 0 744.09448 1052.3622">
   <defs
@@ -761,6 +761,29 @@
          stdDeviation="0.40593251"
          id="feGaussianBlur5528" />
     </filter>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient8392"
+       id="radialGradient8434"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(-0.13373053,0.07423718,-0.17422889,-0.31385511,108.57068,1371.5943)"
+       cx="2113.7039"
+       cy="185.3024"
+       fx="2113.7039"
+       fy="185.3024"
+       r="16.90625" />
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient8392">
+      <stop
+         style="stop-color:#ececec;stop-opacity:1"
+         offset="0"
+         id="stop8394" />
+      <stop
+         style="stop-color:#333333;stop-opacity:1"
+         offset="1"
+         id="stop8396" />
+    </linearGradient>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -769,18 +792,19 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.3246154"
-     inkscape:cx="0.86252901"
-     inkscape:cy="-326.84824"
+     inkscape:zoom="2.8503042"
+     inkscape:cx="-38.601581"
+     inkscape:cy="-405.78885"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1469"
-     inkscape:window-height="631"
-     inkscape:window-x="1366"
-     inkscape:window-y="370"
-     inkscape:window-maximized="0"
-     inkscape:snap-global="false" />
+     inkscape:window-width="1920"
+     inkscape:window-height="1010"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:snap-global="false"
+     inkscape:document-rotation="0" />
   <metadata
      id="metadata14648">
     <rdf:RDF>
@@ -1263,7 +1287,11 @@
          id="tspan6715"
          y="1488.6226"
          x="-158.17015"
-         sodipodi:role="line" /></text>
+         sodipodi:role="line">Habilitar/deshabilitar mostrar valores como tooltips</tspan><tspan
+         y="1538.6226"
+         x="-158.17015"
+         sodipodi:role="line"
+         id="tspan1212" /></text>
     <rect
        inkscape:export-ydpi="78.80172"
        inkscape:export-xdpi="78.80172"
@@ -2817,5 +2845,50 @@
          d="m -197.72706,-21.116079 5.36685,8.050279"
          style="fill:#303030;fill-rule:evenodd;stroke:#303030;stroke-width:5.0999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     </g>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:15.54372597px;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.38859317"
+       x="-201.74573"
+       y="1484.8302"
+       id="text1273"><tspan
+         sodipodi:role="line"
+         id="tspan1271"
+         x="-201.74573"
+         y="1484.8302"
+         style="stroke-width:0.38859317">42</tspan></text>
+    <rect
+       style="opacity:0.56699997;fill:#ffff00;stroke:none;stroke-width:0.67459768;stroke-linecap:round;stroke-linejoin:round"
+       id="rect1275"
+       width="20.778109"
+       height="13.782981"
+       x="-203.64598"
+       y="1472.6079" />
+    <rect
+       style="opacity:0.75;fill:none;stroke:none"
+       id="id_inspect_on_mover"
+       width="36.547398"
+       height="36.547398"
+       x="-216.5249"
+       y="1456.0503"
+       inkscape:export-filename="/mnt/ex/zinjai/imgs/16/debug_registers.png"
+       inkscape:export-xdpi="42.029999"
+       inkscape:export-ydpi="42.029999" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:13.70059395px;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.34251484"
+       x="-214.33725"
+       y="1468.5204"
+       id="text1269"><tspan
+         sodipodi:role="line"
+         id="tspan1267"
+         x="-214.33725"
+         y="1468.5204"
+         style="stroke-width:0.34251484">var</tspan></text>
+    <path
+       style="fill:url(#radialGradient8434);fill-opacity:1;stroke:none;stroke-width:0.29458252px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m -206.6112,1472.9982 4.48778,7.8249 2.18638,-1.3808 -4.37275,-7.7098 4.02749,-0.2302 -9.32079,-7.0194 0.80551,12.6004 z"
+       id="path8390"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccc" />
   </g>
 </svg>

@@ -2524,6 +2524,8 @@ PREFERENCES_DEBUG_ACTIVATE_WINDOW_ON_INTERRUPTION
 Mostrar ZinjaI cuando se interrumpe la ejecución
 PREFERENCES_DEBUG_RETURN_FOCUS_ON_CONTINUE
 Devolver el foco a la aplicación en depuración luego de una pausa
+PREFERENCES_DEBUG_INSPECT_ON_MOUSE_OVER
+Mostrar el valor de una variables al colocar el mouse sobre la misma
 PREFERENCES_DEBUG_ENABLE_CORE_DUMP
 Habilitar volcado de memoria al ejecutar sin depurador
 PREFERENCES_DEBUG_CATCH_THROW

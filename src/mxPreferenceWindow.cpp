@@ -291,6 +291,9 @@ wxPanel *mxPreferenceWindow::CreateDebugPanel1 (wxNotebook *notebook) {
 	sizer.BeginCheck( LANG(PREFERENCES_DEBUG_RETURN_FOCUS_ON_CONTINUE,"Devolver el foco a la aplicación en depuración luego de una pausa") )
 		.Bind(m_binder,config->Debug.return_focus_on_continue).EndCheck();
 	
+	sizer.BeginCheck( LANG(PREFERENCES_DEBUG_INSPECT_ON_MOUSE_OVER,"Mostrar el valor de una variables al colocar el mouse sobre la misma") )
+		.Bind(m_binder,config->Debug.inspect_on_mouse_over).EndCheck();
+	
 	sizer.SetAndFit();
 	return sizer.GetPanel();
 }

@@ -219,6 +219,7 @@ bool ConfigManager::Load() {
 				else if (p.Key()=="auto_solibs") Debug.auto_solibs = p.AsBool();
 				else if (p.Key()=="readnow") Debug.readnow = p.AsBool();
 				else if (p.Key()=="inspections_on_right") Debug.inspections_on_right = p.AsBool();
+				else if (p.Key()=="inspect_on_mouse_over") Debug.inspect_on_mouse_over = p.AsBool();
 				else if (p.Key()=="show_thread_panel") Debug.show_thread_panel = p.AsBool();
 				else if (p.Key()=="show_log_panel") Debug.show_log_panel = p.AsBool();
 				else if (p.Key()=="return_focus_on_continue") Debug.return_focus_on_continue = p.AsBool();
@@ -580,6 +581,7 @@ bool ConfigManager::Save(){
 	CFG_BOOL_WRITE_DN("show_thread_panel",Debug.show_thread_panel);
 	CFG_BOOL_WRITE_DN("show_log_panel",Debug.show_log_panel);
 	CFG_BOOL_WRITE_DN("inspections_on_right",Debug.inspections_on_right);
+	CFG_BOOL_WRITE_DN("inspect_on_mouse_over",Debug.inspect_on_mouse_over);
 	CFG_BOOL_WRITE_DN("readnow",Debug.readnow);
 	CFG_BOOL_WRITE_DN("catch_throw",Debug.catch_throw);
 	CFG_BOOL_WRITE_DN("auto_solibs",Debug.auto_solibs);
@@ -864,6 +866,7 @@ void ConfigManager::LoadDefaults(){
 	Debug.format = "";
 	Debug.macros_file = "debug_macros.gdb";
 	Debug.inspections_on_right = false;
+	Debug.inspect_on_mouse_over = true;
 	Debug.show_thread_panel = false;
 	Debug.show_log_panel = false;
 	Debug.catch_throw = true;

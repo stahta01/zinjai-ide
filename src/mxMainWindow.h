@@ -251,6 +251,7 @@ public:
 	void OnDebugShowLogPanel (wxCommandEvent &event);
 	void OnDebugEnableInverseExecution (wxCommandEvent &event);
 	void OnDebugInverseExecution (wxCommandEvent &event);
+	void OnDebugInspectOnMouseOver(wxCommandEvent &event);
 	
 	void OnInternalInfo(wxCommandEvent &event);
 	
