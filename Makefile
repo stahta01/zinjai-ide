@@ -45,3 +45,13 @@ wine-clean:
 	$(MAKE) -f Makefile.wine -C src clean
 	$(MAKE) -f Makefile.wine -C parser clean
 	$(MAKE) -f Makefile.wine -C src_extras clean
+
+msys-win32:
+	$(MAKE) -f Makefile.msys -C src
+	$(MAKE) -f Makefile.msys -C parser
+	$(MAKE) -f Makefile.msys -C src_extras
+
+msys-win32-clean:
+	$(MAKE) -f Makefile.msys -C src clean
+	$(MAKE) -f Makefile.msys -C parser clean
+	$(MAKE) -f Makefile.msys -C src_extras clean
