@@ -1,0 +1,28 @@
+GPP=g++
+OBJS_DIR=release-${ARCH}.w32
+BIN_DIR=../bin-${ARCH}
+
+all: ${BIN_DIR} ${BIN_DIR}/zinjai-updatem.exe ${BIN_DIR}/zinjai-runner.exe ${BIN_DIR}/zinjai-shellexecute.exe
+	$(MAKE) -f Makefile.msys -C img_viewer
+
+clean:
+	rm -f ${BIN_DIR}/zinjai-updatem.exe ${BIN_DIR}/zinjai-runner.exe ${BIN_DIR}/zinjai-shellexecute.exe
+	$(MAKE) -f Makefile.msys -C img_viewer clean
+
+${BIN_DIR}:
+	mkdir -p ${BIN_DIR}
+
+${BIN_DIR}/zinjai-runner.exe: ${OBJS_DIR}/runner.o
+	${GPP} ${OBJS_DIR}/runner.o -o $@
+
+${BIN_DIR}/zinjai-shellexecute.exe: shellexecute.cpp
+	${GPP} -s -static-libgcc -static-libstdc++ -mwindows shellexecute.cpp -o $@
+
+${BIN_DIR}/zinjai-updatem.exe: updatem.cpp zockets.cpp zockets.h
+	${GPP} ${FLAGS} -mwindows updatem.cpp zockets.cpp -lwsock32 xmlres.o -o $@
+
+${OBJS_DIR}:
+	mkdir -p ${OBJS_DIR}
+
+${OBJS_DIR}/runner.o: runner.cpp ${OBJS_DIR}
+	${GPP} -O2 -c runner.cpp -o $@

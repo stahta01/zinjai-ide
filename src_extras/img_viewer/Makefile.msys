@@ -1,0 +1,19 @@
+GPP=g++
+CXXFLAGS=-O2 `wx-config --version=3.0 --static --unicode --cppflags`
+LDFLAGS=-s `wx-config --version=3.0 --static --unicode --libs std,stc`
+OBJS_DIR=../../temp/img_viewer/release-${ARCH}.msys
+BIN_DIR=../../bin-${ARCH}
+
+all: ${BIN_DIR}/zinjai-img_viewer.exe
+
+include Makefile.common
+
+clean:
+	rm -rf ${OBJS} ${BIN_DIR}/zinjai-img_viewer.exe
+	rm -f core
+
+${BIN_DIR}/zinjai-img_viewer.exe: ${OBJS_DIR} ${OBJS}
+	${GPP} ${OBJS} ${LDFLAGS} -o $@
+
+${OBJS_DIR}:
+	mkdir -p ${OBJS_DIR}

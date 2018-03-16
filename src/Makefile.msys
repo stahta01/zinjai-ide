@@ -1,0 +1,33 @@
+GPP=g++
+STRIP=strip
+OBJCOPY=objcopy
+# When using g++.exe (Rev1, Built by MSYS2 project) 7.3.0
+#   -O2 and -O3 resulted in a exe that seg faulted
+CXXFLAGS=-Wall -O1 -g `wx-config --version=3.0 --static --unicode --cppflags`
+LIBS=`wx-config --version=3.0 --static --unicode --libs std,aui,stc`
+OBJS_DIR=../temp/zinjai/release-${ARCH}.msys
+BIN_DIR=../bin-${ARCH}
+
+
+all: ${BIN_DIR} ${BIN_DIR}/zinjai.exe
+
+include Makefile.common
+
+clean:
+	rm -rf ${OBJS} ${BIN_DIR}/zinjai.exe ${BIN_DIR}/zinjai-w32.dbg ${OBJS_DIR}/icon.o
+
+
+${OBJS_DIR}/icon.o: zinjai.rc manifest.xml
+	windres -i zinjai.rc -o $@
+
+${BIN_DIR}/zinjai.exe: ${OBJS_DIR} ${OBJS} ${OBJS_DIR}/icon.o
+	${GPP} ${OBJS} ${LIBS}  ${OBJS_DIR}/icon.o -o $@
+	${OBJCOPY} --only-keep-debug ${BIN_DIR}/zinjai.exe ${BIN_DIR}/zinjai-w32.dbg
+	${STRIP} ${BIN_DIR}/zinjai.exe
+	${OBJCOPY} --add-gnu-debuglink=${BIN_DIR}/zinjai-w32.dbg ${BIN_DIR}/zinjai.exe
+
+${OBJS_DIR}:
+	mkdir -p ${OBJS_DIR}
+
+${BIN_DIR}:
+	mkdir -p ${BIN_DIR}
