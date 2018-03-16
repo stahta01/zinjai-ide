@@ -1,0 +1,30 @@
+GPP=g++ -fshow-column
+GCC=gcc
+FLAGS= -O2 `wx-config --version=3.0 --static --unicode --cppflags`
+LIBS= -s  `wx-config --version=3.0 --static --unicode --libs`
+OBJS_DIR=release-${ARCH}.w32
+BIN_DIR=../bin-${ARCH}
+OBJS=${OBJS_DIR}/Application.o ${OBJS_DIR}/mxWindow.o ${OBJS_DIR}/LangFile.o
+
+all: ${OBJS_DIR} ${BIN_DIR}/mxLangTool.exe
+
+clean:
+	rm -rf ${OBJS} ${BIN_DIR}/mxLangTool.exe
+
+${BIN_DIR}:
+	mkdir -p ${BIN_DIR}
+
+${BIN_DIR}/mxLangTool.exe: ${BIN_DIR} ${OBJS}
+	${GPP} ${OBJS} ${LIBS} -o $@
+
+${OBJS_DIR}:
+	mkdir -p ${OBJS_DIR}
+
+${OBJS_DIR}/Application.o: Application.cpp Application.h mxWindow.h
+	${GPP} ${FLAGS} -c Application.cpp -o $@
+
+${OBJS_DIR}/mxWindow.o: mxWindow.cpp mxWindow.h
+	${GPP} ${FLAGS} -c mxWindow.cpp -o $@
+
+${OBJS_DIR}/LangFile.o: LangFile.cpp LangFile.h
+	${GPP} ${FLAGS} -c LangFile.cpp -o $@

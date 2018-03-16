@@ -1,0 +1,23 @@
+GCC=gcc
+OPTS= -O1 -DZASKAR -Dpanic=printf -Dckfree=free -Dckalloc=malloc -Dckrealloc=realloc -DHAVE_CONFIG_H -Ihyper -Icommon -Imisc -Icpp/cpplib -I.
+OBJS_DIR=../temp/parser/release-${ARCH}.msys
+BIN_DIR=../bin-${ARCH}
+LDFLAGS=-s
+
+all: ${OBJS_DIR} ${BIN_DIR}/zinjai-cbrowser.exe
+
+include Makefile.common
+
+${OBJS_DIR}:
+	mkdir -p ${OBJS_DIR}
+
+${BIN_DIR}:
+	mkdir -p ${BIN_DIR}
+
+${BIN_DIR}/zinjai-cbrowser.exe: ${BIN_DIR} ${OBJS}
+	${GCC} ${OBJS} ${LDFLAGS} -o $@
+
+
+clean:
+	rm -f ${BIN_DIR}/zinjai-cbrowser.exe
+	rm -f ${OBJS}
