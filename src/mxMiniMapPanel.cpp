@@ -10,7 +10,7 @@ mxMiniMapPanel::mxMiniMapPanel(wxWindow *parent)
 }
 void mxMiniMapPanel::SetCurrentSource (mxSource * src)  {
 	if (m_current_map) {
-		m_sizer->Remove(m_current_map);
+		m_sizer->Detach(m_current_map);
 		m_current_map->Hide();
 	}
 	if (src) {
