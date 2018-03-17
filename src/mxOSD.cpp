@@ -22,7 +22,7 @@ mxOSD *mxOSD::current_osd = nullptr;
 
 mxOSD::mxOSD(wxWindow *aparent, wxString str, int time, bool corner, GenericAction *aon_cancel) 
 	: wxDialog( aparent?aparent:main_window,wxID_ANY,"",wxPoint(200,200),wxSize(400,100),
-	            (aparent?wxFRAME_FLOAT_ON_PARENT:wxSTAY_ON_TOP)|wxNO_3D|wxNO_BORDER ),
+	            (aparent?wxFRAME_FLOAT_ON_PARENT:wxSTAY_ON_TOP)|wxNO_BORDER ),
 	  on_cancel(aon_cancel), timer(nullptr), parent(aparent)
 {
 	cancel_button = on_cancel ? new wxButton(this,wxID_CANCEL,LANG(GENERAL_CANCEL_BUTTON,"Cancelar")) : nullptr;
