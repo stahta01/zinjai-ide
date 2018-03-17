@@ -78,7 +78,7 @@ wxString mxFilename::GetFileName (const wxString &fullpath, bool with_extension)
 		if (!with_extension && pdot==-1 && fullpath[i]=='.') pdot=i;
 		--i;
 	}
-	return fullpath.Mid(i+1,pdot==-1?wxSTRING_MAXLEN:(pdot-i-1));
+	return fullpath.Mid(i+1,pdot==-1?wxString::npos:(pdot-i-1));
 }
 
 wxString mxFilename::GetPath (const wxString &fullpath, bool or_dot) {
