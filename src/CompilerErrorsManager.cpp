@@ -192,7 +192,7 @@ static void UnSTD(wxString &line) {
 	p=0; int p2;
 	while ((p2=line.Mid(p).Find("basic_string"))!=wxNOT_FOUND) { 
 		p+=p2;
-		if (p>0&&((line[p-1]|32)<'a'||(line[p-1]|32)>'z')&&((line[p+12]|32)<'a'||(line[p+12]|32)>'z'))
+		if (p>0&&(((wxChar)line[p-1]|32)<'a'||((wxChar)line[p-1]|32)>'z')&&(((wxChar)line[p+12]|32)<'a'||((wxChar)line[p+12]|32)>'z'))
 			line.erase(p,6);
 		else
 			p+=12;
@@ -201,7 +201,7 @@ static void UnSTD(wxString &line) {
 	p=0;
 	while ((p2=line.Mid(p).Find("std::"))!=wxNOT_FOUND) { 
 		p+=p2;
-		if (p>0&&((line[p-1]|32)<'a'||(line[p-1]|32)>'z'))
+		if (p>0&&(((wxChar)line[p-1]|32)<'a'||((wxChar)line[p-1]|32)>'z'))
 			line.erase(p,5);
 		else
 			p+=5;

@@ -27,7 +27,7 @@ static bool ShouldAddToAutocompStart(const wxString &typed, int len, const wxStr
 	int l2=candidate.Len(); 
 	if (l2<len) return false;
 	for(int i=0; i<len; i++) 
-		if (tolower(candidate[i])!=typed[i]) 
+		if (tolower(candidate[i])!=(wxChar)typed[i])
 			return false;
 	return true;
 }
@@ -79,7 +79,7 @@ bool CodeHelper::AutocompleteFromArray(mxSource *source, CodeHelperSpecialArray 
 	int j, ll = words.keywords.GetCount();
 	for (j=0;j<ll;j++) {
 		unsigned int i=0;
-		while (i<l && (tolower(words.keywords[j][i])==typed[i]))
+		while (i<l && (tolower(words.keywords[j][i])==(wxChar)typed[i]))
 			i++;
 		if (i==l) g_autocomp_list.Add(words.keywords[j],words.icon,words.help);
 	}

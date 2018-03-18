@@ -101,8 +101,8 @@ void mxUT::SortArrayString(wxArrayString &array, int inf, int sup) {
 		while (true) {
 			int jl=array[inf].Len(),  l=(jl<ml?jl:ml)-2;
 			for (i=0;i<l;i++) {
-				if ( (array[inf][i]|32)!=med[i] ) {
-					bi=( (array[inf][i]|32)<med[i] );
+				if ( ((wxChar)array[inf][i]|32)!=(wxChar)med[i] ) {
+					bi=( ((wxChar)array[inf][i]|32)<(wxChar)med[i] );
 					break;
 				}
 			}
@@ -116,8 +116,8 @@ void mxUT::SortArrayString(wxArrayString &array, int inf, int sup) {
 		while (true) {
 			int jl=array[sup].Len(), l=(jl<ml?jl:ml)-2;
 			for (i=0;i<l;i++) {
-				if ( (array[sup][i]|32)!=med[i] ) {
-					bs=( (array[sup][i]|32)>med[i] );
+				if ( ((wxChar)array[sup][i]|32)!=(wxChar)med[i] ) {
+					bs=( ((wxChar)array[sup][i]|32)>(wxChar)med[i] );
 					break;
 				}
 			}

@@ -16,7 +16,7 @@ class mxGdbAsmPanel : public wxPanel, public myDIGlobalEventHandler {
 			addr_t result = 0;
 			for (int l = address.Len(), i = 2; i<l; ++i) { // 2 por saltear el 0x
 				result *= 16; 
-				char c = (address[i])|32;
+				char c = ((wxChar)address[i])|32;
 				if (c>='0'&&c<='9') result += address[i]-'0';
 				else /*(c>='a'&&c<='f')*/ result += (address[i]-'a'+10);
 			}

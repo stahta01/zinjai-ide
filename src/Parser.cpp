@@ -354,7 +354,7 @@ void Parser::ParseNextFileContinue(const wxString &s) {
 		id = s.GetChar(0)-'0';
 		p[0]=1;
 	} else if (l>3 && s.GetChar(2)==';') {
-		id = (s.GetChar(0)-'0')*10+s.GetChar(1)-'0';
+		id = ((wxChar)s.GetChar(0)-'0')*10+(wxChar)s.GetChar(1)-'0';
 		p[0]=2;
 	} else return;
 	// "cortar" las partes de la linea, separadas por ';' o 1. En p[i] se guardan las posiciones de estos caracteres de separacion
@@ -578,7 +578,7 @@ void Parser::ParseNextFileContinue(const wxString &s) {
 			wxString key=PARSER_PARTE(0);
 			g_code_helper->UnMacro(name);
 			g_code_helper->UnTemplate(name);
-			switch (s[p[5]+3]) {
+			switch ((wxChar)s[p[5]+3]) {
 			case '4':
 				PD_REGISTER_INHERIT(process->file,name,key,PD_CONST_PUBLIC);
 				break;

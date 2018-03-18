@@ -251,8 +251,8 @@ mediante las macros PD_ADD_*, pero las cosas se borran solas mediante su destruc
 		pd_aux = it->second; \
 		wxString ext_new=(afile->name).AfterLast('.'); \
 		wxString ext_old=(pd_aux->file->name).AfterLast('.'); \
-		bool was_header= ext_old.size()>0&&(ext_old[0]|32)=='h';\
-		bool is_header = ext_new.size()>0&&(ext_new[0]|32)=='h';\
+		bool was_header= ext_old.size()>0&&((wxChar)ext_old[0]|32)=='h';\
+		bool is_header = ext_new.size()>0&&((wxChar)ext_new[0]|32)=='h';\
 		if (is_header || !was_header) { \
 			PD_DEL_REF(pd_aux->ref); \
 			PD_ADD_REF(afile->first_global,afile->counter,pd_aux); \

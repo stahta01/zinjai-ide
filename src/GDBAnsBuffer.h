@@ -49,7 +49,7 @@ public:
 		m_done = endl_pos+1; --m_unprocessed_lines;
 		// guess type
 		if (line.IsEmpty()) return EMPTY;
-		switch (line[0]) {
+		switch ((wxChar)line[0]) {
 			case '^': return RESULT;
 			case '*': return EXEC_ASYNC;
 			case '+': return STATUS_ASYNC;
