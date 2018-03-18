@@ -4437,9 +4437,9 @@ void mxMainWindow::SetCompilingStatus (const wxString &message, bool also_status
 static void SuggestFix(mxSource *source, int pos, const wxString &error, const wxString &first_child) {
 	wxString message;
 	if (error.Contains(EN_COMPOUT_DID_YOU_MEAN)) {
-		message = error.Mid(error.Index(EN_COMPOUT_DID_YOU_MEAN));
+		message = error.Mid(error.Find(EN_COMPOUT_DID_YOU_MEAN));
 	} else if (first_child.Contains(EN_COMPOUT_SUGGESTED_ALTERNATIVE)) {
-		message = first_child.Mid(first_child.Index(EN_COMPOUT_SUGGESTED_ALTERNATIVE));
+		message = first_child.Mid(first_child.Find(EN_COMPOUT_SUGGESTED_ALTERNATIVE));
 	}
 	if (message.IsEmpty()) return;
 	wxString fix = message.AfterFirst('\'').BeforeFirst('\'');
