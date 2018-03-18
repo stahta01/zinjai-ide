@@ -242,7 +242,7 @@ void mxCreateComplementWindow::Notify(const wxString &message) {
 }
 
 void mxCreateComplementWindow::OnButtonFolder (wxCommandEvent & evt) {
-	wxDirDialog dlg(this,_T(spanish?"Directorio con archivos para el complemento:":"Directory with files to be included:"),folder->GetValue());
+	wxDirDialog dlg(this,spanish?"Directorio con archivos para el complemento:":"Directory with files to be included:",folder->GetValue());
 	if (wxID_OK==dlg.ShowModal()) SetFolder(dlg.GetPath());
 }
 
