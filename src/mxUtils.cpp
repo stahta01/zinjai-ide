@@ -84,8 +84,9 @@ void mxUT::SortArrayString(wxArrayString &array, int inf, int sup) {
 	wxString med=array[osup],aux;
 	int i=0,ml=med.Len();
 //	bool bi,bs;
-	for (i=0;i<ml;i++)
-		med[i]|=32;
+//	for (i=0;i<ml;i++)
+//		med[i]|=32;
+	med.Lower();
 	while (true) {
 // for (int i=oinf;i<=osup;i++) {
 // 	if (i==inf) cout<<"--";
