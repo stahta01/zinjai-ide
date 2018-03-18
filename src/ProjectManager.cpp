@@ -874,7 +874,7 @@ bool ProjectManager::Save (bool as_template) {
 					if (!breakpoints[j]->enabled) CFG_BOOL_WRITE_DN("breakpoint_enabled",false);
 					if (breakpoints[j]->action) CFG_GENERIC_WRITE_DN("breakpoint_action",true);
 					if (breakpoints[j]->ignore_count) CFG_GENERIC_WRITE_DN("breakpoint_ignore",breakpoints[j]->ignore_count);
-					if (breakpoints[j]->annotation) CFG_GENERIC_WRITE_DN("breakpoint_annotation",mxUT::Text2Line(breakpoints[j]->annotation));
+					if (!breakpoints[j]->annotation.IsEmpty()) CFG_GENERIC_WRITE_DN("breakpoint_annotation",mxUT::Text2Line(breakpoints[j]->annotation));
 					if (breakpoints[j]->cond.Len()) CFG_GENERIC_WRITE_DN("breakpoint_condition",breakpoints[j]->cond);
 	//				breakpoint->enabled=true; // que hace esto aca?
 				}
