@@ -173,11 +173,11 @@ static void Surround (mxSource *src, int lmin, int lmax, wxString spre, wxString
 		src->Indent(lmax,lmax);
 	}
 	if (spre.Contains("#here#")) {
-		int p = src->GetLineIndentPosition(lmin) + spre.Index("#here#");
+		int p = src->GetLineIndentPosition(lmin) + spre.Find("#here#");
 		src->SetTargetStart(p); src->SetTargetEnd(p+6); 
 		src->ReplaceTarget(""); src->SetSelection(p,p);
 	} else if (spos.Contains("#here#")) {
-		int p = src->GetLineIndentPosition(lmax) + spos.Index("#here#");
+		int p = src->GetLineIndentPosition(lmax) + spos.Find("#here#");
 		src->SetTargetStart(p); src->SetTargetEnd(p+6); 
 		src->ReplaceTarget(""); src->SetSelection(p,p);
 	}
