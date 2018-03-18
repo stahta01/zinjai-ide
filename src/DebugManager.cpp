@@ -1021,7 +1021,7 @@ void DebugManager::ReadGDBOutput() {
 	if (input->IsOk() && input->CanRead()) {
 		int n, watchdog=0;
 		do {
-			static char buffer[256];
+			static wxChar buffer[256];
 			n = input->Read(buffer,255).LastRead();
 			m_gdb_buffer.Read(buffer,n);
 		} while (++watchdog!=1000 && n==255 && input->CanRead());
