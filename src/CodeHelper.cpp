@@ -1314,7 +1314,8 @@ void CodeHelper::TryToSuggestTemplateSolutionForLinkingErrors (const wxArrayStri
 	
 	for(unsigned int i=0;i<full_output.GetCount();i++) { 
 		
-		wxString &l=full_output[i], keyword; 
+		const wxString &l=full_output[i];
+		wxString keyword;
 		
 		// simbolos que no encuentra el linker
 		int p=l.Find(EN_COMPOUT_UNDEFINED_REFERENCE);
