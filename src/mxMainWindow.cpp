@@ -4494,7 +4494,7 @@ void mxMainWindow::OnSelectErrorCommon (const wxString & error, const wxString &
 		if (preline.Len()) {
 			unsigned int i=0, n=0;
 			while (i<preline.size() && preline[i]>='0' && preline[i]<='9') 
-			{ n=n*10+preline[i++]-'0'; }
+			{ n=n*10+(wxChar)preline[i++]-'0'; }
 			if (i==preline.Len()) {
 				n+=source->PositionFromLine(line-1)-1;
 				source->SelectError(0,n,n);

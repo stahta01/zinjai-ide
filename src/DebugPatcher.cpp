@@ -23,10 +23,10 @@ bool DebugPatcher::mem_seg::extract(wxString &s, int &where) {
 		r*=16;
 		if (s[i]>='0'&&s[i]<='9') {
 			r+=s[i]-'0';
-		} else if (s[i]>='A'&&s[i]<='F') {
-			r+=s[i]+10-'A';
+		} else if ((wxChar)s[i]>='A'&&(wxChar)s[i]<='F') {
+			r+=(wxChar)s[i]+10-'A';
 		} else {
-			r+=s[i]+10-'a';
+			r+=(wxChar)s[i]+10-'a';
 		}
 		i++;
 	}
