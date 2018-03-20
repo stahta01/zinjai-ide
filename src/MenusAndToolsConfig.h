@@ -234,7 +234,11 @@ public:
 			else if (right) s<<"R"<<row; 
 			else if (top) s<<"T"<<row;
 			else s<<"F";
+#if wxCHECK_VERSION(3, 0, 0)
+#warning TODO: Add wxWidgets 3.0 code here
+#else
 			if (!visible) s[0]+=32;
+#endif
 			return s;
 		}
 	};
