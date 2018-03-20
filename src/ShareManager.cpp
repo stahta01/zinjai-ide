@@ -284,7 +284,7 @@ void ShareManager::OnSocketEvent(wxSocketEvent *event) {
 		} else if (event->GetSocketEvent()==wxSOCKET_INPUT) { // if comes a piece of source
 			int n=0;
 			if (it->second.len==-1) { // if that's the first message, get the source len
-				wxChar buf[25]="a";
+				wxChar buf[25]=wxS("a");
 				while (n<25) {
 					sock->Read(buf+n,1);
 					if (buf[n++]==' ') break;
@@ -331,7 +331,7 @@ void ShareManager::OnSocketEvent(wxSocketEvent *event) {
 		if (event->GetSocketEvent()==wxSOCKET_INPUT) { // if ask for something
 			
 			// read the request
-			wxChar buf[256]="";
+			wxChar buf[256]=wxS("");
 			event->GetSocket()->Read(buf,255);
 			HashStringSource it;
 			

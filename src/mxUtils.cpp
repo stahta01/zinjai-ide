@@ -563,7 +563,7 @@ wxString mxUT::ToHtml(wxString text, bool full) {
 	text.Replace(_T(">"),_T("&gt;"));
 	text.Replace("\n",_T("<BR>"));
 	if (full) {
-		wxChar doce[]=" ";
+		wxChar doce[]=wxS(" ");
 		doce[0]=12;
 		text.Replace(doce,_T("<BR>"));
 		text.Replace(" ",_T("&nbsp;"));
