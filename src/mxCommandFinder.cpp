@@ -118,7 +118,7 @@ void mxCommandFinderList::Select ( ) {
 	if (sel>=0&&sel<int(list->GetCount())) {
 		Hide(); GetParent()->Close();
 		wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED,ids[sel]);
-		main_window->ProcessEvent(evt);
+		main_window->GetEventHandler()->ProcessEvent(evt);
 	}
 }
 

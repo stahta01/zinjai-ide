@@ -1434,7 +1434,7 @@ mxMainWindow::~mxMainWindow() {
 void mxMainWindow::OnEdit (wxCommandEvent &event) {
 	_record_this_action_in_macro(event.GetId());
 	IF_THERE_IS_SOURCE {
-		CURRENT_SOURCE->ProcessEvent(event);
+		CURRENT_SOURCE->GetEventHandler()->ProcessEvent(event);
 		CURRENT_SOURCE->SetFocus();
 	}
 }
@@ -1446,9 +1446,9 @@ void mxMainWindow::OnEditNeedFocus (wxCommandEvent &event) {
 	if (focus && (focus==inspection_ctrl || focus->GetParent()==inspection_ctrl->GetCurrentInspectionGrid())) {
 		inspection_ctrl->OnRedirectedEditEvent(event);
 	} else if (focus && focus->IsKindOf(menu_data->toolbar_find_text->GetClassInfo())) {
-		if (event.GetId()<wxID_HIGHEST) focus->ProcessEvent(event); // redirect copy/past/cut, not others (duplicate lines, toggle mark, etc)
+		if (event.GetId()<wxID_HIGHEST) focus->GetEventHandler()->ProcessEvent(event); // redirect copy/past/cut, not others (duplicate lines, toggle mark, etc)
 	} else IF_THERE_IS_SOURCE {
-		CURRENT_SOURCE->ProcessEvent(event);
+		CURRENT_SOURCE->GetEventHandler()->ProcessEvent(event);
 	}
 }
 
