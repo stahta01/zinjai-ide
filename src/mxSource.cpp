@@ -2414,7 +2414,7 @@ void mxSource::ShowBaloon(wxString str, int p) {
 					while (j && ( str[j]!=' ' && str[j]!=',' && str[j]!='(' && str[j]!=')' ) ) j--;
 					if (j && !(j>2 && str[j]==' ' && str[j-1]==' ' && str[j-2]==' ' && str[j-3]=='\n') ) {
 						i=j;
-						str = str.SubString(0,j)+"\n"+wxString(' ',spaces+3).c_str()+str.Mid(j+1);
+						str = str.SubString(0,j)+"\n"+wxString(' ',spaces+3).wx_str()+str.Mid(j+1);
 						++line_count;
 						l+=4;
 					}
