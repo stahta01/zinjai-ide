@@ -148,7 +148,7 @@ void NavigationHistory::Next() {
 #define STYLE_IS_COMMENT(s) (s==wxSTC_C_COMMENT || s==wxSTC_C_COMMENTLINE || s==wxSTC_C_COMMENTLINEDOC || s==wxSTC_C_COMMENTDOC || s==wxSTC_C_COMMENTDOCKEYWORD || s==wxSTC_C_COMMENTDOCKEYWORDERROR)
 
 static const wxChar* s_reserved_keywords =
-	"and asm auto break case catch class const const_cast "
+	wxS("and asm auto break case catch class const const_cast ")
 	"continue default delete do dynamic_cast else enum explicit "
 	"export extern false for friend if goto inline "
 	"mutable namespace new not operator or private protected public "
@@ -157,10 +157,10 @@ static const wxChar* s_reserved_keywords =
 	"typename union using virtual while xor "
 	"auto constexpr decltype static_assert final override noexcept nullptr"; // c++ 2011
 static const wxChar* s_types_keywords =
-	"bool char const double float int long mutable register "
+	wxS("bool char const double float int long mutable register ")
 	"short signed static unsigned void volatile wchar_t";
 static const wxChar* s_doxygen_keywords =
-	"a addindex addtogroup anchor arg attention author b brief bug c "
+	wxS("a addindex addtogroup anchor arg attention author b brief bug c ")
 	"class code date def defgroup deprecated dontinclude e em endcode "
 	"endhtmlonly endif endlatexonly endlink endverbatim enum example "
 	"exception f$ f[ f] file fn hideinitializer htmlinclude "
