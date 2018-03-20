@@ -138,7 +138,11 @@ LANGUAGE_ERROR compile_language(string lang_in, string lang_cache) {
 }
 
 void try_to_load_language( ) {
+#if wxCHECK_VERSION(3, 0, 0)
+	if (LANGERR_OK!=load_language(DIR_PLUS_FILE("lang",config->Init.language_file).ToStdString(),config->GetUserConfigPath("lang_cache").ToStdString())) {
+#else
 	if (LANGERR_OK!=load_language(DIR_PLUS_FILE("lang",config->Init.language_file).c_str(),config->GetUserConfigPath("lang_cache").c_str())) {
+#endif
 		if (g_splash) g_splash->Hide(); // en window, si el splash esta visible, la llamada a ShowModal revienta
 		mxMessageDialog(nullptr,"No se pudo cargar el diccionario del idioma seleccionado.\n"
 						"El sistema utilizará el predeterminado (español).\n\n"
