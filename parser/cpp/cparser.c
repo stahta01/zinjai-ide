@@ -6638,7 +6638,7 @@ extern int Put_symbol (int type, char *scope, char *sym_name, char *file, int st
    }
 #endif
 
-   retval = put_symbol( type
+   retval = Put_symbol( type
                       , scope
                       , sym_name
                       , file
