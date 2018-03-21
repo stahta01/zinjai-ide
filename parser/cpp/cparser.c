@@ -102,6 +102,9 @@ MA 02111-1307, USA.
 #define LongStringMySetLen( plstr, l ) (((plstr)->buf ? (plstr)->buf[l] = 0 : 0), (plstr)->len = (l))
 
 extern FILE *cross_ref_fp;
+extern int f_ReadFile( int fd );
+extern int put_comment(char *classn,char *func,char *filename,
+   char *comment,int beg_line,int beg_char);
 
 typedef struct sDeclaration sDeclaration_t, *Declaration_t;
 typedef struct sDeclarator  sDeclarator_t , *Declarator_t ;
