@@ -23,6 +23,9 @@ MA 02111-1307, USA.
 
 */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 //#include "tcl.h"
 
 /* See sn.h for definitions of PAF_FILE -> PAF_SYMBOL_TYPE_MAX */
