@@ -38,6 +38,7 @@ MA 02111-1307, USA.
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 //#include <tcl.h>
 #include <ctype.h>
 
