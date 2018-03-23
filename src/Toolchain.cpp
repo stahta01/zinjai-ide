@@ -109,11 +109,13 @@ Toolchain::Toolchain () {
 //	desc="<null>";
 	type=TC_GCC;
 #ifdef __WIN32__
+	c_linker_options="-static-libgcc";
+	cpp_linker_options="-static-libgcc -static-libstdc++";
+#endif
+#if 0 // defined(__WIN32__)
 	linker="mingw32-g++";
 	cpp_compiler="mingw32-g++";
 	c_compiler="mingw32-gcc";
-	c_linker_options="-static-libgcc";
-	cpp_linker_options="-static-libgcc -static-libstdc++";
 	base_path="mingw32-gcc6";
 	bin_path="mingw32-gcc6\\bin";
 #else
