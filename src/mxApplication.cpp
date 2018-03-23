@@ -109,6 +109,9 @@ bool mxApplication::OnInit() {
 		} else if ( ( flag = wxFileName::FileExists(DIR_PLUS_FILE(zpath,"../zinjai.dir")) ) ) {
 			zpath = DIR_PLUS_FILE(zpath,"../");
 			wxSetWorkingDirectory(zpath);
+		} else if ( ( flag = wxFileName::FileExists(DIR_PLUS_FILE(zpath,"../share/zinjai/zinjai.dir")) ) )  {
+			zpath = DIR_PLUS_FILE(zpath,"../share/zinjai");
+			wxSetWorkingDirectory(zpath);
 #ifdef __APPLE__
 		} else if ( ( flag = wxFileName::FileExists(DIR_PLUS_FILE(zpath,"../Resources/zinjai.dir")) ) )  {
 			zpath = DIR_PLUS_FILE(zpath,"../Resources");
