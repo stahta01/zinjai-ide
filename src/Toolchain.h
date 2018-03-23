@@ -4,7 +4,7 @@
 #include <wx/arrstr.h>
 
 #ifdef __WIN32__
-#	define CURRENT_MINGW "mingw32-gcc6"
+#	define CURRENT_MINGW "gcc-msys2"
 #endif
 
 #define TOOLCHAIN_MAX_ARGS 5
