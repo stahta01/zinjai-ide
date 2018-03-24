@@ -132,13 +132,13 @@ mxCustomToolProcess::mxCustomToolProcess(const OneCustomTool &_tool) : tool(_too
 		cmd.Replace("${BROWSER}",config->Files.browser_command);
 	else {
 #ifdef __WIN32__
-		mxUT::ParameterReplace(cmd,"${BROWSER}",config->GetZinjaiBinPath("shellexecute.exe"));
+		mxUT::ParameterReplace(cmd,"${BROWSER}","zinjai-shellexecute.exe");
 #else
 		cmd.Replace("${BROWSER}","xdg-open");
 #endif
 	}
 #ifdef __WIN32__
-	mxUT::ParameterReplace(cmd,"${OPEN}",config->GetZinjaiBinPath("shellexecute.exe"));
+	mxUT::ParameterReplace(cmd,"${OPEN}","zinjai-shellexecute.exe");
 #else
 	cmd.Replace("${OPEN}","xdg-open");
 #endif
