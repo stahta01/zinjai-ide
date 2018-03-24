@@ -712,11 +712,11 @@ void ConfigManager::LoadDefaults(){
 #ifdef __WIN32__
 	Files.toolchain=CURRENT_MINGW;
 	Files.debugger_command="gdb";
-	Files.runner_command=DIR_PLUS_FILE("bin","runner.exe");
+	Files.runner_command="zinjai-runner.exe";
 	Files.terminal_command="";
 	Files.explorer_command="explorer";
 	Files.img_viewer="";
-	Files.doxygen_command="c:\\archivos de programa\\doxygen\\bin\\doxygen.exe";
+	Files.doxygen_command="doxygen.exe";
 	Files.wxfb_command="";
 	Files.browser_command=""; // use "bin\\shellexecute.exe";
 #elif defined(__APPLE__)
