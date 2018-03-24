@@ -336,13 +336,8 @@ long Parser::ParseNextFileStart(wxFileName filename, wxString HashName, bool hid
 	PD_REGISTER_FILE(process->file, HashName,filename.GetModificationTime());
 	process->file->hide_symbols=hide_symbols;
 	static wxString parser_command = "";
-	if (parser_command.IsEmpty()) parser_command = DIR_PLUS_FILE(config->GetZinjaiBinDir(),
-#ifdef __WIN32__
-		"cbrowser.exe"
-#else
-		"cbrowser.bin"
-#endif
-		);
+	if (parser_command.IsEmpty()) parser_command = "zinjai-cbrowser.exe";
+
 	return wxExecute(wxString(parser_command)<<" \""<<filename.GetFullPath()<<"\"",wxEXEC_ASYNC,process);
 }
 

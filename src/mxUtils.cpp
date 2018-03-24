@@ -1241,7 +1241,7 @@ wxString mxUT::GetCommandForRunningInTerminal (const wxString &title, const wxSt
 
 int mxUT::LaunchImageViewer (const wxString &window_title, const wxString &image_file) {
 	wxString command = config->Files.img_viewer;
-	if (command.IsEmpty()) command = mxUT::Quotize( config->GetZinjaiBinPath(_if_win32("img_viewer.exe","img_viewer.bin")) );
+	if (command.IsEmpty()) command = mxUT::Quotize( "zinjai-img_viewer.exe" );
 	command<<" "<<Quotize(image_file)<<" \""<<window_title<<"\"";
 	ZLINF2("Utils","LaunchImageViewer command: "<<command);
 	int retval = wxExecute(command);
@@ -1264,7 +1264,7 @@ wxString mxUT::GetFileTypeDescription(wxString file_path) {
 }
 
 bool mxUT::ShellExecute (const wxString & path, const wxString &workdir) {
-	wxString command = _if_win32( config->GetZinjaiBinPath("shellexecute.exe"), "xdg-open" );
+	wxString command = "zinjai-shellexecute.exe";
 	command<<" "<<Quotize(path);
 	RaiiWorkDirChanger wkcd_guard(workdir.IsEmpty()?".":workdir);
 	return wxExecute(command);
