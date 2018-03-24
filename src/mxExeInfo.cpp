@@ -142,7 +142,7 @@ wxPanel *mxExeInfo::CreateGeneralPanel (wxNotebook *notebook) {
 
 wxPanel *mxExeInfo::CreateDependPanel (wxNotebook *notebook) {
 	CreatePanelAndSizer sizer(notebook);
-	sizer.BeginText( _if_win32("lsdeps","ldd") )
+	sizer.BeginText( "ldd" )
 		.Value( LANG(EXEINFO_WAIT_FOR_PARSER,"No se puede determinar esta informacion mientras el parser esta analizando fuentes") )
 		.ReadOnly().MultiLine().EndText(ldd_ctrl);
 	sizer.Set();
@@ -181,7 +181,7 @@ void mxExeInfo::OnTimer(wxTimerEvent &evt) {
 
 void mxExeInfo::UpdateTypeAndDeps ( ) {
 	if (ldd_ctrl) {
-		wxString ldd_cmd = _if_win32( config->GetZinjaiBinPath("lsdeps.exe"), "ldd" );
+		wxString ldd_cmd = "ldd.exe";
 		ldd_ctrl->SetValue(mxUT::GetOutput(ldd_cmd+" "+mxUT::Quotize(m_fname.GetFullPath()),true,false));
 	}
 	text_type->SetValue(mxUT::GetFileTypeDescription(m_fname.GetFullPath()));
