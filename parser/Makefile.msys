@@ -1,8 +1,9 @@
 GCC=gcc
-OPTS= -O1 -DZASKAR -Dpanic=printf -Dckfree=free -Dckalloc=malloc -Dckrealloc=realloc -DHAVE_CONFIG_H -Ihyper -Icommon -Imisc -Icpp/cpplib -I.
+OPTS= -O1 -g -DZASKAR -Dpanic=printf -Dckfree=free -Dckalloc=malloc -Dckrealloc=realloc -DHAVE_CONFIG_H -Ihyper -Icommon -Imisc -Icpp/cpplib -I.
 OBJS_DIR=../temp/parser/release-${ARCH}.msys
 BIN_DIR=../bin-${ARCH}
-LDFLAGS=-s
+#LDFLAGS=-s
+LDFLAGS=
 
 all: ${OBJS_DIR} ${BIN_DIR}/zinjai-cbrowser.exe
 
