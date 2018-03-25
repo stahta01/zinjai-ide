@@ -283,19 +283,19 @@ bool mxReferenceWindow::PopulateInitialTree ( ) {
 	if (index_loaded) return true;
 	wxTextFile fil(DIR_PLUS_FILE(config->Help.cppreference_dir,_index));
 	if (!fil.Exists()) {
-		mxMessageDialog::mdAns res = 
-			mxMessageDialog(main_window,LANG(CPPREF_NOT_FOUND,""
-								 "No se encontró el archivo indice. Es probable que la\n"
-								 "referencia no está instalada, ya que no se incluye por\n"
-								 "defecto en todas las versiones de ZinjaI.\n\n"
-								 "Si dispone de acceso a internet puede descargarla e\n"
-								 "instalarla como complemento ahora."))
-			.Check1(LANG(CPPREF_INSTALL_NOW,"Descargar e instalar ahora"),true)
-			.Title("Referencia C/C++").IconInfo().Run();
-		if (res.check1) {
-			new mxComplementInstallerWindow(this); wxYield();
-			mxUT::OpenZinjaiSite("cppreference.html");
-		}
+		//mxMessageDialog::mdAns res =
+			//mxMessageDialog(main_window,LANG(CPPREF_NOT_FOUND,""
+								 //"No se encontró el archivo indice. Es probable que la\n"
+								 //"referencia no está instalada, ya que no se incluye por\n"
+								 //"defecto en todas las versiones de ZinjaI.\n\n"
+								 //"Si dispone de acceso a internet puede descargarla e\n"
+								 //"instalarla como complemento ahora."))
+			//.Check1(LANG(CPPREF_INSTALL_NOW,"Descargar e instalar ahora"),true)
+			//.Title("Referencia C/C++").IconInfo().Run();
+		//if (res.check1) {
+			//new mxComplementInstallerWindow(this); wxYield();
+			//mxUT::OpenZinjaiSite("cppreference.html");
+		//}
 		return false;
 	}
 	

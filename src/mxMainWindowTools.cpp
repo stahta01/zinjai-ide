@@ -29,7 +29,7 @@
 #include "mxExeInfo.h"
 #include "mxColoursEditor.h"
 #include "mxListSharedWindow.h"
-#include "mxComplementInstallerWindow.h"
+// #include "mxComplementInstallerWindow.h"
 #include "mxCppCheckConfigDialog.h"
 #include "mxValgrindConfigDialog.h"
 #include "Toolchain.h"
@@ -1000,9 +1000,11 @@ void mxMainWindow::ToolsPreproc( int id_command ) {
 //	src->SetFocus();
 }
 
+#if 0
 void mxMainWindow::OnToolsInstallComplements(wxCommandEvent &evt) {
 	new mxComplementInstallerWindow(this);
 }
+#endif
 
 void mxMainWindow::OnToolsCreateTemplate(wxCommandEvent &evt) {
 	wxString user_templates_dir=DIR_PLUS_FILE(config->config_dir,"templates");

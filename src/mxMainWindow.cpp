@@ -394,7 +394,7 @@ BEGIN_EVENT_TABLE(mxMainWindow, wxFrame)
 	EVT_MENU(mxID_TOOLS_CUSTOM_TOOLS_SETTINGS, mxMainWindow::OnToolsCustomToolsSettings)
 	EVT_MENU(mxID_TOOLS_PROJECT_TOOLS_SETTINGS, mxMainWindow::OnToolsProjectToolsSettings)
 	EVT_MENU(mxID_TOOLS_CUSTOM_HELP, mxMainWindow::OnToolsCustomHelp)
-	EVT_MENU(mxID_TOOLS_INSTALL_COMPLEMENTS, mxMainWindow::OnToolsInstallComplements)
+//	EVT_MENU(mxID_TOOLS_INSTALL_COMPLEMENTS, mxMainWindow::OnToolsInstallComplements)
 	
 	EVT_MENU(mxID_HELP_FIND_COMMAND, mxMainWindow::OnHelpFindCommand)
 	EVT_MENU(mxID_HELP_SHORTCUTS, mxMainWindow::OnHelpShortcuts)
