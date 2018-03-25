@@ -338,7 +338,7 @@ void MenusAndToolsConfig::LoadMenuData ( ) {
 		AddSeparator(mnTOOLS);
 		
 		AddMenuItem(mnTOOLS, myMenuItem("save_as_template",mxID_TOOLS_CREATE_TEMPLATE, LANG(MENUITEM_TOOLS_CREATE_TEMPLATE,"Guardar como nueva plantilla...")).Description("Permite guardar el programa simple o proyecto actual como plantilla").EnableIf(ecPROJECT_OR_SOURCE));
-		AddMenuItem(mnTOOLS, myMenuItem("install_complement",mxID_TOOLS_INSTALL_COMPLEMENTS, LANG(MENUITEM_TOOLS_INSTALL_COMPLEMENTS,"Instalar Complementos...")).Description("Permite instalar un complemento ya descargado para ZinjaI"));
+//		AddMenuItem(mnTOOLS, myMenuItem("install_complement",mxID_TOOLS_INSTALL_COMPLEMENTS, LANG(MENUITEM_TOOLS_INSTALL_COMPLEMENTS,"Instalar Complementos...")).Description("Permite instalar un complemento ya descargado para ZinjaI"));
 	}	
 	
 	
